@@ -38,6 +38,12 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Rocky"
             packageVersion = "1.0.0"
+
+            windows {
+                menuGroup = "Rocky"
+                shortcut = true
+                upgradeUuid = "CD761319-DDDF-439F-BEAF-9616ED84E4AF"
+            }
         }
     }
 }

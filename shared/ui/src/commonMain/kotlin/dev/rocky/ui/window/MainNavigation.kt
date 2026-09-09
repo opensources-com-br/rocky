@@ -62,7 +62,7 @@ internal fun MainNavigation(
 }
 
 @Composable
-internal fun AssistantFooter(onTalk: () -> Unit) {
+internal fun AssistantFooter(active: Boolean = false, onTalk: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,11 +71,11 @@ internal fun AssistantFooter(onTalk: () -> Unit) {
             .padding(horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        VoicePulse()
+        VoicePulse(active)
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Fale com o Rocky",
+                text = if (active) "Rocky está ouvindo" else "Fale com o Rocky",
                 color = RockyColors.TextPrimary,
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Medium,
@@ -93,7 +93,7 @@ internal fun AssistantFooter(onTalk: () -> Unit) {
 }
 
 @Composable
-private fun VoicePulse() {
+private fun VoicePulse(active: Boolean) {
     Row(
         modifier = Modifier.width(34.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
@@ -104,7 +104,7 @@ private fun VoicePulse() {
                 Modifier
                     .width(4.dp)
                     .height(height.dp)
-                    .background(RockyColors.TextMuted, CircleShape),
+                    .background(if (active) RockyColors.Accent else RockyColors.TextMuted, CircleShape),
             )
         }
     }

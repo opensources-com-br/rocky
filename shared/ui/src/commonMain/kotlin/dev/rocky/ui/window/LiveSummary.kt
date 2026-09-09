@@ -70,6 +70,8 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
 
 @Composable
 internal fun LiveSummary(
+    message: String = "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+    silenced: Boolean = false,
     onSaveNote: () -> Unit,
     onNext: () -> Unit,
     onSilence: () -> Unit,
@@ -108,7 +110,7 @@ internal fun LiveSummary(
         }
         Spacer(Modifier.height(17.dp))
         Text(
-            text = "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+            text = message,
             style = MaterialTheme.typography.h1,
         )
         Spacer(Modifier.height(13.dp))
@@ -135,7 +137,7 @@ internal fun LiveSummary(
                 Text("Salvar como nota", fontWeight = FontWeight.Bold)
             }
             PromptAction("Próxima", onNext)
-            PromptAction("Silenciar", onSilence)
+            PromptAction(if (silenced) "Retomar" else "Silenciar", onSilence)
         }
     }
 }

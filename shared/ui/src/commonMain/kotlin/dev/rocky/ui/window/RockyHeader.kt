@@ -33,6 +33,7 @@ import dev.rocky.ui.theme.RockyColors
 
 @Composable
 internal fun RockyHeader(
+    compact: Boolean = false,
     pinned: Boolean = false,
     onMinimize: () -> Unit = {},
     onTogglePinned: () -> Unit = {},
@@ -57,11 +58,13 @@ internal fun RockyHeader(
                 fontWeight = FontWeight.Bold,
                 color = RockyColors.TextPrimary,
             )
-            Text(
-                text = "a voz do chat, em acordes",
-                color = RockyColors.TextSecondary,
-                style = MaterialTheme.typography.caption,
-            )
+            if (!compact) {
+                Text(
+                    text = "a voz do chat, em acordes",
+                    color = RockyColors.TextSecondary,
+                    style = MaterialTheme.typography.caption,
+                )
+            }
         }
         ListeningBadge()
         IconButton(onClick = onTogglePinned, modifier = Modifier.size(34.dp)) {
@@ -72,13 +75,15 @@ internal fun RockyHeader(
                 modifier = Modifier.size(17.dp),
             )
         }
-        IconButton(onClick = onOpenSettings, modifier = Modifier.size(32.dp)) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = "Abrir configurações",
-                tint = RockyColors.TextSecondary,
-                modifier = Modifier.size(17.dp),
-            )
+        if (!compact) {
+            IconButton(onClick = onOpenSettings, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    imageVector = Icons.Outlined.Settings,
+                    contentDescription = "Abrir configurações",
+                    tint = RockyColors.TextSecondary,
+                    modifier = Modifier.size(17.dp),
+                )
+            }
         }
     }
 }

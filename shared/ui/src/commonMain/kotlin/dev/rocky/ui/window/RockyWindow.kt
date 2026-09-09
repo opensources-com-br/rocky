@@ -12,9 +12,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -35,6 +37,7 @@ import dev.rocky.core.twitch.TwitchConnectionListener
 import dev.rocky.core.twitch.TwitchConnectionPhase
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun RockyWindow(
@@ -75,6 +78,7 @@ fun RockyWindow(
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(aiSuggestionClient, initialAiConfiguration, onAiConfigurationChange)
         }
+        val aiScope = rememberCoroutineScope()
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
@@ -86,7 +90,15 @@ fun RockyWindow(
             else -> LiveSessionStatus.Stopped
         }
         val visibleMessages = if (twitch.isRealSession) twitch.messages else live.messages
+        val visibleSuggestion = if (twitch.isRealSession) ai.suggestion else live.suggestion
         val visiblePlatforms = if (twitch.isRealSession) twitch.platforms else samplePlatforms
+
+        LaunchedEffect(twitch.phase, ai.automaticAnalysis) {
+            while (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {
+                delay(AUTOMATIC_ANALYSIS_INTERVAL_MILLIS)
+                ai.analyze(aiScope, twitch.messages, automatic = true)
+            }
+        }
 
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
@@ -110,7 +122,7 @@ fun RockyWindow(
                     compact -> CompactContent(
                         status = sessionStatus,
                         messageCount = visibleMessages.size,
-                        suggestion = live.suggestion?.text.takeUnless { twitch.isRealSession },
+                        suggestion = visibleSuggestion?.text,
                         real = twitch.isRealSession,
                     )
                     settingsOpen -> {
@@ -171,9 +183,9 @@ fun RockyWindow(
                         PlatformStrip(visiblePlatforms)
                         Divider(color = RockyColors.Divider)
                         LiveSummary(
-                            suggestion = live.suggestion.takeUnless { twitch.isRealSession },
+                            suggestion = visibleSuggestion,
                             sourceCounts = if (twitch.isRealSession) {
-                                mapOf(StreamPlatform.Twitch to twitch.messages.size)
+                                mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0))
                             } else {
                                 live.sourceCounts
                             },
@@ -181,14 +193,23 @@ fun RockyWindow(
                             sessionMode = if (twitch.isRealSession) LiveSessionMode.Real else LiveSessionMode.Demonstration,
                             suggestionSaved = live.suggestionSaved,
                             silenced = silenced,
+                            generatingSuggestion = ai.generating,
+                            canAnalyze = twitch.isRealSession && twitch.messages.isNotEmpty(),
                             onSaveNote = {
-                                val note = live.createNoteFromSuggestion()
+                                val note = if (twitch.isRealSession) {
+                                    ai.suggestion?.let { suggestion ->
+                                        LiveNote(suggestion.id, suggestion.text, "agora", "SUGESTÃO IA")
+                                    }
+                                } else {
+                                    live.createNoteFromSuggestion()
+                                }
                                 if (note != null && localNotes.save(note)) {
-                                    live.markSuggestionSaved()
+                                    if (twitch.isRealSession) ai.dismissSuggestion() else live.markSuggestionSaved()
                                     mainSection = MainSection.Notes
                                 }
                             },
-                            onNext = live::dismissSuggestion,
+                            onAnalyze = { ai.analyze(aiScope, twitch.messages) },
+                            onNext = if (twitch.isRealSession) ai::dismissSuggestion else live::dismissSuggestion,
                             onSilence = { silenced = !silenced },
                         )
                         MainNavigation(mainSection) { mainSection = it }
@@ -280,3 +301,5 @@ private val TwitchLiveState.platforms: List<PlatformStatus>
         PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.YouTube, enabled = false),
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
     )
+
+private const val AUTOMATIC_ANALYSIS_INTERVAL_MILLIS = 15_000L

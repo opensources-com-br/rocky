@@ -13,8 +13,11 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.rocky.data.notes.SqliteNoteRepository
+import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
+import dev.rocky.platform.desktop.TwitchDesktopPreferences
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
+import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.ui.window.RockyWindow
 import java.awt.Dimension
 
@@ -25,9 +28,13 @@ fun main() = application {
     var previousSize by remember { mutableStateOf(ExpandedSize) }
     var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
     val noteRepository = remember { SqliteNoteRepository(RockyDesktopPaths.notesDatabase) }
+    val twitchClient = remember { DesktopTwitchChatClient() }
 
-    DisposableEffect(noteRepository) {
-        onDispose(noteRepository::close)
+    DisposableEffect(noteRepository, twitchClient) {
+        onDispose {
+            twitchClient.close()
+            noteRepository.close()
+        }
     }
 
     Window(
@@ -44,6 +51,10 @@ fun main() = application {
             compact = compact,
             pinned = pinned,
             noteRepository = noteRepository,
+            twitchChatClient = twitchClient,
+            initialTwitchClientId = TwitchDesktopPreferences.clientId,
+            onTwitchClientIdChange = { TwitchDesktopPreferences.clientId = it },
+            onOpenTwitchAuthorization = { openInBrowser(it) },
             onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {

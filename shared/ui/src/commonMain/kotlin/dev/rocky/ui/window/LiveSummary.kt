@@ -186,7 +186,7 @@ internal fun LiveSummary(
             PromptAction(
                 label = if (silenced) "Retomar" else "Silenciar",
                 onClick = onSilence,
-                enabled = sessionStatus == LiveSessionStatus.Running && sessionMode == LiveSessionMode.Demonstration,
+                enabled = sessionStatus == LiveSessionStatus.Running,
             )
         }
     }

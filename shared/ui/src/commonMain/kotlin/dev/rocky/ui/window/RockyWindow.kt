@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
 
@@ -53,6 +54,7 @@ fun RockyWindow(
                 RockyHeader(
                     compact = compact,
                     pinned = pinned,
+                    sessionStatus = live.status,
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
                     onOpenSettings = {
@@ -62,7 +64,11 @@ fun RockyWindow(
                 )
                 Divider(color = RockyColors.Divider)
                 when {
-                    compact -> CompactContent()
+                    compact -> CompactContent(
+                        status = live.status,
+                        messageCount = live.messages.size,
+                        suggestion = live.suggestion?.text,
+                    )
                     settingsOpen -> {
                         SettingsHeading(
                             onDone = {
@@ -85,11 +91,28 @@ fun RockyWindow(
                         }
                     }
                     else -> {
+                        LiveSessionControls(
+                            status = live.status,
+                            onStart = {
+                                silenced = false
+                                live.start()
+                            },
+                            onEnd = {
+                                silenced = false
+                                live.end()
+                            },
+                            onRestart = {
+                                silenced = false
+                                live.restart()
+                            },
+                        )
+                        Divider(color = RockyColors.Divider)
                         PlatformStrip(samplePlatforms)
                         Divider(color = RockyColors.Divider)
                         LiveSummary(
                             suggestion = live.suggestion,
                             sourceCounts = live.sourceCounts,
+                            sessionStatus = live.status,
                             suggestionSaved = live.suggestionSaved,
                             silenced = silenced,
                             onSaveNote = {
@@ -124,15 +147,23 @@ fun RockyWindow(
 }
 
 @Composable
-private fun CompactContent() {
+private fun CompactContent(
+    status: LiveSessionStatus,
+    messageCount: Int,
+    suggestion: String?,
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp)) {
         Text(
-            text = "7 perguntas sobre o preço do curso",
+            text = when (status) {
+                LiveSessionStatus.Stopped -> "Demonstração parada"
+                LiveSessionStatus.Running -> suggestion ?: "Ouvindo a demonstração"
+                LiveSessionStatus.Ended -> "Demonstração encerrada"
+            },
             style = MaterialTheme.typography.subtitle1,
             color = RockyColors.TextPrimary,
         )
         Text(
-            text = "4 Twitch · 2 YouTube · 1 Kick",
+            text = "$messageCount mensagens simuladas · sem live real",
             modifier = Modifier.padding(top = 4.dp),
             style = MaterialTheme.typography.caption,
             color = RockyColors.TextSecondary,

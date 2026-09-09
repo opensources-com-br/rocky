@@ -20,6 +20,11 @@ kotlin {
                 implementation(libs.sqldelight.sqlite.driver)
             }
         }
+        val desktopTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
 

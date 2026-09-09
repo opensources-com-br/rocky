@@ -13,8 +13,10 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.rocky.data.notes.SqliteNoteRepository
+import dev.rocky.data.ai.DesktopAiSuggestionClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
+import dev.rocky.platform.desktop.AiDesktopPreferences
 import dev.rocky.platform.desktop.TwitchDesktopPreferences
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
@@ -29,9 +31,11 @@ fun main() = application {
     var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
     val noteRepository = remember { SqliteNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
+    val aiClient = remember { DesktopAiSuggestionClient() }
 
-    DisposableEffect(noteRepository, twitchClient) {
+    DisposableEffect(noteRepository, twitchClient, aiClient) {
         onDispose {
+            aiClient.close()
             twitchClient.close()
             noteRepository.close()
         }
@@ -52,6 +56,9 @@ fun main() = application {
             pinned = pinned,
             noteRepository = noteRepository,
             twitchChatClient = twitchClient,
+            aiSuggestionClient = aiClient,
+            initialAiConfiguration = AiDesktopPreferences.configuration,
+            onAiConfigurationChange = { AiDesktopPreferences.configuration = it },
             initialTwitchClientId = TwitchDesktopPreferences.clientId,
             onTwitchClientIdChange = { TwitchDesktopPreferences.clientId = it },
             onOpenTwitchAuthorization = { openInBrowser(it) },

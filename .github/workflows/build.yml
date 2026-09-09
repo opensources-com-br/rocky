@@ -11,8 +11,19 @@ permissions:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
+        include:
+          - os: macos-latest
+            package-task: :apps:desktop:packageDmg
+            artifact-name: rocky-macos
+            artifact-path: apps/desktop/build/compose/binaries/main/dmg/*.dmg
+          - os: windows-latest
+            package-task: :apps:desktop:packageMsi :apps:desktop:packageExe
+            artifact-name: rocky-windows
+            artifact-path: |
+              apps/desktop/build/compose/binaries/main/msi/*.msi
+              apps/desktop/build/compose/binaries/main/exe/*.exe
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -22,3 +33,10 @@ jobs:
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew build
+      - run: ./gradlew ${{ matrix.package-task }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-path }}
+          if-no-files-found: error
+          retention-days: 7

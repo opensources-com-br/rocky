@@ -30,7 +30,7 @@ import dev.rocky.ui.theme.RockyColors
 internal fun PlatformSettings(platforms: List<PlatformStatus>) {
     var enabled by remember { mutableStateOf(platforms.associate { it.name to it.enabled }) }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
             "Contas conectadas",
             "O chat de todas as plataformas ativas vira uma fila única.",

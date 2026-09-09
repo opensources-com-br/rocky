@@ -19,13 +19,13 @@ internal fun VoiceSettings() {
     var speed by remember { mutableStateOf(0.5f) }
     var volume by remember { mutableStateOf(0.7f) }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle("Voz", "Timbre usado no seu fone.", voice)
         ChoiceRow(listOf("Aurora", "Íris", "Nuno", "Sem voz"), voice) { voice = it }
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(16.dp))
         SettingTitle("Velocidade", "Ritmo da fala.", "${(speed * 100 + 50).toInt()}%")
         RockySlider(speed) { speed = it }
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(10.dp))
         SettingTitle(
             "Volume no monitor",
             "Só você ouve; não entra na transmissão.",

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -29,7 +30,7 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun SettingsHeading(onDone: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text("Configurações", style = MaterialTheme.typography.h6)
@@ -123,7 +124,7 @@ internal fun ChoiceRow(
             ) {
                 Text(
                     text = option,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
                     color = if (active) RockyColors.Accent else RockyColors.TextSecondary,
                     style = MaterialTheme.typography.body2,
                 )
@@ -135,6 +136,7 @@ internal fun ChoiceRow(
 @Composable
 internal fun RockySlider(value: Float, onValueChange: (Float) -> Unit) {
     Slider(
+        modifier = Modifier.height(36.dp),
         value = value,
         onValueChange = onValueChange,
         colors = SliderDefaults.colors(
@@ -153,6 +155,7 @@ internal fun SettingSwitch(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Switch(
+            modifier = Modifier.height(34.dp),
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(

@@ -26,12 +26,12 @@ internal fun AgentSettings() {
     var frequency by remember { mutableStateOf(0.3f) }
     var canInterrupt by remember { mutableStateOf(true) }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle("Nome do agente", "Como o chat e você chamam o assistente.")
         OutlinedTextField(
             value = agentName,
             onValueChange = { agentName = it },
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp).height(48.dp),
             singleLine = true,
             textStyle = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium),
             shape = MaterialTheme.shapes.medium,
@@ -43,17 +43,17 @@ internal fun AgentSettings() {
                 cursorColor = RockyColors.Accent,
             ),
         )
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(16.dp))
         SettingTitle("Tom de voz", "Define como o agente formula as intervenções.", tone)
         ChoiceRow(listOf("Direto", "Animado", "Analítico", "Irônico"), tone) { tone = it }
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(16.dp))
         SettingTitle(
             "Frequência de fala",
             "Quantas vezes por 10 minutos ele pode intervir.",
             "${(frequency * 8).toInt() + 1}×",
         )
         RockySlider(frequency) { frequency = it }
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
         SettingTitle(
             "Interromper enquanto você fala",
             "Se desligado, ele espera uma pausa de 3 segundos.",

@@ -242,7 +242,7 @@ fun RockyWindow(
                                 .verticalScroll(rememberScrollState()),
                         ) {
                             when (mainSection) {
-                                MainSection.Conversation -> ConversationContent(visibleMessages)
+                                MainSection.Conversation -> ConversationContent(visibleMessages, voice.transcript)
                                 MainSection.Support -> SupportContent()
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,

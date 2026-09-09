@@ -25,7 +25,10 @@ import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun ConversationContent(messages: List<ChatMessage> = emptyList()) {
+internal fun ConversationContent(
+    messages: List<ChatMessage> = emptyList(),
+    streamerSpeech: String? = null,
+) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -47,6 +50,24 @@ internal fun ConversationContent(messages: List<ChatMessage> = emptyList()) {
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )
+        }
+
+        streamerSpeech?.let { speech ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "VOCÊ",
+                    modifier = Modifier.width(60.dp),
+                    color = RockyColors.Accent,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = speech,
+                    modifier = Modifier.weight(1f),
+                    color = RockyColors.TextPrimary,
+                    style = MaterialTheme.typography.body1,
+                )
+            }
         }
 
         if (messages.isEmpty()) {

@@ -151,6 +151,7 @@ fun RockyWindow(
                                     twitch = twitch,
                                     onConnect = {
                                         live.end()
+                                        ai.dismissSuggestion()
                                         twitch.connect(twitchClientId)
                                     },
                                     onDisconnect = twitch::disconnect,

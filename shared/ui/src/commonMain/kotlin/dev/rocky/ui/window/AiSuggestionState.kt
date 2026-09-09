@@ -87,15 +87,17 @@ internal class AiSuggestionState(
             return
         }
         if (automatic) {
+            if (messages.size < lastAutomaticMessageCount) lastAutomaticMessageCount = 0
             if (!automaticAnalysis || messages.size - lastAutomaticMessageCount < AUTOMATIC_BATCH_SIZE) return
-            lastAutomaticMessageCount = messages.size
         }
+        lastAutomaticMessageCount = messages.size
         val snapshot = messages.takeLast(MAX_ANALYSIS_MESSAGES)
+        val activeConfiguration = configuration
         generating = true
         status = "Analisando ${snapshot.size} mensagens…"
         scope.launch {
             val result = runCatching {
-                withContext(Dispatchers.Default) { client.generateSuggestion(configuration, snapshot) }
+                withContext(Dispatchers.Default) { client.generateSuggestion(activeConfiguration, snapshot) }
             }
             generating = false
             result.onSuccess { generated ->

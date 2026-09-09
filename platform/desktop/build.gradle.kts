@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+group = "dev.rocky.platform"
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
 }

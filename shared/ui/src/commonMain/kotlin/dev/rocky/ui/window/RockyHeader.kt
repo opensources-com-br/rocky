@@ -26,12 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
 internal fun RockyHeader(
     compact: Boolean = false,
     pinned: Boolean = false,
+    sessionStatus: LiveSessionStatus = LiveSessionStatus.Stopped,
     onTogglePinned: () -> Unit = {},
     onToggleCompact: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
@@ -57,7 +59,7 @@ internal fun RockyHeader(
                 )
             }
         }
-        ListeningBadge()
+        ListeningBadge(sessionStatus)
         IconButton(onClick = onToggleCompact, modifier = Modifier.size(34.dp)) {
             Icon(
                 imageVector = if (compact) Icons.Outlined.OpenInFull else Icons.Outlined.CloseFullscreen,
@@ -88,19 +90,32 @@ internal fun RockyHeader(
 }
 
 @Composable
-private fun ListeningBadge() {
+private fun ListeningBadge(status: LiveSessionStatus) {
     Box(
         modifier = Modifier
-            .border(1.dp, RockyColors.AccentMuted, RoundedCornerShape(18.dp))
+            .border(1.dp, status.badgeBorderColor, RoundedCornerShape(18.dp))
             .padding(horizontal = 11.dp, vertical = 5.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "OUVINDO",
-            color = RockyColors.Accent,
+            text = status.badgeLabel,
+            color = status.badgeTextColor,
             fontSize = 11.sp,
             letterSpacing = 1.6.sp,
             textAlign = TextAlign.Center,
         )
     }
 }
+
+private val LiveSessionStatus.badgeLabel: String
+    get() = when (this) {
+        LiveSessionStatus.Stopped -> "PARADO"
+        LiveSessionStatus.Running -> "OUVINDO"
+        LiveSessionStatus.Ended -> "ENCERRADO"
+    }
+
+private val LiveSessionStatus.badgeTextColor
+    get() = if (this == LiveSessionStatus.Running) RockyColors.Accent else RockyColors.TextSecondary
+
+private val LiveSessionStatus.badgeBorderColor
+    get() = if (this == LiveSessionStatus.Running) RockyColors.AccentMuted else RockyColors.Border

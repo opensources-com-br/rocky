@@ -6,6 +6,17 @@ enum class StreamPlatform {
     YouTube,
 }
 
+enum class LiveSessionMode {
+    Demonstration,
+    Real,
+}
+
+enum class LiveSessionStatus {
+    Stopped,
+    Running,
+    Ended,
+}
+
 data class ChatMessage(
     val id: String,
     val author: String,

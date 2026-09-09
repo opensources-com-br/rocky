@@ -128,7 +128,7 @@ fun RockyWindow(
                         ) {
                             when (settingsSection) {
                                 SettingsSection.Agent -> AgentSettings()
-                                SettingsSection.Ai -> AiSettings()
+                                SettingsSection.Ai -> AiSettings(ai)
                                 SettingsSection.Voice -> VoiceSettings()
                                 SettingsSection.Platforms -> PlatformSettings(
                                     clientId = twitchClientId,

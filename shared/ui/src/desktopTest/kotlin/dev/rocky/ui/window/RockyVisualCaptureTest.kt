@@ -48,7 +48,7 @@ class RockyVisualCaptureTest {
 
         val mainSections = mapOf(
             MainSection.Support to "ju.lia",
-            MainSection.Notes to "Prometeu mostrar o raio-x do repositório antes de encerrar.",
+            MainSection.Notes to "Notas locais",
             MainSection.Ideas to "Série curta respondendo as 5 dúvidas mais repetidas do chat.",
             MainSection.Pulse to "820 assistindo · 26 msg/min",
         )

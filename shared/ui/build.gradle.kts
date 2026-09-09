@@ -20,6 +20,13 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.material)
         }
+
+        val desktopTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.compose.ui.test.junit)
+            }
+        }
     }
 }
 

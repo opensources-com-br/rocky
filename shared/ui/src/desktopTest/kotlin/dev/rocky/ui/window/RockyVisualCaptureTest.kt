@@ -16,6 +16,10 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveNote
+import dev.rocky.core.ai.AiConnectionResult
+import dev.rocky.core.ai.AiGeneratedSuggestion
+import dev.rocky.core.ai.AiProviderConfiguration
+import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.notes.NoteRepository
@@ -71,7 +75,7 @@ class RockyVisualCaptureTest {
 
         val settingsSections = mapOf(
             SettingsSection.Agent to "Nome do agente",
-            SettingsSection.Ai to "Criatividade",
+            SettingsSection.Ai to "Provedor de IA",
             SettingsSection.Voice to "Velocidade",
             SettingsSection.Platforms to "Conexão com plataformas",
         )
@@ -115,11 +119,13 @@ class RockyVisualCaptureTest {
     @Test
     fun connectsAndDisplaysRealTwitchChat() {
         val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient()
         render(
             settingsOpen = true,
             settingsSection = SettingsSection.Platforms,
             twitchChatClient = twitch,
             twitchClientId = "client-id",
+            aiSuggestionClient = ai,
         )
 
         rule.onNodeWithText("Conectar Twitch").performClick()
@@ -140,6 +146,10 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("CONEXÃO REAL · TWITCH").assertExists()
         rule.onNodeWithText("Mensagem real").assertExists()
+        rule.onNodeWithText("Analisar agora").performClick()
+        rule.waitUntil(timeoutMillis = 5_000) {
+            rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     @Test
@@ -202,6 +212,7 @@ class RockyVisualCaptureTest {
         onExportNotes: (List<LiveNote>) -> Boolean = { false },
         twitchChatClient: TwitchChatClient? = null,
         twitchClientId: String = "",
+        aiSuggestionClient: AiSuggestionClient? = null,
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection) {
@@ -213,6 +224,7 @@ class RockyVisualCaptureTest {
                         onToggleCompact = {},
                         noteRepository = noteRepository,
                         twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
+                        aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         initialTwitchClientId = twitchClientId,
                         onExportNotes = onExportNotes,
                         initialMainSectionIndex = mainSection.ordinal,
@@ -253,5 +265,15 @@ class RockyVisualCaptureTest {
         override fun close() = Unit
 
         fun emit(event: TwitchConnectionEvent) = listener.onEvent(event)
+    }
+
+    private class FakeAiSuggestionClient : AiSuggestionClient {
+        override fun testConnection(configuration: AiProviderConfiguration) =
+            AiConnectionResult(true, "Conectado")
+
+        override fun generateSuggestion(configuration: AiProviderConfiguration, messages: List<ChatMessage>) =
+            AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
+
+        override fun close() = Unit
     }
 }

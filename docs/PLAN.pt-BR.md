@@ -171,7 +171,7 @@ rocky/
   platform/
     desktop/               # cofre, áudio, atalhos, tray e APIs do sistema
   docs/
-    PLANO.md
+    PLAN.pt-BR.md
     adr/                   # decisões de arquitetura à medida que forem implementadas
   fixtures/                # eventos sintéticos e cenários de replay
   .github/workflows/

@@ -2,7 +2,7 @@
 
 Status: proposal to begin implementation. Date: September 8, 2026.
 
-Read in [Português (Brasil)](PLANO.md).
+Read in [Português (Brasil)](PLAN.pt-BR.md).
 
 Rocky is a live-stream assistant for macOS and Windows: a floating window that follows chat, speaks or writes to the streamer, organizes paid support events, and captures useful notes and ideas. It is a free, open-source application with processing and storage controlled by the user, no Rocky account, and no required backend.
 
@@ -172,7 +172,7 @@ rocky/
     desktop/               # credential store, audio, shortcuts, tray, native APIs
   docs/
     PLAN.md
-    PLANO.md
+    PLAN.pt-BR.md
     adr/                   # architecture decisions as they are implemented
   fixtures/                # synthetic events and replay scenarios
   .github/workflows/

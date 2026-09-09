@@ -26,6 +26,8 @@ class SimulatedLiveStateTest {
         state.receive(LiveEvent.SuggestionCreated(suggestion))
         val savedNote = state.createNoteFromSuggestion()
         assertEquals(suggestion.text, savedNote?.text)
+        state.markSuggestionSaved()
+        assertTrue(state.suggestionSaved)
 
         state.end()
         assertEquals(LiveSessionStatus.Ended, state.status)

@@ -57,8 +57,11 @@ internal class SimulatedLiveState {
             timestamp = "agora",
             tag = "SUGESTÃO",
         )
-        suggestionSaved = true
         return note
+    }
+
+    fun markSuggestionSaved() {
+        suggestionSaved = true
     }
 
     fun dismissSuggestion() {

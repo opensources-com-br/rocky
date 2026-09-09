@@ -125,6 +125,7 @@ fun RockyWindow(
                             onSaveNote = {
                                 val note = live.createNoteFromSuggestion()
                                 if (note != null && localNotes.save(note)) {
+                                    live.markSuggestionSaved()
                                     mainSection = MainSection.Notes
                                 }
                             },

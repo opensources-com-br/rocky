@@ -1,0 +1,32 @@
+# AI providers
+
+Rocky can generate grounded suggestions from Twitch chat with a local Ollama model or the OpenAI Responses API.
+
+## Ollama
+
+1. [Install Ollama](https://ollama.com/download) and keep it running.
+2. Download the default model with `ollama pull llama3.2`, or choose another installed text model.
+3. In Rocky, open **Settings → AI** and select **Ollama local**.
+4. Keep `http://localhost:11434` as the endpoint, enter the installed model name, and select **Test connection**.
+
+Messages stay on the computer when the Ollama endpoint is local. Rocky does not install or bundle models.
+
+## OpenAI API
+
+1. Create an API key for your OpenAI API project. A ChatGPT subscription does not supply an API key or API usage credits.
+2. In **Settings → AI**, select **OpenAI API**.
+3. Keep `https://api.openai.com` as the endpoint, enter a model available to the project, and paste the API key.
+4. Select **Test connection**.
+
+The API key remains in memory and is discarded when Rocky closes. It is never saved to preferences. Requests use the [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) with `store: false`.
+
+## Suggestion behavior
+
+- **Analyze now** works after at least one real Twitch message arrives.
+- Automatic analysis runs every 15 seconds and sends a new batch only after three additional messages.
+- A request contains at most the latest 30 messages and 300 characters from each message.
+- Chat is labeled as untrusted content. A generated suggestion must cite message IDs present in the request or Rocky rejects it.
+- Only one analysis runs at a time. Rocky never falls back from Ollama to OpenAI automatically.
+- Saving a generated suggestion uses the existing local SQLite notes and Markdown export.
+
+API providers receive the selected chat content. Review the provider's data controls before enabling automatic analysis.

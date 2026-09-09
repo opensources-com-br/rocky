@@ -7,6 +7,7 @@ Rocky is built with Kotlin Multiplatform and Compose Multiplatform. The desktop 
 Read the [implementation plan](docs/PLAN.md) for the product, privacy, integrations, architecture, monorepo, phases, and release criteria.
 
 To test real chat, follow the [Twitch connection guide](docs/TWITCH.md).
+To generate suggestions, follow the [AI provider guide](docs/AI.md).
 
 Leia em [português](README.pt-BR.md).
 

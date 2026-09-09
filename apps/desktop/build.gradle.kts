@@ -37,7 +37,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Rocky"
-            packageVersion = "0.1.0"
+            packageVersion = "1.0.0"
         }
     }
 }

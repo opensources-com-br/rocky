@@ -129,7 +129,11 @@ internal fun LiveSummary(
         Spacer(Modifier.height(17.dp))
         Text(
             text = suggestion?.text ?: if (sessionMode == LiveSessionMode.Real) {
-                "Estou recebendo o chat real. As sugestões com IA entram na próxima fase."
+                if (generatingSuggestion) {
+                    "Estou analisando o chat para encontrar uma resposta ou ideia útil."
+                } else {
+                    "Estou recebendo o chat real. Posso analisar agora ou aguardar o próximo lote automático."
+                }
             } else when (sessionStatus) {
                 LiveSessionStatus.Stopped -> "Inicie a demonstração para receber mensagens simuladas."
                 LiveSessionStatus.Running -> "Estou acompanhando as mensagens para encontrar algo útil."

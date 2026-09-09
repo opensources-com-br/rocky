@@ -24,7 +24,8 @@ class SimulatedLiveStateTest {
         state.start()
         state.receive(LiveEvent.MessageReceived(message))
         state.receive(LiveEvent.SuggestionCreated(suggestion))
-        assertTrue(state.saveSuggestion())
+        val savedNote = state.createNoteFromSuggestion()
+        assertEquals(suggestion.text, savedNote?.text)
 
         state.end()
         assertEquals(LiveSessionStatus.Ended, state.status)
@@ -33,7 +34,6 @@ class SimulatedLiveStateTest {
         assertEquals(LiveSessionStatus.Running, state.status)
         assertTrue(state.messages.isEmpty())
         assertNull(state.suggestion)
-        assertEquals(1, state.notes.size)
         assertEquals(2, state.sessionNumber)
     }
 

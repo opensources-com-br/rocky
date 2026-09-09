@@ -17,6 +17,7 @@ import dev.rocky.core.live.RockySuggestion
 import dev.rocky.core.live.SimulatedLiveScript
 import dev.rocky.core.live.StreamPlatform
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 internal class SimulatedLiveState {
     val messages = mutableStateListOf<ChatMessage>()
@@ -47,19 +48,23 @@ internal class SimulatedLiveState {
         }
     }
 
-    fun saveSuggestion(): Boolean {
-        val currentSuggestion = suggestion ?: return false
-        if (suggestionSaved) return false
+    fun createNoteFromSuggestion(): LiveNote? {
+        val currentSuggestion = suggestion ?: return null
+        if (suggestionSaved) return null
 
-        notes.add(
-            LiveNote(
-                id = "note-$sessionNumber-${currentSuggestion.id}",
-                text = currentSuggestion.text,
-                timestamp = "agora",
-                tag = "SUGESTÃO",
-            ),
+        val note = LiveNote(
+            id = "note-${Random.nextLong()}",
+            text = currentSuggestion.text,
+            timestamp = "agora",
+            tag = "SUGESTÃO",
         )
         suggestionSaved = true
+        return note
+    }
+
+    fun saveSuggestion(): Boolean {
+        val note = createNoteFromSuggestion() ?: return false
+        notes.add(0, note)
         return true
     }
 

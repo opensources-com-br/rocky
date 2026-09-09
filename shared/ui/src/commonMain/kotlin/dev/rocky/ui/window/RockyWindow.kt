@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveNote
 import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.notes.NoteRepository
+import dev.rocky.core.twitch.TwitchChatClient
+import dev.rocky.core.twitch.TwitchConnectionListener
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
 
@@ -32,6 +34,10 @@ fun RockyWindow(
     onTogglePinned: () -> Unit,
     onToggleCompact: () -> Unit,
     noteRepository: NoteRepository? = null,
+    twitchChatClient: TwitchChatClient = InactiveTwitchChatClient,
+    initialTwitchClientId: String = "",
+    onTwitchClientIdChange: (String) -> Unit = {},
+    onOpenTwitchAuthorization: (String) -> Unit = {},
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
     initialMainSectionIndex: Int = 0,
@@ -49,6 +55,8 @@ fun RockyWindow(
         var silenced by remember { mutableStateOf(false) }
         var talking by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
+        val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient) }
+        var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
@@ -161,6 +169,14 @@ fun RockyWindow(
             }
         }
     }
+}
+
+private object InactiveTwitchChatClient : TwitchChatClient {
+    override fun connect(clientId: String, listener: TwitchConnectionListener) = Unit
+
+    override fun disconnect() = Unit
+
+    override fun close() = Unit
 }
 
 @Composable

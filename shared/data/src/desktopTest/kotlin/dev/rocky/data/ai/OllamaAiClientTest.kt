@@ -44,7 +44,7 @@ class OllamaAiClientTest {
     private val message = ChatMessage("m1", "viewer", "Qual é o preço?", StreamPlatform.Twitch)
 }
 
-private fun com.sun.net.httpserver.HttpExchange.respond(body: String) {
+internal fun com.sun.net.httpserver.HttpExchange.respond(body: String) {
     val bytes = body.toByteArray(StandardCharsets.UTF_8)
     sendResponseHeaders(200, bytes.size.toLong())
     responseBody.use { it.write(bytes) }

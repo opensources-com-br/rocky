@@ -29,6 +29,7 @@ class AiSuggestionStateTest {
         state.analyze(this, messages(5), automatic = true)
         assertEquals(2, client.requests)
 
+        state.dismissSuggestion()
         state.analyze(this, messages(1), automatic = true)
         state.analyze(this, messages(3), automatic = true)
         while (state.generating) delay(1)

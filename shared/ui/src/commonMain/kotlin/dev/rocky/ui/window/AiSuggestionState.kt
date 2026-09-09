@@ -87,6 +87,7 @@ internal class AiSuggestionState(
             return
         }
         if (automatic) {
+            if (suggestion != null) return
             if (messages.size < lastAutomaticMessageCount) lastAutomaticMessageCount = 0
             if (!automaticAnalysis || messages.size - lastAutomaticMessageCount < AUTOMATIC_BATCH_SIZE) return
         }

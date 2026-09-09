@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -17,6 +18,7 @@ import java.nio.file.Path
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import org.junit.Rule
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class RockyVisualCaptureTest {
@@ -77,6 +79,38 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("Nota salva").assertExists()
         rule.onNodeWithText("SUGESTÃO").assertExists()
+    }
+
+    @Test
+    fun windowControlsInvokeCallbacks() {
+        var closed = false
+        var minimized = false
+        var pinned = false
+        var compact = false
+        rule.setContent {
+            Box(Modifier.size(420.dp, 720.dp)) {
+                RockyWindow(
+                    compact = false,
+                    pinned = false,
+                    onClose = { closed = true },
+                    onMinimize = { minimized = true },
+                    onTogglePinned = { pinned = true },
+                    onToggleCompact = { compact = true },
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("Minimizar").performClick()
+        rule.onNodeWithContentDescription("Fixar janela").performClick()
+        rule.onNodeWithContentDescription("Alternar modo compacto").performClick()
+        rule.onNodeWithContentDescription("Fechar").performClick()
+
+        rule.runOnIdle {
+            assertTrue(minimized)
+            assertTrue(pinned)
+            assertTrue(compact)
+            assertTrue(closed)
+        }
     }
 
     private fun render(

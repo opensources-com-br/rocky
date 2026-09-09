@@ -80,10 +80,14 @@ internal fun LiveSummary(
     sessionMode: LiveSessionMode = LiveSessionMode.Demonstration,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
+    generatingSuggestion: Boolean = false,
+    canAnalyze: Boolean = false,
     onSaveNote: () -> Unit,
+    onAnalyze: () -> Unit = {},
     onNext: () -> Unit,
     onSilence: () -> Unit,
 ) {
+    val analyzeAction = sessionMode == LiveSessionMode.Real && suggestion == null
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -146,8 +150,8 @@ internal fun LiveSummary(
         ) {
             Button(
                 modifier = Modifier.weight(1f).height(42.dp),
-                onClick = onSaveNote,
-                enabled = suggestion != null && !suggestionSaved,
+                onClick = if (analyzeAction) onAnalyze else onSaveNote,
+                enabled = if (analyzeAction) canAnalyze && !generatingSuggestion else suggestion != null && !suggestionSaved,
                 shape = RoundedCornerShape(11.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = RockyColors.Accent,
@@ -156,7 +160,12 @@ internal fun LiveSummary(
                 elevation = ButtonDefaults.elevation(0.dp, 0.dp),
             ) {
                 Text(
-                    text = if (suggestionSaved) "Nota salva" else "Salvar como nota",
+                    text = when {
+                        analyzeAction && generatingSuggestion -> "Analisando…"
+                        analyzeAction -> "Analisar agora"
+                        suggestionSaved -> "Nota salva"
+                        else -> "Salvar como nota"
+                    },
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -168,7 +177,7 @@ internal fun LiveSummary(
             PromptAction(
                 label = if (silenced) "Retomar" else "Silenciar",
                 onClick = onSilence,
-                enabled = sessionStatus == LiveSessionStatus.Running,
+                enabled = sessionStatus == LiveSessionStatus.Running && sessionMode == LiveSessionMode.Demonstration,
             )
         }
     }

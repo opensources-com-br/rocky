@@ -51,10 +51,16 @@ class DesktopVoiceService : VoiceService {
     override fun speak(text: String, configuration: VoiceOutputConfiguration) {
         require(text.isNotBlank()) { "Speech text cannot be empty" }
         stopSpeaking()
-        speechProcess = when {
+        val process = when {
             operatingSystem.contains("mac") -> ProcessBuilder(macSpeechCommand(text, configuration)).start()
             operatingSystem.contains("win") -> ProcessBuilder(windowsSpeechCommand(text, configuration)).start()
             else -> error("System speech is unavailable on this operating system")
+        }
+        speechProcess = process
+        val exitCode = process.waitFor()
+        if (speechProcess === process) {
+            speechProcess = null
+            check(exitCode == 0) { "System speech failed" }
         }
     }
 

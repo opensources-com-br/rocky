@@ -37,6 +37,10 @@ internal class AiSuggestionState(
     var suggestion by mutableStateOf<RockySuggestion?>(null)
         private set
 
+    val isReady: Boolean
+        get() = configuration.endpoint.isNotBlank() && configuration.model.isNotBlank() &&
+            (configuration.provider != AiProviderKind.OpenAI || configuration.apiKey.isNotBlank())
+
     private var lastAutomaticMessageCount = 0
 
     fun updateProvider(provider: AiProviderKind) {
@@ -78,6 +82,10 @@ internal class AiSuggestionState(
 
     fun analyze(scope: CoroutineScope, messages: List<ChatMessage>, automatic: Boolean = false) {
         if (generating || messages.isEmpty()) return
+        if (!isReady) {
+            status = "Configure o provedor de IA antes de analisar"
+            return
+        }
         if (automatic) {
             if (!automaticAnalysis || messages.size - lastAutomaticMessageCount < AUTOMATIC_BATCH_SIZE) return
             lastAutomaticMessageCount = messages.size

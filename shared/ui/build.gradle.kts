@@ -14,9 +14,15 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":shared:core"))
+            implementation(libs.compose.resources)
+            implementation(libs.compose.icons.extended)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "dev.rocky.ui.resources"
 }

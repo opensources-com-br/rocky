@@ -90,7 +90,7 @@ fun RockyWindow(
                         ) {
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent()
-                                MainSection.Support -> SupportContent(onRead = {})
+                                MainSection.Support -> SupportContent()
                                 MainSection.Notes,
                                 MainSection.Ideas -> TimelineContent(mainSection)
                                 MainSection.Pulse -> PulseContent(samplePlatforms)

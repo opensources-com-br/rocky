@@ -16,6 +16,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,10 +42,15 @@ private val supportMessages = listOf(
 )
 
 @Composable
-internal fun SupportContent(onRead: (String) -> Unit) {
+internal fun SupportContent() {
+    var readAuthors by remember { mutableStateOf(emptySet<String>()) }
+
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp)) {
         supportMessages.forEach { item ->
-            SupportCard(item = item, onRead = { onRead(item.author) })
+            SupportCard(
+                item = item.copy(read = item.read || item.author in readAuthors),
+                onRead = { readAuthors = readAuthors + item.author },
+            )
         }
     }
 }

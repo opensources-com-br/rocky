@@ -60,3 +60,22 @@ internal class LocalNotesState(private val repository: NoteRepository) {
         },
     )
 }
+
+internal class TransientNoteRepository : NoteRepository {
+    private val notes = mutableListOf<LiveNote>()
+
+    override fun getAll(): List<LiveNote> = notes.toList()
+
+    override fun save(note: LiveNote) {
+        notes.add(0, note)
+    }
+
+    override fun update(note: LiveNote) {
+        val index = notes.indexOfFirst { it.id == note.id }
+        if (index >= 0) notes[index] = note
+    }
+
+    override fun delete(noteId: String) {
+        notes.removeAll { it.id == noteId }
+    }
+}

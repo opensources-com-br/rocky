@@ -31,7 +31,7 @@ fun RockyWindow(
     pinned: Boolean,
     onTogglePinned: () -> Unit,
     onToggleCompact: () -> Unit,
-    noteRepository: NoteRepository = TransientNoteRepository(),
+    noteRepository: NoteRepository? = null,
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
     initialMainSectionIndex: Int = 0,
@@ -49,7 +49,9 @@ fun RockyWindow(
         var silenced by remember { mutableStateOf(false) }
         var talking by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
-        val localNotes = remember(noteRepository) { LocalNotesState(noteRepository) }
+        val transientNotes = remember { TransientNoteRepository() }
+        val resolvedNoteRepository = noteRepository ?: transientNotes
+        val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
 
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),

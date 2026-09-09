@@ -13,7 +13,7 @@ import org.junit.Test
 
 class SimulatedLiveStateTest {
     @Test
-    fun controlsSessionLifecycleAndKeepsSavedNotes() {
+    fun controlsSessionLifecycle() {
         val state = SimulatedLiveState()
 
         assertEquals(LiveSessionMode.Demonstration, state.mode)

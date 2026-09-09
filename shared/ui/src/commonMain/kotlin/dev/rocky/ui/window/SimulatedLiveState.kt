@@ -21,7 +21,6 @@ import kotlin.random.Random
 
 internal class SimulatedLiveState {
     val messages = mutableStateListOf<ChatMessage>()
-    val notes = mutableStateListOf<LiveNote>()
     val mode = LiveSessionMode.Demonstration
 
     var status by mutableStateOf(LiveSessionStatus.Stopped)
@@ -60,12 +59,6 @@ internal class SimulatedLiveState {
         )
         suggestionSaved = true
         return note
-    }
-
-    fun saveSuggestion(): Boolean {
-        val note = createNoteFromSuggestion() ?: return false
-        notes.add(0, note)
-        return true
     }
 
     fun dismissSuggestion() {

@@ -30,8 +30,9 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         apiKey: String,
         model: String,
         messages: List<ChatMessage>,
+        streamerRequest: String? = null,
     ): AiGeneratedSuggestion? {
-        val prompt = buildAiSuggestionPrompt(messages)
+        val prompt = buildAiSuggestionPrompt(messages, streamerRequest)
         val schema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)

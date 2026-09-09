@@ -28,8 +28,13 @@ internal class OllamaAiClient(private val httpClient: HttpClient) {
         }
     }.getOrElse { AiConnectionResult(false, it.userMessage("Não foi possível conectar ao Ollama")) }
 
-    fun generate(endpoint: String, model: String, messages: List<ChatMessage>): AiGeneratedSuggestion? {
-        val prompt = buildAiSuggestionPrompt(messages)
+    fun generate(
+        endpoint: String,
+        model: String,
+        messages: List<ChatMessage>,
+        streamerRequest: String? = null,
+    ): AiGeneratedSuggestion? {
+        val prompt = buildAiSuggestionPrompt(messages, streamerRequest)
         val body = buildJsonObject {
             put("model", model)
             put("stream", false)

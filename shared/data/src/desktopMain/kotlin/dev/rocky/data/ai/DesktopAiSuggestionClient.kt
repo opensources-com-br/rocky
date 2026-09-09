@@ -32,16 +32,18 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
     override fun generateSuggestion(
         configuration: AiProviderConfiguration,
         messages: List<ChatMessage>,
+        streamerRequest: String?,
     ): AiGeneratedSuggestion? {
         configuration.validationError()?.let { throw IllegalArgumentException(it) }
         require(messages.isNotEmpty()) { "At least one chat message is required" }
         return when (configuration.provider) {
-            AiProviderKind.Ollama -> ollama.generate(configuration.endpoint, configuration.model, messages)
+            AiProviderKind.Ollama -> ollama.generate(configuration.endpoint, configuration.model, messages, streamerRequest)
             AiProviderKind.OpenAI -> openAi.generate(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,
                 messages,
+                streamerRequest,
             )
         }
     }

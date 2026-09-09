@@ -26,8 +26,6 @@ import dev.rocky.ui.theme.RockyTheme
 fun RockyWindow(
     compact: Boolean,
     pinned: Boolean,
-    onClose: () -> Unit,
-    onMinimize: () -> Unit,
     onTogglePinned: () -> Unit,
     onToggleCompact: () -> Unit,
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
@@ -55,8 +53,6 @@ fun RockyWindow(
                 RockyHeader(
                     compact = compact,
                     pinned = pinned,
-                    onClose = onClose,
-                    onMinimize = onMinimize,
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
                     onOpenSettings = {

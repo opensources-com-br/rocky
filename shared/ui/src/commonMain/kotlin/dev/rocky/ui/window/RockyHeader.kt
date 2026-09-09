@@ -32,8 +32,6 @@ import dev.rocky.ui.theme.RockyColors
 internal fun RockyHeader(
     compact: Boolean = false,
     pinned: Boolean = false,
-    onClose: () -> Unit = {},
-    onMinimize: () -> Unit = {},
     onTogglePinned: () -> Unit = {},
     onToggleCompact: () -> Unit = {},
     onOpenSettings: () -> Unit = {},

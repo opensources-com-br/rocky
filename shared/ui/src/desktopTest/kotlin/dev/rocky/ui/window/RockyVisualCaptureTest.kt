@@ -90,8 +90,6 @@ class RockyVisualCaptureTest {
                 RockyWindow(
                     compact = false,
                     pinned = false,
-                    onClose = {},
-                    onMinimize = {},
                     onTogglePinned = { pinned = true },
                     onToggleCompact = { compact = true },
                 )
@@ -118,8 +116,6 @@ class RockyVisualCaptureTest {
                     RockyWindow(
                         compact = false,
                         pinned = false,
-                        onClose = {},
-                        onMinimize = {},
                         onTogglePinned = {},
                         onToggleCompact = {},
                         initialMainSectionIndex = mainSection.ordinal,

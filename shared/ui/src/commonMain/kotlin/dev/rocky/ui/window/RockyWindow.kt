@@ -101,7 +101,20 @@ fun RockyWindow(
                                 SettingsSection.Agent -> AgentSettings()
                                 SettingsSection.Ai -> AiSettings()
                                 SettingsSection.Voice -> VoiceSettings()
-                                SettingsSection.Platforms -> PlatformSettings(samplePlatforms)
+                                SettingsSection.Platforms -> PlatformSettings(
+                                    clientId = twitchClientId,
+                                    onClientIdChange = { value ->
+                                        twitchClientId = value
+                                        onTwitchClientIdChange(value)
+                                    },
+                                    twitch = twitch,
+                                    onConnect = {
+                                        live.end()
+                                        twitch.connect(twitchClientId)
+                                    },
+                                    onDisconnect = twitch::disconnect,
+                                    onOpenAuthorization = onOpenTwitchAuthorization,
+                                )
                             }
                         }
                     }

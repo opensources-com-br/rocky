@@ -10,89 +10,186 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.rocky.core.twitch.TwitchConnectionPhase
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun PlatformSettings(platforms: List<PlatformStatus>) {
-    var enabled by remember { mutableStateOf(platforms.associate { it.name to it.enabled }) }
-
+internal fun PlatformSettings(
+    clientId: String,
+    onClientIdChange: (String) -> Unit,
+    twitch: TwitchLiveState,
+    onConnect: () -> Unit,
+    onDisconnect: () -> Unit,
+    onOpenAuthorization: (String) -> Unit,
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
-            "Contas conectadas",
-            "O chat de todas as plataformas ativas vira uma fila única.",
+            "Conexão com plataformas",
+            "A demonstração funciona sem conta. Conecte a Twitch para receber um chat real.",
         )
-        Column(modifier = Modifier.padding(top = 12.dp)) {
-            platforms.forEach { platform ->
-                PlatformAccount(
-                    platform = platform,
-                    checked = enabled[platform.name] == true,
-                    onCheckedChange = { checked ->
-                        enabled = enabled + (platform.name to checked)
-                    },
+        TwitchAccount(clientId, onClientIdChange, twitch, onConnect, onDisconnect, onOpenAuthorization)
+        Text(
+            text = "O Client ID identifica seu aplicativo público da Twitch. Tokens ficam apenas na memória e são apagados ao desconectar ou fechar o Rocky.",
+            modifier = Modifier.padding(horizontal = 3.dp, vertical = 6.dp),
+            color = RockyColors.TextMuted,
+            style = MaterialTheme.typography.caption,
+        )
+        UpcomingPlatform("Kick", PlatformColor.Kick)
+        UpcomingPlatform("YouTube", PlatformColor.YouTube)
+        UpcomingPlatform("Facebook", PlatformColor.Offline)
+    }
+}
+
+@Composable
+private fun TwitchAccount(
+    clientId: String,
+    onClientIdChange: (String) -> Unit,
+    twitch: TwitchLiveState,
+    onConnect: () -> Unit,
+    onDisconnect: () -> Unit,
+    onOpenAuthorization: (String) -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 6.dp),
+        color = RockyColors.SurfaceElevated,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, RockyColors.Border),
+    ) {
+        Column(modifier = Modifier.padding(13.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.size(9.dp).background(RockyColors.Twitch, CircleShape))
+                Column(modifier = Modifier.padding(start = 11.dp).weight(1f)) {
+                    Text("Twitch", color = RockyColors.TextPrimary, fontWeight = FontWeight.Medium)
+                    Text(
+                        text = twitch.statusText,
+                        color = twitch.statusColor,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.testTag("twitch-status"),
+                    )
+                }
+            }
+            OutlinedTextField(
+                value = clientId,
+                onValueChange = onClientIdChange,
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp).testTag("twitch-client-id"),
+                label = { Text("Client ID") },
+                placeholder = { Text("Cole o Client ID do seu aplicativo") },
+                singleLine = true,
+                enabled = !twitch.phase.isConnecting,
+            )
+            twitch.userCode?.let { code ->
+                Text(
+                    text = code,
+                    modifier = Modifier.padding(top = 12.dp).testTag("twitch-user-code"),
+                    color = RockyColors.TextPrimary,
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold,
                 )
+                Text(
+                    "Use este código para autorizar o Rocky na Twitch.",
+                    color = RockyColors.TextSecondary,
+                    style = MaterialTheme.typography.caption,
+                )
+            }
+            Row(modifier = Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (twitch.phase == TwitchConnectionPhase.Disconnected || twitch.phase == TwitchConnectionPhase.Failed) {
+                    PrimaryButton("Conectar Twitch", clientId.isNotBlank(), onConnect)
+                } else {
+                    OutlinedButton(
+                        onClick = onDisconnect,
+                        border = BorderStroke(1.dp, RockyColors.Border),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
+                    ) { Text("Desconectar") }
+                }
+                twitch.verificationUri?.let { uri ->
+                    OutlinedButton(
+                        onClick = { onOpenAuthorization(uri) },
+                        modifier = Modifier.padding(start = 8.dp).testTag("twitch-open-browser"),
+                        border = BorderStroke(1.dp, RockyColors.AccentMuted),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.Accent),
+                    ) { Text("Abrir Twitch") }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun PlatformAccount(
-    platform: PlatformStatus,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-) {
+private fun PrimaryButton(label: String, enabled: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(backgroundColor = RockyColors.Accent, contentColor = Color.Black),
+        elevation = ButtonDefaults.elevation(0.dp, 0.dp),
+    ) { Text(label, fontWeight = FontWeight.Bold) }
+}
+
+@Composable
+private fun UpcomingPlatform(name: String, color: PlatformColor) {
     Surface(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 9.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         color = RockyColors.SurfaceElevated,
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, RockyColors.Border),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 13.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 13.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(Modifier.size(9.dp).background(platform.color(), CircleShape))
-            Column(modifier = Modifier.padding(start = 11.dp).weight(1f)) {
-                Text(
-                    text = platform.name,
-                    color = RockyColors.TextPrimary,
-                    style = MaterialTheme.typography.body1,
-                    fontWeight = FontWeight.Medium,
-                )
-                Text(
-                    text = if (platform.enabled) {
-                        "${platform.account} · ${platform.audience} no chat"
-                    } else {
-                        platform.account
-                    },
-                    color = RockyColors.TextMuted,
-                    style = MaterialTheme.typography.caption,
-                )
-            }
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = RockyColors.TextPrimary,
-                    checkedTrackColor = platform.color(),
-                    uncheckedThumbColor = RockyColors.TextPrimary,
-                    uncheckedTrackColor = RockyColors.TextMuted,
-                ),
+            Spacer(Modifier.size(9.dp).background(color.color(), CircleShape))
+            Text(
+                text = name,
+                modifier = Modifier.padding(start = 11.dp).weight(1f),
+                color = RockyColors.TextSecondary,
             )
+            Text("Em breve", color = RockyColors.TextMuted, style = MaterialTheme.typography.caption)
         }
     }
+}
+
+private val TwitchConnectionPhase.isConnecting: Boolean
+    get() = this in setOf(
+        TwitchConnectionPhase.Authenticating,
+        TwitchConnectionPhase.AwaitingAuthorization,
+        TwitchConnectionPhase.Connecting,
+        TwitchConnectionPhase.Reconnecting,
+    )
+
+private val TwitchLiveState.statusText: String
+    get() = detail ?: when (phase) {
+        TwitchConnectionPhase.Disconnected -> "Não conectada"
+        TwitchConnectionPhase.Authenticating -> "Iniciando autenticação"
+        TwitchConnectionPhase.AwaitingAuthorization -> "Aguardando autorização"
+        TwitchConnectionPhase.Connecting -> "Conectando ao chat"
+        TwitchConnectionPhase.Connected -> "Conectada"
+        TwitchConnectionPhase.Reconnecting -> "Reconectando"
+        TwitchConnectionPhase.Failed -> "Falha na conexão"
+    }
+
+private val TwitchLiveState.statusColor
+    get() = when (phase) {
+        TwitchConnectionPhase.Connected -> RockyColors.Twitch
+        TwitchConnectionPhase.Failed -> RockyColors.YouTube
+        else -> RockyColors.TextMuted
+    }
+
+private fun PlatformColor.color(): Color = when (this) {
+    PlatformColor.Twitch -> RockyColors.Twitch
+    PlatformColor.Kick -> RockyColors.Kick
+    PlatformColor.YouTube -> RockyColors.YouTube
+    PlatformColor.Offline -> RockyColors.TextMuted
 }

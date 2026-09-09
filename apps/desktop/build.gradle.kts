@@ -8,7 +8,7 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop") {
+    jvm {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     }
 
@@ -22,17 +22,14 @@ kotlin {
             implementation(libs.compose.foundation)
         }
 
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
 
 compose.desktop {
     application {
-        from(kotlin.targets["desktop"])
         mainClass = "dev.rocky.app.MainKt"
 
         nativeDistributions {

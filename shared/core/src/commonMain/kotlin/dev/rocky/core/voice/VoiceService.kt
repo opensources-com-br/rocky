@@ -24,6 +24,12 @@ data class LocalTranscriptionConfiguration(
     val language: String = "pt",
 )
 
+data class VoiceConfiguration(
+    val output: VoiceOutputConfiguration = VoiceOutputConfiguration(),
+    val transcription: LocalTranscriptionConfiguration = LocalTranscriptionConfiguration("", ""),
+    val readSuggestions: Boolean = true,
+)
+
 interface VoiceService : AutoCloseable {
     fun availableVoices(): List<SystemVoice>
 

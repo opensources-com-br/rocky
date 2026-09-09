@@ -1,20 +1,15 @@
 package dev.rocky.platform.desktop
 
 import dev.rocky.core.voice.LocalTranscriptionConfiguration
+import dev.rocky.core.voice.VoiceConfiguration
 import dev.rocky.core.voice.VoiceOutputConfiguration
 import java.util.prefs.Preferences
-
-data class DesktopVoiceConfiguration(
-    val output: VoiceOutputConfiguration = VoiceOutputConfiguration(),
-    val transcription: LocalTranscriptionConfiguration = LocalTranscriptionConfiguration("", ""),
-    val readSuggestions: Boolean = true,
-)
 
 object VoiceDesktopPreferences {
     private val preferences = Preferences.userRoot().node("dev/rocky/voice")
 
-    var configuration: DesktopVoiceConfiguration
-        get() = DesktopVoiceConfiguration(
+    var configuration: VoiceConfiguration
+        get() = VoiceConfiguration(
             output = VoiceOutputConfiguration(
                 voiceId = preferences.get(VOICE_KEY, "").ifBlank { null },
                 speedPercent = preferences.getInt(SPEED_KEY, 100),

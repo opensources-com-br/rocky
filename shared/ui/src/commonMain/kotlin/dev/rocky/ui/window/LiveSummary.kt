@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.rocky.core.live.RockySuggestion
 import dev.rocky.core.live.LiveSessionStatus
+import dev.rocky.core.live.LiveSessionMode
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
@@ -76,6 +77,7 @@ internal fun LiveSummary(
     suggestion: RockySuggestion? = previewSuggestion,
     sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Running,
+    sessionMode: LiveSessionMode = LiveSessionMode.Demonstration,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
     onSaveNote: () -> Unit,
@@ -103,6 +105,7 @@ internal fun LiveSummary(
             Text(
                 text = when {
                     suggestion != null -> "TOCANDO AGORA"
+                    sessionMode == LiveSessionMode.Real -> "CHAT REAL DA TWITCH"
                     sessionStatus == LiveSessionStatus.Stopped -> "DEMONSTRAÇÃO PRONTA"
                     sessionStatus == LiveSessionStatus.Ended -> "DEMONSTRAÇÃO ENCERRADA"
                     else -> "OUVINDO O CHAT"
@@ -121,7 +124,9 @@ internal fun LiveSummary(
         }
         Spacer(Modifier.height(17.dp))
         Text(
-            text = suggestion?.text ?: when (sessionStatus) {
+            text = suggestion?.text ?: if (sessionMode == LiveSessionMode.Real) {
+                "Estou recebendo o chat real. As sugestões com IA entram na próxima fase."
+            } else when (sessionStatus) {
                 LiveSessionStatus.Stopped -> "Inicie a demonstração para receber mensagens simuladas."
                 LiveSessionStatus.Running -> "Estou acompanhando as mensagens para encontrar algo útil."
                 LiveSessionStatus.Ended -> "A demonstração terminou. Reinicie quando quiser testar novamente."

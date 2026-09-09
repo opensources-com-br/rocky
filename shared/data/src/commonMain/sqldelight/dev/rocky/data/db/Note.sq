@@ -1,0 +1,25 @@
+CREATE TABLE note (
+    id TEXT NOT NULL PRIMARY KEY,
+    text TEXT NOT NULL,
+    timestamp TEXT NOT NULL,
+    tag TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+selectAll:
+SELECT id, text, timestamp, tag
+FROM note
+ORDER BY created_at DESC;
+
+insertNote:
+INSERT INTO note(id, text, timestamp, tag, created_at)
+VALUES (?, ?, ?, ?, ?);
+
+updateNote:
+UPDATE note
+SET text = ?, timestamp = ?, tag = ?
+WHERE id = ?;
+
+deleteNote:
+DELETE FROM note
+WHERE id = ?;

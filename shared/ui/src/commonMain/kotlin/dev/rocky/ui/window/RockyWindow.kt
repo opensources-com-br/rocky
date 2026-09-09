@@ -117,6 +117,13 @@ fun RockyWindow(
             visibleSuggestion?.let { voice.speakSuggestion(aiScope, it.id, it.text, silenced) }
         }
 
+        LaunchedEffect(sessionStatus) {
+            if (sessionStatus != LiveSessionStatus.Running) {
+                voice.stopSpeaking()
+                voice.cancelCapture()
+            }
+        }
+
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
             color = RockyColors.Background,

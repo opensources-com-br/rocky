@@ -82,7 +82,10 @@ internal class VoiceState(
         configuration.copy(output = configuration.output.copy(volumePercent = percent.coerceIn(0, 100))),
     )
 
-    fun updateReadSuggestions(enabled: Boolean) = update(configuration.copy(readSuggestions = enabled))
+    fun updateReadSuggestions(enabled: Boolean) {
+        if (!enabled) stopSpeaking()
+        update(configuration.copy(readSuggestions = enabled))
+    }
 
     fun updateWhisperExecutable(path: String) = update(
         configuration.copy(transcription = configuration.transcription.copy(executablePath = path)),

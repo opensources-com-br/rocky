@@ -8,4 +8,10 @@ kotlin {
     jvm("desktop") {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     }
+
+    sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+    }
 }

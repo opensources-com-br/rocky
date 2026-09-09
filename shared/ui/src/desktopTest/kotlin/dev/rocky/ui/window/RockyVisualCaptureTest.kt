@@ -16,7 +16,13 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveNote
+import dev.rocky.core.live.ChatMessage
+import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.notes.NoteRepository
+import dev.rocky.core.twitch.TwitchAccount
+import dev.rocky.core.twitch.TwitchChatClient
+import dev.rocky.core.twitch.TwitchConnectionEvent
+import dev.rocky.core.twitch.TwitchConnectionListener
 import java.nio.file.Files
 import java.nio.file.Path
 import org.jetbrains.skia.EncodedImageFormat
@@ -107,6 +113,36 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun connectsAndDisplaysRealTwitchChat() {
+        val twitch = FakeTwitchChatClient()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+        )
+
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.AuthorizationRequired("ABCD-1234", "https://example.test"))
+        }
+        rule.onNodeWithText("ABCD-1234").assertExists()
+
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emit(
+                TwitchConnectionEvent.MessageReceived(
+                    ChatMessage("message-1", "viewer", "Mensagem real", StreamPlatform.Twitch),
+                ),
+            )
+        }
+        rule.onNodeWithText("concluir").performClick()
+
+        rule.onNodeWithText("CONEXÃO REAL · TWITCH").assertExists()
+        rule.onNodeWithText("Mensagem real").assertExists()
+    }
+
+    @Test
     fun editsDeletesAndExportsLocalNote() {
         val repository = TransientNoteRepository()
         val note = LiveNote("local-note", "Texto original", "agora", "SUGESTÃO")
@@ -164,6 +200,8 @@ class RockyVisualCaptureTest {
         settingsSection: SettingsSection = SettingsSection.Agent,
         noteRepository: NoteRepository? = null,
         onExportNotes: (List<LiveNote>) -> Boolean = { false },
+        twitchChatClient: TwitchChatClient? = null,
+        twitchClientId: String = "",
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection) {
@@ -174,6 +212,8 @@ class RockyVisualCaptureTest {
                         onTogglePinned = {},
                         onToggleCompact = {},
                         noteRepository = noteRepository,
+                        twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
+                        initialTwitchClientId = twitchClientId,
                         onExportNotes = onExportNotes,
                         initialMainSectionIndex = mainSection.ordinal,
                         initialSettingsOpen = settingsOpen,
@@ -199,5 +239,19 @@ class RockyVisualCaptureTest {
                 "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
             ).fetchSemanticsNodes().isNotEmpty()
         }
+    }
+
+    private class FakeTwitchChatClient : TwitchChatClient {
+        private var listener = TwitchConnectionListener {}
+
+        override fun connect(clientId: String, listener: TwitchConnectionListener) {
+            this.listener = listener
+        }
+
+        override fun disconnect() = Unit
+
+        override fun close() = Unit
+
+        fun emit(event: TwitchConnectionEvent) = listener.onEvent(event)
     }
 }

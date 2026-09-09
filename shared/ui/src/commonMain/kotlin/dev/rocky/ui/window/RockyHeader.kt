@@ -35,6 +35,7 @@ import dev.rocky.ui.theme.RockyColors
 internal fun RockyHeader(
     compact: Boolean = false,
     pinned: Boolean = false,
+    onClose: () -> Unit = {},
     onMinimize: () -> Unit = {},
     onTogglePinned: () -> Unit = {},
     onToggleCompact: () -> Unit = {},
@@ -47,6 +48,7 @@ internal fun RockyHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         WindowDots(
+            onClose = onClose,
             onMinimize = onMinimize,
             onToggleCompact = onToggleCompact,
         )
@@ -90,11 +92,12 @@ internal fun RockyHeader(
 
 @Composable
 private fun WindowDots(
+    onClose: () -> Unit,
     onMinimize: () -> Unit,
     onToggleCompact: () -> Unit,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        WindowDot(RockyColors.WindowClose, "Fechar")
+        WindowDot(RockyColors.WindowClose, "Fechar", onClose)
         WindowDot(RockyColors.WindowMinimize, "Minimizar", onMinimize)
         WindowDot(RockyColors.WindowExpand, "Alternar modo compacto", onToggleCompact)
     }

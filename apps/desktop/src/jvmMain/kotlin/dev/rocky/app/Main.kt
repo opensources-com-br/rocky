@@ -33,6 +33,7 @@ fun main() = application {
         RockyWindow(
             compact = compact,
             pinned = pinned,
+            onClose = ::exitApplication,
             onMinimize = { windowState.isMinimized = true },
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {

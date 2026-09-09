@@ -1,15 +1,22 @@
 package dev.rocky.ui.window
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.rocky.ui.theme.RockyColors
@@ -19,37 +26,104 @@ import dev.rocky.ui.theme.RockyTheme
 fun RockyWindow(
     compact: Boolean,
     pinned: Boolean,
+    onClose: () -> Unit,
     onMinimize: () -> Unit,
     onTogglePinned: () -> Unit,
     onToggleCompact: () -> Unit,
 ) {
     RockyTheme {
+        var settingsOpen by remember { mutableStateOf(false) }
+        var mainSection by remember { mutableStateOf(MainSection.Conversation) }
+        var settingsSection by remember { mutableStateOf(SettingsSection.Agent) }
+        var promptIndex by remember { mutableIntStateOf(0) }
+        var silenced by remember { mutableStateOf(false) }
+        var talking by remember { mutableStateOf(false) }
+
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = RockyColors.Background,
         ) {
-            Column(modifier = Modifier.padding(20.dp)) {
-                RockyHeader()
-                Spacer(Modifier.height(12.dp))
-                WindowActions(
+            Column {
+                RockyHeader(
                     compact = compact,
                     pinned = pinned,
+                    onClose = onClose,
                     onMinimize = onMinimize,
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
+                    onOpenSettings = { settingsOpen = true },
                 )
-                if (!compact) {
-                    Spacer(Modifier.height(20.dp))
-                    Divider(color = RockyColors.SurfaceElevated)
-                    Spacer(Modifier.height(20.dp))
-                    Text("Window controls are ready", style = MaterialTheme.typography.h6)
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = "Live chat and assistant activity will appear here.",
-                        color = RockyColors.TextSecondary,
-                    )
+                Divider(color = RockyColors.Divider)
+                when {
+                    compact -> CompactContent()
+                    settingsOpen -> {
+                        SettingsHeading(onDone = { settingsOpen = false })
+                        SettingsNavigation(settingsSection) { settingsSection = it }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
+                        ) {
+                            when (settingsSection) {
+                                SettingsSection.Agent -> AgentSettings()
+                                SettingsSection.Ai -> AiSettings()
+                                SettingsSection.Voice -> VoiceSettings()
+                                SettingsSection.Platforms -> PlatformSettings(samplePlatforms)
+                            }
+                        }
+                    }
+                    else -> {
+                        PlatformStrip(samplePlatforms)
+                        Divider(color = RockyColors.Divider)
+                        LiveSummary(
+                            message = prompts[promptIndex],
+                            silenced = silenced,
+                            onSaveNote = { mainSection = MainSection.Notes },
+                            onNext = { promptIndex = (promptIndex + 1) % prompts.size },
+                            onSilence = { silenced = !silenced },
+                        )
+                        MainNavigation(mainSection) { mainSection = it }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
+                        ) {
+                            when (mainSection) {
+                                MainSection.Conversation -> ConversationContent()
+                                MainSection.Support -> SupportContent(onRead = {})
+                                MainSection.Notes,
+                                MainSection.Ideas -> TimelineContent(mainSection)
+                                MainSection.Pulse -> PulseContent(samplePlatforms)
+                            }
+                        }
+                        Divider(color = RockyColors.Divider)
+                        AssistantFooter(active = talking) { talking = !talking }
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun CompactContent() {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp)) {
+        Text(
+            text = "7 perguntas sobre o preço do curso",
+            style = MaterialTheme.typography.subtitle1,
+            color = RockyColors.TextPrimary,
+        )
+        Text(
+            text = "4 Twitch · 2 YouTube · 1 Kick",
+            modifier = Modifier.padding(top = 4.dp),
+            style = MaterialTheme.typography.caption,
+            color = RockyColors.TextSecondary,
+        )
+    }
+}
+
+private val prompts = listOf(
+    "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+    "O chat quer rever o comando final do deploy. Pode ser uma boa hora para repetir.",
+    "Há uma dúvida recorrente sobre compatibilidade com Next.js esperando resposta.",
+)

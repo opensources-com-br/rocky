@@ -2,9 +2,11 @@
 
 Live assistant for macOS and Windows: the voice of chat, with notes and ideas during a stream.
 
-Rocky is being bootstrapped with Kotlin Multiplatform and Compose Multiplatform planned for the application, local data, and AI chosen by the user. The monorepo directories are in place; build configuration and executable code come next.
+Rocky is built with Kotlin Multiplatform and Compose Multiplatform. The desktop prototype includes a simulated live session, local SQLite notes, Markdown export, and a real Twitch chat connector.
 
 Read the [implementation plan](docs/PLAN.md) for the product, privacy, integrations, architecture, monorepo, phases, and release criteria.
+
+To test real chat, follow the [Twitch connection guide](docs/TWITCH.md).
 
 Leia em [português](README.pt-BR.md).
 
@@ -21,4 +23,4 @@ Leia em [português](README.pt-BR.md).
 | [fixtures](fixtures/) | Synthetic demo and test inputs |
 | [docs/adr](docs/adr/) | Architecture decision records |
 
-Each directory documents its scope. Gradle modules, source sets, and dependency wiring will be added during build setup.
+Each directory documents its scope.

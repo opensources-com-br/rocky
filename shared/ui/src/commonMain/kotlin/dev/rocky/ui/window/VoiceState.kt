@@ -106,6 +106,7 @@ internal class VoiceState(
     }
 
     fun stopSpeaking() {
+        if (!speaking) return
         service.stopSpeaking()
         speaking = false
         status = "Leitura interrompida"

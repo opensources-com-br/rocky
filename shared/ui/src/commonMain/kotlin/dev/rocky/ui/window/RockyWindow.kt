@@ -35,6 +35,12 @@ import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionListener
 import dev.rocky.core.twitch.TwitchConnectionPhase
+import dev.rocky.core.voice.AudioInputDevice
+import dev.rocky.core.voice.LocalTranscriptionConfiguration
+import dev.rocky.core.voice.SystemVoice
+import dev.rocky.core.voice.VoiceConfiguration
+import dev.rocky.core.voice.VoiceOutputConfiguration
+import dev.rocky.core.voice.VoiceService
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
 import kotlinx.coroutines.delay
@@ -48,12 +54,15 @@ fun RockyWindow(
     noteRepository: NoteRepository? = null,
     twitchChatClient: TwitchChatClient = InactiveTwitchChatClient,
     aiSuggestionClient: AiSuggestionClient = InactiveAiSuggestionClient,
+    voiceService: VoiceService = InactiveVoiceService,
     initialAiConfiguration: AiProviderConfiguration = AiProviderConfiguration(
         AiProviderKind.Ollama,
         AiSuggestionState.DEFAULT_OLLAMA_ENDPOINT,
         AiSuggestionState.DEFAULT_OLLAMA_MODEL,
     ),
     onAiConfigurationChange: (AiProviderConfiguration) -> Unit = {},
+    initialVoiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
+    onVoiceConfigurationChange: (VoiceConfiguration) -> Unit = {},
     initialTwitchClientId: String = "",
     onTwitchClientIdChange: (String) -> Unit = {},
     onOpenTwitchAuthorization: (String) -> Unit = {},
@@ -72,11 +81,13 @@ fun RockyWindow(
             mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
         }
         var silenced by remember { mutableStateOf(false) }
-        var talking by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(aiSuggestionClient, initialAiConfiguration, onAiConfigurationChange)
+        }
+        val voice = remember(voiceService) {
+            VoiceState(voiceService, initialVoiceConfiguration, onVoiceConfigurationChange)
         }
         val aiScope = rememberCoroutineScope()
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
@@ -98,6 +109,10 @@ fun RockyWindow(
                 delay(AUTOMATIC_ANALYSIS_INTERVAL_MILLIS)
                 ai.analyze(aiScope, twitch.messages, automatic = true)
             }
+        }
+
+        LaunchedEffect(visibleSuggestion?.id, silenced) {
+            visibleSuggestion?.let { voice.speakSuggestion(aiScope, it.id, it.text, silenced) }
         }
 
         Surface(
@@ -141,7 +156,7 @@ fun RockyWindow(
                             when (settingsSection) {
                                 SettingsSection.Agent -> AgentSettings()
                                 SettingsSection.Ai -> AiSettings(ai)
-                                SettingsSection.Voice -> VoiceSettings()
+                                SettingsSection.Voice -> VoiceSettings(voice)
                                 SettingsSection.Platforms -> PlatformSettings(
                                     clientId = twitchClientId,
                                     onClientIdChange = { value ->
@@ -211,8 +226,14 @@ fun RockyWindow(
                                 }
                             },
                             onAnalyze = { ai.analyze(aiScope, twitch.messages) },
-                            onNext = if (twitch.isRealSession) ai::dismissSuggestion else live::dismissSuggestion,
-                            onSilence = { silenced = !silenced },
+                            onNext = {
+                                voice.stopSpeaking()
+                                if (twitch.isRealSession) ai.dismissSuggestion() else live.dismissSuggestion()
+                            },
+                            onSilence = {
+                                silenced = !silenced
+                                if (silenced) voice.stopSpeaking()
+                            },
                         )
                         MainNavigation(mainSection) { mainSection = it }
                         Box(
@@ -237,12 +258,34 @@ fun RockyWindow(
                             }
                         }
                         Divider(color = RockyColors.Divider)
-                        AssistantFooter(active = talking) { talking = !talking }
+                        AssistantFooter(
+                            active = voice.capturing,
+                            busy = voice.transcribing,
+                            status = voice.status,
+                            onTalk = {
+                                if (voice.capturing) {
+                                    voice.stopCapture(aiScope) {}
+                                } else {
+                                    voice.startCapture(aiScope) {}
+                                }
+                            },
+                        )
                     }
                 }
             }
         }
     }
+}
+
+private object InactiveVoiceService : VoiceService {
+    override fun availableVoices(): List<SystemVoice> = emptyList()
+    override fun availableMicrophones(): List<AudioInputDevice> = emptyList()
+    override fun speak(text: String, configuration: VoiceOutputConfiguration) = Unit
+    override fun stopSpeaking() = Unit
+    override fun startCapture(microphoneId: String?) = Unit
+    override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) = ""
+    override fun cancelCapture() = Unit
+    override fun close() = Unit
 }
 
 private object InactiveTwitchChatClient : TwitchChatClient {

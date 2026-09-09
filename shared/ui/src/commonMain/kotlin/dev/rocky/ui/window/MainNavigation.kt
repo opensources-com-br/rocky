@@ -62,7 +62,12 @@ internal fun MainNavigation(
 }
 
 @Composable
-internal fun AssistantFooter(active: Boolean = false, onTalk: () -> Unit) {
+internal fun AssistantFooter(
+    active: Boolean = false,
+    busy: Boolean = false,
+    status: String? = null,
+    onTalk: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,13 +80,17 @@ internal fun AssistantFooter(active: Boolean = false, onTalk: () -> Unit) {
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = if (active) "Rocky está ouvindo" else "Fale com o Rocky",
+                text = when {
+                    busy -> "Rocky está transcrevendo"
+                    active -> "Microfone ativo"
+                    else -> "Fale com o Rocky"
+                },
                 color = RockyColors.TextPrimary,
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Medium,
             )
             Text(
-                text = "segure ⌥ Espaço ou clique aqui",
+                text = status ?: if (active) "clique novamente para concluir" else "clique para começar",
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )

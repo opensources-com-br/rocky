@@ -1,44 +1,128 @@
 package dev.rocky.ui.window
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun RockyHeader() {
+internal fun RockyHeader(
+    pinned: Boolean = false,
+    onMinimize: () -> Unit = {},
+    onTogglePinned: () -> Unit = {},
+    onToggleCompact: () -> Unit = {},
+    onOpenSettings: () -> Unit = {},
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        WindowDots(
+            onMinimize = onMinimize,
+            onToggleCompact = onToggleCompact,
+        )
+        Spacer(Modifier.width(18.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text("Rocky", fontWeight = FontWeight.Bold)
             Text(
-                text = "the voice of chat, in harmony",
+                text = "Rocky",
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold,
+                color = RockyColors.TextPrimary,
+            )
+            Text(
+                text = "a voz do chat, em acordes",
                 color = RockyColors.TextSecondary,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.caption,
             )
         }
-        Spacer(Modifier.width(12.dp))
-        Surface(
-            modifier = Modifier.border(1.dp, RockyColors.Accent, RoundedCornerShape(16.dp)),
-            color = RockyColors.Surface,
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Text("IDLE", color = RockyColors.Accent, modifier = Modifier.padding(12.dp, 6.dp))
+        ListeningBadge()
+        IconButton(onClick = onTogglePinned, modifier = Modifier.size(34.dp)) {
+            Icon(
+                imageVector = Icons.Outlined.PushPin,
+                contentDescription = if (pinned) "Desafixar janela" else "Fixar janela",
+                tint = if (pinned) RockyColors.Accent else RockyColors.TextMuted,
+                modifier = Modifier.size(17.dp),
+            )
         }
+        IconButton(onClick = onOpenSettings, modifier = Modifier.size(32.dp)) {
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = "Abrir configurações",
+                tint = RockyColors.TextSecondary,
+                modifier = Modifier.size(17.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun WindowDots(
+    onMinimize: () -> Unit,
+    onToggleCompact: () -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        WindowDot(RockyColors.WindowClose, "Fechar")
+        WindowDot(RockyColors.WindowMinimize, "Minimizar", onMinimize)
+        WindowDot(RockyColors.WindowExpand, "Alternar modo compacto", onToggleCompact)
+    }
+}
+
+@Composable
+private fun WindowDot(
+    color: Color,
+    description: String,
+    onClick: () -> Unit = {},
+) {
+    Box(
+        modifier = Modifier
+            .size(12.dp)
+            .background(color, CircleShape)
+            .clickable(onClickLabel = description, onClick = onClick),
+    )
+}
+
+@Composable
+private fun ListeningBadge() {
+    Box(
+        modifier = Modifier
+            .border(1.dp, RockyColors.AccentMuted, RoundedCornerShape(18.dp))
+            .padding(horizontal = 11.dp, vertical = 5.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "OUVINDO",
+            color = RockyColors.Accent,
+            fontSize = 11.sp,
+            letterSpacing = 1.6.sp,
+            textAlign = TextAlign.Center,
+        )
     }
 }

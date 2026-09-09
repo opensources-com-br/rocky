@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.rocky.core.live.LiveNote
 import dev.rocky.ui.theme.RockyColors
 
 private data class TimelineEntry(val time: String, val text: String, val tag: String)
@@ -33,8 +34,17 @@ private val ideas = listOf(
 )
 
 @Composable
-internal fun TimelineContent(section: MainSection) {
-    val entries = if (section == MainSection.Notes) notes else ideas
+internal fun TimelineContent(
+    section: MainSection,
+    savedNotes: List<LiveNote> = emptyList(),
+) {
+    val entries = if (section == MainSection.Notes) {
+        savedNotes.map { note ->
+            TimelineEntry(note.timestamp, note.text, note.tag)
+        } + notes
+    } else {
+        ideas
+    }
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp)) {
         entries.forEachIndexed { index, entry ->
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {

@@ -114,7 +114,7 @@ fun RockyWindow(
                                 MainSection.Conversation -> ConversationContent(live.messages)
                                 MainSection.Support -> SupportContent()
                                 MainSection.Notes,
-                                MainSection.Ideas -> TimelineContent(mainSection)
+                                MainSection.Ideas -> TimelineContent(mainSection, live.notes)
                                 MainSection.Pulse -> PulseContent(samplePlatforms)
                             }
                         }

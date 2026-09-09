@@ -1,0 +1,65 @@
+# Validação desktop
+
+Este documento acompanha a validação do build e da janela nativa do Rocky. A versão principal está em [VALIDATION.md](VALIDATION.md).
+
+## Validação automatizada
+
+Cada push na `main` e cada pull request executa o build Gradle completo no macOS e no Windows. O workflow também cria instaladores nativos e os disponibiliza como artefatos do GitHub Actions por sete dias:
+
+| Runner | Tarefas | Artefato |
+| --- | --- | --- |
+| `macos-latest` | `build`, `packageDmg` | `rocky-macos`, contendo um `.dmg` |
+| `windows-latest` | `build`, `packageMsi`, `packageExe` | `rocky-windows`, contendo instaladores `.msi` e `.exe` |
+
+Os pacotes ainda são builds de desenvolvimento sem assinatura. A assinatura e a notarização do macOS fazem parte da etapa de lançamento.
+
+## Comandos locais
+
+Use o JDK 17 e execute:
+
+```shell
+./gradlew build
+./gradlew :apps:desktop:run
+./gradlew :apps:desktop:packageDmg
+```
+
+No PowerShell do Windows:
+
+```powershell
+.\gradlew.bat build
+.\gradlew.bat :apps:desktop:run
+.\gradlew.bat :apps:desktop:packageMsi :apps:desktop:packageExe
+```
+
+Os pacotes são gerados em `apps/desktop/build/compose/binaries/main/`.
+
+## Teste rápido da janela nativa
+
+Execute esta lista no macOS e em uma instalação ou emulador Windows real. Teste o aplicativo empacotado, pois ele contém o mesmo runtime e os mesmos metadados do artefato do instalador.
+
+- [ ] Instalar e abrir o Rocky sem uma instalação do Java no sistema.
+- [ ] Mover a janela pela barra de título nativa.
+- [ ] Redimensionar a janela expandida e confirmar que ela não fica menor que 340 × 180.
+- [ ] Minimizar pelo controle amarelo do Rocky e restaurar pelo Dock ou pela barra de tarefas.
+- [ ] Fixar a janela, colocar outro aplicativo sobre ela e confirmar que o Rocky continua visível; desafixar e confirmar que o empilhamento normal retorna.
+- [ ] Ativar o modo compacto e confirmar que a janela passa para 340 × 180.
+- [ ] Voltar ao modo expandido e confirmar que o tamanho anterior é restaurado.
+- [ ] Abrir as configurações e confirmar que a janela passa para 420 × 520; fechar e confirmar que o tamanho anterior retorna.
+- [ ] Fechar o Rocky pelo controle vermelho.
+
+## Registro da validação
+
+Registre cada execução manual em uma issue ou pull request usando este modelo:
+
+```text
+Data:
+Commit do Rocky:
+Sistema operacional e versão:
+Arquitetura:
+Resolução e escala da tela:
+Pacote testado (.dmg, .msi ou .exe):
+Resultado da lista: passou / falhou
+Problemas encontrados:
+```
+
+Checkpoint atual do macOS (09/09/2026, Apple Silicon): passaram o build completo, os testes de interface Compose, a criação do `.dmg` e a abertura do aplicativo empacotado. A interação com a janela nativa ainda requer verificação manual. O empacotamento no CI do Windows e o teste da janela em um Windows real precisam passar antes da conclusão deste marco.

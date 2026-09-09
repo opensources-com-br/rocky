@@ -39,6 +39,16 @@ compose.desktop {
             packageName = "Rocky"
             packageVersion = "1.0.6"
 
+            macOS {
+                bundleID = "dev.rocky.app"
+                infoPlist {
+                    extraKeysRawXml = """
+                        <key>NSMicrophoneUsageDescription</key>
+                        <string>Rocky uses the microphone only while you record a command for local transcription.</string>
+                    """.trimIndent()
+                }
+            }
+
             windows {
                 menuGroup = "Rocky"
                 shortcut = true

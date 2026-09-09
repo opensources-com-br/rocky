@@ -30,7 +30,7 @@ interface AiSuggestionClient : AutoCloseable {
     fun generateSuggestion(
         configuration: AiProviderConfiguration,
         messages: List<ChatMessage>,
-    ): AiGeneratedSuggestion
+    ): AiGeneratedSuggestion?
 
     override fun close()
 }

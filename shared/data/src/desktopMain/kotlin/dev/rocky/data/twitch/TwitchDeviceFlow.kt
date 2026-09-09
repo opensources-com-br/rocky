@@ -27,7 +27,7 @@ internal class TwitchDeviceFlow(private val api: TwitchApi) {
                     account = api.validate(tokens.accessToken),
                 )
             } catch (error: TwitchApiException) {
-                when (error.twitchMessage?.lowercase()) {
+                when (error.twitchMessage?.lowercase()?.replace(' ', '_')) {
                     "authorization_pending" -> Unit
                     "slow_down" -> intervalMillis += 5_000
                     else -> throw error

@@ -2,7 +2,7 @@ package dev.rocky.ui.window
 
 internal enum class MainSection(val label: String) {
     Conversation("Conversa"),
-    Support("Apoios"),
+    Support("Superchats"),
     Notes("Notas"),
     Ideas("Ideias"),
     Pulse("Pulso"),

@@ -8,6 +8,7 @@ import dev.rocky.core.voice.VoiceOutputConfiguration
 import dev.rocky.core.voice.VoiceService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.CountDownLatch
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -25,6 +26,20 @@ class VoiceStateTest {
         delay(10)
 
         assertEquals(listOf("Uma ideia"), service.spoken)
+    }
+
+    @Test
+    fun queuesTheNextSuggestionWhileSpeaking() = runBlocking {
+        val service = FakeVoiceService().apply { speechGate = CountDownLatch(1) }
+        val state = VoiceState(service, readyConfiguration) {}
+
+        state.speakSuggestion(this, "suggestion-1", "Primeira", silenced = false)
+        waitUntil { service.spoken.size == 1 }
+        state.speakSuggestion(this, "suggestion-2", "Segunda", silenced = false)
+        service.speechGate?.countDown()
+        waitUntil { service.spoken.size == 2 }
+
+        assertEquals(listOf("Primeira", "Segunda"), service.spoken)
     }
 
     @Test
@@ -55,11 +70,13 @@ class VoiceStateTest {
     private class FakeVoiceService : VoiceService {
         val spoken = mutableListOf<String>()
         var captureStarted = false
+        var speechGate: CountDownLatch? = null
 
         override fun availableVoices() = listOf(SystemVoice("voice", "Voice", "pt-BR"))
         override fun availableMicrophones() = listOf(AudioInputDevice("mic", "Microphone"))
         override fun speak(text: String, configuration: VoiceOutputConfiguration) {
             spoken += text
+            speechGate?.await()
         }
         override fun stopSpeaking() = Unit
         override fun startCapture(microphoneId: String?) {

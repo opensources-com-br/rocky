@@ -53,6 +53,7 @@ internal class VoiceState(
 
     private var captureTimeout: Job? = null
     private var lastSpokenSuggestionId: String? = null
+    private var queuedSpeech: String? = null
 
     fun loadDevices(scope: CoroutineScope) {
         if (loadingDevices || voices.isNotEmpty() || microphones.isNotEmpty()) return
@@ -102,11 +103,16 @@ internal class VoiceState(
     fun speakSuggestion(scope: CoroutineScope, suggestionId: String, text: String, silenced: Boolean) {
         if (!configuration.readSuggestions || silenced || suggestionId == lastSpokenSuggestionId) return
         lastSpokenSuggestionId = suggestionId
+        if (speaking) {
+            queuedSpeech = text
+            return
+        }
         speak(scope, text)
     }
 
     fun stopSpeaking() {
         if (!speaking) return
+        queuedSpeech = null
         service.stopSpeaking()
         speaking = false
         status = "Leitura interrompida"
@@ -178,6 +184,12 @@ internal class VoiceState(
                 onSuccess = { "Leitura concluída" },
                 onFailure = { "Não foi possível usar a voz do sistema" },
             )
+            if (result.isSuccess) {
+                queuedSpeech?.let { next ->
+                    queuedSpeech = null
+                    speak(scope, next)
+                }
+            }
         }
     }
 

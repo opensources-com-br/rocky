@@ -17,6 +17,7 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies {
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.sqldelight.sqlite.driver)
             }
         }

@@ -67,7 +67,7 @@ class RockyVisualCaptureTest {
             SettingsSection.Agent to "Nome do agente",
             SettingsSection.Ai to "Criatividade",
             SettingsSection.Voice to "Velocidade",
-            SettingsSection.Platforms to "Contas conectadas",
+            SettingsSection.Platforms to "Conexão com plataformas",
         )
         settingsSections.forEach { (section, visibleText) ->
             render(settingsOpen = true, settingsSection = section)

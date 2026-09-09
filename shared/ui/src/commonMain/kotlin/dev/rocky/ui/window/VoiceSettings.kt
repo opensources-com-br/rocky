@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -36,7 +37,11 @@ import dev.rocky.core.voice.SystemVoice
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun VoiceSettings(voice: VoiceState) {
+internal fun VoiceSettings(
+    voice: VoiceState,
+    onChooseWhisperExecutable: () -> String? = { null },
+    onChooseWhisperModel: () -> String? = { null },
+) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(voice) { voice.loadDevices(scope) }
 
@@ -85,6 +90,7 @@ internal fun VoiceSettings(voice: VoiceState) {
             value = voice.configuration.transcription.executablePath,
             tag = "whisper-executable",
             onValueChange = voice::updateWhisperExecutable,
+            onBrowse = { onChooseWhisperExecutable()?.let(voice::updateWhisperExecutable) },
         )
         Spacer(Modifier.height(8.dp))
         VoicePathField(
@@ -92,6 +98,7 @@ internal fun VoiceSettings(voice: VoiceState) {
             value = voice.configuration.transcription.modelPath,
             tag = "whisper-model",
             onValueChange = voice::updateWhisperModel,
+            onBrowse = { onChooseWhisperModel()?.let(voice::updateWhisperModel) },
         )
         voice.status?.let {
             Text(
@@ -186,12 +193,31 @@ private fun <T> SelectionField(
 }
 
 @Composable
-private fun VoicePathField(label: String, value: String, tag: String, onValueChange: (String) -> Unit) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().testTag(tag),
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        singleLine = true,
-    )
+private fun VoicePathField(
+    label: String,
+    value: String,
+    tag: String,
+    onValueChange: (String) -> Unit,
+    onBrowse: () -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            modifier = Modifier.weight(1f).testTag(tag),
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            singleLine = true,
+        )
+        Spacer(Modifier.width(7.dp))
+        Button(
+            onClick = onBrowse,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = RockyColors.SurfaceElevated,
+                contentColor = RockyColors.TextPrimary,
+            ),
+            shape = RoundedCornerShape(9.dp),
+        ) {
+            Text("Escolher")
+        }
+    }
 }

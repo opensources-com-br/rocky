@@ -63,6 +63,8 @@ fun RockyWindow(
     onAiConfigurationChange: (AiProviderConfiguration) -> Unit = {},
     initialVoiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
     onVoiceConfigurationChange: (VoiceConfiguration) -> Unit = {},
+    onChooseWhisperExecutable: () -> String? = { null },
+    onChooseWhisperModel: () -> String? = { null },
     initialTwitchClientId: String = "",
     onTwitchClientIdChange: (String) -> Unit = {},
     onOpenTwitchAuthorization: (String) -> Unit = {},
@@ -156,7 +158,11 @@ fun RockyWindow(
                             when (settingsSection) {
                                 SettingsSection.Agent -> AgentSettings()
                                 SettingsSection.Ai -> AiSettings(ai)
-                                SettingsSection.Voice -> VoiceSettings(voice)
+                                SettingsSection.Voice -> VoiceSettings(
+                                    voice,
+                                    onChooseWhisperExecutable,
+                                    onChooseWhisperModel,
+                                )
                                 SettingsSection.Platforms -> PlatformSettings(
                                     clientId = twitchClientId,
                                     onClientIdChange = { value ->

@@ -22,6 +22,7 @@ import dev.rocky.platform.desktop.DesktopVoiceService
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
+import dev.rocky.platform.desktop.chooseDesktopFile
 import dev.rocky.ui.window.RockyWindow
 import java.awt.Dimension
 
@@ -66,6 +67,12 @@ fun main() = application {
             onAiConfigurationChange = { AiDesktopPreferences.configuration = it },
             initialVoiceConfiguration = VoiceDesktopPreferences.configuration,
             onVoiceConfigurationChange = { VoiceDesktopPreferences.configuration = it },
+            onChooseWhisperExecutable = {
+                chooseDesktopFile(window, "Selecione o executável whisper-cli")
+            },
+            onChooseWhisperModel = {
+                chooseDesktopFile(window, "Selecione o modelo GGML", setOf("bin"))
+            },
             initialTwitchClientId = TwitchDesktopPreferences.clientId,
             onTwitchClientIdChange = { TwitchDesktopPreferences.clientId = it },
             onOpenTwitchAuthorization = { openInBrowser(it) },

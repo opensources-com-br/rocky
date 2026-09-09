@@ -41,6 +41,7 @@ class RockyVisualCaptureTest {
         }
 
         render()
+        rule.onNodeWithText("Iniciar").performClick()
         waitForSuggestion()
         rule.onNodeWithText("Também queria saber o valor.").assertExists()
         capture("implementation-main.png")
@@ -73,12 +74,31 @@ class RockyVisualCaptureTest {
     @Test
     fun saveSimulatedSuggestionAsNote() {
         render()
+        rule.onNodeWithText("Iniciar").performClick()
         waitForSuggestion()
 
         rule.onNodeWithText("Salvar como nota").performClick()
 
         rule.onNodeWithText("Nota salva").assertExists()
         rule.onNodeWithText("SUGESTÃO").assertExists()
+    }
+
+    @Test
+    fun startsEndsAndRestartsDemonstration() {
+        render()
+
+        rule.onNodeWithText("MODO DEMONSTRAÇÃO").assertExists()
+        rule.onNodeWithText("Sem conexão com uma live real").assertExists()
+        rule.onNodeWithText("PARADO").assertExists()
+        rule.onNodeWithText("Iniciar").performClick()
+        rule.onNodeWithText("OUVINDO").assertExists()
+
+        rule.onNodeWithText("Encerrar").performClick()
+        rule.onNodeWithText("ENCERRADO").assertExists()
+
+        rule.onNodeWithText("Reiniciar").performClick()
+        rule.onNodeWithText("OUVINDO").assertExists()
+        rule.onNodeWithText("Encerrar").assertExists()
     }
 
     @Test

@@ -1,64 +1,112 @@
 package dev.rocky.ui.window
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.rocky.core.live.ChatMessage
+import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun ConversationContent() {
+internal fun ConversationContent(messages: List<ChatMessage> = emptyList()) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(17.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        DialogueLine("VOCÊ", "Rocky, o que o chat está achando da parte de deploy?")
-        DialogueLine(
-            "ROCKY",
-            "Aprovado. Doze mensagens elogiaram, duas pediram para repetir o comando final.",
-            assistant = true,
-        )
-        DialogueLine("VOCÊ", "Tem alguma dúvida repetida que eu deixei passar?")
-        DialogueLine(
-            "ROCKY",
-            "Sim: compatibilidade com Next.js, três vezes nos últimos oito minutos.",
-            assistant = true,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "CHAT AO VIVO",
+                color = RockyColors.TextMuted,
+                fontSize = 10.sp,
+                letterSpacing = 1.2.sp,
+                fontWeight = FontWeight.Medium,
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = "${messages.size} ${if (messages.size == 1) "mensagem" else "mensagens"}",
+                color = RockyColors.TextMuted,
+                style = MaterialTheme.typography.caption,
+            )
+        }
+
+        if (messages.isEmpty()) {
+            Text(
+                text = "Aguardando mensagens do chat…",
+                color = RockyColors.TextSecondary,
+                style = MaterialTheme.typography.body1,
+            )
+        } else {
+            messages.takeLast(5).forEach { message ->
+                ChatMessageRow(message)
+            }
+        }
     }
 }
 
 @Composable
-private fun DialogueLine(
-    speaker: String,
-    message: String,
-    assistant: Boolean = false,
-) {
+private fun ChatMessageRow(message: ChatMessage) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = speaker,
-            modifier = Modifier.width(58.dp).padding(top = 2.dp),
-            color = if (assistant) RockyColors.Accent else RockyColors.TextMuted,
-            fontSize = 11.sp,
-            letterSpacing = 1.2.sp,
-            fontWeight = FontWeight.Medium,
+        Box(
+            modifier = Modifier
+                .padding(top = 7.dp)
+                .size(7.dp)
+                .background(message.platform.color(), CircleShape),
         )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = message,
-            modifier = Modifier.weight(1f),
-            color = RockyColors.TextPrimary,
-            style = MaterialTheme.typography.body1,
-        )
+        Spacer(Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = message.author,
+                    color = RockyColors.TextPrimary,
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Medium,
+                )
+                Spacer(Modifier.width(7.dp))
+                Text(
+                    text = message.platform.label,
+                    color = RockyColors.TextMuted,
+                    fontSize = 10.sp,
+                )
+            }
+            Text(
+                text = message.text,
+                modifier = Modifier.padding(top = 2.dp),
+                color = RockyColors.TextSecondary,
+                style = MaterialTheme.typography.body1,
+            )
+        }
     }
+}
+
+private val StreamPlatform.label: String
+    get() = when (this) {
+        StreamPlatform.Twitch -> "Twitch"
+        StreamPlatform.Kick -> "Kick"
+        StreamPlatform.YouTube -> "YouTube"
+    }
+
+private fun StreamPlatform.color(): Color = when (this) {
+    StreamPlatform.Twitch -> RockyColors.Twitch
+    StreamPlatform.Kick -> RockyColors.Kick
+    StreamPlatform.YouTube -> RockyColors.YouTube
 }

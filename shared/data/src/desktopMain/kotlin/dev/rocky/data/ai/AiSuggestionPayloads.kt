@@ -18,7 +18,7 @@ internal object AiSuggestionPayloads {
         val output = body.asObject().arrayAt("output")
         return output.asSequence()
             .map { it.jsonObject }
-            .flatMap { item -> item.arrayAt("content").asSequence() }
+            .flatMap { item -> item.arrayAtOrEmpty("content").asSequence() }
             .map { it.jsonObject }
             .first { it.stringAt("type") == "output_text" }
             .stringAt("text")
@@ -46,6 +46,9 @@ private fun JsonObject.objectAt(name: String): JsonObject =
 
 private fun JsonObject.arrayAt(name: String): JsonArray =
     requireNotNull(this[name]) { "Missing AI array: $name" }.jsonArray
+
+private fun JsonObject.arrayAtOrEmpty(name: String): JsonArray =
+    this[name]?.jsonArray ?: JsonArray(emptyList())
 
 private fun JsonObject.stringAt(name: String): String =
     requireNotNull(this[name]) { "Missing AI field: $name" }.jsonPrimitive.content

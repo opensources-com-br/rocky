@@ -194,7 +194,8 @@ fun RockyWindow(
                             suggestionSaved = live.suggestionSaved,
                             silenced = silenced,
                             generatingSuggestion = ai.generating,
-                            canAnalyze = twitch.isRealSession && twitch.messages.isNotEmpty(),
+                            canAnalyze = twitch.isRealSession && twitch.messages.isNotEmpty() && ai.isReady,
+                            analysisStatus = ai.status,
                             onSaveNote = {
                                 val note = if (twitch.isRealSession) {
                                     ai.suggestion?.let { suggestion ->

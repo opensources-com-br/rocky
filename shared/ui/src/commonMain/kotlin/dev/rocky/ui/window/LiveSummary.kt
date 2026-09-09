@@ -82,6 +82,7 @@ internal fun LiveSummary(
     silenced: Boolean = false,
     generatingSuggestion: Boolean = false,
     canAnalyze: Boolean = false,
+    analysisStatus: String? = null,
     onSaveNote: () -> Unit,
     onAnalyze: () -> Unit = {},
     onNext: () -> Unit,
@@ -131,6 +132,10 @@ internal fun LiveSummary(
             text = suggestion?.text ?: if (sessionMode == LiveSessionMode.Real) {
                 if (generatingSuggestion) {
                     "Estou analisando o chat para encontrar uma resposta ou ideia útil."
+                } else if (!canAnalyze) {
+                    "Configure e teste um provedor na aba IA para gerar sugestões."
+                } else if (analysisStatus?.startsWith("Não foi possível") == true) {
+                    analysisStatus
                 } else {
                     "Estou recebendo o chat real. Posso analisar agora ou aguardar o próximo lote automático."
                 }

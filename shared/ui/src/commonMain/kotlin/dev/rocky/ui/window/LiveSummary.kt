@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.rocky.core.live.RockySuggestion
+import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
@@ -74,6 +75,7 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
 internal fun LiveSummary(
     suggestion: RockySuggestion? = previewSuggestion,
     sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
+    sessionStatus: LiveSessionStatus = LiveSessionStatus.Running,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
     onSaveNote: () -> Unit,
@@ -99,7 +101,12 @@ internal fun LiveSummary(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                text = if (suggestion == null) "OUVINDO O CHAT" else "TOCANDO AGORA",
+                text = when {
+                    suggestion != null -> "TOCANDO AGORA"
+                    sessionStatus == LiveSessionStatus.Stopped -> "DEMONSTRAÇÃO PRONTA"
+                    sessionStatus == LiveSessionStatus.Ended -> "DEMONSTRAÇÃO ENCERRADA"
+                    else -> "OUVINDO O CHAT"
+                },
                 color = RockyColors.Accent,
                 fontSize = 12.sp,
                 letterSpacing = 2.sp,
@@ -114,7 +121,11 @@ internal fun LiveSummary(
         }
         Spacer(Modifier.height(17.dp))
         Text(
-            text = suggestion?.text ?: "Estou acompanhando as mensagens para encontrar algo útil.",
+            text = suggestion?.text ?: when (sessionStatus) {
+                LiveSessionStatus.Stopped -> "Inicie a demonstração para receber mensagens simuladas."
+                LiveSessionStatus.Running -> "Estou acompanhando as mensagens para encontrar algo útil."
+                LiveSessionStatus.Ended -> "A demonstração terminou. Reinicie quando quiser testar novamente."
+            },
             style = MaterialTheme.typography.h1,
         )
         Spacer(Modifier.height(13.dp))
@@ -144,8 +155,16 @@ internal fun LiveSummary(
                     fontWeight = FontWeight.Bold,
                 )
             }
-            PromptAction("Próxima", onNext, enabled = suggestion != null)
-            PromptAction(if (silenced) "Retomar" else "Silenciar", onSilence)
+            PromptAction(
+                label = "Próxima",
+                onClick = onNext,
+                enabled = suggestion != null && sessionStatus == LiveSessionStatus.Running,
+            )
+            PromptAction(
+                label = if (silenced) "Retomar" else "Silenciar",
+                onClick = onSilence,
+                enabled = sessionStatus == LiveSessionStatus.Running,
+            )
         }
     }
 }

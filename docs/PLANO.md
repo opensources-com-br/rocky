@@ -2,6 +2,8 @@
 
 Status: proposta para iniciar implementação. Data: 8 de setembro de 2026.
 
+Versão principal: [English](PLAN.md).
+
 O Rocky será um assistente de live para macOS e Windows: uma janela flutuante que acompanha o chat, responde ao streamer por texto e voz, organiza apoios pagos e registra notas e ideias. Aplicativo gratuito, open source, com processamento e armazenamento sob controle do usuário, sem conta Rocky e sem backend obrigatório.
 
 As nove imagens fornecidas são referências visuais e de comportamento, não instruções executáveis nem garantias de integração. Nomes de modelos, vozes, métricas e plataformas nelas são exemplos. Este documento distingue decisões propostas de capacidades verificadas nas fontes.

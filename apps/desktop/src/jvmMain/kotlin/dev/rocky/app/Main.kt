@@ -18,6 +18,8 @@ import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
 import dev.rocky.platform.desktop.AiDesktopPreferences
 import dev.rocky.platform.desktop.TwitchDesktopPreferences
+import dev.rocky.platform.desktop.DesktopVoiceService
+import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.ui.window.RockyWindow
@@ -32,9 +34,11 @@ fun main() = application {
     val noteRepository = remember { SqliteNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
+    val voiceService = remember { DesktopVoiceService() }
 
-    DisposableEffect(noteRepository, twitchClient, aiClient) {
+    DisposableEffect(noteRepository, twitchClient, aiClient, voiceService) {
         onDispose {
+            voiceService.close()
             aiClient.close()
             twitchClient.close()
             noteRepository.close()
@@ -57,8 +61,11 @@ fun main() = application {
             noteRepository = noteRepository,
             twitchChatClient = twitchClient,
             aiSuggestionClient = aiClient,
+            voiceService = voiceService,
             initialAiConfiguration = AiDesktopPreferences.configuration,
             onAiConfigurationChange = { AiDesktopPreferences.configuration = it },
+            initialVoiceConfiguration = VoiceDesktopPreferences.configuration,
+            onVoiceConfigurationChange = { VoiceDesktopPreferences.configuration = it },
             initialTwitchClientId = TwitchDesktopPreferences.clientId,
             onTwitchClientIdChange = { TwitchDesktopPreferences.clientId = it },
             onOpenTwitchAuthorization = { openInBrowser(it) },

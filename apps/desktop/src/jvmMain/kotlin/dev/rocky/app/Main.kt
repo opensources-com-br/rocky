@@ -50,5 +50,5 @@ fun main() = application {
     }
 }
 
-private val ExpandedSize = DpSize(420.dp, 680.dp)
+private val ExpandedSize = DpSize(420.dp, 720.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)

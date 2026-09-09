@@ -58,8 +58,8 @@ fun RockyTheme(content: @Composable () -> Unit) {
         typography = Typography(
             h1 = TextStyle(
                 fontFamily = displayFamily,
-                fontSize = 31.sp,
-                lineHeight = 38.sp,
+                fontSize = 28.sp,
+                lineHeight = 34.sp,
                 color = RockyColors.TextPrimary,
             ),
             h5 = TextStyle(

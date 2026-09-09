@@ -23,7 +23,7 @@ import dev.rocky.ui.theme.RockyColors
 internal fun AgentSettings() {
     var agentName by remember { mutableStateOf("Rocky") }
     var tone by remember { mutableStateOf("Direto") }
-    var frequency by remember { mutableStateOf(0.38f) }
+    var frequency by remember { mutableStateOf(0.3f) }
     var canInterrupt by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp)) {

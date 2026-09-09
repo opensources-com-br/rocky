@@ -1,0 +1,89 @@
+package dev.rocky.data.ai
+
+import dev.rocky.core.ai.AiConnectionResult
+import dev.rocky.core.ai.AiGeneratedSuggestion
+import dev.rocky.core.ai.buildAiSuggestionPrompt
+import dev.rocky.core.live.ChatMessage
+import java.net.URI
+import java.net.URLEncoder
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.nio.charset.StandardCharsets
+import java.time.Duration
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.put
+
+internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
+    fun testConnection(endpoint: String, apiKey: String, model: String): AiConnectionResult = runCatching {
+        httpClient.send(
+            request(endpoint, "/v1/models/${model.urlEncode()}", apiKey).GET().build(),
+            HttpResponse.BodyHandlers.ofString(),
+        ).requireOpenAiSuccess()
+        AiConnectionResult(true, "OpenAI conectada · $model disponível")
+    }.getOrElse { AiConnectionResult(false, it.userMessage("Não foi possível conectar à OpenAI")) }
+
+    fun generate(
+        endpoint: String,
+        apiKey: String,
+        model: String,
+        messages: List<ChatMessage>,
+    ): AiGeneratedSuggestion? {
+        val prompt = buildAiSuggestionPrompt(messages)
+        val schema = buildJsonObject {
+            put("type", "object")
+            put("additionalProperties", false)
+            put("properties", buildJsonObject {
+                put("suggestion", buildJsonObject { put("type", "string") })
+                put("source_message_ids", buildJsonObject {
+                    put("type", "array")
+                    put("items", buildJsonObject { put("type", "string") })
+                })
+            })
+            put("required", buildJsonArray {
+                add(JsonPrimitive("suggestion"))
+                add(JsonPrimitive("source_message_ids"))
+            })
+        }
+        val body = buildJsonObject {
+            put("model", model)
+            put("instructions", prompt.instructions)
+            put("input", prompt.input)
+            put("store", false)
+            put("max_output_tokens", 300)
+            put("text", buildJsonObject {
+                put("format", buildJsonObject {
+                    put("type", "json_schema")
+                    put("name", "rocky_suggestion")
+                    put("strict", true)
+                    put("schema", schema)
+                })
+            })
+        }.toString()
+        val response = httpClient.send(
+            request(endpoint, "/v1/responses", apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build(),
+            HttpResponse.BodyHandlers.ofString(),
+        ).requireOpenAiSuccess()
+        return AiSuggestionPayloads.suggestion(
+            AiSuggestionPayloads.openAiText(response.body()),
+            prompt.messageIds,
+        )
+    }
+
+    private fun request(endpoint: String, path: String, apiKey: String): HttpRequest.Builder =
+        HttpRequest.newBuilder(URI.create("${endpoint.trim().trimEnd('/')}$path"))
+            .timeout(Duration.ofSeconds(45))
+            .header("Authorization", "Bearer ${apiKey.trim()}")
+
+    private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
+}
+
+private fun HttpResponse<String>.requireOpenAiSuccess(): HttpResponse<String> {
+    if (statusCode() !in 200..299) throw AiProviderException(statusCode())
+    return this
+}

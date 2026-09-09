@@ -49,12 +49,24 @@ class AiSuggestionStateTest {
         assertEquals("", saved?.apiKey)
     }
 
+    @Test
+    fun forwardsStreamerSpeechToTheProvider() = runBlocking {
+        val client = FakeAiSuggestionClient()
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+
+        state.analyze(this, messages(1), streamerRequest = "O que o chat achou?")
+        while (state.generating) delay(1)
+
+        assertEquals("O que o chat achou?", client.lastStreamerRequest)
+    }
+
     private fun messages(count: Int) = (1..count).map { index ->
         ChatMessage("m$index", "viewer", "message $index", StreamPlatform.Twitch)
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
         var requests = 0
+        var lastStreamerRequest: String? = null
 
         override fun testConnection(configuration: AiProviderConfiguration) = AiConnectionResult(true, "ok")
 
@@ -64,6 +76,7 @@ class AiSuggestionStateTest {
             streamerRequest: String?,
         ): AiGeneratedSuggestion {
             requests += 1
+            lastStreamerRequest = streamerRequest
             return AiGeneratedSuggestion("Sugestão", setOf(messages.last().id))
         }
 

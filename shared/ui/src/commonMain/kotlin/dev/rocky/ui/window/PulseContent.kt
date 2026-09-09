@@ -30,7 +30,11 @@ internal fun PulseContent(platforms: List<PlatformStatus>) {
                 Spacer(Modifier.weight(1f))
                 Text(
                     text = if (platform.enabled) {
-                        "${platform.audience} assistindo · ${platform.messagesPerMinute} msg/min"
+                        if (platform.audience == "—") {
+                            "audiência indisponível · ${platform.messagesPerMinute} msg/min"
+                        } else {
+                            "${platform.audience} assistindo · ${platform.messagesPerMinute} msg/min"
+                        }
                     } else {
                         "desconectado"
                     },
@@ -49,7 +53,7 @@ internal fun PulseContent(platforms: List<PlatformStatus>) {
                 if (platform.enabled) {
                     Spacer(
                         Modifier
-                            .fillMaxWidth(platform.audience.toFloat() / 820f)
+                            .fillMaxWidth((platform.audience.toFloatOrNull() ?: 0f) / 820f)
                             .height(7.dp)
                             .background(platform.color(), RoundedCornerShape(6.dp)),
                     )

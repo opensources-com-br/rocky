@@ -39,7 +39,10 @@ class DesktopVoiceServiceTest {
 
         assertEquals("C:/Rocky Tools/whisper-cli.exe", command.first())
         assertEquals("C:/Models/ggml-base.bin", command[2])
-        assertEquals("C:/Temp/voice.wav", command[4])
-        assertEquals(listOf("-nt", "-otxt", "-of", "C:/Temp/transcript"), command.takeLast(4))
+        assertEquals(Path.of("C:/Temp/voice.wav").toString(), command[4])
+        assertEquals(
+            listOf("-nt", "-otxt", "-of", Path.of("C:/Temp/transcript").toString()),
+            command.takeLast(4),
+        )
     }
 }

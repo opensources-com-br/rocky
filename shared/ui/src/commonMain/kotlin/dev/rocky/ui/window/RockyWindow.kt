@@ -13,7 +13,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,9 +43,9 @@ fun RockyWindow(
         var settingsSection by remember {
             mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
         }
-        var promptIndex by remember { mutableIntStateOf(0) }
         var silenced by remember { mutableStateOf(false) }
         var talking by remember { mutableStateOf(false) }
+        val live = rememberSimulatedLiveState()
 
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
@@ -93,10 +92,16 @@ fun RockyWindow(
                         PlatformStrip(samplePlatforms)
                         Divider(color = RockyColors.Divider)
                         LiveSummary(
-                            message = prompts[promptIndex],
+                            suggestion = live.suggestion,
+                            sourceCounts = live.sourceCounts,
+                            suggestionSaved = live.suggestionSaved,
                             silenced = silenced,
-                            onSaveNote = { mainSection = MainSection.Notes },
-                            onNext = { promptIndex = (promptIndex + 1) % prompts.size },
+                            onSaveNote = {
+                                if (live.saveSuggestion()) {
+                                    mainSection = MainSection.Notes
+                                }
+                            },
+                            onNext = live::dismissSuggestion,
                             onSilence = { silenced = !silenced },
                         )
                         MainNavigation(mainSection) { mainSection = it }
@@ -106,7 +111,7 @@ fun RockyWindow(
                                 .verticalScroll(rememberScrollState()),
                         ) {
                             when (mainSection) {
-                                MainSection.Conversation -> ConversationContent()
+                                MainSection.Conversation -> ConversationContent(live.messages)
                                 MainSection.Support -> SupportContent()
                                 MainSection.Notes,
                                 MainSection.Ideas -> TimelineContent(mainSection)
@@ -138,9 +143,3 @@ private fun CompactContent() {
         )
     }
 }
-
-private val prompts = listOf(
-    "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
-    "O chat quer rever o comando final do deploy. Pode ser uma boa hora para repetir.",
-    "Há uma dúvida recorrente sobre compatibilidade com Next.js esperando resposta.",
-)

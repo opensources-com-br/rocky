@@ -50,6 +50,10 @@ internal class SimulatedLiveState {
         suggestionSaved = true
         return true
     }
+
+    fun dismissSuggestion() {
+        suggestion = null
+    }
 }
 
 @Composable

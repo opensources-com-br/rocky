@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.rocky.core.live.RockySuggestion
+import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
@@ -70,7 +72,9 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
 
 @Composable
 internal fun LiveSummary(
-    message: String = "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+    suggestion: RockySuggestion? = previewSuggestion,
+    sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
+    suggestionSaved: Boolean = false,
     silenced: Boolean = false,
     onSaveNote: () -> Unit,
     onNext: () -> Unit,
@@ -95,7 +99,7 @@ internal fun LiveSummary(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                text = "TOCANDO AGORA",
+                text = if (suggestion == null) "OUVINDO O CHAT" else "TOCANDO AGORA",
                 color = RockyColors.Accent,
                 fontSize = 12.sp,
                 letterSpacing = 2.sp,
@@ -110,14 +114,14 @@ internal fun LiveSummary(
         }
         Spacer(Modifier.height(17.dp))
         Text(
-            text = message,
+            text = suggestion?.text ?: "Estou acompanhando as mensagens para encontrar algo útil.",
             style = MaterialTheme.typography.h1,
         )
         Spacer(Modifier.height(13.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            SourceCount("4 na Twitch", RockyColors.Twitch)
-            SourceCount("2 no YouTube", RockyColors.YouTube)
-            SourceCount("1 no Kick", RockyColors.Kick)
+            SourceCount(sourceCounts[StreamPlatform.Twitch] ?: 0, "Twitch", RockyColors.Twitch)
+            SourceCount(sourceCounts[StreamPlatform.YouTube] ?: 0, "YouTube", RockyColors.YouTube)
+            SourceCount(sourceCounts[StreamPlatform.Kick] ?: 0, "Kick", RockyColors.Kick)
         }
         Spacer(Modifier.height(17.dp))
         Row(
@@ -127,6 +131,7 @@ internal fun LiveSummary(
             Button(
                 modifier = Modifier.weight(1f).height(42.dp),
                 onClick = onSaveNote,
+                enabled = suggestion != null && !suggestionSaved,
                 shape = RoundedCornerShape(11.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = RockyColors.Accent,
@@ -134,28 +139,36 @@ internal fun LiveSummary(
                 ),
                 elevation = ButtonDefaults.elevation(0.dp, 0.dp),
             ) {
-                Text("Salvar como nota", fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (suggestionSaved) "Nota salva" else "Salvar como nota",
+                    fontWeight = FontWeight.Bold,
+                )
             }
-            PromptAction("Próxima", onNext)
+            PromptAction("Próxima", onNext, enabled = suggestion != null)
             PromptAction(if (silenced) "Retomar" else "Silenciar", onSilence)
         }
     }
 }
 
 @Composable
-private fun SourceCount(label: String, color: Color) {
+private fun SourceCount(count: Int, platform: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(7.dp).background(color, CircleShape))
         Spacer(Modifier.width(6.dp))
-        Text(label, color = RockyColors.TextSecondary, style = MaterialTheme.typography.caption)
+        Text(
+            text = "$count ${if (platform == "Twitch") "na" else "no"} $platform",
+            color = RockyColors.TextSecondary,
+            style = MaterialTheme.typography.caption,
+        )
     }
 }
 
 @Composable
-private fun PromptAction(label: String, onClick: () -> Unit) {
+private fun PromptAction(label: String, onClick: () -> Unit, enabled: Boolean = true) {
     OutlinedButton(
         modifier = Modifier.height(42.dp),
         onClick = onClick,
+        enabled = enabled,
         shape = RoundedCornerShape(11.dp),
         border = androidx.compose.foundation.BorderStroke(1.dp, RockyColors.Border),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
@@ -163,6 +176,18 @@ private fun PromptAction(label: String, onClick: () -> Unit) {
         Text(label, fontWeight = FontWeight.Normal)
     }
 }
+
+private val previewSuggestion = RockySuggestion(
+    id = "preview",
+    text = "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+    sourceMessageIds = emptySet(),
+)
+
+private val previewSourceCounts = mapOf(
+    StreamPlatform.Twitch to 4,
+    StreamPlatform.YouTube to 2,
+    StreamPlatform.Kick to 1,
+)
 
 internal fun PlatformStatus.color(): Color = when (colorKey) {
     PlatformColor.Twitch -> RockyColors.Twitch

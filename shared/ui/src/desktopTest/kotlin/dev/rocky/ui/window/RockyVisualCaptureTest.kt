@@ -83,8 +83,6 @@ class RockyVisualCaptureTest {
 
     @Test
     fun windowControlsInvokeCallbacks() {
-        var closed = false
-        var minimized = false
         var pinned = false
         var compact = false
         rule.setContent {
@@ -92,24 +90,20 @@ class RockyVisualCaptureTest {
                 RockyWindow(
                     compact = false,
                     pinned = false,
-                    onClose = { closed = true },
-                    onMinimize = { minimized = true },
+                    onClose = {},
+                    onMinimize = {},
                     onTogglePinned = { pinned = true },
                     onToggleCompact = { compact = true },
                 )
             }
         }
 
-        rule.onNodeWithContentDescription("Minimizar").performClick()
         rule.onNodeWithContentDescription("Fixar janela").performClick()
-        rule.onNodeWithContentDescription("Alternar modo compacto").performClick()
-        rule.onNodeWithContentDescription("Fechar").performClick()
+        rule.onNodeWithContentDescription("Modo compacto").performClick()
 
         rule.runOnIdle {
-            assertTrue(minimized)
             assertTrue(pinned)
             assertTrue(compact)
-            assertTrue(closed)
         }
     }
 

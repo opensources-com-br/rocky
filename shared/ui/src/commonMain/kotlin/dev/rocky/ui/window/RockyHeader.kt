@@ -1,9 +1,6 @@
 package dev.rocky.ui.window
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,21 +9,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CloseFullscreen
+import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -49,12 +44,6 @@ internal fun RockyHeader(
             .padding(horizontal = 18.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        WindowDots(
-            onClose = onClose,
-            onMinimize = onMinimize,
-            onToggleCompact = onToggleCompact,
-        )
-        Spacer(Modifier.width(18.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "Rocky",
@@ -71,6 +60,14 @@ internal fun RockyHeader(
             }
         }
         ListeningBadge()
+        IconButton(onClick = onToggleCompact, modifier = Modifier.size(34.dp)) {
+            Icon(
+                imageVector = if (compact) Icons.Outlined.OpenInFull else Icons.Outlined.CloseFullscreen,
+                contentDescription = if (compact) "Modo expandido" else "Modo compacto",
+                tint = RockyColors.TextMuted,
+                modifier = Modifier.size(17.dp),
+            )
+        }
         IconButton(onClick = onTogglePinned, modifier = Modifier.size(34.dp)) {
             Icon(
                 imageVector = Icons.Outlined.PushPin,
@@ -90,34 +87,6 @@ internal fun RockyHeader(
             }
         }
     }
-}
-
-@Composable
-private fun WindowDots(
-    onClose: () -> Unit,
-    onMinimize: () -> Unit,
-    onToggleCompact: () -> Unit,
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        WindowDot(RockyColors.WindowClose, "Fechar", onClose)
-        WindowDot(RockyColors.WindowMinimize, "Minimizar", onMinimize)
-        WindowDot(RockyColors.WindowExpand, "Alternar modo compacto", onToggleCompact)
-    }
-}
-
-@Composable
-private fun WindowDot(
-    color: Color,
-    description: String,
-    onClick: () -> Unit = {},
-) {
-    Box(
-        modifier = Modifier
-            .size(12.dp)
-            .background(color, CircleShape)
-            .semantics { contentDescription = description }
-            .clickable(onClickLabel = description, onClick = onClick),
-    )
 }
 
 @Composable

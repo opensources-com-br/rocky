@@ -6,4 +6,12 @@ This module will assemble shared UI, data adapters, and desktop services through
 
 Planned dependencies: `shared/core`, `shared/data`, `shared/ui`, and `platform/desktop`.
 
-Status: directory scaffold only; Gradle configuration and source code come next.
+## Run locally
+
+From the repository root:
+
+```shell
+./gradlew :apps:desktop:run
+```
+
+The current window uses native decorations for dragging, resizing, and system minimize controls. Rocky also provides actions to minimize, stay on top, and switch between expanded and compact sizes.

@@ -37,7 +37,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Rocky"
-            packageVersion = "1.0.2"
+            packageVersion = "1.0.3"
 
             windows {
                 menuGroup = "Rocky"

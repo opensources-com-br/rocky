@@ -8,6 +8,7 @@ Read the [implementation plan](docs/PLAN.md) for the product, privacy, integrati
 
 To test real chat, follow the [Twitch connection guide](docs/TWITCH.md).
 To generate suggestions, follow the [AI provider guide](docs/AI.md).
+To configure speech and local transcription, follow the [voice guide](docs/VOICE.md).
 
 Leia em [português](README.pt-BR.md).
 

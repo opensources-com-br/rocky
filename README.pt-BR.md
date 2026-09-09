@@ -8,6 +8,7 @@ Leia o [plano de implementação](docs/PLAN.pt-BR.md), com produto, privacidade,
 
 Para testar o chat real, siga o [guia de conexão com a Twitch](docs/TWITCH.pt-BR.md).
 Para gerar sugestões, siga o [guia de provedores de IA](docs/AI.pt-BR.md).
+Para configurar voz e transcrição local, siga o [guia de voz](docs/VOICE.pt-BR.md).
 
 Read in [English](README.md).
 

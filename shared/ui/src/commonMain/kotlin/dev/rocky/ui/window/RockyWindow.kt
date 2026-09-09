@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
@@ -30,17 +31,25 @@ fun RockyWindow(
     onMinimize: () -> Unit,
     onTogglePinned: () -> Unit,
     onToggleCompact: () -> Unit,
+    onSettingsVisibilityChanged: (Boolean) -> Unit = {},
+    initialMainSectionIndex: Int = 0,
+    initialSettingsOpen: Boolean = false,
+    initialSettingsSectionIndex: Int = 0,
 ) {
     RockyTheme {
-        var settingsOpen by remember { mutableStateOf(false) }
-        var mainSection by remember { mutableStateOf(MainSection.Conversation) }
-        var settingsSection by remember { mutableStateOf(SettingsSection.Agent) }
+        var settingsOpen by remember { mutableStateOf(initialSettingsOpen) }
+        var mainSection by remember {
+            mutableStateOf(MainSection.entries[initialMainSectionIndex])
+        }
+        var settingsSection by remember {
+            mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
+        }
         var promptIndex by remember { mutableIntStateOf(0) }
         var silenced by remember { mutableStateOf(false) }
         var talking by remember { mutableStateOf(false) }
 
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().testTag("rocky-window"),
             color = RockyColors.Background,
         ) {
             Column {
@@ -51,13 +60,21 @@ fun RockyWindow(
                     onMinimize = onMinimize,
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
-                    onOpenSettings = { settingsOpen = true },
+                    onOpenSettings = {
+                        settingsOpen = true
+                        onSettingsVisibilityChanged(true)
+                    },
                 )
                 Divider(color = RockyColors.Divider)
                 when {
                     compact -> CompactContent()
                     settingsOpen -> {
-                        SettingsHeading(onDone = { settingsOpen = false })
+                        SettingsHeading(
+                            onDone = {
+                                settingsOpen = false
+                                onSettingsVisibilityChanged(false)
+                            },
+                        )
                         SettingsNavigation(settingsSection) { settingsSection = it }
                         Box(
                             modifier = Modifier

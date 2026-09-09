@@ -19,6 +19,7 @@ fun main() = application {
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(false) }
     var previousSize by remember { mutableStateOf(ExpandedSize) }
+    var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -46,9 +47,20 @@ fun main() = application {
                 }
                 compact = !compact
             },
+            onSettingsVisibilityChanged = { open ->
+                if (!compact) {
+                    if (open) {
+                        mainSizeBeforeSettings = windowState.size
+                        windowState.size = SettingsSize
+                    } else {
+                        windowState.size = mainSizeBeforeSettings
+                    }
+                }
+            },
         )
     }
 }
 
 private val ExpandedSize = DpSize(420.dp, 720.dp)
+private val SettingsSize = DpSize(420.dp, 520.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)

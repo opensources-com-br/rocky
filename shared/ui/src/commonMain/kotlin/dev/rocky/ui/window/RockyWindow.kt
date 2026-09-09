@@ -20,6 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveNote
+import dev.rocky.core.ai.AiConnectionResult
+import dev.rocky.core.ai.AiGeneratedSuggestion
+import dev.rocky.core.ai.AiProviderConfiguration
+import dev.rocky.core.ai.AiProviderKind
+import dev.rocky.core.ai.AiSuggestionClient
+import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.LiveSessionMode
 import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.live.StreamPlatform
@@ -38,6 +44,13 @@ fun RockyWindow(
     onToggleCompact: () -> Unit,
     noteRepository: NoteRepository? = null,
     twitchChatClient: TwitchChatClient = InactiveTwitchChatClient,
+    aiSuggestionClient: AiSuggestionClient = InactiveAiSuggestionClient,
+    initialAiConfiguration: AiProviderConfiguration = AiProviderConfiguration(
+        AiProviderKind.Ollama,
+        AiSuggestionState.DEFAULT_OLLAMA_ENDPOINT,
+        AiSuggestionState.DEFAULT_OLLAMA_MODEL,
+    ),
+    onAiConfigurationChange: (AiProviderConfiguration) -> Unit = {},
     initialTwitchClientId: String = "",
     onTwitchClientIdChange: (String) -> Unit = {},
     onOpenTwitchAuthorization: (String) -> Unit = {},
@@ -59,6 +72,9 @@ fun RockyWindow(
         var talking by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient) }
+        val ai = remember(aiSuggestionClient) {
+            AiSuggestionState(aiSuggestionClient, initialAiConfiguration, onAiConfigurationChange)
+        }
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
@@ -210,6 +226,16 @@ private object InactiveTwitchChatClient : TwitchChatClient {
     override fun connect(clientId: String, listener: TwitchConnectionListener) = Unit
 
     override fun disconnect() = Unit
+
+    override fun close() = Unit
+}
+
+private object InactiveAiSuggestionClient : AiSuggestionClient {
+    override fun testConnection(configuration: AiProviderConfiguration) =
+        AiConnectionResult(false, "Provedor de IA indisponível")
+
+    override fun generateSuggestion(configuration: AiProviderConfiguration, messages: List<ChatMessage>): AiGeneratedSuggestion? =
+        null
 
     override fun close() = Unit
 }

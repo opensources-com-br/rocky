@@ -264,9 +264,17 @@ fun RockyWindow(
                             status = voice.status,
                             onTalk = {
                                 if (voice.capturing) {
-                                    voice.stopCapture(aiScope) {}
+                                    voice.stopCapture(aiScope) { request ->
+                                        if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
+                                            ai.analyze(aiScope, twitch.messages, streamerRequest = request)
+                                        }
+                                    }
                                 } else {
-                                    voice.startCapture(aiScope) {}
+                                    voice.startCapture(aiScope) { request ->
+                                        if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
+                                            ai.analyze(aiScope, twitch.messages, streamerRequest = request)
+                                        }
+                                    }
                                 }
                             },
                         )
@@ -300,7 +308,11 @@ private object InactiveAiSuggestionClient : AiSuggestionClient {
     override fun testConnection(configuration: AiProviderConfiguration) =
         AiConnectionResult(false, "Provedor de IA indisponível")
 
-    override fun generateSuggestion(configuration: AiProviderConfiguration, messages: List<ChatMessage>): AiGeneratedSuggestion? =
+    override fun generateSuggestion(
+        configuration: AiProviderConfiguration,
+        messages: List<ChatMessage>,
+        streamerRequest: String?,
+    ): AiGeneratedSuggestion? =
         null
 
     override fun close() = Unit

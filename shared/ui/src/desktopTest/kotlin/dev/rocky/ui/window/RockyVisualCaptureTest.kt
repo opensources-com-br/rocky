@@ -271,7 +271,11 @@ class RockyVisualCaptureTest {
         override fun testConnection(configuration: AiProviderConfiguration) =
             AiConnectionResult(true, "Conectado")
 
-        override fun generateSuggestion(configuration: AiProviderConfiguration, messages: List<ChatMessage>) =
+        override fun generateSuggestion(
+            configuration: AiProviderConfiguration,
+            messages: List<ChatMessage>,
+            streamerRequest: String?,
+        ) =
             AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
 
         override fun close() = Unit

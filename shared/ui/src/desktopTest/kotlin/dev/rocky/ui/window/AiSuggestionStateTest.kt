@@ -58,7 +58,11 @@ class AiSuggestionStateTest {
 
         override fun testConnection(configuration: AiProviderConfiguration) = AiConnectionResult(true, "ok")
 
-        override fun generateSuggestion(configuration: AiProviderConfiguration, messages: List<ChatMessage>): AiGeneratedSuggestion {
+        override fun generateSuggestion(
+            configuration: AiProviderConfiguration,
+            messages: List<ChatMessage>,
+            streamerRequest: String?,
+        ): AiGeneratedSuggestion {
             requests += 1
             return AiGeneratedSuggestion("Sugestão", setOf(messages.last().id))
         }

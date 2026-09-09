@@ -80,7 +80,12 @@ internal class AiSuggestionState(
         }
     }
 
-    fun analyze(scope: CoroutineScope, messages: List<ChatMessage>, automatic: Boolean = false) {
+    fun analyze(
+        scope: CoroutineScope,
+        messages: List<ChatMessage>,
+        automatic: Boolean = false,
+        streamerRequest: String? = null,
+    ) {
         if (generating || messages.isEmpty()) return
         if (!isReady) {
             status = "Configure o provedor de IA antes de analisar"
@@ -98,7 +103,9 @@ internal class AiSuggestionState(
         status = "Analisando ${snapshot.size} mensagens…"
         scope.launch {
             val result = runCatching {
-                withContext(Dispatchers.Default) { client.generateSuggestion(activeConfiguration, snapshot) }
+                withContext(Dispatchers.Default) {
+                    client.generateSuggestion(activeConfiguration, snapshot, streamerRequest)
+                }
             }
             generating = false
             result.onSuccess { generated ->

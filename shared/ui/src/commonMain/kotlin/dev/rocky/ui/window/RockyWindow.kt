@@ -19,7 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import dev.rocky.core.live.LiveNote
 import dev.rocky.core.live.LiveSessionStatus
+import dev.rocky.core.notes.NoteRepository
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
 
@@ -29,6 +31,8 @@ fun RockyWindow(
     pinned: Boolean,
     onTogglePinned: () -> Unit,
     onToggleCompact: () -> Unit,
+    noteRepository: NoteRepository = TransientNoteRepository(),
+    onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
@@ -45,6 +49,7 @@ fun RockyWindow(
         var silenced by remember { mutableStateOf(false) }
         var talking by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
+        val localNotes = remember(noteRepository) { LocalNotesState(noteRepository) }
 
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
@@ -116,7 +121,8 @@ fun RockyWindow(
                             suggestionSaved = live.suggestionSaved,
                             silenced = silenced,
                             onSaveNote = {
-                                if (live.saveSuggestion()) {
+                                val note = live.createNoteFromSuggestion()
+                                if (note != null && localNotes.save(note)) {
                                     mainSection = MainSection.Notes
                                 }
                             },
@@ -132,8 +138,16 @@ fun RockyWindow(
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent(live.messages)
                                 MainSection.Support -> SupportContent()
-                                MainSection.Notes,
-                                MainSection.Ideas -> TimelineContent(mainSection, live.notes)
+                                MainSection.Notes -> NotesContent(
+                                    notes = localNotes.notes,
+                                    notice = localNotes.notice,
+                                    onUpdate = localNotes::update,
+                                    onDelete = localNotes::delete,
+                                    onExport = {
+                                        localNotes.setExportResult(onExportNotes(localNotes.notes))
+                                    },
+                                )
+                                MainSection.Ideas -> TimelineContent(mainSection)
                                 MainSection.Pulse -> PulseContent(samplePlatforms)
                             }
                         }

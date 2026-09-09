@@ -57,6 +57,12 @@ class DesktopTwitchChatClient : TwitchChatClient {
     @Volatile
     private var keepaliveTimeoutMillis = 0L
 
+    @Volatile
+    private var lastValidationAt = 0L
+
+    @Volatile
+    private var validationRunning = false
+
     private var reconnectAttempt = 0
 
     init {
@@ -95,6 +101,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                 } else if (isCurrent(run)) {
                     tokens = authentication.tokens
                     account = authentication.account
+                    lastValidationAt = System.currentTimeMillis()
                     emit(TwitchConnectionPhase.Connecting, "Conectando ao chat")
                     openSocket(DEFAULT_WEBSOCKET_URL, run)
                 }
@@ -232,12 +239,37 @@ class DesktopTwitchChatClient : TwitchChatClient {
     }
 
     private fun checkKeepalive() {
+        checkTokenValidation()
         val timeout = keepaliveTimeoutMillis
         if (!active || timeout == 0L || System.currentTimeMillis() - lastEventAt <= timeout + 5_000) return
         val currentRun = generation.get()
         keepaliveTimeoutMillis = 0
         socket?.abort()
         scheduleReconnect(currentRun)
+    }
+
+    @Synchronized
+    private fun checkTokenValidation() {
+        val now = System.currentTimeMillis()
+        val run = generation.get()
+        if (!isCurrent(run) || validationRunning || now - lastValidationAt < TOKEN_VALIDATION_INTERVAL_MILLIS) return
+        validationRunning = true
+        ioExecutor.execute {
+            runCatching {
+                val currentTokens = requireNotNull(tokens)
+                api.validate(currentTokens.accessToken)
+            }.onSuccess {
+                if (isCurrent(run)) {
+                    lastValidationAt = System.currentTimeMillis()
+                    validationRunning = false
+                }
+            }.onFailure { error ->
+                if (isCurrent(run)) {
+                    validationRunning = false
+                    fail(run, error.userMessage("A sessão da Twitch deixou de ser válida."))
+                }
+            }
+        }
     }
 
     private fun fail(run: Long, message: String) {
@@ -253,6 +285,8 @@ class DesktopTwitchChatClient : TwitchChatClient {
         generation.incrementAndGet()
         reconnectScheduled = false
         keepaliveTimeoutMillis = 0
+        lastValidationAt = 0
+        validationRunning = false
         socket?.sendClose(WebSocket.NORMAL_CLOSURE, "disconnected")
         socket = null
         tokens = null
@@ -272,5 +306,6 @@ class DesktopTwitchChatClient : TwitchChatClient {
     private companion object {
         const val DEFAULT_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds=30"
         const val MAX_SEEN_MESSAGES = 1_000
+        const val TOKEN_VALIDATION_INTERVAL_MILLIS = 60 * 60 * 1_000L
     }
 }

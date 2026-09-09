@@ -12,12 +12,17 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
+import dev.rocky.core.live.LiveNote
+import dev.rocky.core.notes.NoteRepository
 import java.nio.file.Files
 import java.nio.file.Path
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import org.junit.Rule
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -102,6 +107,34 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun editsDeletesAndExportsLocalNote() {
+        val repository = TransientNoteRepository()
+        val note = LiveNote("local-note", "Texto original", "agora", "SUGESTÃO")
+        repository.save(note)
+        var exportedNotes = emptyList<LiveNote>()
+        render(
+            mainSection = MainSection.Notes,
+            noteRepository = repository,
+            onExportNotes = {
+                exportedNotes = it
+                true
+            },
+        )
+
+        rule.onNodeWithContentDescription("Editar nota").performClick()
+        rule.onNodeWithText("Conteúdo").performTextReplacement("Texto editado")
+        rule.onNodeWithText("Salvar").performClick()
+        rule.onNodeWithText("Texto editado").assertExists()
+
+        rule.onNodeWithText("Exportar .md").performClick()
+        rule.runOnIdle { assertEquals("Texto editado", exportedNotes.single().text) }
+
+        rule.onNodeWithContentDescription("Excluir nota").performScrollTo().performClick()
+        rule.onNodeWithText("Excluir").performClick()
+        rule.onNodeWithText("0 notas salvas").assertExists()
+    }
+
+    @Test
     fun windowControlsInvokeCallbacks() {
         var pinned = false
         var compact = false
@@ -129,6 +162,8 @@ class RockyVisualCaptureTest {
         mainSection: MainSection = MainSection.Conversation,
         settingsOpen: Boolean = false,
         settingsSection: SettingsSection = SettingsSection.Agent,
+        noteRepository: NoteRepository? = null,
+        onExportNotes: (List<LiveNote>) -> Boolean = { false },
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection) {
@@ -138,6 +173,8 @@ class RockyVisualCaptureTest {
                         pinned = false,
                         onTogglePinned = {},
                         onToggleCompact = {},
+                        noteRepository = noteRepository,
+                        onExportNotes = onExportNotes,
                         initialMainSectionIndex = mainSection.ordinal,
                         initialSettingsOpen = settingsOpen,
                         initialSettingsSectionIndex = settingsSection.ordinal,

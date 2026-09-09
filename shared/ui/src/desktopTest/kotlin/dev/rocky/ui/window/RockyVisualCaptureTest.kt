@@ -7,8 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import java.nio.file.Files
 import java.nio.file.Path
@@ -37,7 +39,8 @@ class RockyVisualCaptureTest {
         }
 
         render()
-        rule.onNodeWithText("Rocky, o que o chat está achando da parte de deploy?").assertExists()
+        waitForSuggestion()
+        rule.onNodeWithText("Também queria saber o valor.").assertExists()
         capture("implementation-main.png")
 
         val mainSections = mapOf(
@@ -63,6 +66,17 @@ class RockyVisualCaptureTest {
             rule.onNodeWithText(visibleText).assertExists()
             capture("implementation-settings-${section.name.lowercase()}.png")
         }
+    }
+
+    @Test
+    fun saveSimulatedSuggestionAsNote() {
+        render()
+        waitForSuggestion()
+
+        rule.onNodeWithText("Salvar como nota").performClick()
+
+        rule.onNodeWithText("Nota salva").assertExists()
+        rule.onNodeWithText("SUGESTÃO").assertExists()
     }
 
     private fun render(
@@ -96,5 +110,13 @@ class RockyVisualCaptureTest {
         val data = requireNotNull(Image.makeFromBitmap(bitmap).encodeToData(EncodedImageFormat.PNG))
         Files.createDirectories(outputDirectory)
         Files.write(outputDirectory.resolve(fileName), data.bytes)
+    }
+
+    private fun waitForSuggestion() {
+        rule.waitUntil(timeoutMillis = 10_000) {
+            rule.onAllNodesWithText(
+                "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+            ).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }

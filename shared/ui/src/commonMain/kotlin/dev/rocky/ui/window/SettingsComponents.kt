@@ -15,6 +15,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -141,4 +143,30 @@ internal fun RockySlider(value: Float, onValueChange: (Float) -> Unit) {
             inactiveTrackColor = RockyColors.TextMuted,
         ),
     )
+}
+
+@Composable
+internal fun SettingSwitch(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = RockyColors.TextPrimary,
+                checkedTrackColor = RockyColors.Accent,
+                uncheckedThumbColor = RockyColors.TextPrimary,
+                uncheckedTrackColor = RockyColors.TextMuted,
+            ),
+        )
+        Text(
+            text = label,
+            modifier = Modifier.padding(start = 8.dp),
+            color = RockyColors.TextSecondary,
+            style = MaterialTheme.typography.body2,
+        )
+    }
 }

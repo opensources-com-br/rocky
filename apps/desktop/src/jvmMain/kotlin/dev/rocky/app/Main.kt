@@ -1,6 +1,7 @@
 package dev.rocky.app
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,6 +12,9 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import dev.rocky.data.notes.SqliteNoteRepository
+import dev.rocky.platform.desktop.RockyDesktopPaths
+import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.ui.window.RockyWindow
 import java.awt.Dimension
 
@@ -20,6 +24,11 @@ fun main() = application {
     var pinned by remember { mutableStateOf(false) }
     var previousSize by remember { mutableStateOf(ExpandedSize) }
     var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
+    val noteRepository = remember { SqliteNoteRepository(RockyDesktopPaths.notesDatabase) }
+
+    DisposableEffect(noteRepository) {
+        onDispose(noteRepository::close)
+    }
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -34,6 +43,8 @@ fun main() = application {
         RockyWindow(
             compact = compact,
             pinned = pinned,
+            noteRepository = noteRepository,
+            onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {
                 if (compact) {

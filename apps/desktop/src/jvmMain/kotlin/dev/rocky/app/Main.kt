@@ -21,6 +21,7 @@ import dev.rocky.platform.desktop.AiDesktopPreferences
 import dev.rocky.platform.desktop.TwitchDesktopPreferences
 import dev.rocky.platform.desktop.DesktopVoiceService
 import dev.rocky.platform.desktop.FirstUseDesktopPreferences
+import dev.rocky.platform.desktop.LanguageDesktopPreferences
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
@@ -85,6 +86,8 @@ fun main() = application {
             onExportIdeas = { ideas -> exportIdeasAsMarkdown(window, ideas) },
             initialFirstUseOpen = !FirstUseDesktopPreferences.completed,
             onFirstUseFinished = { FirstUseDesktopPreferences.completed = true },
+            initialLanguage = LanguageDesktopPreferences.language,
+            onLanguageChange = { LanguageDesktopPreferences.language = it },
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {
                 if (compact) {

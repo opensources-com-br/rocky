@@ -81,6 +81,33 @@ class TwitchLiveStateTest {
         assertEquals(listOf("current"), state.messages.map(ChatMessage::id))
     }
 
+    @Test
+    fun ignoresRecoveryEventsAfterManualDisconnect() {
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client)
+        state.connect("client-id")
+        val interruptedConnection = client.currentConnection
+        client.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+        client.emit(
+            TwitchConnectionEvent.PhaseChanged(
+                TwitchConnectionPhase.Reconnecting,
+                "Simulated network drop",
+            ),
+        )
+
+        state.disconnect()
+        interruptedConnection.onEvent(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+        interruptedConnection.onEvent(
+            TwitchConnectionEvent.MessageReceived(
+                ChatMessage("stale", "viewer", "Late message", StreamPlatform.Twitch),
+            ),
+        )
+
+        assertEquals(TwitchConnectionPhase.Disconnected, state.phase)
+        assertFalse(state.isRealSession)
+        assertTrue(state.messages.isEmpty())
+    }
+
     private class FakeTwitchChatClient : TwitchChatClient {
         private var listener = TwitchConnectionListener {}
         val currentConnection: TwitchConnectionListener

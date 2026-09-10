@@ -66,6 +66,8 @@ internal fun AssistantFooter(
     active: Boolean = false,
     busy: Boolean = false,
     status: String? = null,
+    realSession: Boolean = false,
+    messageCount: Int = 0,
     onTalk: () -> Unit,
 ) {
     Row(
@@ -95,9 +97,16 @@ internal fun AssistantFooter(
                 style = MaterialTheme.typography.caption,
             )
         }
-        FooterMetric(value = "1.221", label = "assistindo")
-        Box(Modifier.padding(horizontal = 8.dp).size(1.dp, 28.dp).background(RockyColors.Border))
-        FooterMetric(value = "41", label = "msg/min")
+        if (realSession) {
+            FooterMetric(
+                value = messageCount.toString(),
+                label = if (messageCount == 1) "mensagem" else "mensagens",
+            )
+        } else {
+            FooterMetric(value = "1.221", label = "assistindo")
+            Box(Modifier.padding(horizontal = 8.dp).size(1.dp, 28.dp).background(RockyColors.Border))
+            FooterMetric(value = "41", label = "msg/min")
+        }
     }
 }
 

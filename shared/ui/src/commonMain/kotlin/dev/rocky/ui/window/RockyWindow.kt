@@ -279,7 +279,11 @@ fun RockyWindow(
                                     section = mainSection,
                                     onExportIdeas = onExportIdeas,
                                 )
-                                MainSection.Pulse -> PulseContent(visiblePlatforms)
+                                MainSection.Pulse -> PulseContent(
+                                    platforms = visiblePlatforms,
+                                    realSession = twitch.isRealSession,
+                                    messageCount = visibleMessages.size,
+                                )
                             }
                         }
                         Divider(color = RockyColors.Divider)
@@ -287,6 +291,8 @@ fun RockyWindow(
                             active = voice.capturing,
                             busy = voice.transcribing,
                             status = voice.status,
+                            realSession = twitch.isRealSession,
+                            messageCount = visibleMessages.size,
                             onTalk = {
                                 if (voice.capturing) {
                                     voice.stopCapture(aiScope) { request ->

@@ -18,7 +18,11 @@ import androidx.compose.ui.unit.dp
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun PulseContent(platforms: List<PlatformStatus>) {
+internal fun PulseContent(
+    platforms: List<PlatformStatus>,
+    realSession: Boolean = false,
+    messageCount: Int = 0,
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 3.dp)) {
         platforms.forEach { platform ->
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -29,14 +33,16 @@ internal fun PulseContent(platforms: List<PlatformStatus>) {
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = if (platform.enabled) {
+                    text = if (realSession && platform.enabled) {
+                        "$messageCount ${if (messageCount == 1) "mensagem recebida" else "mensagens recebidas"}"
+                    } else if (platform.enabled) {
                         if (platform.audience == "—") {
                             "audiência indisponível · ${platform.messagesPerMinute} msg/min"
                         } else {
                             "${platform.audience} assistindo · ${platform.messagesPerMinute} msg/min"
                         }
                     } else {
-                        "desconectado"
+                        if (realSession) "em breve" else "desconectado"
                     },
                     color = RockyColors.TextSecondary,
                     style = MaterialTheme.typography.caption,
@@ -50,7 +56,7 @@ internal fun PulseContent(platforms: List<PlatformStatus>) {
                     .height(7.dp)
                     .background(RockyColors.SurfaceElevated, RoundedCornerShape(6.dp)),
             ) {
-                if (platform.enabled) {
+                if (platform.enabled && !realSession) {
                     Spacer(
                         Modifier
                             .fillMaxWidth((platform.audience.toFloatOrNull() ?: 0f) / 820f)

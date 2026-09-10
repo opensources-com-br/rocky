@@ -11,8 +11,12 @@ import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionEvent
 import dev.rocky.core.twitch.TwitchConnectionPhase
 
-internal class TwitchLiveState(private val client: TwitchChatClient) {
+internal class TwitchLiveState(
+    private val client: TwitchChatClient,
+    private val currentTimeMillis: () -> Long = { 0L },
+) {
     val messages = mutableStateListOf<ChatMessage>()
+    private val receivedMessageTimes = mutableStateListOf<Long>()
     private var sessionGeneration = 0L
 
     var phase by mutableStateOf(TwitchConnectionPhase.Disconnected)
@@ -33,6 +37,12 @@ internal class TwitchLiveState(private val client: TwitchChatClient) {
     val isRealSession: Boolean
         get() = phase != TwitchConnectionPhase.Disconnected
 
+    var totalMessages by mutableStateOf(0)
+        private set
+
+    val messagesPerMinute: Int
+        get() = receivedMessageTimes.count { it >= currentTimeMillis() - ONE_MINUTE_MILLIS }
+
     fun connect(clientId: String) {
         if (clientId.isBlank()) {
             phase = TwitchConnectionPhase.Failed
@@ -40,6 +50,8 @@ internal class TwitchLiveState(private val client: TwitchChatClient) {
             return
         }
         messages.clear()
+        receivedMessageTimes.clear()
+        totalMessages = 0
         account = null
         userCode = null
         verificationUri = null
@@ -89,6 +101,10 @@ internal class TwitchLiveState(private val client: TwitchChatClient) {
                 is TwitchConnectionEvent.MessageReceived -> {
                     if (messages.size == MAX_CHAT_MESSAGES) messages.removeAt(0)
                     messages += event.message
+                    totalMessages += 1
+                    val cutoff = currentTimeMillis() - ONE_MINUTE_MILLIS
+                    receivedMessageTimes.removeAll { it < cutoff }
+                    receivedMessageTimes += currentTimeMillis()
                 }
             }
         }
@@ -96,5 +112,6 @@ internal class TwitchLiveState(private val client: TwitchChatClient) {
 
     companion object {
         internal const val MAX_CHAT_MESSAGES = 1_000
+        private const val ONE_MINUTE_MILLIS = 60_000L
     }
 }

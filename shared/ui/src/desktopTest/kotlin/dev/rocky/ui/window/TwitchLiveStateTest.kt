@@ -60,6 +60,25 @@ class TwitchLiveStateTest {
     }
 
     @Test
+    fun calculatesMessageRateAndSessionTotal() {
+        var now = 100_000L
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client) { now }
+        state.connect("client-id")
+
+        client.emit(message("m1"))
+        now += 30_000
+        client.emit(message("m2"))
+        assertEquals(2, state.messagesPerMinute)
+        assertEquals(2, state.totalMessages)
+
+        now += 31_000
+        client.emit(message("m3"))
+        assertEquals(2, state.messagesPerMinute)
+        assertEquals(3, state.totalMessages)
+    }
+
+    @Test
     fun ignoresEventsFromAPreviousConnection() {
         val client = FakeTwitchChatClient()
         val state = TwitchLiveState(client)
@@ -125,4 +144,8 @@ class TwitchLiveStateTest {
 
         fun emit(event: TwitchConnectionEvent) = listener.onEvent(event)
     }
+
+    private fun message(id: String) = TwitchConnectionEvent.MessageReceived(
+        ChatMessage(id, "viewer", "Message $id", StreamPlatform.Twitch),
+    )
 }

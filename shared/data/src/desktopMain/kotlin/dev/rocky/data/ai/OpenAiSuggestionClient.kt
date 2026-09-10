@@ -41,21 +41,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         agent: AgentConfiguration = AgentConfiguration(),
     ): AiGeneratedSuggestion? {
         val prompt = buildAiSuggestionPrompt(messages, streamerRequest, agent)
-        val schema = buildJsonObject {
-            put("type", "object")
-            put("additionalProperties", false)
-            put("properties", buildJsonObject {
-                put("suggestion", buildJsonObject { put("type", "string") })
-                put("source_message_ids", buildJsonObject {
-                    put("type", "array")
-                    put("items", buildJsonObject { put("type", "string") })
-                })
-            })
-            put("required", buildJsonArray {
-                add(JsonPrimitive("suggestion"))
-                add(JsonPrimitive("source_message_ids"))
-            })
-        }
+        val schema = suggestionSchema()
         val body = buildJsonObject {
             put("model", model)
             put("instructions", prompt.instructions)
@@ -90,6 +76,22 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
             .header("Authorization", "Bearer ${apiKey.trim()}")
 
     private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
+}
+
+private fun suggestionSchema() = buildJsonObject {
+    put("type", "object")
+    put("additionalProperties", false)
+    put("properties", buildJsonObject {
+        put("suggestion", buildJsonObject { put("type", "string") })
+        put("source_message_ids", buildJsonObject {
+            put("type", "array")
+            put("items", buildJsonObject { put("type", "string") })
+        })
+    })
+    put("required", buildJsonArray {
+        add(JsonPrimitive("suggestion"))
+        add(JsonPrimitive("source_message_ids"))
+    })
 }
 
 private fun HttpResponse<String>.requireOpenAiSuccess(): HttpResponse<String> {

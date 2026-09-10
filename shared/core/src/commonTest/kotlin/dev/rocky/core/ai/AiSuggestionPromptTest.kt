@@ -1,5 +1,7 @@
 package dev.rocky.core.ai
 
+import dev.rocky.core.agent.AgentConfiguration
+import dev.rocky.core.agent.AgentTone
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import kotlin.test.Test
@@ -32,5 +34,16 @@ class AiSuggestionPromptTest {
         assertTrue(prompt.input.startsWith("FALA DO STREAMER: O que o chat achou?"))
         assertTrue(prompt.input.contains("MENSAGENS DO CHAT:"))
         assertTrue(prompt.instructions.contains("é o pedido que você deve responder"))
+    }
+
+    @Test
+    fun appliesTheConfiguredAgentNameAndTone() {
+        val prompt = buildAiSuggestionPrompt(
+            messages = listOf(ChatMessage("id-1", "viewer", "Gostei", StreamPlatform.Twitch)),
+            agent = AgentConfiguration(name = "Acorde", tone = AgentTone.Analytical),
+        )
+
+        assertTrue(prompt.instructions.contains("Você é Acorde"))
+        assertTrue(prompt.instructions.contains("tom analítico"))
     }
 }

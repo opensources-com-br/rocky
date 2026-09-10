@@ -27,6 +27,8 @@ import dev.rocky.ui.theme.RockyColors
 internal fun ConversationContent(
     messages: List<ChatMessage> = emptyList(),
     streamerSpeech: String? = null,
+    textRequestEnabled: Boolean = false,
+    onTextRequest: (String) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 10.dp),
@@ -49,6 +51,10 @@ internal fun ConversationContent(
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )
+        }
+
+        if (textRequestEnabled) {
+            StreamerTextRequest(enabled = messages.isNotEmpty(), onSend = onTextRequest)
         }
 
         streamerSpeech?.let { speech ->
@@ -82,6 +88,7 @@ internal fun ConversationContent(
         }
     }
 }
+
 
 @Composable
 private fun ChatMessageRow(message: ChatMessage) {

@@ -332,7 +332,19 @@ fun RockyWindow(
                                 .verticalScroll(rememberScrollState()),
                         ) {
                             when (mainSection) {
-                                MainSection.Conversation -> ConversationContent(visibleMessages, voice.transcript)
+                                MainSection.Conversation -> ConversationContent(
+                                    messages = visibleMessages,
+                                    streamerSpeech = voice.transcript,
+                                    textRequestEnabled = twitch.isRealSession && ai.isReady && !ai.generating,
+                                    onTextRequest = { request ->
+                                        ai.analyze(
+                                            aiScope,
+                                            twitch.messages,
+                                            streamerRequest = request,
+                                            agent = agent.configuration,
+                                        )
+                                    },
+                                )
                                 MainSection.Support -> SupportContent(demonstration = !twitch.isRealSession)
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,

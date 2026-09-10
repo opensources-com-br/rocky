@@ -104,17 +104,25 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
             })
             put("provider", buildJsonObject { put("require_parameters", true) })
         }.toString()
-        val response = httpClient.send(
-            request(endpoint, "/v1/chat/completions", apiKey)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body))
-                .build(),
-            HttpResponse.BodyHandlers.ofString(),
-        ).requireOpenAiSuccess()
-        return AiSuggestionPayloads.suggestion(
-            AiSuggestionPayloads.openRouterText(response.body()),
-            prompt.messageIds,
-        )
+        var lastInvalidResponse: IllegalArgumentException? = null
+        repeat(OPENROUTER_RESPONSE_ATTEMPTS) {
+            val response = httpClient.send(
+                request(endpoint, "/v1/chat/completions", apiKey)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build(),
+                HttpResponse.BodyHandlers.ofString(),
+            ).requireOpenAiSuccess()
+            try {
+                return AiSuggestionPayloads.suggestion(
+                    AiSuggestionPayloads.openRouterText(response.body()),
+                    prompt.messageIds,
+                )
+            } catch (error: IllegalArgumentException) {
+                lastInvalidResponse = error
+            }
+        }
+        throw checkNotNull(lastInvalidResponse)
     }
 
     private fun request(endpoint: String, path: String, apiKey: String): HttpRequest.Builder =
@@ -124,6 +132,8 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
 
     private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 }
+
+private const val OPENROUTER_RESPONSE_ATTEMPTS = 3
 
 private fun suggestionSchema() = buildJsonObject {
     put("type", "object")

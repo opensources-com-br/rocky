@@ -35,6 +35,15 @@ class AiSuggestionPayloadsTest {
         )
     }
 
+    @Test
+    fun explainsAnEmptyOpenRouterChoice() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            AiSuggestionPayloads.openRouterText("""{"choices":[{"message":null}]}""")
+        }
+
+        assertEquals("OpenRouter retornou uma resposta vazia", error.message)
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

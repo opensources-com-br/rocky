@@ -80,6 +80,7 @@ fun RockyWindow(
     onFirstUseFinished: () -> Unit = {},
     initialLanguage: RockyLanguage = RockyLanguage.English,
     onLanguageChange: (RockyLanguage) -> Unit = {},
+    currentTimeLabel: () -> String = { "agora" },
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
     initialSettingsSectionIndex: Int = 0,
@@ -305,7 +306,7 @@ fun RockyWindow(
                             onSaveNote = {
                                 val note = if (twitch.isRealSession) {
                                     ai.suggestion?.let { suggestion ->
-                                        LiveNote(suggestion.id, suggestion.text, "agora", "SUGESTÃO IA")
+                                        suggestionNote(suggestion, twitch.messages, currentTimeLabel())
                                     }
                                 } else {
                                     live.createNoteFromSuggestion()

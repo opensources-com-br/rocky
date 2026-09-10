@@ -29,6 +29,8 @@ import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.platform.desktop.chooseDesktopFile
 import dev.rocky.ui.window.RockyWindow
 import java.awt.Dimension
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 fun main() = application {
     val windowState = rememberWindowState(size = ExpandedSize)
@@ -88,6 +90,7 @@ fun main() = application {
             onFirstUseFinished = { FirstUseDesktopPreferences.completed = true },
             initialLanguage = LanguageDesktopPreferences.language,
             onLanguageChange = { LanguageDesktopPreferences.language = it },
+            currentTimeLabel = { LocalTime.now().format(TimeFormatter) },
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {
                 if (compact) {
@@ -116,3 +119,4 @@ fun main() = application {
 private val ExpandedSize = DpSize(420.dp, 720.dp)
 private val SettingsSize = DpSize(420.dp, 520.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
+private val TimeFormatter = DateTimeFormatter.ofPattern("HH:mm")

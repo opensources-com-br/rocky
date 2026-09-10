@@ -24,6 +24,13 @@ internal object AiSuggestionPayloads {
             .stringAt("text")
     }
 
+    fun openRouterText(body: String): String = body.asObject()
+        .arrayAt("choices")
+        .first()
+        .jsonObject
+        .objectAt("message")
+        .stringAt("content")
+
     fun suggestion(text: String, allowedMessageIds: Set<String>): AiGeneratedSuggestion? {
         val payload = text.removePrefix("```json").removePrefix("```").removeSuffix("```").trim().asObject()
         val suggestion = payload.stringAt("suggestion").trim()

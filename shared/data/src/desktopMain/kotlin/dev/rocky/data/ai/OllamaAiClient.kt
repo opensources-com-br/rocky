@@ -72,7 +72,10 @@ internal class OllamaAiClient(private val httpClient: HttpClient) {
     ).timeout(Duration.ofSeconds(45))
 }
 
-internal class AiProviderException(val statusCode: Int) : Exception("AI provider returned HTTP $statusCode")
+internal class AiProviderException(
+    val statusCode: Int,
+    val providerMessage: String? = null,
+) : Exception("AI provider returned HTTP $statusCode")
 
 private fun HttpResponse<String>.requireSuccess(): HttpResponse<String> {
     if (statusCode() !in 200..299) throw AiProviderException(statusCode())
@@ -80,6 +83,7 @@ private fun HttpResponse<String>.requireSuccess(): HttpResponse<String> {
 }
 
 internal fun Throwable.userMessage(fallback: String): String = when (this) {
-    is AiProviderException -> "$fallback (HTTP $statusCode)"
-    else -> fallback
+    is AiProviderException -> listOfNotNull("$fallback (HTTP $statusCode)", providerMessage)
+        .joinToString(": ")
+    else -> message?.takeIf(String::isNotBlank)?.let { "$fallback: ${it.take(180)}" } ?: fallback
 }

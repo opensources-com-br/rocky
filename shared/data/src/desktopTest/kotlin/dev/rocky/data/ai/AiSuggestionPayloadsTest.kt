@@ -11,9 +11,11 @@ class AiSuggestionPayloadsTest {
         val suggestionJson = """{"suggestion":"Responda sobre o preço.","source_message_ids":["m1","invented"]}"""
         val ollama = """{"message":{"content":${jsonString(suggestionJson)}}}"""
         val openAi = """{"output":[{"type":"reasoning"},{"content":[{"type":"output_text","text":${jsonString(suggestionJson)}}]}]}"""
+        val openRouter = """{"choices":[{"message":{"content":${jsonString(suggestionJson)}}}]}"""
 
         assertEquals(suggestionJson, AiSuggestionPayloads.ollamaText(ollama))
         assertEquals(suggestionJson, AiSuggestionPayloads.openAiText(openAi))
+        assertEquals(suggestionJson, AiSuggestionPayloads.openRouterText(openRouter))
         assertEquals(setOf("m1"), AiSuggestionPayloads.suggestion(suggestionJson, setOf("m1"))?.sourceMessageIds)
     }
 

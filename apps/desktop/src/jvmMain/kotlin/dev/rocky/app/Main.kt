@@ -20,6 +20,7 @@ import dev.rocky.platform.desktop.AgentDesktopPreferences
 import dev.rocky.platform.desktop.AiDesktopPreferences
 import dev.rocky.platform.desktop.TwitchDesktopPreferences
 import dev.rocky.platform.desktop.DesktopVoiceService
+import dev.rocky.platform.desktop.FirstUseDesktopPreferences
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
@@ -82,6 +83,8 @@ fun main() = application {
             onOpenTwitchAuthorization = { openInBrowser(it) },
             onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },
             onExportIdeas = { ideas -> exportIdeasAsMarkdown(window, ideas) },
+            initialFirstUseOpen = !FirstUseDesktopPreferences.completed,
+            onFirstUseFinished = { FirstUseDesktopPreferences.completed = true },
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {
                 if (compact) {

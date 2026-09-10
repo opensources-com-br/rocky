@@ -28,6 +28,7 @@ import dev.rocky.core.ai.AiProviderConfiguration
 import dev.rocky.core.ai.AiProviderKind
 import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.live.ChatMessage
+import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveSessionMode
 import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.live.StreamPlatform
@@ -69,6 +70,7 @@ fun RockyWindow(
     onTwitchClientIdChange: (String) -> Unit = {},
     onOpenTwitchAuthorization: (String) -> Unit = {},
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
+    onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
@@ -266,7 +268,10 @@ fun RockyWindow(
                                         localNotes.setExportResult(onExportNotes(localNotes.notes))
                                     },
                                 )
-                                MainSection.Ideas -> TimelineContent(mainSection)
+                                MainSection.Ideas -> TimelineContent(
+                                    section = mainSection,
+                                    onExportIdeas = onExportIdeas,
+                                )
                                 MainSection.Pulse -> PulseContent(visiblePlatforms)
                             }
                         }

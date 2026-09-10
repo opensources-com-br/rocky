@@ -8,14 +8,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveNote
 import dev.rocky.ui.theme.RockyColors
 
@@ -28,24 +39,53 @@ private val notes = listOf(
 )
 
 private val ideas = listOf(
-    TimelineEntry("01:31", "Série curta respondendo as 5 dúvidas mais repetidas do chat.", "CONTEÚDO"),
-    TimelineEntry("01:05", "Enquete ao vivo: deploy manual ou CI? O chat está dividido.", "INTERAÇÃO"),
-    TimelineEntry("00:48", "Convidar a Ju para a próxima live — ela respondeu metade do chat.", "CONVITE"),
+    LiveIdea("Série curta respondendo as 5 dúvidas mais repetidas do chat.", "01:31", "CONTEÚDO"),
+    LiveIdea("Enquete ao vivo: deploy manual ou CI? O chat está dividido.", "01:05", "INTERAÇÃO"),
+    LiveIdea("Convidar a Ju para a próxima live — ela respondeu metade do chat.", "00:48", "CONVITE"),
 )
 
 @Composable
 internal fun TimelineContent(
     section: MainSection,
     savedNotes: List<LiveNote> = emptyList(),
+    onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
 ) {
+    var exportNotice by remember { mutableStateOf<String?>(null) }
     val entries = if (section == MainSection.Notes) {
         savedNotes.map { note ->
             TimelineEntry(note.timestamp, note.text, note.tag)
         } + notes
     } else {
-        ideas
+        ideas.map { idea -> TimelineEntry(idea.timestamp, idea.text, idea.tag) }
     }
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp)) {
+        if (section == MainSection.Ideas) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Ideias da live", style = MaterialTheme.typography.subtitle1)
+                    exportNotice?.let {
+                        Text(
+                            text = it,
+                            color = RockyColors.Accent,
+                            style = MaterialTheme.typography.caption,
+                        )
+                    }
+                }
+                OutlinedButton(
+                    onClick = {
+                        if (onExportIdeas(ideas)) exportNotice = "Markdown exportado."
+                    },
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
+                ) {
+                    Icon(Icons.Outlined.Download, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Exportar .md")
+                }
+            }
+        }
         entries.forEachIndexed { index, entry ->
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
                 Text(

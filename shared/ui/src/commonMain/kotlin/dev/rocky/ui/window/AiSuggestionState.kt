@@ -42,7 +42,7 @@ internal class AiSuggestionState(
         get() = configuration.endpoint.isNotBlank() && configuration.model.isNotBlank() &&
             (configuration.provider != AiProviderKind.OpenAI || configuration.apiKey.isNotBlank())
 
-    private var lastAutomaticMessageCount = 0
+    private var lastAnalyzedMessageId: String? = null
     private var sessionGeneration = 0L
     private var analysisJob: Job? = null
 
@@ -96,10 +96,15 @@ internal class AiSuggestionState(
         }
         if (automatic) {
             if (suggestion != null) return
-            if (messages.size < lastAutomaticMessageCount) lastAutomaticMessageCount = 0
-            if (!automaticAnalysis || messages.size - lastAutomaticMessageCount < AUTOMATIC_BATCH_SIZE) return
+            val lastIndex = lastAnalyzedMessageId?.let { id -> messages.indexOfLast { it.id == id } }
+            val newMessageCount = if (lastIndex == null || lastIndex < 0) {
+                messages.size
+            } else {
+                messages.lastIndex - lastIndex
+            }
+            if (!automaticAnalysis || newMessageCount < AUTOMATIC_BATCH_SIZE) return
         }
-        lastAutomaticMessageCount = messages.size
+        lastAnalyzedMessageId = messages.last().id
         val snapshot = messages.takeLast(MAX_ANALYSIS_MESSAGES)
         val activeConfiguration = configuration
         val activeSession = sessionGeneration
@@ -128,7 +133,7 @@ internal class AiSuggestionState(
         sessionGeneration += 1
         analysisJob?.cancel()
         analysisJob = null
-        lastAutomaticMessageCount = 0
+        lastAnalyzedMessageId = null
         generating = false
         suggestion = null
         status = null

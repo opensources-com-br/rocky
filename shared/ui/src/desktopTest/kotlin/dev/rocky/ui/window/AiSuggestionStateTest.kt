@@ -39,6 +39,20 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun continuesAutomaticAnalysisWhenTheChatBufferIsFull() = runBlocking {
+        val client = FakeAiSuggestionClient()
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+
+        state.analyze(this, messages(1_000))
+        while (state.generating) delay(1)
+        state.dismissSuggestion()
+        state.analyze(this, messages(1_003).takeLast(1_000), automatic = true)
+        while (state.generating) delay(1)
+
+        assertEquals(2, client.requests)
+    }
+
+    @Test
     fun neverPersistsOpenAiApiKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }

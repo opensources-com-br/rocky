@@ -23,7 +23,11 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun AiSettings(ai: AiSuggestionState) {
     val scope = rememberCoroutineScope()
-    val providerLabel = if (ai.configuration.provider == AiProviderKind.Ollama) "Ollama local" else "OpenAI API"
+    val providerLabel = when (ai.configuration.provider) {
+        AiProviderKind.Ollama -> "Ollama local"
+        AiProviderKind.OpenAI -> "OpenAI API"
+        AiProviderKind.OpenRouter -> "OpenRouter"
+    }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
@@ -31,8 +35,14 @@ internal fun AiSettings(ai: AiSuggestionState) {
             "Escolha processamento local ou uma API configurada por você.",
             providerLabel,
         )
-        ChoiceRow(listOf("Ollama local", "OpenAI API"), providerLabel) { selected ->
-            ai.updateProvider(if (selected == "Ollama local") AiProviderKind.Ollama else AiProviderKind.OpenAI)
+        ChoiceRow(listOf("Ollama local", "OpenAI API", "OpenRouter"), providerLabel) { selected ->
+            ai.updateProvider(
+                when (selected) {
+                    "Ollama local" -> AiProviderKind.Ollama
+                    "OpenRouter" -> AiProviderKind.OpenRouter
+                    else -> AiProviderKind.OpenAI
+                },
+            )
         }
         Spacer(Modifier.height(14.dp))
         AiTextField(
@@ -50,19 +60,32 @@ internal fun AiSettings(ai: AiSuggestionState) {
             tag = "ai-model",
             onValueChange = ai::updateModel,
         )
-        if (ai.configuration.provider == AiProviderKind.OpenAI) {
+        if (ai.configuration.provider != AiProviderKind.Ollama) {
             Spacer(Modifier.height(10.dp))
             OutlinedTextField(
                 value = ai.configuration.apiKey,
                 onValueChange = ai::updateApiKey,
                 modifier = Modifier.fillMaxWidth().testTag("ai-api-key"),
                 label = { Text("API key") },
-                placeholder = { Text("sk-…") },
+                placeholder = {
+                    Text(if (ai.configuration.provider == AiProviderKind.OpenRouter) "sk-or-v1-…" else "sk-…")
+                },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
             )
             Text(
                 "A chave fica apenas na memória e será apagada ao fechar o Rocky.",
+                modifier = Modifier.padding(top = 5.dp),
+                color = RockyColors.TextMuted,
+                style = MaterialTheme.typography.caption,
+            )
+        }
+        if (ai.configuration.provider == AiProviderKind.OpenRouter) {
+            Text(
+                tr(
+                    "openrouter/free selects an available free model. Availability and limits may vary.",
+                    "openrouter/free seleciona um modelo gratuito disponível. Disponibilidade e limites podem variar.",
+                ),
                 modifier = Modifier.padding(top = 5.dp),
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
@@ -79,7 +102,7 @@ internal fun AiSettings(ai: AiSuggestionState) {
             onClick = { ai.testConnection(scope) },
             modifier = Modifier.padding(top = 14.dp).testTag("ai-test-connection"),
             enabled = !ai.testing && ai.configuration.model.isNotBlank() &&
-                (ai.configuration.provider != AiProviderKind.OpenAI || ai.configuration.apiKey.isNotBlank()),
+                (ai.configuration.provider == AiProviderKind.Ollama || ai.configuration.apiKey.isNotBlank()),
             colors = ButtonDefaults.buttonColors(backgroundColor = RockyColors.Accent, contentColor = Color.Black),
             elevation = ButtonDefaults.elevation(0.dp, 0.dp),
         ) {

@@ -57,6 +57,12 @@ class RockyVisualCaptureTest {
                 capture("implementation-settings-ai.png")
                 return
             }
+            "settings-openrouter" -> {
+                render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+                rule.onNodeWithText("OpenRouter").performClick()
+                capture("implementation-settings-openrouter.png")
+                return
+            }
             "settings-platforms" -> {
                 render(settingsOpen = true, settingsSection = SettingsSection.Platforms)
                 capture("implementation-settings-platforms.png")
@@ -196,6 +202,17 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("send-streamer-text-request").performClick()
 
         rule.runOnIdle { assertEquals("Quais são as dúvidas sobre preço?", request) }
+    }
+
+    @Test
+    fun configuresOpenRouterFromAiSettings() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+
+        rule.onNodeWithText("OpenRouter").performClick()
+
+        rule.onNodeWithText("https://openrouter.ai/api").assertExists()
+        rule.onNodeWithText("openrouter/free").assertExists()
+        rule.onNodeWithTag("ai-api-key").assertExists()
     }
 
     @Test

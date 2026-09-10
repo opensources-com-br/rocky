@@ -170,7 +170,7 @@ private val settingsTranslations = mapOf(
     "Configurar Twitch" to "Set up Twitch",
     "Revisar Twitch" to "Review Twitch",
     "Configure a IA" to "Configure AI",
-    "Escolha Ollama local ou OpenAI API e use “Testar conexão” antes da live." to "Choose local Ollama or the OpenAI API and use “Test connection” before the stream.",
+    "Escolha Ollama local, OpenAI API ou OpenRouter e use “Testar conexão” antes da live." to "Choose local Ollama, the OpenAI API, or OpenRouter and use “Test connection” before the stream.",
     "Configurar IA" to "Configure AI",
     "Revisar IA" to "Review AI",
     "Teste a voz" to "Test voice",

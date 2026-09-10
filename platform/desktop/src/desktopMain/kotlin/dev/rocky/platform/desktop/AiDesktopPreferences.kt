@@ -27,11 +27,13 @@ object AiDesktopPreferences {
     private fun defaultEndpoint(provider: AiProviderKind): String = when (provider) {
         AiProviderKind.Ollama -> "http://localhost:11434"
         AiProviderKind.OpenAI -> "https://api.openai.com"
+        AiProviderKind.OpenRouter -> "https://openrouter.ai/api"
     }
 
     private fun defaultModel(provider: AiProviderKind): String = when (provider) {
         AiProviderKind.Ollama -> "llama3.2"
         AiProviderKind.OpenAI -> ""
+        AiProviderKind.OpenRouter -> "openrouter/free"
     }
 
     private const val PROVIDER_KEY = "provider"

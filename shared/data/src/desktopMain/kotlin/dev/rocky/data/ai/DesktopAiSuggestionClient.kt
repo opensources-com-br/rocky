@@ -28,6 +28,13 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
                 configuration.apiKey,
                 configuration.model,
             )
+            AiProviderKind.OpenRouter -> openAi.testConnection(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
+                "/v1/model/${configuration.model}",
+                "OpenRouter",
+            )
         }
         if (!connection.successful) return connection
         return runCatching {
@@ -61,6 +68,14 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
                 streamerRequest,
                 agent,
             )
+            AiProviderKind.OpenRouter -> openAi.generate(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
+                messages,
+                streamerRequest,
+                agent,
+            )
         }
     }
 
@@ -70,6 +85,6 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
 private fun AiProviderConfiguration.validationError(): String? = when {
     endpoint.isBlank() -> "Informe o endereço do provedor"
     model.isBlank() -> "Informe o modelo"
-    provider == AiProviderKind.OpenAI && apiKey.isBlank() -> "Informe a API key da OpenAI"
+    provider != AiProviderKind.Ollama && apiKey.isBlank() -> "Informe a API key do provedor"
     else -> null
 }

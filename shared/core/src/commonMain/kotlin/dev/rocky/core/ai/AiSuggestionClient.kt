@@ -6,6 +6,7 @@ import dev.rocky.core.live.ChatMessage
 enum class AiProviderKind {
     Ollama,
     OpenAI,
+    OpenRouter,
 }
 
 data class AiProviderConfiguration(

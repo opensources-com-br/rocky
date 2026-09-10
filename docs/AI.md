@@ -20,6 +20,15 @@ Messages stay on the computer when the Ollama endpoint is local. Rocky does not 
 
 The API key remains in memory and is discarded when Rocky closes. It is never saved to preferences. Requests use the [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) with `store: false`.
 
+## OpenRouter
+
+1. Create an API key in the [OpenRouter settings](https://openrouter.ai/settings/keys).
+2. In **Settings → AI**, select **OpenRouter**.
+3. Keep `https://openrouter.ai/api` as the endpoint and `openrouter/free` as the model.
+4. Paste the API key and select **Test connection**.
+
+`openrouter/free` automatically selects a compatible free model. Availability, the selected model, and limits may vary. Selected messages are processed by OpenRouter and the chosen model provider. The key remains only in Rocky's memory.
+
 ## Suggestion behavior
 
 - **Analyze now** works after at least one real Twitch message arrives.

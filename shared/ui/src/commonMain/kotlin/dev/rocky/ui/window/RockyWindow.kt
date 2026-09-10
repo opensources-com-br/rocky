@@ -123,6 +123,7 @@ fun RockyWindow(
             if (sessionStatus != LiveSessionStatus.Running) {
                 voice.stopSpeaking()
                 voice.cancelCapture()
+                if (twitch.isRealSession) ai.resetSession()
             }
         }
 

@@ -318,6 +318,7 @@ fun RockyWindow(
                             generatingSuggestion = ai.generating,
                             canAnalyze = twitch.isRealSession && twitch.messages.isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
+                            evidence = if (twitch.isRealSession) ai.suggestionSources.map { "${it.author}: ${it.text}" } else emptyList(),
                             onSaveNote = {
                                 val note = if (twitch.isRealSession) {
                                     ai.suggestion?.let { suggestion ->

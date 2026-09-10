@@ -39,6 +39,7 @@ internal fun NoteRow(
             style = MaterialTheme.typography.caption,
         )
         Column(modifier = Modifier.weight(1f)) {
+            EvidenceButton(note.evidence)
             Text(
                 text = note.text,
                 color = RockyColors.TextPrimary,

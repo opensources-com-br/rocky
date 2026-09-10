@@ -84,6 +84,7 @@ internal fun LiveSummary(
     generatingSuggestion: Boolean = false,
     canAnalyze: Boolean = false,
     analysisStatus: String? = null,
+    evidence: List<String> = emptyList(),
     onSaveNote: () -> Unit,
     onAnalyze: () -> Unit = {},
     onNext: () -> Unit,
@@ -156,6 +157,7 @@ internal fun LiveSummary(
                 SourceCount(sourceCounts[StreamPlatform.Kick] ?: 0, "Kick", RockyColors.Kick)
             }
         }
+        EvidenceButton(evidence)
         Spacer(Modifier.height(17.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),

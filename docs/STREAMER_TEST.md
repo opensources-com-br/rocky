@@ -36,7 +36,7 @@ Use a virtual-machine snapshot, a new operating-system user, or a computer where
 3. Install and launch Rocky from Finder or the Windows Start menu.
 4. Confirm the first-use guide opens and follows the operating-system language.
 5. Switch between English and Portuguese, close Rocky, reopen it, and confirm the choice persists.
-6. Complete the Twitch, AI, and voice checks. Confirm **Finish setup** remains disabled until all three are ready.
+6. Complete the required Twitch and AI checks. Confirm **Finish setup** becomes available without testing voice; then configure and test voice optionally.
 7. Close and reopen Rocky. Confirm the guide stays completed and local notes remain available.
 8. Uninstall Rocky through Finder or Windows Installed apps. Confirm no launcher shortcut remains.
 

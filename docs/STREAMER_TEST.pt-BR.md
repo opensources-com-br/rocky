@@ -36,7 +36,7 @@ Use um snapshot de máquina virtual, um usuário novo do sistema operacional ou 
 3. Instale e abra o Rocky pelo Finder ou menu Iniciar do Windows.
 4. Confirme que o guia inicial abre e acompanha o idioma do sistema operacional.
 5. Alterne entre inglês e português, feche o Rocky, abra novamente e confirme que a escolha persiste.
-6. Conclua as verificações de Twitch, IA e voz. Confirme que **Concluir configuração** permanece desativado até os três itens estarem prontos.
+6. Conclua as verificações obrigatórias de Twitch e IA. Confirme que **Concluir configuração** é liberado sem testar a voz; depois configure e teste a voz opcionalmente.
 7. Feche e abra o Rocky novamente. Confirme que o guia permanece concluído e as notas locais continuam disponíveis.
 8. Desinstale o Rocky pelo Finder ou pelos Aplicativos instalados do Windows. Confirme que nenhum atalho permanece.
 

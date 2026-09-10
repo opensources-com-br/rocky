@@ -12,6 +12,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,6 +78,8 @@ fun RockyWindow(
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
     initialFirstUseOpen: Boolean = false,
     onFirstUseFinished: () -> Unit = {},
+    initialLanguage: RockyLanguage = RockyLanguage.English,
+    onLanguageChange: (RockyLanguage) -> Unit = {},
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
     initialSettingsSectionIndex: Int = 0,
@@ -84,6 +87,7 @@ fun RockyWindow(
     RockyTheme {
         var settingsOpen by remember { mutableStateOf(initialSettingsOpen) }
         var firstUseOpen by remember { mutableStateOf(initialFirstUseOpen) }
+        var language by remember { mutableStateOf(initialLanguage) }
         var mainSection by remember {
             mutableStateOf(MainSection.entries[initialMainSectionIndex])
         }
@@ -133,6 +137,7 @@ fun RockyWindow(
             }
         }
 
+        CompositionLocalProvider(LocalRockyLanguage provides language) {
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
             color = RockyColors.Background,
@@ -173,7 +178,14 @@ fun RockyWindow(
                                 .verticalScroll(rememberScrollState()),
                         ) {
                             when (settingsSection) {
-                                SettingsSection.Agent -> AgentSettings(agent)
+                                SettingsSection.Agent -> AgentSettings(
+                                    agent = agent,
+                                    language = language,
+                                    onLanguageChange = {
+                                        language = it
+                                        onLanguageChange(it)
+                                    },
+                                )
                                 SettingsSection.Ai -> AiSettings(ai)
                                 SettingsSection.Voice -> VoiceSettings(
                                     voice,
@@ -380,6 +392,7 @@ fun RockyWindow(
                     }
                 }
             }
+        }
         }
     }
 }

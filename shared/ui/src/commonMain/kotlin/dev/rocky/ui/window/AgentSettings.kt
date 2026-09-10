@@ -19,12 +19,25 @@ import dev.rocky.ui.theme.RockyColors
 import kotlin.math.roundToInt
 
 @Composable
-internal fun AgentSettings(agent: AgentState) {
+internal fun AgentSettings(
+    agent: AgentState,
+    language: RockyLanguage,
+    onLanguageChange: (RockyLanguage) -> Unit,
+) {
     val configuration = agent.configuration
-    val toneLabel = configuration.tone.label
+    val toneLabels = AgentTone.entries.associateWith { it.localizedLabel }
+    val toneLabel = toneLabels.getValue(configuration.tone)
     val frequency = (configuration.interventionsPerTenMinutes - 1) / 8f
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
-        SettingTitle("Nome do agente", "Como o chat e você chamam o assistente.")
+        SettingTitle(tr("Language", "Idioma"), tr("Language used by the Rocky interface.", "Idioma usado pela interface do Rocky."))
+        ChoiceRow(
+            options = listOf("English", "Português (Brasil)"),
+            selected = if (language == RockyLanguage.English) "English" else "Português (Brasil)",
+        ) { selected ->
+            onLanguageChange(if (selected == "English") RockyLanguage.English else RockyLanguage.PortugueseBrazil)
+        }
+        Spacer(Modifier.height(16.dp))
+        SettingTitle(tr("Agent name", "Nome do agente"), tr("How you and the chat address the assistant.", "Como o chat e você chamam o assistente."))
         OutlinedTextField(
             value = configuration.name,
             onValueChange = agent::updateName,
@@ -41,30 +54,30 @@ internal fun AgentSettings(agent: AgentState) {
             ),
         )
         Spacer(Modifier.height(16.dp))
-        SettingTitle("Tom de voz", "Define como o agente formula as intervenções.", toneLabel)
-        ChoiceRow(AgentTone.entries.map { it.label }, toneLabel) { selected ->
-            agent.updateTone(AgentTone.entries.first { it.label == selected })
+        SettingTitle(tr("Tone of voice", "Tom de voz"), tr("How the agent phrases its interventions.", "Define como o agente formula as intervenções."), toneLabel)
+        ChoiceRow(toneLabels.values.toList(), toneLabel) { selected ->
+            agent.updateTone(toneLabels.entries.first { it.value == selected }.key)
         }
         Spacer(Modifier.height(16.dp))
         SettingTitle(
-            "Frequência de fala",
-            "Quantas vezes por 10 minutos ele pode intervir.",
+            tr("Speaking frequency", "Frequência de fala"),
+            tr("How many times it may intervene every 10 minutes.", "Quantas vezes por 10 minutos ele pode intervir."),
             "${configuration.interventionsPerTenMinutes}×",
         )
         RockySlider(frequency) { value -> agent.updateFrequency((value * 8).roundToInt() + 1) }
         Spacer(Modifier.height(8.dp))
         SettingTitle(
-            "Interrupção automática",
-            "A entrada de voz atual funciona por clique e não interrompe o streamer.",
-            "em breve",
+            tr("Automatic interruption", "Interrupção automática"),
+            tr("Voice input currently works by click and does not interrupt the streamer.", "A entrada de voz atual funciona por clique e não interrompe o streamer."),
+            tr("coming soon", "em breve"),
         )
     }
 }
 
-private val AgentTone.label: String
-    get() = when (this) {
-        AgentTone.Direct -> "Direto"
-        AgentTone.Energetic -> "Animado"
-        AgentTone.Analytical -> "Analítico"
-        AgentTone.Ironic -> "Irônico"
+private val AgentTone.localizedLabel: String
+    @Composable get() = when (this) {
+        AgentTone.Direct -> tr("Direct", "Direto")
+        AgentTone.Energetic -> tr("Energetic", "Animado")
+        AgentTone.Analytical -> tr("Analytical", "Analítico")
+        AgentTone.Ironic -> tr("Ironic", "Irônico")
     }

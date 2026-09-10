@@ -37,6 +37,12 @@ data class LiveNote(
     val tag: String,
 )
 
+data class LiveIdea(
+    val text: String,
+    val timestamp: String,
+    val tag: String,
+)
+
 sealed interface LiveEvent {
     data class MessageReceived(val message: ChatMessage) : LiveEvent
     data class SuggestionCreated(val suggestion: RockySuggestion) : LiveEvent

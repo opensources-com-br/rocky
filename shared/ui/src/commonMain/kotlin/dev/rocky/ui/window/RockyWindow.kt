@@ -129,6 +129,13 @@ fun RockyWindow(
             }
         }
 
+        LaunchedEffect(twitch.phase) {
+            while (twitch.phase == TwitchConnectionPhase.Connected) {
+                delay(METRICS_REFRESH_MILLIS)
+                twitch.refreshMetrics()
+            }
+        }
+
         LaunchedEffect(visibleSuggestion?.id, silenced) {
             visibleSuggestion?.let { voice.speakSuggestion(aiScope, it.id, it.text, silenced) }
         }
@@ -492,3 +499,5 @@ private val TwitchLiveState.platforms: List<PlatformStatus>
 
 private val AgentConfiguration.analysisIntervalMillis: Long
     get() = 600_000L / interventionsPerTenMinutes.coerceIn(1, 9)
+
+private const val METRICS_REFRESH_MILLIS = 5_000L

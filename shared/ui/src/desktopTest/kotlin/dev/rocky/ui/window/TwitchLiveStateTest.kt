@@ -14,6 +14,25 @@ import org.junit.Test
 
 class TwitchLiveStateTest {
     @Test
+    fun keepsMetricsBoundedUnderHeavyTrafficAndExpiresAtIdle() {
+        var now = 0L
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client) { now }
+        state.connect("client-id")
+        repeat(120) { second ->
+            now = second * 1_000L
+            repeat(100) { client.emit(message("$second-$it")) }
+            assertTrue(state.metricBucketCount <= 60)
+        }
+        assertEquals(6_000, state.messagesPerMinute)
+        assertEquals(12_000, state.totalMessages)
+        now += 60_000
+        state.refreshMetrics()
+        assertEquals(0, state.messagesPerMinute)
+        assertEquals(0, state.metricBucketCount)
+    }
+
+    @Test
     fun followsAuthorizationConnectionAndChatEvents() {
         val client = FakeTwitchChatClient()
         val state = TwitchLiveState(client)

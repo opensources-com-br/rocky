@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -32,19 +31,20 @@ internal fun NoteRow(
         modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            text = note.timestamp,
-            modifier = Modifier.width(42.dp).padding(top = 3.dp),
-            color = RockyColors.TextMuted,
-            style = MaterialTheme.typography.caption,
-        )
         Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = note.timestamp,
+                modifier = Modifier.padding(bottom = 6.dp),
+                color = RockyColors.TextMuted,
+                style = MaterialTheme.typography.caption,
+            )
             Text(
                 text = note.text,
                 color = RockyColors.TextPrimary,
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Medium,
             )
+            EvidenceButton(note.evidence)
             Text(
                 text = note.tag,
                 modifier = Modifier

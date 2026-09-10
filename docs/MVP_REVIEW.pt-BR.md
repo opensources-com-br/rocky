@@ -2,6 +2,8 @@
 
 Data: 10/09/2026. Código analisado: `b930ad518eccaa990260167f8457bdd43dfe9c37`.
 
+Esta avaliação é histórica. As correções posteriores e os critérios de teste do candidato 1.0.9-alpha.1 estão no [roteiro de validação de hoje](TEST_TODAY.pt-BR.md). Os achados abaixo descrevem o commit analisado, não o estado atual de cada funcionalidade.
+
 ## Parecer
 
 O Rocky tem uma base de alpha funcional, mas ainda não tem evidência suficiente para lançamento amplo. Recomendo fechar primeiro um MVP focado em Twitch: conectar o próprio canal, pedir uma síntese por texto, receber resposta com fontes, ouvir opcionalmente e salvar/exportar notas. É uma proposta de redução de escopo, não uma alteração já aprovada do plano.

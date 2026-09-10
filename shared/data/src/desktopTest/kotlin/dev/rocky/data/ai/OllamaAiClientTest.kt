@@ -3,12 +3,15 @@ package dev.rocky.data.ai
 import com.sun.net.httpserver.HttpServer
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
+import dev.rocky.core.ai.AiProviderConfiguration
+import dev.rocky.core.ai.AiProviderKind
 import java.net.InetSocketAddress
 import java.net.http.HttpClient
 import java.nio.charset.StandardCharsets
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.assertFalse
 
 class OllamaAiClientTest {
     @Test
@@ -33,9 +36,16 @@ class OllamaAiClientTest {
             val suggestion = client.generate(endpoint, "llama3.2", listOf(message))
 
             assertTrue(connection.successful)
+            assertFalse(client.testConnection(endpoint, "llama3.2:70b").successful)
             assertEquals("Responda sobre o preço.", suggestion?.text)
             assertEquals(setOf("m1"), suggestion?.sourceMessageIds)
             assertTrue("não confiável" in requestBody)
+            requestBody = ""
+            val probe = DesktopAiSuggestionClient().testConnection(
+                AiProviderConfiguration(AiProviderKind.Ollama, endpoint, "llama3.2"),
+            )
+            assertTrue(probe.successful)
+            assertTrue("Rocky test" in requestBody)
         } finally {
             server.stop(0)
         }

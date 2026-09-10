@@ -23,10 +23,12 @@ A API key permanece na memória e é descartada quando o Rocky fecha. Ela nunca 
 ## Comportamento das sugestões
 
 - **Analisar agora** funciona depois que pelo menos uma mensagem real da Twitch chega.
-- A análise automática roda a cada 15 segundos e envia um novo lote somente após mais três mensagens.
+- A análise automática começa desativada. Quando ativada, segue a frequência configurada no agente e só envia um novo lote após mais três mensagens; uma sugestão pendente impede outra automática.
 - Cada chamada contém no máximo as 30 mensagens mais recentes e 300 caracteres de cada mensagem.
 - O chat é marcado como conteúdo não confiável. Uma sugestão precisa citar IDs presentes na chamada ou será rejeitada pelo Rocky.
 - Somente uma análise roda por vez. O Rocky nunca troca automaticamente do Ollama para a OpenAI.
 - Sugestões salvas usam as notas locais em SQLite e a exportação para Markdown já existentes.
+
+Pedidos digitados dispensam microfone e whisper.cpp. Uma análise em andamento pode ser cancelada. O teste de conexão gera uma resposta curta com dados fictícios para verificar também a capacidade de geração; provedores por API podem cobrar essa chamada.
 
 Provedores por API recebem o conteúdo selecionado do chat. Confira os controles de dados do provedor antes de ativar a análise automática.

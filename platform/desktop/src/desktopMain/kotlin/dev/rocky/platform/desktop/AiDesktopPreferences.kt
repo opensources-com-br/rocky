@@ -31,7 +31,7 @@ object AiDesktopPreferences {
 
     private fun defaultModel(provider: AiProviderKind): String = when (provider) {
         AiProviderKind.Ollama -> "llama3.2"
-        AiProviderKind.OpenAI -> "gpt-5.6-luna"
+        AiProviderKind.OpenAI -> ""
     }
 
     private const val PROVIDER_KEY = "provider"

@@ -10,10 +10,9 @@ import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.RockySuggestion
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 internal class AiSuggestionState(
@@ -21,6 +20,9 @@ internal class AiSuggestionState(
     initialConfiguration: AiProviderConfiguration,
     private val onConfigurationChange: (AiProviderConfiguration) -> Unit,
 ) {
+    var suggestionSources by mutableStateOf<List<ChatMessage>>(emptyList())
+        private set
+
     var configuration by mutableStateOf(initialConfiguration)
         private set
 
@@ -82,12 +84,15 @@ internal class AiSuggestionState(
     fun testConnection(scope: CoroutineScope) {
         if (testing) return
         testing = true
+        val testedConfiguration = configuration
         status = "Testando conexão…"
         scope.launch {
             val result = runCatching {
-                withContext(Dispatchers.Default) { client.testConnection(configuration) }
+                interruptibleWork { client.testConnection(testedConfiguration) }
             }
             testing = false
+            if (configuration != testedConfiguration) return@launch
+            result.exceptionOrNull()?.let { if (it is CancellationException) throw it }
             result.onSuccess {
                 connectionVerified = it.successful
                 status = it.message
@@ -128,13 +133,15 @@ internal class AiSuggestionState(
         status = "Analisando ${snapshot.size} mensagens…"
         analysisJob = scope.launch {
             val result = runCatching {
-                withContext(Dispatchers.Default) {
+                interruptibleWork {
                     client.generateSuggestion(activeConfiguration, snapshot, streamerRequest, agent)
                 }
             }
             if (activeSession != sessionGeneration) return@launch
             generating = false
+            result.exceptionOrNull()?.let { if (it is CancellationException) throw it }
             result.onSuccess { generated ->
+                suggestionSources = snapshot.filter { it.id in generated?.sourceMessageIds.orEmpty() }
                 suggestion = generated?.let {
                     RockySuggestion("ai-${Random.nextLong()}", it.text, it.sourceMessageIds)
                 }
@@ -152,11 +159,21 @@ internal class AiSuggestionState(
         lastAnalyzedMessageId = null
         generating = false
         suggestion = null
+        suggestionSources = emptyList()
         status = null
+    }
+
+    fun cancelAnalysis() {
+        sessionGeneration += 1
+        analysisJob?.cancel()
+        analysisJob = null
+        generating = false
+        status = "Análise cancelada"
     }
 
     fun dismissSuggestion() {
         suggestion = null
+        suggestionSources = emptyList()
     }
 
     private fun update(value: AiProviderConfiguration) {
@@ -172,7 +189,7 @@ internal class AiSuggestionState(
         const val DEFAULT_OLLAMA_ENDPOINT = "http://localhost:11434"
         const val DEFAULT_OLLAMA_MODEL = "llama3.2"
         const val DEFAULT_OPENAI_ENDPOINT = "https://api.openai.com"
-        const val DEFAULT_OPENAI_MODEL = "gpt-5.6-luna"
+        const val DEFAULT_OPENAI_MODEL = ""
 
         private const val AUTOMATIC_BATCH_SIZE = 3
         private const val MAX_ANALYSIS_MESSAGES = 30

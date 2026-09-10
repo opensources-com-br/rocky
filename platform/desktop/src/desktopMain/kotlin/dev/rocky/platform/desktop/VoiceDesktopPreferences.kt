@@ -20,7 +20,7 @@ object VoiceDesktopPreferences {
                 modelPath = preferences.get(WHISPER_MODEL_KEY, ""),
                 microphoneId = preferences.get(MICROPHONE_KEY, "").ifBlank { null },
             ),
-            readSuggestions = preferences.getBoolean(READ_SUGGESTIONS_KEY, true),
+            readSuggestions = preferences.getBoolean(READ_SUGGESTIONS_KEY, false),
         )
         set(value) {
             preferences.put(VOICE_KEY, value.output.voiceId.orEmpty())

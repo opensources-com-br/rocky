@@ -68,6 +68,13 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 style = MaterialTheme.typography.caption,
             )
         }
+        Text(
+            tr("Connection test generates a short response with synthetic data. API usage may be charged.",
+                "O teste gera uma resposta curta com dados de exemplo. Pode haver cobrança de uso da API."),
+            modifier = Modifier.padding(top = 10.dp),
+            style = MaterialTheme.typography.caption,
+            color = RockyColors.TextMuted,
+        )
         Button(
             onClick = { ai.testConnection(scope) },
             modifier = Modifier.padding(top = 14.dp).testTag("ai-test-connection"),

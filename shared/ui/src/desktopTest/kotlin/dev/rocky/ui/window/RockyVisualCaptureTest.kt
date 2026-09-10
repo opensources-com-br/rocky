@@ -3,6 +3,10 @@ package dev.rocky.ui.window
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.test.captureToImage
@@ -164,10 +168,18 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Pulso").performClick()
         rule.onNodeWithText("1 mensagem recebida").assertExists()
         rule.onNodeWithText("Conversa").performClick()
-        rule.onNodeWithText("Analisar agora").performClick()
+        rule.onNodeWithTag("streamer-text-request").performScrollTo()
+            .performTextReplacement("Quais dúvidas responder?")
+        rule.onNodeWithTag("send-streamer-text-request").performScrollTo().performClick()
         rule.waitUntil(timeoutMillis = 5_000) {
             rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()
         }
+        rule.runOnIdle {
+            assertEquals("Quais dúvidas responder?", ai.lastRequest)
+            twitch.emit(TwitchConnectionEvent.PhaseChanged(dev.rocky.core.twitch.TwitchConnectionPhase.Reconnecting))
+        }
+        rule.onNodeWithText("O chat quer saber o preço.").assertExists()
+        capture("implementation-real-session.png")
     }
 
     @Test
@@ -188,6 +200,16 @@ class RockyVisualCaptureTest {
 
     @Test
     fun showsRealSuggestionInCompactMode() {
+        var stopped = false
+        rule.setContent {
+            Box(Modifier.size(340.dp, 125.dp)) {
+                CompactContent(LiveSessionStatus.Running, 10, "Resposta ".repeat(80), true, false) {
+                    stopped = true
+                }
+            }
+        }
+        rule.onNodeWithText("Mute").performClick()
+        rule.runOnIdle { assertTrue(stopped) }
         assertEquals(
             "O chat quer saber o preço.",
             compactHeadline(LiveSessionStatus.Running, "O chat quer saber o preço.", real = true),
@@ -351,7 +373,8 @@ class RockyVisualCaptureTest {
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
-                Box(Modifier.size(420.dp, if (settingsOpen) 520.dp else 720.dp)) {
+                var showingSettings by remember { mutableStateOf(settingsOpen) }
+                Box(Modifier.size(420.dp, if (showingSettings) 520.dp else 720.dp)) {
                     RockyWindow(
                         compact = compact,
                         pinned = false,
@@ -366,6 +389,7 @@ class RockyVisualCaptureTest {
                         onExportIdeas = onExportIdeas,
                         initialMainSectionIndex = mainSection.ordinal,
                         initialSettingsOpen = settingsOpen,
+                        onSettingsVisibilityChanged = { showingSettings = it },
                         initialSettingsSectionIndex = settingsSection.ordinal,
                         initialFirstUseOpen = firstUseOpen,
                         onFirstUseFinished = onFirstUseFinished,
@@ -409,6 +433,7 @@ class RockyVisualCaptureTest {
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
+        var lastRequest: String? = null
         override fun testConnection(configuration: AiProviderConfiguration) =
             AiConnectionResult(true, "Conectado")
 
@@ -417,8 +442,10 @@ class RockyVisualCaptureTest {
             messages: List<ChatMessage>,
             streamerRequest: String?,
             agent: AgentConfiguration,
-        ) =
-            AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
+        ): AiGeneratedSuggestion {
+            lastRequest = streamerRequest
+            return AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
+        }
 
         override fun close() = Unit
     }

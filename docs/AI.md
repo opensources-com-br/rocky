@@ -23,10 +23,11 @@ The API key remains in memory and is discarded when Rocky closes. It is never sa
 ## Suggestion behavior
 
 - **Analyze now** works after at least one real Twitch message arrives.
-- Automatic analysis runs every 15 seconds and sends a new batch only after three additional messages.
+- Automatic analysis starts disabled. Once enabled, it follows the agent's configured frequency and requires three additional messages; a pending suggestion prevents another automatic analysis.
 - A request contains at most the latest 30 messages and 300 characters from each message.
 - Chat is labeled as untrusted content. A generated suggestion must cite message IDs present in the request or Rocky rejects it.
 - Only one analysis runs at a time. Rocky never falls back from Ollama to OpenAI automatically.
+- Typed requests require no microphone. In-progress analysis can be cancelled. Testing a connection also generates a short response using synthetic messages; API providers may charge for this request.
 - Saving a generated suggestion uses the existing local SQLite notes and Markdown export.
 
 API providers receive the selected chat content. Review the provider's data controls before enabling automatic analysis.

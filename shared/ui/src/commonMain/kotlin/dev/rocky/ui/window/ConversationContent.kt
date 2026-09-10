@@ -28,6 +28,9 @@ internal fun ConversationContent(
     messages: List<ChatMessage> = emptyList(),
     streamerSpeech: String? = null,
     textRequestEnabled: Boolean = false,
+    showTextRequest: Boolean = textRequestEnabled,
+    analyzing: Boolean = false,
+    onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
 ) {
     Column(
@@ -53,8 +56,13 @@ internal fun ConversationContent(
             )
         }
 
-        if (textRequestEnabled) {
-            StreamerTextRequest(enabled = messages.isNotEmpty(), onSend = onTextRequest)
+        if (showTextRequest) {
+            StreamerTextRequest(enabled = textRequestEnabled && messages.isNotEmpty(), onSend = onTextRequest)
+            if (analyzing) {
+                androidx.compose.material.TextButton(onClick = onCancelAnalysis) {
+                    Text(tr("Cancel analysis", "Cancelar análise"))
+                }
+            }
         }
 
         streamerSpeech?.let { speech ->

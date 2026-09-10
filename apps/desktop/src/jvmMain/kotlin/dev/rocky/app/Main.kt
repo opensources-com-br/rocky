@@ -29,7 +29,7 @@ import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.platform.desktop.chooseDesktopFile
 import dev.rocky.ui.window.RockyWindow
 import java.awt.Dimension
-import java.time.LocalTime
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 fun main() = application {
@@ -92,7 +92,7 @@ fun main() = application {
             onFirstUseFinished = { FirstUseDesktopPreferences.completed = true },
             initialLanguage = LanguageDesktopPreferences.language,
             onLanguageChange = { LanguageDesktopPreferences.language = it },
-            currentTimeLabel = { LocalTime.now().format(TimeFormatter) },
+            currentTimeLabel = { OffsetDateTime.now().format(TimeFormatter) },
             currentTimeMillis = System::currentTimeMillis,
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {
@@ -106,6 +106,10 @@ fun main() = application {
                 compact = !compact
             },
             onSettingsVisibilityChanged = { open ->
+                if (open && compact) {
+                    compact = false
+                    windowState.size = previousSize
+                }
                 if (!compact) {
                     if (open) {
                         mainSizeBeforeSettings = windowState.size
@@ -122,4 +126,4 @@ fun main() = application {
 private val ExpandedSize = DpSize(420.dp, 720.dp)
 private val SettingsSize = DpSize(420.dp, 520.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
-private val TimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")

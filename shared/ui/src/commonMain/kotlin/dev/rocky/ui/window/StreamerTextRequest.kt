@@ -27,8 +27,8 @@ internal fun StreamerTextRequest(enabled: Boolean, onSend: (String) -> Unit) {
             value = value,
             onValueChange = { value = it.take(MAX_TEXT_REQUEST_LENGTH) },
             modifier = Modifier.weight(1f).testTag("streamer-text-request"),
-            label = { Text("Pergunte ao Rocky") },
-            placeholder = { Text("Ex.: resuma as dúvidas sobre preço") },
+            label = { Text(tr("Ask about the chat", "Pergunte sobre o chat")) },
+            placeholder = { Text(tr("E.g. summarize questions about pricing", "Ex.: resuma as dúvidas sobre preço")) },
             maxLines = 2,
         )
         Spacer(Modifier.width(8.dp))
@@ -43,7 +43,7 @@ internal fun StreamerTextRequest(enabled: Boolean, onSend: (String) -> Unit) {
                 backgroundColor = RockyColors.Accent,
                 contentColor = Color.Black,
             ),
-        ) { Text("Perguntar") }
+        ) { Text(tr("Ask", "Perguntar")) }
     }
 }
 

@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -84,6 +86,7 @@ internal fun LiveSummary(
     generatingSuggestion: Boolean = false,
     canAnalyze: Boolean = false,
     analysisStatus: String? = null,
+    evidence: List<String> = emptyList(),
     onSaveNote: () -> Unit,
     onAnalyze: () -> Unit = {},
     onNext: () -> Unit,
@@ -147,6 +150,7 @@ internal fun LiveSummary(
                 LiveSessionStatus.Ended -> "A demonstração terminou. Reinicie quando quiser testar novamente."
             },
             style = MaterialTheme.typography.h1,
+            modifier = Modifier.heightIn(max = 140.dp).verticalScroll(rememberScrollState()),
         )
         Spacer(Modifier.height(13.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -156,6 +160,7 @@ internal fun LiveSummary(
                 SourceCount(sourceCounts[StreamPlatform.Kick] ?: 0, "Kick", RockyColors.Kick)
             }
         }
+        EvidenceButton(evidence)
         Spacer(Modifier.height(17.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),

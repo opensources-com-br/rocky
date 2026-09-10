@@ -27,7 +27,7 @@ data class LocalTranscriptionConfiguration(
 data class VoiceConfiguration(
     val output: VoiceOutputConfiguration = VoiceOutputConfiguration(),
     val transcription: LocalTranscriptionConfiguration = LocalTranscriptionConfiguration("", ""),
-    val readSuggestions: Boolean = true,
+    val readSuggestions: Boolean = false,
 )
 
 interface VoiceService : AutoCloseable {

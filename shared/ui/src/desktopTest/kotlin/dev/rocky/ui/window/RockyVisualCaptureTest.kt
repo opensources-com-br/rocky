@@ -17,6 +17,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveNote
+import dev.rocky.core.locale.RockyLanguage
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
@@ -254,6 +255,21 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun changesInterfaceLanguage() {
+        var savedLanguage = RockyLanguage.PortugueseBrazil
+        render(
+            settingsOpen = true,
+            onLanguageChange = { savedLanguage = it },
+        )
+
+        rule.onNodeWithText("English").performClick()
+
+        rule.onNodeWithText("Settings").assertExists()
+        rule.onNodeWithText("Agent name").assertExists()
+        rule.runOnIdle { assertEquals(RockyLanguage.English, savedLanguage) }
+    }
+
+    @Test
     fun windowControlsInvokeCallbacks() {
         var pinned = false
         var compact = false
@@ -290,6 +306,7 @@ class RockyVisualCaptureTest {
         onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
         firstUseOpen: Boolean = false,
         onFirstUseFinished: () -> Unit = {},
+        onLanguageChange: (RockyLanguage) -> Unit = {},
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
@@ -311,6 +328,8 @@ class RockyVisualCaptureTest {
                         initialSettingsSectionIndex = settingsSection.ordinal,
                         initialFirstUseOpen = firstUseOpen,
                         onFirstUseFinished = onFirstUseFinished,
+                        initialLanguage = RockyLanguage.PortugueseBrazil,
+                        onLanguageChange = onLanguageChange,
                     )
                 }
             }

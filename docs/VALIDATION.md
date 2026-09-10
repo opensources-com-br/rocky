@@ -13,6 +13,8 @@ Every push to `main` and every pull request runs the complete Gradle build on ma
 
 The packages are currently unsigned development builds. Signing and macOS notarization belong to the release stage.
 
+The automated suite also runs a Twitch presentation-state soak test with 20,000 messages and seven simulated connection drops. It verifies that recovery preserves the active session and that memory remains bounded to the latest 1,000 chat messages.
+
 ## Local commands
 
 Use JDK 17, then run:
@@ -47,6 +49,12 @@ Run this checklist on macOS and on a real Windows installation or emulator. Test
 - [ ] Open settings and confirm the window becomes 420 × 520; close settings and confirm the previous size returns.
 - [ ] Close Rocky using its red control.
 
+## Streamer test
+
+Use the [streamer alpha test protocol](STREAMER_TEST.md) for clean installation, a two-hour live session, OBS audio/window capture, network interruption, and evidence requirements. Submit each run with the **Streamer alpha test** issue form.
+
+The automated soak test does not replace this manual gate. A release candidate remains unvalidated until the required macOS, Windows, OBS, and real-stream records pass.
+
 ## Validation record
 
 Record each manual run in an issue or pull request using this template:
@@ -62,4 +70,4 @@ Checklist result: pass / fail
 Problems found:
 ```
 
-Current macOS checkpoint (2026-09-09, Apple Silicon): the complete build, Compose UI tests, `.dmg` creation, and packaged application launch passed. Native window interaction remains a manual check. Windows CI packaging and the real Windows window test must pass before this milestone is complete.
+Current automated checkpoint (2026-09-10): the complete build, UI tests, prolonged-session soak test, and native packaging pass on GitHub runners for macOS and Windows. The streamer protocol remains a manual release gate and requires recorded results from real streams.

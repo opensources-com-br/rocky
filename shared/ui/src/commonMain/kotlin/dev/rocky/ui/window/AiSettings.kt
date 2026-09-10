@@ -80,6 +80,17 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 style = MaterialTheme.typography.caption,
             )
         }
+        if (ai.configuration.provider == AiProviderKind.OpenRouter) {
+            Text(
+                tr(
+                    "openrouter/free selects an available free model. Availability and limits may vary.",
+                    "openrouter/free seleciona um modelo gratuito disponível. Disponibilidade e limites podem variar.",
+                ),
+                modifier = Modifier.padding(top = 5.dp),
+                color = RockyColors.TextMuted,
+                style = MaterialTheme.typography.caption,
+            )
+        }
         Text(
             tr("Connection test generates a short response with synthetic data. API usage may be charged.",
                 "O teste gera uma resposta curta com dados de exemplo. Pode haver cobrança de uso da API."),

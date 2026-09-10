@@ -15,6 +15,8 @@ import java.time.Duration
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
@@ -140,6 +142,17 @@ private fun suggestionSchema() = buildJsonObject {
 }
 
 private fun HttpResponse<String>.requireOpenAiSuccess(): HttpResponse<String> {
-    if (statusCode() !in 200..299) throw AiProviderException(statusCode())
+    if (statusCode() !in 200..299) {
+        val providerMessage = runCatching {
+            kotlinx.serialization.json.Json.parseToJsonElement(body())
+                .jsonObject["error"]
+                ?.jsonObject
+                ?.get("message")
+                ?.jsonPrimitive
+                ?.content
+                ?.take(180)
+        }.getOrNull()
+        throw AiProviderException(statusCode(), providerMessage)
+    }
     return this
 }

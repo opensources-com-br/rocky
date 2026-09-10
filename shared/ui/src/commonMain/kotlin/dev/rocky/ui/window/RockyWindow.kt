@@ -181,10 +181,13 @@ fun RockyWindow(
                                     twitch = twitch,
                                     onConnect = {
                                         live.end()
-                                        ai.dismissSuggestion()
+                                        ai.resetSession()
                                         twitch.connect(twitchClientId)
                                     },
-                                    onDisconnect = twitch::disconnect,
+                                    onDisconnect = {
+                                        ai.resetSession()
+                                        twitch.disconnect()
+                                    },
                                     onOpenAuthorization = onOpenTwitchAuthorization,
                                 )
                             }
@@ -192,7 +195,10 @@ fun RockyWindow(
                     }
                     else -> {
                         if (twitch.isRealSession) {
-                            TwitchSessionControls(twitch, twitch::disconnect)
+                            TwitchSessionControls(twitch) {
+                                ai.resetSession()
+                                twitch.disconnect()
+                            }
                         } else {
                             LiveSessionControls(
                                 status = live.status,

@@ -9,7 +9,9 @@ import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.delay
+import java.util.concurrent.CountDownLatch
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -60,6 +62,23 @@ class AiSuggestionStateTest {
         assertEquals("O que o chat achou?", client.lastStreamerRequest)
     }
 
+    @Test
+    fun ignoresAResultFromAnEndedSession() = runBlocking {
+        val gate = CountDownLatch(1)
+        val client = FakeAiSuggestionClient().apply { responseGate = gate }
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+
+        state.analyze(this, messages(1))
+        while (!state.generating) delay(1)
+        state.resetSession()
+        gate.countDown()
+        delay(20)
+
+        assertFalse(state.generating)
+        assertEquals(null, state.suggestion)
+        assertEquals(null, state.status)
+    }
+
     private fun messages(count: Int) = (1..count).map { index ->
         ChatMessage("m$index", "viewer", "message $index", StreamPlatform.Twitch)
     }
@@ -67,6 +86,7 @@ class AiSuggestionStateTest {
     private class FakeAiSuggestionClient : AiSuggestionClient {
         var requests = 0
         var lastStreamerRequest: String? = null
+        var responseGate: CountDownLatch? = null
 
         override fun testConnection(configuration: AiProviderConfiguration) = AiConnectionResult(true, "ok")
 
@@ -77,6 +97,7 @@ class AiSuggestionStateTest {
         ): AiGeneratedSuggestion {
             requests += 1
             lastStreamerRequest = streamerRequest
+            responseGate?.await()
             return AiGeneratedSuggestion("Sugestão", setOf(messages.last().id))
         }
 

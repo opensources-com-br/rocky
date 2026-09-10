@@ -10,6 +10,7 @@ import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.RockySuggestion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
@@ -42,6 +43,8 @@ internal class AiSuggestionState(
             (configuration.provider != AiProviderKind.OpenAI || configuration.apiKey.isNotBlank())
 
     private var lastAutomaticMessageCount = 0
+    private var sessionGeneration = 0L
+    private var analysisJob: Job? = null
 
     fun updateProvider(provider: AiProviderKind) {
         configuration = if (provider == AiProviderKind.Ollama) {
@@ -99,14 +102,16 @@ internal class AiSuggestionState(
         lastAutomaticMessageCount = messages.size
         val snapshot = messages.takeLast(MAX_ANALYSIS_MESSAGES)
         val activeConfiguration = configuration
+        val activeSession = sessionGeneration
         generating = true
         status = "Analisando ${snapshot.size} mensagens…"
-        scope.launch {
+        analysisJob = scope.launch {
             val result = runCatching {
                 withContext(Dispatchers.Default) {
                     client.generateSuggestion(activeConfiguration, snapshot, streamerRequest)
                 }
             }
+            if (activeSession != sessionGeneration) return@launch
             generating = false
             result.onSuccess { generated ->
                 suggestion = generated?.let {
@@ -117,6 +122,16 @@ internal class AiSuggestionState(
                 status = "Não foi possível gerar a sugestão"
             }
         }
+    }
+
+    fun resetSession() {
+        sessionGeneration += 1
+        analysisJob?.cancel()
+        analysisJob = null
+        lastAutomaticMessageCount = 0
+        generating = false
+        suggestion = null
+        status = null
     }
 
     fun dismissSuggestion() {

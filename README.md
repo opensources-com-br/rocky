@@ -8,6 +8,8 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 
 [Leia em português](README.pt-BR.md).
 
+[Website](https://opensources-com-br.github.io/rocky/) · [Latest alpha](https://github.com/opensources-com-br/rocky/releases/latest)
+
 ## What works today
 
 - movable, resizable, always-on-top, and compact desktop window;
@@ -18,7 +20,8 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - push-to-talk commands with local `whisper.cpp` transcription;
 - local SQLite notes with create, edit, delete, restore, and Markdown export;
 - Markdown export for the ideas shown during the demonstration;
-- automated builds and development installers for macOS and Windows.
+- automated builds and development installers for macOS and Windows;
+- English and Brazilian Portuguese interface, selected from the system language and adjustable in Settings.
 
 Rocky does not require a Rocky account or a remote backend. Twitch access tokens and OpenAI API keys remain in memory. Notes are stored locally on the user's computer. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
 
@@ -69,12 +72,14 @@ The Twitch connector currently reads new chat messages only. Viewer counts, subs
 
 Packages are generated under `apps/desktop/build/compose/binaries/main/`. See the [desktop validation guide](docs/VALIDATION.md) for the complete build matrix and manual test checklist.
 
+Tagged alpha versions publish the macOS DMG, Windows MSI and EXE, and SHA-256 checksums on [GitHub Releases](https://github.com/opensources-com-br/rocky/releases).
+
 ## Repository structure
 
 | Directory | Responsibility |
 | --- | --- |
 | [apps/desktop](apps/desktop/) | Desktop entry point, packaging, and application lifecycle |
-| [apps/web](apps/web/) | Planned landing page and public documentation |
+| [apps/web](apps/web/) | Bilingual static landing page published with GitHub Pages |
 | [shared/core](shared/core/) | Domain models, contracts, and export rules |
 | [shared/data](shared/data/) | Twitch, AI, and SQLite implementations |
 | [shared/ui](shared/ui/) | Compose UI and presentation state |
@@ -83,3 +88,7 @@ Packages are generated under `apps/desktop/build/compose/binaries/main/`. See th
 | [docs/adr](docs/adr/) | Architecture decision records |
 
 The [implementation plan](docs/PLAN.md) describes the product direction, privacy model, architecture, delivery phases, and release criteria.
+
+## License
+
+Rocky is open-source software available under the [MIT License](LICENSE).

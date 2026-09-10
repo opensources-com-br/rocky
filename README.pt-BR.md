@@ -23,7 +23,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;
 - interface em inglês e português brasileiro, selecionada pelo idioma do sistema e ajustável nas Configurações.
 
-Rocky não exige uma conta própria nem um backend remoto. Tokens de acesso da Twitch e API keys da OpenAI permanecem em memória. As notas ficam armazenadas localmente no computador. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
+Rocky não exige uma conta própria nem um backend remoto. Tokens de acesso da Twitch e chaves de provedores em nuvem permanecem em memória. As notas ficam armazenadas localmente no computador. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
 
 ## Executar pelo código-fonte
 
@@ -54,7 +54,7 @@ Execute todas as verificações automatizadas com `./gradlew build` ou `.\gradle
 ## Configurar uma sessão real
 
 1. Siga o [guia de conexão com a Twitch](docs/TWITCH.pt-BR.md) para registrar um cliente público e conectar o canal do próprio streamer.
-2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar um modelo local do Ollama ou uma API key da OpenAI.
+2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API ou OpenRouter.
 3. Opcionalmente, siga o [guia de voz](docs/VOICE.pt-BR.md) para escolher uma voz do sistema e configurar a transcrição local por push-to-talk.
 4. Inicie uma live na Twitch, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 

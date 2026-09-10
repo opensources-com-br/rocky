@@ -14,13 +14,15 @@ import kotlin.test.assertTrue
 class OpenAiSuggestionClientTest {
     @Test
     fun validatesOpenRouterAndGeneratesWithTheFreeRouter() {
+        var requestBody = ""
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
             createContext("/v1/model/openrouter/free") { exchange ->
                 exchange.respond("""{"id":"openrouter/free"}""")
             }
-            createContext("/v1/responses") { exchange ->
+            createContext("/v1/chat/completions") { exchange ->
+                requestBody = exchange.requestBody.bufferedReader().readText()
                 exchange.respond(
-                    """{"output":[{"content":[{"type":"output_text","text":"{\"suggestion\":\"Teste aprovado.\",\"source_message_ids\":[\"m1\"]}"}]}]}""",
+                    """{"choices":[{"message":{"content":"{\"suggestion\":\"Teste aprovado.\",\"source_message_ids\":[\"m1\"]}"}}]}""",
                 )
             }
             start()
@@ -37,6 +39,8 @@ class OpenAiSuggestionClientTest {
 
             assertTrue(result.successful)
             assertEquals("Conexão e geração verificadas", result.message)
+            assertTrue("\"response_format\"" in requestBody)
+            assertTrue("\"require_parameters\":true" in requestBody)
         } finally {
             server.stop(0)
         }

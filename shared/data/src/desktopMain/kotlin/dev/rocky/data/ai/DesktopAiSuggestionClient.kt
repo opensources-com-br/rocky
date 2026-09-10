@@ -68,7 +68,7 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
                 streamerRequest,
                 agent,
             )
-            AiProviderKind.OpenRouter -> openAi.generate(
+            AiProviderKind.OpenRouter -> openAi.generateOpenRouter(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,

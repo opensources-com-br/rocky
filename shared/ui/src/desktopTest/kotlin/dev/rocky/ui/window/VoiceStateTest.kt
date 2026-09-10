@@ -16,6 +16,15 @@ import org.junit.Test
 
 class VoiceStateTest {
     @Test
+    fun textOnlySetupDoesNotSpeakWithoutOptIn() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, VoiceConfiguration()) {}
+        state.speakSuggestion(this, "s1", "Uma ideia", silenced = false)
+        assertTrue(service.spoken.isEmpty())
+        assertFalse(state.speaking)
+    }
+
+    @Test
     fun readsEachSuggestionOnlyOnce() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}
@@ -154,6 +163,7 @@ class VoiceStateTest {
     }
 
     private val readyConfiguration = VoiceConfiguration(
+        readSuggestions = true,
         transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
     )
 }

@@ -452,11 +452,7 @@ private fun CompactContent(
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp)) {
         Text(
-            text = if (real) "Chat real da Twitch" else when (status) {
-                LiveSessionStatus.Stopped -> "Demonstração parada"
-                LiveSessionStatus.Running -> suggestion ?: "Ouvindo a demonstração"
-                LiveSessionStatus.Ended -> "Demonstração encerrada"
-            },
+            text = compactHeadline(status, suggestion, real),
             style = MaterialTheme.typography.subtitle1,
             color = RockyColors.TextPrimary,
         )
@@ -468,6 +464,13 @@ private fun CompactContent(
         )
     }
 }
+
+internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?, real: Boolean): String =
+    if (real) suggestion ?: "Chat real da Twitch" else when (status) {
+        LiveSessionStatus.Stopped -> "Demonstração parada"
+        LiveSessionStatus.Running -> suggestion ?: "Ouvindo a demonstração"
+        LiveSessionStatus.Ended -> "Demonstração encerrada"
+    }
 
 private val TwitchLiveState.platforms: List<PlatformStatus>
     get() = listOf(

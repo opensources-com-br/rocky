@@ -17,6 +17,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveNote
+import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.locale.RockyLanguage
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
@@ -186,6 +187,14 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun showsRealSuggestionInCompactMode() {
+        assertEquals(
+            "O chat quer saber o preço.",
+            compactHeadline(LiveSessionStatus.Running, "O chat quer saber o preço.", real = true),
+        )
+    }
+
+    @Test
     fun editsDeletesAndExportsLocalNote() {
         val repository = TransientNoteRepository()
         val note = LiveNote("local-note", "Texto original", "agora", "SUGESTÃO")
@@ -324,6 +333,7 @@ class RockyVisualCaptureTest {
     }
 
     private fun render(
+        compact: Boolean = false,
         mainSection: MainSection = MainSection.Conversation,
         settingsOpen: Boolean = false,
         settingsSection: SettingsSection = SettingsSection.Agent,
@@ -343,7 +353,7 @@ class RockyVisualCaptureTest {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
                 Box(Modifier.size(420.dp, if (settingsOpen) 520.dp else 720.dp)) {
                     RockyWindow(
-                        compact = false,
+                        compact = compact,
                         pinned = false,
                         onTogglePinned = {},
                         onToggleCompact = {},

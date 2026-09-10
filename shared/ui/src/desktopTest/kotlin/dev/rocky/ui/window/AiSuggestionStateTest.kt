@@ -110,6 +110,21 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun configuresTheFreeOpenRouterWithoutPersistingItsKey() {
+        var saved: AiProviderConfiguration? = null
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }
+
+        state.updateProvider(AiProviderKind.OpenRouter)
+        state.updateApiKey("router-key")
+        state.updateModel("openrouter/free")
+
+        assertEquals("https://openrouter.ai/api", state.configuration.endpoint)
+        assertEquals("openrouter/free", state.configuration.model)
+        assertTrue(state.isReady)
+        assertEquals("", saved?.apiKey)
+    }
+
+    @Test
     fun verifiesAndInvalidatesTheAiConnection() = runBlocking {
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
 

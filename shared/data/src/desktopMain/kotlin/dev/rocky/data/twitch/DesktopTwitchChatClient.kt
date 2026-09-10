@@ -254,14 +254,21 @@ class DesktopTwitchChatClient : TwitchChatClient {
     private fun checkTokenValidation() {
         val now = System.currentTimeMillis()
         val run = generation.get()
-        if (!isCurrent(run) || validationRunning || now - lastValidationAt < TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS) return
+        if (!isCurrent(run) || tokens == null || validationRunning || now - lastValidationAt < TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS) return
         validationRunning = true
+        val validationClientId = clientId
+        val validationTokens = tokens ?: return
         ioExecutor.execute {
+            if (!isCurrent(run)) return@execute
             runCatching {
-                val currentTokens = requireNotNull(tokens)
-                api.validate(currentTokens.accessToken)
-            }.onSuccess {
+                validateTwitchTokens(
+                    validationTokens,
+                    validate = { api.validate(it) },
+                    refresh = { api.refreshTokens(validationClientId, it) },
+                )
+            }.onSuccess { refreshed ->
                 if (isCurrent(run)) {
+                    tokens = refreshed
                     lastValidationAt = System.currentTimeMillis()
                     validationRetryAttempt = 0
                     validationRunning = false

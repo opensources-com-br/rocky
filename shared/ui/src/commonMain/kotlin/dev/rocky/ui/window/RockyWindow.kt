@@ -144,7 +144,7 @@ fun RockyWindow(
         LaunchedEffect(sessionStatus) {
             if (sessionStatus != LiveSessionStatus.Running) {
                 voice.resetSession()
-                if (twitch.isRealSession) ai.resetSession()
+                if (twitch.isRealSession && ai.generating) ai.cancelAnalysis()
             }
         }
 
@@ -316,7 +316,7 @@ fun RockyWindow(
                             silenced = silenced,
                             speaking = voice.speaking,
                             generatingSuggestion = ai.generating,
-                            canAnalyze = twitch.isRealSession && twitch.messages.isNotEmpty() && ai.isReady,
+                            canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messages.isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
                             evidence = if (twitch.isRealSession) ai.suggestionSources.map { "${it.author}: ${it.text}" } else emptyList(),
                             onSaveNote = {

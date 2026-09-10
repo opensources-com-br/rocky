@@ -201,7 +201,7 @@ fun RockyWindow(
                                         ai.resetSession()
                                         twitch.disconnect()
                                     },
-                                    onOpenAuthorization = onOpenTwitchAuthorization,
+                                    onOpenBrowser = onOpenTwitchAuthorization,
                                 )
                             }
                         }

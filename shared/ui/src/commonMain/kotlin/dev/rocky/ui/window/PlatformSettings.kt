@@ -34,14 +34,26 @@ internal fun PlatformSettings(
     twitch: TwitchLiveState,
     onConnect: () -> Unit,
     onDisconnect: () -> Unit,
-    onOpenAuthorization: (String) -> Unit,
+    onOpenBrowser: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
             "Conexão com plataformas",
             "A demonstração funciona sem conta. Conecte a Twitch para receber um chat real.",
         )
-        TwitchAccount(clientId, onClientIdChange, twitch, onConnect, onDisconnect, onOpenAuthorization)
+        Text(
+            text = "1. Crie um aplicativo do tipo Public na Twitch. 2. Copie o Client ID. 3. Conecte e autorize o canal da live.",
+            modifier = Modifier.padding(top = 8.dp),
+            color = RockyColors.TextSecondary,
+            style = MaterialTheme.typography.caption,
+        )
+        OutlinedButton(
+            onClick = { onOpenBrowser(TWITCH_APP_REGISTRATION_URL) },
+            modifier = Modifier.padding(top = 6.dp),
+            border = BorderStroke(1.dp, RockyColors.Border),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
+        ) { Text("Como criar o Client ID") }
+        TwitchAccount(clientId, onClientIdChange, twitch, onConnect, onDisconnect, onOpenBrowser)
         Text(
             text = "O Client ID identifica seu aplicativo público da Twitch. Tokens ficam apenas na memória e são apagados ao desconectar ou fechar o Rocky.",
             modifier = Modifier.padding(horizontal = 3.dp, vertical = 6.dp),
@@ -53,6 +65,8 @@ internal fun PlatformSettings(
         UpcomingPlatform("Facebook", PlatformColor.Offline)
     }
 }
+
+private const val TWITCH_APP_REGISTRATION_URL = "https://dev.twitch.tv/docs/authentication/register-app/"
 
 @Composable
 private fun TwitchAccount(

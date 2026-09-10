@@ -37,9 +37,14 @@ internal fun MainNavigation(
         Row(modifier = Modifier.padding(4.dp)) {
             MainSection.entries.forEach { section ->
                 val selectedSection = section == selected
+                val sectionWeight = when (section) {
+                    MainSection.Conversation -> 1.25f
+                    MainSection.Support -> 1.15f
+                    else -> 0.85f
+                }
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(sectionWeight)
                         .background(
                             if (selectedSection) RockyColors.SurfaceSelected else Color.Transparent,
                             RoundedCornerShape(9.dp),
@@ -53,6 +58,8 @@ internal fun MainNavigation(
                         color = if (selectedSection) RockyColors.TextPrimary else RockyColors.TextSecondary,
                         style = MaterialTheme.typography.caption,
                         fontWeight = if (selectedSection) FontWeight.Bold else FontWeight.Normal,
+                        maxLines = 1,
+                        softWrap = false,
                     )
                 }
             }

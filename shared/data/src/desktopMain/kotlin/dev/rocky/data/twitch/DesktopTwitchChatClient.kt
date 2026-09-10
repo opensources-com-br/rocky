@@ -64,6 +64,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
     private var validationRunning = false
 
     private var reconnectAttempt = 0
+    private var validationRetryAttempt = 0
 
     init {
         scheduler.scheduleAtFixedRate(::checkKeepalive, 5, 5, TimeUnit.SECONDS)
@@ -76,6 +77,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         this.listener = listener
         active = true
         reconnectAttempt = 0
+        validationRetryAttempt = 0
         seenMessageIds.clear()
         emit(TwitchConnectionPhase.Authenticating, "Solicitando autorização da Twitch")
 
@@ -252,7 +254,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
     private fun checkTokenValidation() {
         val now = System.currentTimeMillis()
         val run = generation.get()
-        if (!isCurrent(run) || validationRunning || now - lastValidationAt < TOKEN_VALIDATION_INTERVAL_MILLIS) return
+        if (!isCurrent(run) || validationRunning || now - lastValidationAt < TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS) return
         validationRunning = true
         ioExecutor.execute {
             runCatching {
@@ -261,12 +263,21 @@ class DesktopTwitchChatClient : TwitchChatClient {
             }.onSuccess {
                 if (isCurrent(run)) {
                     lastValidationAt = System.currentTimeMillis()
+                    validationRetryAttempt = 0
                     validationRunning = false
                 }
             }.onFailure { error ->
                 if (isCurrent(run)) {
                     validationRunning = false
-                    fail(run, error.userMessage("A sessão da Twitch deixou de ser válida."))
+                    if (error.requiresNewTwitchAuthorization()) {
+                        fail(run, "A sessão da Twitch deixou de ser válida. Conecte novamente.")
+                    } else {
+                        validationRetryAttempt += 1
+                        lastValidationAt = nextValidationRetryReferenceTime(
+                            now = System.currentTimeMillis(),
+                            attempt = validationRetryAttempt,
+                        )
+                    }
                 }
             }
         }
@@ -287,6 +298,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         keepaliveTimeoutMillis = 0
         lastValidationAt = 0
         validationRunning = false
+        validationRetryAttempt = 0
         socket?.sendClose(WebSocket.NORMAL_CLOSURE, "disconnected")
         socket = null
         tokens = null
@@ -306,6 +318,14 @@ class DesktopTwitchChatClient : TwitchChatClient {
     private companion object {
         const val DEFAULT_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds=30"
         const val MAX_SEEN_MESSAGES = 1_000
-        const val TOKEN_VALIDATION_INTERVAL_MILLIS = 60 * 60 * 1_000L
     }
 }
+
+internal const val TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS = 60 * 60 * 1_000L
+
+internal fun Throwable.requiresNewTwitchAuthorization(): Boolean =
+    this is TwitchApiException && statusCode in setOf(400, 401, 403)
+
+internal fun nextValidationRetryReferenceTime(now: Long, attempt: Int): Long =
+    now - TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS +
+        twitchReconnectDelaySeconds(attempt) * 1_000

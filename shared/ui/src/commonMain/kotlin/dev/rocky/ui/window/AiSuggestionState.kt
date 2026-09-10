@@ -21,6 +21,9 @@ internal class AiSuggestionState(
     initialConfiguration: AiProviderConfiguration,
     private val onConfigurationChange: (AiProviderConfiguration) -> Unit,
 ) {
+    var suggestionSources by mutableStateOf<List<ChatMessage>>(emptyList())
+        private set
+
     var configuration by mutableStateOf(initialConfiguration)
         private set
 
@@ -135,6 +138,7 @@ internal class AiSuggestionState(
             if (activeSession != sessionGeneration) return@launch
             generating = false
             result.onSuccess { generated ->
+                suggestionSources = snapshot.filter { it.id in generated?.sourceMessageIds.orEmpty() }
                 suggestion = generated?.let {
                     RockySuggestion("ai-${Random.nextLong()}", it.text, it.sourceMessageIds)
                 }
@@ -152,11 +156,13 @@ internal class AiSuggestionState(
         lastAnalyzedMessageId = null
         generating = false
         suggestion = null
+        suggestionSources = emptyList()
         status = null
     }
 
     fun dismissSuggestion() {
         suggestion = null
+        suggestionSources = emptyList()
     }
 
     private fun update(value: AiProviderConfiguration) {

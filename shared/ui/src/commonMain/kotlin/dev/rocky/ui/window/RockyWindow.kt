@@ -315,7 +315,7 @@ fun RockyWindow(
                             onSaveNote = {
                                 val note = if (twitch.isRealSession) {
                                     ai.suggestion?.let { suggestion ->
-                                        suggestionNote(suggestion, twitch.messages, currentTimeLabel())
+                                        suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())
                                     }
                                 } else {
                                     live.createNoteFromSuggestion()

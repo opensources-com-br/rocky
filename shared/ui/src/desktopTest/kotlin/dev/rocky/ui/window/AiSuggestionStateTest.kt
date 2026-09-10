@@ -18,6 +18,21 @@ import org.junit.Test
 
 class AiSuggestionStateTest {
     @Test
+    fun keepsEvidenceAfterLiveBufferChanges() = runBlocking {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+        val buffer = messages(3).toMutableList()
+        state.analyze(this, buffer)
+        while (state.generating) delay(1)
+        buffer.clear()
+
+        val note = suggestionNote(requireNotNull(state.suggestion), state.suggestionSources, "2026-09-10 18:00")
+        assertEquals(listOf("viewer: message 3"), note.evidence)
+        assertEquals(setOf("m3"), note.sourceMessageIds)
+        state.resetSession()
+        assertTrue(state.suggestionSources.isEmpty())
+    }
+
+    @Test
     fun batchesAutomaticAnalysisAndResetsForANewSession() = runBlocking {
         val client = FakeAiSuggestionClient()
         val state = AiSuggestionState(client, ollamaConfiguration) {}

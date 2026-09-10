@@ -39,6 +39,7 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun VoiceSettings(
     voice: VoiceState,
+    agentName: String = "Rocky",
     onChooseWhisperExecutable: () -> String? = { null },
     onChooseWhisperModel: () -> String? = { null },
 ) {
@@ -69,7 +70,7 @@ internal fun VoiceSettings(
         }
         Button(
             modifier = Modifier.fillMaxWidth().height(40.dp).testTag("test-voice"),
-            onClick = { if (voice.speaking) voice.stopSpeaking() else voice.testVoice(scope) },
+            onClick = { if (voice.speaking) voice.stopSpeaking() else voice.testVoice(scope, agentName) },
             colors = ButtonDefaults.buttonColors(backgroundColor = RockyColors.Accent, contentColor = Color.Black),
             shape = RoundedCornerShape(10.dp),
         ) {
@@ -79,7 +80,7 @@ internal fun VoiceSettings(
         Spacer(Modifier.height(22.dp))
         SettingTitle(
             "Entrada do streamer",
-            "Clique em “Fale com o Rocky” para gravar e clique novamente para transcrever localmente.",
+            "Clique em “Fale com $agentName” para gravar e clique novamente para transcrever localmente.",
             if (voice.transcriptionReady) "pronta" else "configurar",
         )
         Spacer(Modifier.height(10.dp))

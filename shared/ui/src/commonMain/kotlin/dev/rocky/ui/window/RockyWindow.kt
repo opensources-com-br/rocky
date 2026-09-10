@@ -175,6 +175,7 @@ fun RockyWindow(
                                 SettingsSection.Ai -> AiSettings(ai)
                                 SettingsSection.Voice -> VoiceSettings(
                                     voice,
+                                    agent.displayName,
                                     onChooseWhisperExecutable,
                                     onChooseWhisperModel,
                                 )

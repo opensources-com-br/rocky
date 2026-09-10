@@ -104,8 +104,8 @@ internal class VoiceState(
         configuration.copy(transcription = configuration.transcription.copy(microphoneId = id)),
     )
 
-    fun testVoice(scope: CoroutineScope) {
-        speak(scope, "Olá, eu sou o Rocky. A voz do chat, em acordes.", force = true)
+    fun testVoice(scope: CoroutineScope, agentName: String = "Rocky") {
+        speak(scope, "Olá, eu sou $agentName. A voz do chat, em acordes.", force = true)
     }
 
     fun speakSuggestion(scope: CoroutineScope, suggestionId: String, text: String, silenced: Boolean) {

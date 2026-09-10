@@ -13,6 +13,7 @@ import dev.rocky.core.twitch.TwitchConnectionPhase
 
 internal class TwitchLiveState(private val client: TwitchChatClient) {
     val messages = mutableStateListOf<ChatMessage>()
+    private var sessionGeneration = 0L
 
     var phase by mutableStateOf(TwitchConnectionPhase.Disconnected)
         private set
@@ -42,11 +43,22 @@ internal class TwitchLiveState(private val client: TwitchChatClient) {
         account = null
         userCode = null
         verificationUri = null
-        client.connect(clientId, ::receive)
+        val generation = ++sessionGeneration
+        client.connect(clientId) { event ->
+            if (generation == sessionGeneration) receive(event)
+        }
     }
 
     fun disconnect() {
         client.disconnect()
+        sessionGeneration += 1
+        Snapshot.withMutableSnapshot {
+            phase = TwitchConnectionPhase.Disconnected
+            detail = null
+            account = null
+            userCode = null
+            verificationUri = null
+        }
     }
 
     private fun receive(event: TwitchConnectionEvent) {

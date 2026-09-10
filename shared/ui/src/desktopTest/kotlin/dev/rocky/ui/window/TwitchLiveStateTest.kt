@@ -59,8 +59,32 @@ class TwitchLiveStateTest {
         assertEquals("message-1000", state.messages.last().id)
     }
 
+    @Test
+    fun ignoresEventsFromAPreviousConnection() {
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client)
+        state.connect("first-client")
+        val firstConnection = client.currentConnection
+
+        state.connect("second-client")
+        firstConnection.onEvent(
+            TwitchConnectionEvent.MessageReceived(
+                ChatMessage("stale", "viewer", "Old message", StreamPlatform.Twitch),
+            ),
+        )
+        client.emit(
+            TwitchConnectionEvent.MessageReceived(
+                ChatMessage("current", "viewer", "New message", StreamPlatform.Twitch),
+            ),
+        )
+
+        assertEquals(listOf("current"), state.messages.map(ChatMessage::id))
+    }
+
     private class FakeTwitchChatClient : TwitchChatClient {
         private var listener = TwitchConnectionListener {}
+        val currentConnection: TwitchConnectionListener
+            get() = listener
 
         override fun connect(clientId: String, listener: TwitchConnectionListener) {
             this.listener = listener

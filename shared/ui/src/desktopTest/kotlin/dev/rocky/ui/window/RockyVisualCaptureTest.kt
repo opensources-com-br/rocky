@@ -266,6 +266,10 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("Settings").assertExists()
         rule.onNodeWithText("Agent name").assertExists()
+        rule.onNodeWithText("done").performClick()
+        rule.onNodeWithText("DEMO MODE").assertExists()
+        rule.onNodeWithText("Start").assertExists()
+        rule.onNodeWithText("Conversation").assertExists()
         rule.runOnIdle { assertEquals(RockyLanguage.English, savedLanguage) }
     }
 

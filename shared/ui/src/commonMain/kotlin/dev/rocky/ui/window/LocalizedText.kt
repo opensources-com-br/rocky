@@ -55,12 +55,33 @@ internal fun Text(
 @Composable
 private fun localize(text: String): String {
     val language = LocalRockyLanguage.current
-    val translation = settingsTranslations.entries.firstOrNull { text == it.key || text == it.value }
+    val translation = allTranslations.entries.firstOrNull { text == it.key || text == it.value }
     return when (language) {
-        dev.rocky.core.locale.RockyLanguage.English -> translation?.value ?: text
+        dev.rocky.core.locale.RockyLanguage.English -> translation?.value ?: dynamicEnglish(text)
         dev.rocky.core.locale.RockyLanguage.PortugueseBrazil -> translation?.key ?: text
     }
 }
+
+private fun dynamicEnglish(text: String): String = when {
+    text.endsWith(" mensagens recebidas") -> text.removeSuffix(" mensagens recebidas") + " messages received"
+    text.endsWith(" mensagem recebida") -> text.removeSuffix(" mensagem recebida") + " message received"
+    text.endsWith(" mensagens simuladas · sem live real") -> text.removeSuffix(" mensagens simuladas · sem live real") + " simulated messages · no real stream"
+    text.endsWith(" notas salvas") -> text.removeSuffix(" notas salvas") + " saved notes"
+    text.endsWith(" nota salva") -> text.removeSuffix(" nota salva") + " saved note"
+    text.endsWith(" mensagens") -> text.removeSuffix(" mensagens") + " messages"
+    text.endsWith(" mensagem") -> text.removeSuffix(" mensagem") + " message"
+    text.startsWith("Recebendo o chat de ") -> text.replaceFirst("Recebendo o chat de ", "Receiving chat from ")
+    text.startsWith("Analisando ") && text.endsWith(" mensagens…") -> text.replaceFirst("Analisando ", "Analyzing ").replace(" mensagens…", " messages…")
+    text.startsWith("Você: ") -> text.replaceFirst("Você: ", "You: ")
+    text.startsWith("Fale com ") -> text.replaceFirst("Fale com ", "Talk to ")
+    text.startsWith("Olá, eu sou ") -> text.replaceFirst("Olá, eu sou ", "Hello, I am ").replace(". A voz do chat, em acordes.", ". The voice of chat, in tune.")
+    text.startsWith("SUGESTÃO DO ") -> text.replaceFirst("SUGESTÃO DO ", "SUGGESTION FROM ")
+    text.contains(" assistindo · ") -> text.replace(" assistindo · ", " watching · ")
+    text.startsWith("audiência indisponível · ") -> text.replaceFirst("audiência indisponível", "audience unavailable")
+    else -> text
+}
+
+private val allTranslations by lazy { settingsTranslations + liveTranslations }
 
 private val settingsTranslations = mapOf(
     "Configurações" to "Settings",
@@ -148,4 +169,109 @@ private val settingsTranslations = mapOf(
     "Concluir configuração" to "Finish setup",
     "Usar demonstração" to "Use demo",
     "Rocky não exige uma conta própria. As notas ficam no computador e as credenciais sensíveis não são salvas." to "Rocky requires no account of its own. Notes stay on your computer and sensitive credentials are not saved.",
+)
+
+private val liveTranslations = mapOf(
+    "a voz do chat, em acordes" to "the voice of chat, in tune",
+    "Abrir configurações" to "Open settings",
+    "Fixar janela" to "Pin window",
+    "Desafixar janela" to "Unpin window",
+    "Modo compacto" to "Compact mode",
+    "Modo expandido" to "Expanded mode",
+    "MODO DEMONSTRAÇÃO" to "DEMO MODE",
+    "Sem conexão com uma live real" to "No real stream connected",
+    "DEMONSTRAÇÃO PRONTA" to "DEMO READY",
+    "DEMONSTRAÇÃO ENCERRADA" to "DEMO ENDED",
+    "PARADO" to "STOPPED",
+    "OUVINDO" to "LISTENING",
+    "ENCERRADO" to "ENDED",
+    "ERRO" to "ERROR",
+    "Pronta para iniciar" to "Ready to start",
+    "Sessão em andamento" to "Session in progress",
+    "Sessão encerrada" to "Session ended",
+    "Iniciar" to "Start",
+    "Encerrar" to "End",
+    "Reiniciar" to "Restart",
+    "Retomar" to "Resume",
+    "A demonstração terminou. Reinicie quando quiser testar novamente." to "The demo has ended. Restart whenever you want to test again.",
+    "TOCANDO AGORA" to "PLAYING NOW",
+    "Salvar como nota" to "Save as note",
+    "Nota salva" to "Note saved",
+    "Próxima" to "Next",
+    "Silenciar" to "Mute",
+    "Conversa" to "Conversation",
+    "Superchats" to "Super Chats",
+    "Notas" to "Notes",
+    "Ideias" to "Ideas",
+    "Pulso" to "Pulse",
+    "CHAT AO VIVO" to "LIVE CHAT",
+    "VOCÊ" to "YOU",
+    "Aguardando mensagens do chat…" to "Waiting for chat messages…",
+    "Estou acompanhando as mensagens para encontrar algo útil." to "I am following the messages to find something useful.",
+    "Estou recebendo o chat real. Posso analisar agora ou aguardar o próximo lote automático." to "I am receiving real chat. I can analyze now or wait for the next automatic batch.",
+    "Estou analisando o chat para encontrar uma resposta ou ideia útil." to "I am analyzing chat to find a useful answer or idea.",
+    "Analisar agora" to "Analyze now",
+    "Analisando…" to "Analyzing…",
+    "Configure e teste um provedor na aba IA para gerar sugestões." to "Configure and test a provider in the AI tab to generate suggestions.",
+    "Super Chats ainda não estão conectados." to "Super Chats are not connected yet.",
+    "A conexão atual da Twitch recebe somente mensagens do chat." to "The current Twitch connection receives chat messages only.",
+    "Notas locais" to "Local notes",
+    "Exportar .md" to "Export .md",
+    "Markdown exportado." to "Markdown exported.",
+    "As sugestões salvas durante a live aparecerão aqui." to "Suggestions saved during the stream will appear here.",
+    "Ideias da live" to "Stream ideas",
+    "A geração automática de ideias ainda não está disponível em sessões reais." to "Automatic idea generation is not available in real sessions yet.",
+    "Editar nota" to "Edit note",
+    "Conteúdo" to "Content",
+    "Salvar" to "Save",
+    "Cancelar" to "Cancel",
+    "Excluir nota?" to "Delete note?",
+    "Esta ação remove a nota deste computador." to "This removes the note from this computer.",
+    "Excluir" to "Delete",
+    "Nota atualizada." to "Note updated.",
+    "Nota excluída." to "Note deleted.",
+    "Nota salva localmente." to "Note saved locally.",
+    "Não foi possível carregar as notas locais." to "Could not load local notes.",
+    "Não foi possível salvar a alteração." to "Could not save the change.",
+    "CONEXÃO REAL · TWITCH" to "REAL CONNECTION · TWITCH",
+    "CHAT REAL DA TWITCH" to "REAL TWITCH CHAT",
+    "CONECTANDO" to "CONNECTING",
+    "RECONECTANDO" to "RECONNECTING",
+    "Chat real da Twitch" to "Real Twitch chat",
+    "Demonstração parada" to "Demo stopped",
+    "Ouvindo a demonstração" to "Listening to the demo",
+    "Demonstração encerrada" to "Demo ended",
+    "Conectando" to "Connecting",
+    "Reconectando" to "Reconnecting",
+    "Não conectada" to "Not connected",
+    "Conectada" to "Connected",
+    "Falha na conexão" to "Connection failed",
+    "Aguardando autorização" to "Waiting for authorization",
+    "Iniciando autenticação" to "Starting authentication",
+    "Autenticando" to "Authenticating",
+    "Conectando ao chat" to "Connecting to chat",
+    "Confirme o código no navegador." to "Confirm the code in your browser.",
+    "Informe o Client ID da Twitch." to "Enter the Twitch Client ID.",
+    "OUVINDO O CHAT" to "LISTENING TO CHAT",
+    "Rocky está falando…" to "Rocky is speaking…",
+    "Rocky está transcrevendo" to "Rocky is transcribing",
+    "clique para começar" to "click to start",
+    "clique novamente para concluir" to "click again to finish",
+    "SUGESTÃO" to "SUGGESTION",
+    "SUGESTÃO IA" to "AI SUGGESTION",
+    "CLIPE" to "CLIP",
+    "PENDÊNCIA" to "PENDING",
+    "CONTEÚDO" to "CONTENT",
+    "INTERAÇÃO" to "INTERACTION",
+    "CONVITE" to "INVITATION",
+    "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora." to "Seven people asked about the course price in the last two minutes. This is a good time to answer.",
+    "Prometeu mostrar o raio-x do repositório antes de encerrar." to "You promised to show the repository overview before ending.",
+    "Chat reagiu forte à parte de deploy — bom material para um corte." to "Chat reacted strongly to the deployment section — good material for a clip.",
+    "Três pedidos de compatibilidade com Next.js. Ninguém respondeu ainda." to "Three requests for Next.js compatibility. No one has answered yet.",
+    "Série curta respondendo as 5 dúvidas mais repetidas do chat." to "Short series answering the five most repeated chat questions.",
+    "Enquete ao vivo: deploy manual ou CI? O chat está dividido." to "Live poll: manual deployment or CI? Chat is divided.",
+    "Convidar a Ju para a próxima live — ela respondeu metade do chat." to "Invite Ju to the next stream — she answered half the chat.",
+    "Essa aula salvou minha semana, obrigada!" to "This class saved my week, thank you!",
+    "Vale a pena usar isso em produção hoje?" to "Is this worth using in production today?",
+    "Quantas vagas ainda tem na turma?" to "How many seats are left in the class?",
 )

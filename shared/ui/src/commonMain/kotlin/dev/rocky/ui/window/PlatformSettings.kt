@@ -41,7 +41,11 @@ internal fun PlatformSettings(
             "A demonstração funciona sem conta. Conecte a Twitch para receber um chat real.",
         )
         Text(
-            text = "1. Crie um aplicativo do tipo Public na Twitch. 2. Copie o Client ID. 3. Conecte e autorize o canal da live.",
+            text = if (clientId.isBlank()) {
+                "Este build não inclui um Client ID. Crie um aplicativo público na Twitch e cole o identificador abaixo."
+            } else {
+                "O Client ID já está configurado. Conecte e autorize o canal que fará a transmissão."
+            },
             modifier = Modifier.padding(top = 8.dp),
             color = RockyColors.TextSecondary,
             style = MaterialTheme.typography.caption,
@@ -51,7 +55,7 @@ internal fun PlatformSettings(
             modifier = Modifier.padding(top = 6.dp),
             border = BorderStroke(1.dp, RockyColors.Border),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
-        ) { Text("Como criar o Client ID") }
+        ) { Text(if (clientId.isBlank()) "Criar Client ID" else "Sobre o Client ID") }
         TwitchAccount(clientId, onClientIdChange, twitch, onConnect, onDisconnect, onOpenBrowser)
         Text(
             text = "O Client ID identifica seu aplicativo público da Twitch. Tokens ficam apenas na memória e são apagados ao desconectar ou fechar o Rocky.",

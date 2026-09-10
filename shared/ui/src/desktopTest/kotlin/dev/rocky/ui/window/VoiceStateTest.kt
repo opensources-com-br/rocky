@@ -70,8 +70,8 @@ class VoiceStateTest {
         var received: String? = null
 
         state.startCapture(this) { received = it }
-        waitUntil { service.captureStarted }
-        assertTrue(state.capturing)
+        waitUntil { state.capturing }
+        assertTrue(service.captureStarted)
         state.stopCapture(this) { received = it }
         waitUntil { !state.transcribing }
 

@@ -2,6 +2,7 @@ package dev.rocky.ui.window
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -168,11 +169,16 @@ fun RockyWindow(
                 )
                 Divider(color = RockyColors.Divider)
                 when {
-                    compact -> CompactContent(
+                    compact && !settingsOpen -> CompactContent(
                         status = sessionStatus,
                         messageCount = visibleMessageCount,
                         suggestion = visibleSuggestion?.text,
                         real = twitch.isRealSession,
+                        silenced = silenced,
+                        onToggleSilence = {
+                            silenced = !silenced
+                            if (silenced) voice.stopSpeaking()
+                        },
                     )
                     settingsOpen -> {
                         SettingsHeading(
@@ -457,23 +463,30 @@ private object InactiveAiSuggestionClient : AiSuggestionClient {
 }
 
 @Composable
-private fun CompactContent(
+internal fun CompactContent(
     status: LiveSessionStatus,
     messageCount: Int,
     suggestion: String?,
     real: Boolean,
+    silenced: Boolean,
+    onToggleSilence: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 4.dp)) {
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Text(
+                text = if (real) "$messageCount mensagens recebidas" else "$messageCount mensagens simuladas · sem live real",
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.caption,
+            )
+            androidx.compose.material.TextButton(onClick = onToggleSilence) {
+                Text(if (silenced) "Retomar" else "Silenciar")
+            }
+        }
         Text(
             text = compactHeadline(status, suggestion, real),
+            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             style = MaterialTheme.typography.subtitle1,
             color = RockyColors.TextPrimary,
-        )
-        Text(
-            text = if (real) "$messageCount mensagens recebidas" else "$messageCount mensagens simuladas · sem live real",
-            modifier = Modifier.padding(top = 4.dp),
-            style = MaterialTheme.typography.caption,
-            color = RockyColors.TextSecondary,
         )
     }
 }

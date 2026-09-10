@@ -106,6 +106,10 @@ fun main() = application {
                 compact = !compact
             },
             onSettingsVisibilityChanged = { open ->
+                if (open && compact) {
+                    compact = false
+                    windowState.size = previousSize
+                }
                 if (!compact) {
                     if (open) {
                         mainSizeBeforeSettings = windowState.size

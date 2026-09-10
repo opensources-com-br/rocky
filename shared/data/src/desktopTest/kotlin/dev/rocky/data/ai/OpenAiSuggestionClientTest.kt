@@ -1,6 +1,8 @@
 package dev.rocky.data.ai
 
 import com.sun.net.httpserver.HttpServer
+import dev.rocky.core.ai.AiProviderConfiguration
+import dev.rocky.core.ai.AiProviderKind
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import java.net.InetSocketAddress
@@ -10,6 +12,36 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class OpenAiSuggestionClientTest {
+    @Test
+    fun validatesOpenRouterAndGeneratesWithTheFreeRouter() {
+        val server = HttpServer.create(InetSocketAddress(0), 0).apply {
+            createContext("/v1/model/openrouter/free") { exchange ->
+                exchange.respond("""{"id":"openrouter/free"}""")
+            }
+            createContext("/v1/responses") { exchange ->
+                exchange.respond(
+                    """{"output":[{"content":[{"type":"output_text","text":"{\"suggestion\":\"Teste aprovado.\",\"source_message_ids\":[\"m1\"]}"}]}]}""",
+                )
+            }
+            start()
+        }
+        try {
+            val result = DesktopAiSuggestionClient().testConnection(
+                AiProviderConfiguration(
+                    AiProviderKind.OpenRouter,
+                    "http://localhost:${server.address.port}",
+                    "openrouter/free",
+                    "router-key",
+                ),
+            )
+
+            assertTrue(result.successful)
+            assertEquals("Conexão e geração verificadas", result.message)
+        } finally {
+            server.stop(0)
+        }
+    }
+
     @Test
     fun authenticatesAndRequestsNonStoredStructuredResponse() {
         var authorization = ""

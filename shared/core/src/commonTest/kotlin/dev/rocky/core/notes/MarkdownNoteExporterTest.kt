@@ -8,7 +8,13 @@ class MarkdownNoteExporterTest {
     @Test
     fun exportsNotesInDisplayOrder() {
         val notes = listOf(
-            LiveNote("1", "Primeira ideia", "01:24", "IDEIA"),
+            LiveNote(
+                "1",
+                "Primeira ideia",
+                "01:24",
+                "IDEIA",
+                evidence = listOf("ana: Quero saber o preço"),
+            ),
             LiveNote("2", "Uma pendência", "01:38", "PENDÊNCIA"),
         )
 
@@ -19,6 +25,10 @@ class MarkdownNoteExporterTest {
             ## 01:24 · IDEIA
 
             Primeira ideia
+
+            ### Evidence
+
+            - ana: Quero saber o preço
 
             ## 01:38 · PENDÊNCIA
 

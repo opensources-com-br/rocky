@@ -14,6 +14,12 @@ fun notesAsMarkdown(notes: List<LiveNote>): String = buildString {
         appendLine("## ${note.timestamp} · ${note.tag}")
         appendLine()
         appendLine(note.text)
+        if (note.evidence.isNotEmpty()) {
+            appendLine()
+            appendLine("### Evidence")
+            appendLine()
+            note.evidence.forEach { appendLine("- $it") }
+        }
         if (index < notes.lastIndex) appendLine()
     }
 }

@@ -35,6 +35,8 @@ data class LiveNote(
     val text: String,
     val timestamp: String,
     val tag: String,
+    val sourceMessageIds: Set<String> = emptySet(),
+    val evidence: List<String> = emptyList(),
 )
 
 data class LiveIdea(

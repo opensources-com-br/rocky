@@ -33,7 +33,7 @@ jobs:
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew build
-      - run: ./gradlew ${{ matrix.package-task }}
+      - run: ./gradlew ${{ matrix.package-task }} -ProckyTwitchClientId="${{ vars.ROCKY_TWITCH_CLIENT_ID }}"
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact-name }}

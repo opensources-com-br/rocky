@@ -30,6 +30,9 @@ internal class AiSuggestionState(
     var testing by mutableStateOf(false)
         private set
 
+    var connectionVerified by mutableStateOf(false)
+        private set
+
     var generating by mutableStateOf(false)
         private set
 
@@ -48,6 +51,7 @@ internal class AiSuggestionState(
     private var analysisJob: Job? = null
 
     fun updateProvider(provider: AiProviderKind) {
+        connectionVerified = false
         configuration = if (provider == AiProviderKind.Ollama) {
             configuration.copy(provider = provider, endpoint = DEFAULT_OLLAMA_ENDPOINT, model = DEFAULT_OLLAMA_MODEL)
         } else {
@@ -56,11 +60,18 @@ internal class AiSuggestionState(
         saveConfiguration()
     }
 
-    fun updateEndpoint(endpoint: String) = update(configuration.copy(endpoint = endpoint))
+    fun updateEndpoint(endpoint: String) {
+        connectionVerified = false
+        update(configuration.copy(endpoint = endpoint))
+    }
 
-    fun updateModel(model: String) = update(configuration.copy(model = model))
+    fun updateModel(model: String) {
+        connectionVerified = false
+        update(configuration.copy(model = model))
+    }
 
     fun updateApiKey(apiKey: String) {
+        connectionVerified = false
         configuration = configuration.copy(apiKey = apiKey)
     }
 
@@ -77,10 +88,13 @@ internal class AiSuggestionState(
                 withContext(Dispatchers.Default) { client.testConnection(configuration) }
             }
             testing = false
-            status = result.fold(
-                onSuccess = { it.message },
-                onFailure = { "Não foi possível testar a conexão" },
-            )
+            result.onSuccess {
+                connectionVerified = it.successful
+                status = it.message
+            }.onFailure {
+                connectionVerified = false
+                status = "Não foi possível testar a conexão"
+            }
         }
     }
 

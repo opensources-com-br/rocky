@@ -35,6 +35,9 @@ internal class VoiceState(
     var speaking by mutableStateOf(false)
         private set
 
+    var voiceTested by mutableStateOf(false)
+        private set
+
     var capturing by mutableStateOf(false)
         private set
 
@@ -75,17 +78,20 @@ internal class VoiceState(
         }
     }
 
-    fun updateVoice(voiceId: String?) = update(
-        configuration.copy(output = configuration.output.copy(voiceId = voiceId)),
-    )
+    fun updateVoice(voiceId: String?) {
+        voiceTested = false
+        update(configuration.copy(output = configuration.output.copy(voiceId = voiceId)))
+    }
 
-    fun updateSpeed(percent: Int) = update(
-        configuration.copy(output = configuration.output.copy(speedPercent = percent.coerceIn(50, 150))),
-    )
+    fun updateSpeed(percent: Int) {
+        voiceTested = false
+        update(configuration.copy(output = configuration.output.copy(speedPercent = percent.coerceIn(50, 150))))
+    }
 
-    fun updateVolume(percent: Int) = update(
-        configuration.copy(output = configuration.output.copy(volumePercent = percent.coerceIn(0, 100))),
-    )
+    fun updateVolume(percent: Int) {
+        voiceTested = false
+        update(configuration.copy(output = configuration.output.copy(volumePercent = percent.coerceIn(0, 100))))
+    }
 
     fun updateReadSuggestions(enabled: Boolean) {
         if (!enabled) stopSpeaking()
@@ -105,7 +111,13 @@ internal class VoiceState(
     )
 
     fun testVoice(scope: CoroutineScope, agentName: String = "Rocky") {
-        speak(scope, "Olá, eu sou $agentName. A voz do chat, em acordes.", force = true)
+        voiceTested = false
+        speak(
+            scope,
+            "Olá, eu sou $agentName. A voz do chat, em acordes.",
+            force = true,
+            onSuccess = { voiceTested = true },
+        )
     }
 
     fun speakSuggestion(scope: CoroutineScope, suggestionId: String, text: String, silenced: Boolean) {
@@ -209,7 +221,12 @@ internal class VoiceState(
         lastSpokenSuggestionId = null
     }
 
-    private fun speak(scope: CoroutineScope, text: String, force: Boolean = false) {
+    private fun speak(
+        scope: CoroutineScope,
+        text: String,
+        force: Boolean = false,
+        onSuccess: () -> Unit = {},
+    ) {
         if (speaking || (!force && !configuration.readSuggestions)) return
         val generation = ++speechGeneration
         speaking = true
@@ -221,7 +238,10 @@ internal class VoiceState(
             speechJob = null
             speaking = false
             status = result.fold(
-                onSuccess = { "Leitura concluída" },
+                onSuccess = {
+                    onSuccess()
+                    "Leitura concluída"
+                },
                 onFailure = { "Não foi possível usar a voz do sistema" },
             )
             if (result.isSuccess) {

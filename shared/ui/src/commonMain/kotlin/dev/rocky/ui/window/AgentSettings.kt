@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.agent.AgentTone
@@ -27,7 +28,7 @@ internal fun AgentSettings(agent: AgentState) {
         OutlinedTextField(
             value = configuration.name,
             onValueChange = agent::updateName,
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp).height(48.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp).height(48.dp).testTag("agent-name-field"),
             singleLine = true,
             textStyle = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium),
             shape = MaterialTheme.shapes.medium,

@@ -22,6 +22,7 @@ import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
 import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.agent.AgentConfiguration
+import dev.rocky.core.agent.AgentTone
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.notes.NoteRepository
@@ -215,6 +216,25 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun updatesAgentNameAndTone() {
+        var saved = AgentConfiguration()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Agent,
+            onAgentConfigurationChange = { saved = it },
+        )
+
+        rule.onNodeWithTag("agent-name-field").performTextReplacement("Acorde")
+        rule.onNodeWithText("Analítico").performClick()
+        rule.runOnIdle {
+            assertEquals("Acorde", saved.name)
+            assertEquals(AgentTone.Analytical, saved.tone)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithText("Acorde").assertExists()
+    }
+
+    @Test
     fun windowControlsInvokeCallbacks() {
         var pinned = false
         var compact = false
@@ -248,6 +268,7 @@ class RockyVisualCaptureTest {
         twitchChatClient: TwitchChatClient? = null,
         twitchClientId: String = "",
         aiSuggestionClient: AiSuggestionClient? = null,
+        onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection) {
@@ -260,6 +281,7 @@ class RockyVisualCaptureTest {
                         noteRepository = noteRepository,
                         twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
+                        onAgentConfigurationChange = onAgentConfigurationChange,
                         initialTwitchClientId = twitchClientId,
                         onExportNotes = onExportNotes,
                         onExportIdeas = onExportIdeas,

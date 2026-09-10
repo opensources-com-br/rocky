@@ -187,11 +187,13 @@ fun RockyWindow(
                                     },
                                     twitch = twitch,
                                     onConnect = {
+                                        silenced = false
                                         live.end()
                                         ai.resetSession()
                                         twitch.connect(twitchClientId)
                                     },
                                     onDisconnect = {
+                                        silenced = false
                                         ai.resetSession()
                                         twitch.disconnect()
                                     },
@@ -203,6 +205,7 @@ fun RockyWindow(
                     else -> {
                         if (twitch.isRealSession) {
                             TwitchSessionControls(twitch) {
+                                silenced = false
                                 ai.resetSession()
                                 twitch.disconnect()
                             }
@@ -236,7 +239,7 @@ fun RockyWindow(
                             },
                             sessionStatus = sessionStatus,
                             sessionMode = if (twitch.isRealSession) LiveSessionMode.Real else LiveSessionMode.Demonstration,
-                            suggestionSaved = live.suggestionSaved,
+                            suggestionSaved = !twitch.isRealSession && live.suggestionSaved,
                             silenced = silenced,
                             speaking = voice.speaking,
                             generatingSuggestion = ai.generating,

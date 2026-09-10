@@ -152,8 +152,10 @@ internal fun LiveSummary(
         Spacer(Modifier.height(13.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             SourceCount(sourceCounts[StreamPlatform.Twitch] ?: 0, "Twitch", RockyColors.Twitch)
-            SourceCount(sourceCounts[StreamPlatform.YouTube] ?: 0, "YouTube", RockyColors.YouTube)
-            SourceCount(sourceCounts[StreamPlatform.Kick] ?: 0, "Kick", RockyColors.Kick)
+            if (sessionMode == LiveSessionMode.Demonstration) {
+                SourceCount(sourceCounts[StreamPlatform.YouTube] ?: 0, "YouTube", RockyColors.YouTube)
+                SourceCount(sourceCounts[StreamPlatform.Kick] ?: 0, "Kick", RockyColors.Kick)
+            }
         }
         Spacer(Modifier.height(17.dp))
         Row(

@@ -74,8 +74,15 @@ internal class TwitchLiveState(private val client: TwitchChatClient) {
                     userCode = null
                     verificationUri = null
                 }
-                is TwitchConnectionEvent.MessageReceived -> messages += event.message
+                is TwitchConnectionEvent.MessageReceived -> {
+                    if (messages.size == MAX_CHAT_MESSAGES) messages.removeAt(0)
+                    messages += event.message
+                }
             }
         }
+    }
+
+    companion object {
+        internal const val MAX_CHAT_MESSAGES = 1_000
     }
 }

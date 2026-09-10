@@ -40,6 +40,25 @@ class TwitchLiveStateTest {
         assertFalse(state.isRealSession)
     }
 
+    @Test
+    fun keepsOnlyTheMostRecentChatMessages() {
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client)
+        state.connect("client-id")
+
+        repeat(TwitchLiveState.MAX_CHAT_MESSAGES + 1) { index ->
+            client.emit(
+                TwitchConnectionEvent.MessageReceived(
+                    ChatMessage("message-$index", "viewer", "Message $index", StreamPlatform.Twitch),
+                ),
+            )
+        }
+
+        assertEquals(TwitchLiveState.MAX_CHAT_MESSAGES, state.messages.size)
+        assertEquals("message-1", state.messages.first().id)
+        assertEquals("message-1000", state.messages.last().id)
+    }
+
     private class FakeTwitchChatClient : TwitchChatClient {
         private var listener = TwitchConnectionListener {}
 

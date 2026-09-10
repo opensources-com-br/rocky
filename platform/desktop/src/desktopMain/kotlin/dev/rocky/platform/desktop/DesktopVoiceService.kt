@@ -20,6 +20,7 @@ import javax.sound.sampled.TargetDataLine
 class DesktopVoiceService : VoiceService {
     private val operatingSystem = System.getProperty("os.name").lowercase()
     private val captureLock = Any()
+    private val speechLock = Any()
     private val transcriptionLock = Any()
 
     @Volatile
@@ -57,26 +58,28 @@ class DesktopVoiceService : VoiceService {
 
     override fun speak(text: String, configuration: VoiceOutputConfiguration) {
         require(text.isNotBlank()) { "Speech text cannot be empty" }
-        stopSpeaking()
-        val process = when {
-            operatingSystem.contains("mac") -> ProcessBuilder(macSpeechCommand(text, configuration)).start()
-            operatingSystem.contains("win") -> ProcessBuilder(windowsSpeechCommand(text, configuration)).start()
-            else -> error("System speech is unavailable on this operating system")
+        val process = synchronized(speechLock) {
+            speechProcess?.let(::stopProcess)
+            when {
+                operatingSystem.contains("mac") -> ProcessBuilder(macSpeechCommand(text, configuration)).start()
+                operatingSystem.contains("win") -> ProcessBuilder(windowsSpeechCommand(text, configuration)).start()
+                else -> error("System speech is unavailable on this operating system")
+            }.also { speechProcess = it }
         }
-        speechProcess = process
-        val exitCode = process.waitFor()
-        if (speechProcess === process) {
-            speechProcess = null
-            check(exitCode == 0) { "System speech failed" }
+        val completed = waitForProcess(process, SPEECH_TIMEOUT_MINUTES, TimeUnit.MINUTES)
+        synchronized(speechLock) {
+            if (speechProcess === process) {
+                speechProcess = null
+                check(completed && process.exitValue() == 0) { "System speech failed" }
+            }
         }
     }
 
     override fun stopSpeaking() {
-        speechProcess?.let { process ->
-            process.destroy()
-            if (!process.waitFor(STOP_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) process.destroyForcibly()
+        val process = synchronized(speechLock) {
+            speechProcess.also { speechProcess = null }
         }
-        speechProcess = null
+        process?.let(::stopProcess)
     }
 
     override fun startCapture(microphoneId: String?) {
@@ -286,6 +289,7 @@ class DesktopVoiceService : VoiceService {
         private const val CAPTURE_JOIN_TIMEOUT_MILLIS = 1_000L
         private const val STOP_TIMEOUT_MILLIS = 300L
         private const val COMMAND_TIMEOUT_SECONDS = 10L
+        private const val SPEECH_TIMEOUT_MINUTES = 5L
         private const val TRANSCRIPTION_TIMEOUT_MINUTES = 2L
     }
 }

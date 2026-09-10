@@ -75,12 +75,15 @@ fun RockyWindow(
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
+    initialFirstUseOpen: Boolean = false,
+    onFirstUseFinished: () -> Unit = {},
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
     initialSettingsSectionIndex: Int = 0,
 ) {
     RockyTheme {
         var settingsOpen by remember { mutableStateOf(initialSettingsOpen) }
+        var firstUseOpen by remember { mutableStateOf(initialFirstUseOpen) }
         var mainSection by remember {
             mutableStateOf(MainSection.entries[initialMainSectionIndex])
         }
@@ -201,6 +204,46 @@ fun RockyWindow(
                                     onOpenAuthorization = onOpenTwitchAuthorization,
                                 )
                             }
+                        }
+                    }
+                    firstUseOpen -> {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
+                        ) {
+                            FirstUseContent(
+                                twitchConnected = twitch.phase == TwitchConnectionPhase.Connected,
+                                aiVerified = ai.connectionVerified,
+                                voiceVerified = voice.voiceTested,
+                                onConfigureTwitch = {
+                                    settingsSection = SettingsSection.Platforms
+                                    settingsOpen = true
+                                    onSettingsVisibilityChanged(true)
+                                },
+                                onConfigureAi = {
+                                    settingsSection = SettingsSection.Ai
+                                    settingsOpen = true
+                                    onSettingsVisibilityChanged(true)
+                                },
+                                onConfigureVoice = {
+                                    settingsSection = SettingsSection.Voice
+                                    settingsOpen = true
+                                    onSettingsVisibilityChanged(true)
+                                },
+                                onComplete = {
+                                    firstUseOpen = false
+                                    onFirstUseFinished()
+                                },
+                                onUseDemonstration = {
+                                    silenced = false
+                                    voice.resetSession()
+                                    ai.resetSession()
+                                    if (twitch.isRealSession) twitch.disconnect()
+                                    firstUseOpen = false
+                                    onFirstUseFinished()
+                                },
+                            )
                         }
                     }
                     else -> {

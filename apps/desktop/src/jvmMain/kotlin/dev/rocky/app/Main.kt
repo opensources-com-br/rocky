@@ -16,6 +16,7 @@ import dev.rocky.data.notes.SqliteNoteRepository
 import dev.rocky.data.ai.DesktopAiSuggestionClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
+import dev.rocky.platform.desktop.AgentDesktopPreferences
 import dev.rocky.platform.desktop.AiDesktopPreferences
 import dev.rocky.platform.desktop.TwitchDesktopPreferences
 import dev.rocky.platform.desktop.DesktopVoiceService
@@ -64,6 +65,8 @@ fun main() = application {
             twitchChatClient = twitchClient,
             aiSuggestionClient = aiClient,
             voiceService = voiceService,
+            initialAgentConfiguration = AgentDesktopPreferences.configuration,
+            onAgentConfigurationChange = { AgentDesktopPreferences.configuration = it },
             initialAiConfiguration = AiDesktopPreferences.configuration,
             onAiConfigurationChange = { AiDesktopPreferences.configuration = it },
             initialVoiceConfiguration = VoiceDesktopPreferences.configuration,

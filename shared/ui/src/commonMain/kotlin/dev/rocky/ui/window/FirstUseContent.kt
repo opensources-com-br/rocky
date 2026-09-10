@@ -52,7 +52,7 @@ internal fun FirstUseContent(
         SetupStep(
             number = 2,
             title = "Configure a IA",
-            description = "Escolha Ollama local ou OpenAI API e use “Testar conexão” antes da live.",
+            description = "Escolha Ollama local, OpenAI API ou OpenRouter e use “Testar conexão” antes da live.",
             complete = aiVerified,
             action = if (aiVerified) "Revisar IA" else "Configurar IA",
             onAction = onConfigureAi,

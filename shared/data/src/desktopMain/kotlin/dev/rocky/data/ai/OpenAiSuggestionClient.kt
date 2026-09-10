@@ -70,6 +70,51 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         )
     }
 
+    fun generateOpenRouter(
+        endpoint: String,
+        apiKey: String,
+        model: String,
+        messages: List<ChatMessage>,
+        streamerRequest: String? = null,
+        agent: AgentConfiguration = AgentConfiguration(),
+    ): AiGeneratedSuggestion? {
+        val prompt = buildAiSuggestionPrompt(messages, streamerRequest, agent)
+        val body = buildJsonObject {
+            put("model", model)
+            put("messages", buildJsonArray {
+                add(buildJsonObject {
+                    put("role", "system")
+                    put("content", prompt.instructions)
+                })
+                add(buildJsonObject {
+                    put("role", "user")
+                    put("content", prompt.input)
+                })
+            })
+            put("max_tokens", 300)
+            put("response_format", buildJsonObject {
+                put("type", "json_schema")
+                put("json_schema", buildJsonObject {
+                    put("name", "rocky_suggestion")
+                    put("strict", true)
+                    put("schema", suggestionSchema())
+                })
+            })
+            put("provider", buildJsonObject { put("require_parameters", true) })
+        }.toString()
+        val response = httpClient.send(
+            request(endpoint, "/v1/chat/completions", apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build(),
+            HttpResponse.BodyHandlers.ofString(),
+        ).requireOpenAiSuccess()
+        return AiSuggestionPayloads.suggestion(
+            AiSuggestionPayloads.openRouterText(response.body()),
+            prompt.messageIds,
+        )
+    }
+
     private fun request(endpoint: String, path: String, apiKey: String): HttpRequest.Builder =
         HttpRequest.newBuilder(URI.create("${endpoint.trim().trimEnd('/')}$path"))
             .timeout(Duration.ofSeconds(45))

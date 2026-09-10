@@ -57,6 +57,12 @@ class RockyVisualCaptureTest {
                 capture("implementation-settings-ai.png")
                 return
             }
+            "settings-openrouter" -> {
+                render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+                rule.onNodeWithText("OpenRouter").performClick()
+                capture("implementation-settings-openrouter.png")
+                return
+            }
             "settings-platforms" -> {
                 render(settingsOpen = true, settingsSection = SettingsSection.Platforms)
                 capture("implementation-settings-platforms.png")

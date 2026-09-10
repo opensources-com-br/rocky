@@ -15,6 +15,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
+import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveNote
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
@@ -181,6 +182,25 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun exportsVisibleIdeas() {
+        var exportedIdeas = emptyList<LiveIdea>()
+        render(
+            mainSection = MainSection.Ideas,
+            onExportIdeas = {
+                exportedIdeas = it
+                true
+            },
+        )
+
+        rule.onNodeWithText("Exportar .md").performClick()
+        rule.onNodeWithText("Markdown exportado.").assertExists()
+        rule.runOnIdle {
+            assertEquals(3, exportedIdeas.size)
+            assertEquals("CONTEÚDO", exportedIdeas.first().tag)
+        }
+    }
+
+    @Test
     fun windowControlsInvokeCallbacks() {
         var pinned = false
         var compact = false
@@ -210,6 +230,7 @@ class RockyVisualCaptureTest {
         settingsSection: SettingsSection = SettingsSection.Agent,
         noteRepository: NoteRepository? = null,
         onExportNotes: (List<LiveNote>) -> Boolean = { false },
+        onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
         twitchChatClient: TwitchChatClient? = null,
         twitchClientId: String = "",
         aiSuggestionClient: AiSuggestionClient? = null,
@@ -227,6 +248,7 @@ class RockyVisualCaptureTest {
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         initialTwitchClientId = twitchClientId,
                         onExportNotes = onExportNotes,
+                        onExportIdeas = onExportIdeas,
                         initialMainSectionIndex = mainSection.ordinal,
                         initialSettingsOpen = settingsOpen,
                         initialSettingsSectionIndex = settingsSection.ordinal,

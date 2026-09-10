@@ -6,6 +6,9 @@ import dev.rocky.core.notes.NoteRepository
 import dev.rocky.data.db.RockyDatabase
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
     private val driver: JdbcSqliteDriver
@@ -21,7 +24,16 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
     }
 
     override fun getAll(): List<LiveNote> = database.noteQueries
-        .selectAll(::LiveNote)
+        .selectAll { id, text, timestamp, tag, sourceIds, evidence ->
+            LiveNote(
+                id = id,
+                text = text,
+                timestamp = timestamp,
+                tag = tag,
+                sourceMessageIds = decodeList(sourceIds).toSet(),
+                evidence = decodeList(evidence),
+            )
+        }
         .executeAsList()
 
     override fun save(note: LiveNote) {
@@ -30,6 +42,8 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
             text = note.text,
             timestamp = note.timestamp,
             tag = note.tag,
+            source_message_ids = json.encodeToString(note.sourceMessageIds.toList()),
+            evidence = json.encodeToString(note.evidence),
             created_at = System.currentTimeMillis(),
         )
     }
@@ -39,6 +53,8 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
             text = note.text,
             timestamp = note.timestamp,
             tag = note.tag,
+            source_message_ids = json.encodeToString(note.sourceMessageIds.toList()),
+            evidence = json.encodeToString(note.evidence),
             id = note.id,
         )
     }
@@ -49,5 +65,12 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
 
     override fun close() {
         driver.close()
+    }
+
+    private fun decodeList(value: String): List<String> =
+        runCatching { json.decodeFromString<List<String>>(value) }.getOrDefault(emptyList())
+
+    private companion object {
+        val json = Json
     }
 }

@@ -10,7 +10,14 @@ class SqliteNoteRepositoryTest {
     @Test
     fun savesUpdatesDeletesAndReopensNotes() {
         val databasePath = Files.createTempDirectory("rocky-notes-test").resolve("notes.db")
-        val original = LiveNote("note-1", "Texto original", "agora", "SUGESTÃO")
+        val original = LiveNote(
+            "note-1",
+            "Texto original",
+            "14:35",
+            "SUGESTÃO",
+            sourceMessageIds = setOf("message-1"),
+            evidence = listOf("viewer: Qual é o preço?"),
+        )
 
         SqliteNoteRepository(databasePath).use { repository ->
             repository.save(original)
@@ -27,4 +34,5 @@ class SqliteNoteRepositoryTest {
             assertTrue(repository.getAll().isEmpty())
         }
     }
+
 }

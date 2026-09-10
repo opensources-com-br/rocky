@@ -3,21 +3,23 @@ CREATE TABLE note (
     text TEXT NOT NULL,
     timestamp TEXT NOT NULL,
     tag TEXT NOT NULL,
+    source_message_ids TEXT NOT NULL DEFAULT '[]',
+    evidence TEXT NOT NULL DEFAULT '[]',
     created_at INTEGER NOT NULL
 );
 
 selectAll:
-SELECT id, text, timestamp, tag
+SELECT id, text, timestamp, tag, source_message_ids, evidence
 FROM note
 ORDER BY created_at DESC;
 
 insertNote:
-INSERT INTO note(id, text, timestamp, tag, created_at)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO note(id, text, timestamp, tag, source_message_ids, evidence, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
 updateNote:
 UPDATE note
-SET text = ?, timestamp = ?, tag = ?
+SET text = ?, timestamp = ?, tag = ?, source_message_ids = ?, evidence = ?
 WHERE id = ?;
 
 deleteNote:

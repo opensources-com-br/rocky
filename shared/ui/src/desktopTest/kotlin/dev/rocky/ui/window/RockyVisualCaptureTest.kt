@@ -170,6 +170,22 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun sendsTypedStreamerRequest() {
+        var request: String? = null
+        rule.setContent {
+            Box(Modifier.size(700.dp, 400.dp)) {
+                StreamerTextRequest(enabled = true, onSend = { request = it })
+            }
+        }
+
+        rule.onNodeWithTag("streamer-text-request")
+            .performTextReplacement("Quais são as dúvidas sobre preço?")
+        rule.onNodeWithTag("send-streamer-text-request").performClick()
+
+        rule.runOnIdle { assertEquals("Quais são as dúvidas sobre preço?", request) }
+    }
+
+    @Test
     fun editsDeletesAndExportsLocalNote() {
         val repository = TransientNoteRepository()
         val note = LiveNote("local-note", "Texto original", "agora", "SUGESTÃO")

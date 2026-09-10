@@ -40,8 +40,8 @@ internal class TwitchLiveState(
     var totalMessages by mutableStateOf(0)
         private set
 
-    val messagesPerMinute: Int
-        get() = receivedMessageTimes.count { it >= currentTimeMillis() - ONE_MINUTE_MILLIS }
+    var messagesPerMinute by mutableStateOf(0)
+        private set
 
     fun connect(clientId: String) {
         if (clientId.isBlank()) {
@@ -52,6 +52,7 @@ internal class TwitchLiveState(
         messages.clear()
         receivedMessageTimes.clear()
         totalMessages = 0
+        messagesPerMinute = 0
         account = null
         userCode = null
         verificationUri = null
@@ -102,12 +103,17 @@ internal class TwitchLiveState(
                     if (messages.size == MAX_CHAT_MESSAGES) messages.removeAt(0)
                     messages += event.message
                     totalMessages += 1
-                    val cutoff = currentTimeMillis() - ONE_MINUTE_MILLIS
-                    receivedMessageTimes.removeAll { it < cutoff }
                     receivedMessageTimes += currentTimeMillis()
+                    refreshMetrics()
                 }
             }
         }
+    }
+
+    fun refreshMetrics() {
+        val cutoff = currentTimeMillis() - ONE_MINUTE_MILLIS
+        receivedMessageTimes.removeAll { it < cutoff }
+        messagesPerMinute = receivedMessageTimes.size
     }
 
     companion object {

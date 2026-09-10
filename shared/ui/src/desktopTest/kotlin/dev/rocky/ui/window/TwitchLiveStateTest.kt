@@ -73,9 +73,9 @@ class TwitchLiveStateTest {
         assertEquals(2, state.totalMessages)
 
         now += 31_000
-        client.emit(message("m3"))
-        assertEquals(2, state.messagesPerMinute)
-        assertEquals(3, state.totalMessages)
+        state.refreshMetrics()
+        assertEquals(1, state.messagesPerMinute)
+        assertEquals(2, state.totalMessages)
     }
 
     @Test

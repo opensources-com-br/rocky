@@ -265,7 +265,7 @@ fun RockyWindow(
                         ) {
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent(visibleMessages, voice.transcript)
-                                MainSection.Support -> SupportContent()
+                                MainSection.Support -> SupportContent(demonstration = !twitch.isRealSession)
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,
                                     notice = localNotes.notice,

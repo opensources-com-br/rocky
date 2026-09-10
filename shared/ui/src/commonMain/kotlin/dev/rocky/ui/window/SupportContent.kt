@@ -42,14 +42,30 @@ private val supportMessages = listOf(
 )
 
 @Composable
-internal fun SupportContent() {
+internal fun SupportContent(demonstration: Boolean = true) {
     var readAuthors by remember { mutableStateOf(emptySet<String>()) }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp)) {
-        supportMessages.forEach { item ->
-            SupportCard(
-                item = item.copy(read = item.read || item.author in readAuthors),
-                onRead = { readAuthors = readAuthors + item.author },
+        if (demonstration) {
+            supportMessages.forEach { item ->
+                SupportCard(
+                    item = item.copy(read = item.read || item.author in readAuthors),
+                    onRead = { readAuthors = readAuthors + item.author },
+                )
+            }
+        } else {
+            Text(
+                text = "Super Chats ainda não estão conectados.",
+                modifier = Modifier.padding(top = 24.dp),
+                color = RockyColors.TextPrimary,
+                style = MaterialTheme.typography.body1,
+                fontWeight = FontWeight.Medium,
+            )
+            Text(
+                text = "A conexão atual da Twitch recebe somente mensagens do chat.",
+                modifier = Modifier.padding(top = 6.dp),
+                color = RockyColors.TextSecondary,
+                style = MaterialTheme.typography.body2,
             )
         }
     }

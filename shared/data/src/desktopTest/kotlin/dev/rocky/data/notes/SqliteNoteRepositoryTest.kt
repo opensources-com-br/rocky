@@ -35,4 +35,34 @@ class SqliteNoteRepositoryTest {
         }
     }
 
+    @Test
+    fun upgradesAnExistingNotesDatabase() {
+        val databasePath = Files.createTempDirectory("rocky-notes-migration-test").resolve("notes.db")
+        val driver = app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver(
+            "jdbc:sqlite:${databasePath.toAbsolutePath()}",
+        )
+        driver.execute(
+            null,
+            """CREATE TABLE note (
+                id TEXT NOT NULL PRIMARY KEY,
+                text TEXT NOT NULL,
+                timestamp TEXT NOT NULL,
+                tag TEXT NOT NULL,
+                created_at INTEGER NOT NULL
+            )""".trimIndent(),
+            0,
+            null,
+        ).value
+        driver.execute(null, "INSERT INTO note VALUES ('legacy', 'Texto', 'agora', 'SUGESTÃO', 1)", 0, null).value
+        driver.execute(null, "PRAGMA user_version = 1", 0, null).value
+        driver.close()
+
+        SqliteNoteRepository(databasePath).use { repository ->
+            val note = repository.getAll().single()
+            assertEquals("legacy", note.id)
+            assertTrue(note.sourceMessageIds.isEmpty())
+            assertTrue(note.evidence.isEmpty())
+        }
+    }
+
 }

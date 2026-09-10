@@ -20,6 +20,8 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
             url = "jdbc:sqlite:${databasePath.toAbsolutePath()}",
             schema = RockyDatabase.Schema,
         )
+        addColumnIfMissing("source_message_ids", "TEXT NOT NULL DEFAULT '[]'")
+        addColumnIfMissing("evidence", "TEXT NOT NULL DEFAULT '[]'")
         database = RockyDatabase(driver)
     }
 
@@ -65,6 +67,23 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
 
     override fun close() {
         driver.close()
+    }
+
+    private fun addColumnIfMissing(name: String, definition: String) {
+        val columns = driver.executeQuery(
+            identifier = null,
+            sql = "PRAGMA table_info(note)",
+            mapper = { cursor ->
+                val result = mutableSetOf<String>()
+                while (cursor.next().value) result += requireNotNull(cursor.getString(1))
+                app.cash.sqldelight.db.QueryResult.Value(result)
+            },
+            parameters = 0,
+            binders = null,
+        ).value
+        if (name !in columns) {
+            driver.execute(null, "ALTER TABLE note ADD COLUMN $name $definition", 0, null).value
+        }
     }
 
     private fun decodeList(value: String): List<String> =

@@ -189,7 +189,7 @@ internal class AiSuggestionState(
         const val DEFAULT_OLLAMA_ENDPOINT = "http://localhost:11434"
         const val DEFAULT_OLLAMA_MODEL = "llama3.2"
         const val DEFAULT_OPENAI_ENDPOINT = "https://api.openai.com"
-        const val DEFAULT_OPENAI_MODEL = "gpt-5.6-luna"
+        const val DEFAULT_OPENAI_MODEL = ""
 
         private const val AUTOMATIC_BATCH_SIZE = 3
         private const val MAX_ANALYSIS_MESSAGES = 30

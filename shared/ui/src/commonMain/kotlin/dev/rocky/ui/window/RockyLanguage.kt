@@ -2,11 +2,7 @@ package dev.rocky.ui.window
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
-
-enum class RockyLanguage(val tag: String) {
-    English("en"),
-    PortugueseBrazil("pt-BR"),
-}
+import dev.rocky.core.locale.RockyLanguage
 
 internal val LocalRockyLanguage = staticCompositionLocalOf { RockyLanguage.English }
 

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveNote
+import dev.rocky.core.locale.RockyLanguage
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.agent.AgentTone
+import dev.rocky.core.locale.RockyLanguage
 import dev.rocky.ui.theme.RockyColors
 import kotlin.math.roundToInt
 

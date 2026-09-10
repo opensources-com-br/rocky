@@ -81,6 +81,7 @@ fun RockyWindow(
     initialLanguage: RockyLanguage = RockyLanguage.English,
     onLanguageChange: (RockyLanguage) -> Unit = {},
     currentTimeLabel: () -> String = { "agora" },
+    currentTimeMillis: () -> Long = { 0L },
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
     initialSettingsSectionIndex: Int = 0,
@@ -97,7 +98,7 @@ fun RockyWindow(
         }
         var silenced by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
-        val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient) }
+        val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(aiSuggestionClient, initialAiConfiguration, onAiConfigurationChange)
         }
@@ -117,6 +118,7 @@ fun RockyWindow(
             else -> LiveSessionStatus.Stopped
         }
         val visibleMessages = if (twitch.isRealSession) twitch.messages else live.messages
+        val visibleMessageCount = if (twitch.isRealSession) twitch.totalMessages else visibleMessages.size
         val visibleSuggestion = if (twitch.isRealSession) ai.suggestion else live.suggestion
         val visiblePlatforms = if (twitch.isRealSession) twitch.platforms else samplePlatforms
 
@@ -161,7 +163,7 @@ fun RockyWindow(
                 when {
                     compact -> CompactContent(
                         status = sessionStatus,
-                        messageCount = visibleMessages.size,
+                        messageCount = visibleMessageCount,
                         suggestion = visibleSuggestion?.text,
                         real = twitch.isRealSession,
                     )
@@ -364,7 +366,7 @@ fun RockyWindow(
                                 MainSection.Pulse -> PulseContent(
                                     platforms = visiblePlatforms,
                                     realSession = twitch.isRealSession,
-                                    messageCount = visibleMessages.size,
+                                    messageCount = visibleMessageCount,
                                 )
                             }
                         }
@@ -375,7 +377,7 @@ fun RockyWindow(
                             busy = voice.transcribing,
                             status = voice.status,
                             realSession = twitch.isRealSession,
-                            messageCount = visibleMessages.size,
+                            messageCount = visibleMessageCount,
                             onTalk = {
                                 if (voice.capturing) {
                                     voice.stopCapture(aiScope) { request ->
@@ -479,7 +481,7 @@ private val TwitchLiveState.platforms: List<PlatformStatus>
             name = "Twitch",
             account = account?.let { "@${it.login}" } ?: "Conectando",
             audience = "—",
-            messagesPerMinute = 0,
+            messagesPerMinute = messagesPerMinute,
             colorKey = PlatformColor.Twitch,
             enabled = phase != TwitchConnectionPhase.Failed,
         ),

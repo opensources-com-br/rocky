@@ -91,6 +91,7 @@ fun main() = application {
             initialLanguage = LanguageDesktopPreferences.language,
             onLanguageChange = { LanguageDesktopPreferences.language = it },
             currentTimeLabel = { LocalTime.now().format(TimeFormatter) },
+            currentTimeMillis = System::currentTimeMillis,
             onTogglePinned = { pinned = !pinned },
             onToggleCompact = {
                 if (compact) {

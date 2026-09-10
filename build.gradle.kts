@@ -6,5 +6,5 @@ plugins {
 
 allprojects {
     group = "dev.rocky"
-    version = "0.1.0-SNAPSHOT"
+    version = providers.gradleProperty("rockyVersion").get()
 }

@@ -37,7 +37,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Rocky"
-            packageVersion = "1.0.7"
+            packageVersion = providers.gradleProperty("rockyPackageVersion").get()
 
             macOS {
                 bundleID = "dev.rocky.app"

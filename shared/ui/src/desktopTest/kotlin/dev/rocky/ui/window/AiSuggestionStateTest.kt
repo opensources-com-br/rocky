@@ -1,5 +1,6 @@
 package dev.rocky.ui.window
 
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
@@ -108,6 +109,7 @@ class AiSuggestionStateTest {
             configuration: AiProviderConfiguration,
             messages: List<ChatMessage>,
             streamerRequest: String?,
+            agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
             requests += 1
             lastStreamerRequest = streamerRequest

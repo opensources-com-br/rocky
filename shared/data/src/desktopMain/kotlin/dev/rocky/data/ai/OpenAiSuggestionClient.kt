@@ -1,5 +1,6 @@
 package dev.rocky.data.ai
 
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.buildAiSuggestionPrompt
@@ -31,8 +32,9 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         model: String,
         messages: List<ChatMessage>,
         streamerRequest: String? = null,
+        agent: AgentConfiguration = AgentConfiguration(),
     ): AiGeneratedSuggestion? {
-        val prompt = buildAiSuggestionPrompt(messages, streamerRequest)
+        val prompt = buildAiSuggestionPrompt(messages, streamerRequest, agent)
         val schema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)

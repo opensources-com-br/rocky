@@ -1,5 +1,6 @@
 package dev.rocky.core.ai
 
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.live.ChatMessage
 
 enum class AiProviderKind {
@@ -31,6 +32,7 @@ interface AiSuggestionClient : AutoCloseable {
         configuration: AiProviderConfiguration,
         messages: List<ChatMessage>,
         streamerRequest: String? = null,
+        agent: AgentConfiguration = AgentConfiguration(),
     ): AiGeneratedSuggestion?
 
     override fun close()

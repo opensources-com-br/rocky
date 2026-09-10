@@ -1,5 +1,6 @@
 package dev.rocky.data.ai
 
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
@@ -33,17 +34,25 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
         configuration: AiProviderConfiguration,
         messages: List<ChatMessage>,
         streamerRequest: String?,
+        agent: AgentConfiguration,
     ): AiGeneratedSuggestion? {
         configuration.validationError()?.let { throw IllegalArgumentException(it) }
         require(messages.isNotEmpty()) { "At least one chat message is required" }
         return when (configuration.provider) {
-            AiProviderKind.Ollama -> ollama.generate(configuration.endpoint, configuration.model, messages, streamerRequest)
+            AiProviderKind.Ollama -> ollama.generate(
+                configuration.endpoint,
+                configuration.model,
+                messages,
+                streamerRequest,
+                agent,
+            )
             AiProviderKind.OpenAI -> openAi.generate(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,
                 messages,
                 streamerRequest,
+                agent,
             )
         }
     }

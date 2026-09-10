@@ -1,5 +1,6 @@
 package dev.rocky.data.ai
 
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.buildAiSuggestionPrompt
@@ -33,8 +34,9 @@ internal class OllamaAiClient(private val httpClient: HttpClient) {
         model: String,
         messages: List<ChatMessage>,
         streamerRequest: String? = null,
+        agent: AgentConfiguration = AgentConfiguration(),
     ): AiGeneratedSuggestion? {
-        val prompt = buildAiSuggestionPrompt(messages, streamerRequest)
+        val prompt = buildAiSuggestionPrompt(messages, streamerRequest, agent)
         val body = buildJsonObject {
             put("model", model)
             put("stream", false)

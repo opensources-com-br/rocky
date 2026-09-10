@@ -21,6 +21,7 @@ import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
 import dev.rocky.core.ai.AiSuggestionClient
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.notes.NoteRepository
@@ -310,6 +311,7 @@ class RockyVisualCaptureTest {
             configuration: AiProviderConfiguration,
             messages: List<ChatMessage>,
             streamerRequest: String?,
+            agent: AgentConfiguration,
         ) =
             AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
 

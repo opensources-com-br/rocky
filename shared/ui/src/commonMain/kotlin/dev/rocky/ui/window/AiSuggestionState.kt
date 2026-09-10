@@ -1,5 +1,6 @@
 package dev.rocky.ui.window
 
+import dev.rocky.core.agent.AgentConfiguration
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -88,6 +89,7 @@ internal class AiSuggestionState(
         messages: List<ChatMessage>,
         automatic: Boolean = false,
         streamerRequest: String? = null,
+        agent: AgentConfiguration = AgentConfiguration(),
     ) {
         if (generating || messages.isEmpty()) return
         if (!isReady) {
@@ -113,7 +115,7 @@ internal class AiSuggestionState(
         analysisJob = scope.launch {
             val result = runCatching {
                 withContext(Dispatchers.Default) {
-                    client.generateSuggestion(activeConfiguration, snapshot, streamerRequest)
+                    client.generateSuggestion(activeConfiguration, snapshot, streamerRequest, agent)
                 }
             }
             if (activeSession != sessionGeneration) return@launch

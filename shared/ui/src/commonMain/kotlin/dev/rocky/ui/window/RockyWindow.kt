@@ -27,6 +27,7 @@ import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
 import dev.rocky.core.ai.AiProviderKind
 import dev.rocky.core.ai.AiSuggestionClient
+import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveSessionMode
@@ -345,6 +346,7 @@ private object InactiveAiSuggestionClient : AiSuggestionClient {
         configuration: AiProviderConfiguration,
         messages: List<ChatMessage>,
         streamerRequest: String?,
+        agent: AgentConfiguration,
     ): AiGeneratedSuggestion? =
         null
 

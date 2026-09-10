@@ -13,6 +13,8 @@ Cada push na `main` e cada pull request executa o build Gradle completo no macOS
 
 Os pacotes ainda são builds de desenvolvimento sem assinatura. A assinatura e a notarização do macOS fazem parte da etapa de lançamento.
 
+A suíte automatizada também executa um teste prolongado do estado da Twitch com 20.000 mensagens e sete quedas simuladas. Ele verifica que a recuperação preserva a sessão ativa e que a memória continua limitada às 1.000 mensagens mais recentes do chat.
+
 ## Comandos locais
 
 Use o JDK 17 e execute:
@@ -47,6 +49,12 @@ Execute esta lista no macOS e em uma instalação ou emulador Windows real. Test
 - [ ] Abrir as configurações e confirmar que a janela passa para 420 × 520; fechar e confirmar que o tamanho anterior retorna.
 - [ ] Fechar o Rocky pelo controle vermelho.
 
+## Teste com streamers
+
+Use o [protocolo de teste alpha com streamers](STREAMER_TEST.pt-BR.md) para validar instalação limpa, live de duas horas, captura de janela e áudio pelo OBS, interrupção de rede e evidências. Registre cada execução pelo formulário de issue **Streamer alpha test**.
+
+O teste prolongado automatizado não substitui esta etapa manual. Um candidato a lançamento continua sem validação até que os registros exigidos de macOS, Windows, OBS e lives reais sejam aprovados.
+
 ## Registro da validação
 
 Registre cada execução manual em uma issue ou pull request usando este modelo:
@@ -62,4 +70,4 @@ Resultado da lista: passou / falhou
 Problemas encontrados:
 ```
 
-Checkpoint atual do macOS (09/09/2026, Apple Silicon): passaram o build completo, os testes de interface Compose, a criação do `.dmg` e a abertura do aplicativo empacotado. A interação com a janela nativa ainda requer verificação manual. O empacotamento no CI do Windows e o teste da janela em um Windows real precisam passar antes da conclusão deste marco.
+Checkpoint automatizado atual (10/09/2026): o build completo, os testes de interface, o teste de sessão prolongada e o empacotamento nativo passam nos runners macOS e Windows do GitHub. O protocolo com streamers continua sendo uma etapa manual e exige resultados registrados de lives reais.

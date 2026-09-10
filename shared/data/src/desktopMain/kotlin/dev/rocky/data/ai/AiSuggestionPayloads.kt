@@ -3,6 +3,7 @@ package dev.rocky.data.ai
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -24,12 +25,18 @@ internal object AiSuggestionPayloads {
             .stringAt("text")
     }
 
-    fun openRouterText(body: String): String = body.asObject()
-        .arrayAt("choices")
-        .first()
-        .jsonObject
-        .objectAt("message")
-        .stringAt("content")
+    fun openRouterText(body: String): String {
+        val root = body.asObject()
+        root.errorMessage()?.let { throw IllegalArgumentException("OpenRouter: $it") }
+        val choice = root.arrayAt("choices").firstOrNull()?.jsonObject
+            ?: throw IllegalArgumentException("OpenRouter não retornou uma opção de resposta")
+        choice.errorMessage()?.let { throw IllegalArgumentException("OpenRouter: $it") }
+        val message = choice["message"]?.takeUnless { it is JsonNull }?.jsonObject
+            ?: throw IllegalArgumentException("OpenRouter retornou uma resposta vazia")
+        val content = message["content"]?.takeUnless { it is JsonNull }?.jsonPrimitive?.content
+        return content?.takeIf(String::isNotBlank)
+            ?: throw IllegalArgumentException("OpenRouter retornou conteúdo vazio")
+    }
 
     fun suggestion(text: String, allowedMessageIds: Set<String>): AiGeneratedSuggestion? {
         val payload = text.removePrefix("```json").removePrefix("```").removeSuffix("```").trim().asObject()
@@ -59,3 +66,8 @@ private fun JsonObject.arrayAtOrEmpty(name: String): JsonArray =
 
 private fun JsonObject.stringAt(name: String): String =
     requireNotNull(this[name]) { "Missing AI field: $name" }.jsonPrimitive.content
+
+private fun JsonObject.errorMessage(): String? {
+    val error = this["error"]?.takeUnless { it is JsonNull } as? JsonObject ?: return null
+    return error["message"]?.takeUnless { it is JsonNull }?.jsonPrimitive?.content
+}

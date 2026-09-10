@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.assertFalse
 
 class OllamaAiClientTest {
     @Test
@@ -33,6 +34,7 @@ class OllamaAiClientTest {
             val suggestion = client.generate(endpoint, "llama3.2", listOf(message))
 
             assertTrue(connection.successful)
+            assertFalse(client.testConnection(endpoint, "llama3.2:70b").successful)
             assertEquals("Responda sobre o preço.", suggestion?.text)
             assertEquals(setOf("m1"), suggestion?.sourceMessageIds)
             assertTrue("não confiável" in requestBody)

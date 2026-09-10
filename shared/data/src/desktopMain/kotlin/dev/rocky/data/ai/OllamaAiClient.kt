@@ -21,7 +21,8 @@ internal class OllamaAiClient(private val httpClient: HttpClient) {
             HttpResponse.BodyHandlers.ofString(),
         ).requireSuccess()
         val models = AiSuggestionPayloads.ollamaModels(response.body())
-        val available = models.any { it == model || it.substringBefore(':') == model.substringBefore(':') }
+        val requested = if (':' in model) model else "$model:latest"
+        val available = models.any { (if (':' in it) it else "$it:latest") == requested }
         if (available) {
             AiConnectionResult(true, "Ollama conectado · $model disponível")
         } else {

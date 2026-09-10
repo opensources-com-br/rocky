@@ -2,6 +2,8 @@
 
 Rocky connects to the authenticated user's Twitch chat through the official Device Code Flow and EventSub WebSocket API.
 
+The official build can include Rocky's public client ID with `-ProckyTwitchClientId=...`. When configured, users only need to authorize their account; contributor builds still accept a client ID in settings.
+
 ## Setup
 
 1. Register a Twitch application in the [Developer Console](https://dev.twitch.tv/console/apps).

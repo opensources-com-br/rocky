@@ -33,6 +33,7 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "dev.rocky.app.MainKt"
+        jvmArgs += "-Drocky.twitch.clientId=${providers.gradleProperty("rockyTwitchClientId").orElse("").get()}"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)

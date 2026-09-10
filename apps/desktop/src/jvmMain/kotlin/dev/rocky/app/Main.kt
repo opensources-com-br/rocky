@@ -81,7 +81,9 @@ fun main() = application {
             onChooseWhisperModel = {
                 chooseDesktopFile(window, "Selecione o modelo GGML", setOf("bin"))
             },
-            initialTwitchClientId = TwitchDesktopPreferences.clientId,
+            initialTwitchClientId = TwitchDesktopPreferences.clientId.ifBlank {
+                System.getProperty("rocky.twitch.clientId").orEmpty()
+            },
             onTwitchClientIdChange = { TwitchDesktopPreferences.clientId = it },
             onOpenTwitchAuthorization = { openInBrowser(it) },
             onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },

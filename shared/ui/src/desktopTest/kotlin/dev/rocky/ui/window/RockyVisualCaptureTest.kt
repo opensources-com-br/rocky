@@ -147,6 +147,19 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("CONEXÃO REAL · TWITCH").assertExists()
         rule.onNodeWithText("Mensagem real").assertExists()
+        assertTrue(rule.onAllNodesWithText("1.221").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithText("Superchats").performClick()
+        rule.onNodeWithText("Super Chats ainda não estão conectados.").assertExists()
+        assertTrue(rule.onAllNodesWithText("ju.lia").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithText("Ideias").performClick()
+        rule.onNodeWithText("A geração automática de ideias ainda não está disponível em sessões reais.").assertExists()
+        assertTrue(
+            rule.onAllNodesWithText("Série curta respondendo as 5 dúvidas mais repetidas do chat.")
+                .fetchSemanticsNodes().isEmpty(),
+        )
+        rule.onNodeWithText("Pulso").performClick()
+        rule.onNodeWithText("1 mensagem recebida").assertExists()
+        rule.onNodeWithText("Conversa").performClick()
         rule.onNodeWithText("Analisar agora").performClick()
         rule.waitUntil(timeoutMillis = 5_000) {
             rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()

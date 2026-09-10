@@ -8,7 +8,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 
 [Leia em português](README.pt-BR.md).
 
-[Website](https://opensources-com-br.github.io/rocky/) · [Latest alpha](https://github.com/opensources-com-br/rocky/releases/latest)
+[Website](https://opensources-com-br.github.io/rocky/) · [Alpha releases](https://github.com/opensources-com-br/rocky/releases)
 
 ## What works today
 

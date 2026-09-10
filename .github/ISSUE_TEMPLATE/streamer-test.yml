@@ -1,0 +1,79 @@
+name: Streamer alpha test
+description: Record evidence from a clean install, real stream, OBS, or connection recovery test.
+title: "[Streamer test]: "
+body:
+  - type: markdown
+    attributes:
+      value: Follow the [streamer test protocol](https://github.com/opensources-com-br/rocky/blob/main/docs/STREAMER_TEST.md) and avoid posting channel credentials or API keys.
+  - type: input
+    id: version
+    attributes:
+      label: Rocky version and commit
+      placeholder: v1.0.8-alpha.2 / 50ca1b2
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options:
+        - macOS Apple Silicon
+        - macOS Intel
+        - Windows 11
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: System version, architecture, display, and scaling
+    validations:
+      required: true
+  - type: input
+    id: installer
+    attributes:
+      label: Installer and verified SHA-256
+    validations:
+      required: true
+  - type: input
+    id: duration
+    attributes:
+      label: Stream duration and approximate message count
+      placeholder: 2h15m / approximately 3,000 messages
+  - type: checkboxes
+    id: scenarios
+    attributes:
+      label: Scenarios completed
+      options:
+        - label: Clean installation without a system JDK
+        - label: Real Twitch chat with a second account
+        - label: Prolonged session of at least two hours
+        - label: OBS window and audio recording
+        - label: 15-second network interruption
+        - label: 60-second network interruption
+        - label: Network switch
+        - label: Disconnect while recovery was pending
+  - type: textarea
+    id: configuration
+    attributes:
+      label: AI, voice, microphone, and OBS configuration
+  - type: textarea
+    id: memory
+    attributes:
+      label: Memory at 0, 30, 60, and final minutes
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Results and evidence
+      description: List passed and failed checks and add safe screenshots, logs, or recording links.
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Final result
+      options:
+        - Pass
+        - Fail
+    validations:
+      required: true

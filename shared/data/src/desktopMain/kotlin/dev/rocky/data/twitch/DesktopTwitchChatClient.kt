@@ -8,6 +8,7 @@ import dev.rocky.core.twitch.TwitchConnectionPhase
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.WebSocket
+import java.io.IOException
 import java.time.Duration
 import java.util.LinkedHashSet
 import java.util.concurrent.Executors
@@ -187,6 +188,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
 
     private fun subscribeToChat(webSocket: WebSocket, sessionId: String, run: Long) {
         ioExecutor.execute {
+            if (!isCurrent(run) || socket !== webSocket) return@execute
             runCatching {
                 val currentAccount = requireNotNull(account)
                 var currentTokens = requireNotNull(tokens)
@@ -195,13 +197,21 @@ class DesktopTwitchChatClient : TwitchChatClient {
                 } catch (error: TwitchApiException) {
                     if (error.statusCode != 401) throw error
                     currentTokens = api.refreshTokens(clientId, currentTokens.refreshToken)
+                    if (!isCurrent(run)) return@execute
                     tokens = currentTokens
                     api.subscribeToChat(clientId, currentTokens.accessToken, currentAccount, sessionId)
                 }
             }.onSuccess {
                 if (isCurrent(run) && socket === webSocket) markConnected(run)
             }.onFailure { error ->
-                if (isCurrent(run)) fail(run, error.userMessage("Não foi possível assinar o chat da Twitch."))
+                if (isCurrent(run) && socket === webSocket) {
+                    if (error.isTransientTwitchFailure()) {
+                        webSocket.abort()
+                        scheduleReconnect(run)
+                    } else {
+                        fail(run, error.userMessage("Não foi possível assinar o chat da Twitch."))
+                    }
+                }
             }
         }
     }
@@ -223,8 +233,10 @@ class DesktopTwitchChatClient : TwitchChatClient {
         emit(TwitchConnectionPhase.Reconnecting, "Reconectando em $delaySeconds s")
         scheduler.schedule(
             {
-                reconnectScheduled = false
-                if (isCurrent(run)) openSocket(DEFAULT_WEBSOCKET_URL, run)
+                if (isCurrent(run)) {
+                    reconnectScheduled = false
+                    openSocket(DEFAULT_WEBSOCKET_URL, run)
+                }
             },
             delaySeconds,
             TimeUnit.SECONDS,
@@ -329,6 +341,9 @@ class DesktopTwitchChatClient : TwitchChatClient {
 }
 
 internal const val TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS = 60 * 60 * 1_000L
+
+internal fun Throwable.isTransientTwitchFailure(): Boolean =
+    this is IOException || (this is TwitchApiException && (statusCode == 429 || statusCode in 500..599))
 
 internal fun Throwable.requiresNewTwitchAuthorization(): Boolean =
     this is TwitchApiException && statusCode in setOf(400, 401, 403)

@@ -7,6 +7,14 @@ import kotlin.test.assertTrue
 
 class TwitchReconnectPolicyTest {
     @Test
+    fun retriesSubscriptionTimeoutsAndServerFailuresOnly() {
+        assertTrue(java.io.IOException("offline").isTransientTwitchFailure())
+        assertTrue(TwitchApiException(429, null).isTransientTwitchFailure())
+        assertTrue(TwitchApiException(503, null).isTransientTwitchFailure())
+        assertFalse(TwitchApiException(403, null).isTransientTwitchFailure())
+    }
+
+    @Test
     fun backsOffUntilThirtySeconds() {
         assertEquals(
             listOf(1L, 2L, 4L, 8L, 16L, 30L, 30L),

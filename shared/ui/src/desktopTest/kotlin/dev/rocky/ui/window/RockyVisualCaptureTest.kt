@@ -235,6 +235,25 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun guidesFirstUseThroughSettings() {
+        var finished = false
+        render(
+            firstUseOpen = true,
+            onFirstUseFinished = { finished = true },
+        )
+
+        rule.onNodeWithText("Configure o Rocky").assertExists()
+        rule.onNodeWithText("Configurar Twitch").performClick()
+        rule.onNodeWithText("Conexão com plataformas").assertExists()
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithText("Configure o Rocky").assertExists()
+
+        rule.onNodeWithText("Usar demonstração").performScrollTo().performClick()
+        rule.onNodeWithText("MODO DEMONSTRAÇÃO").assertExists()
+        rule.runOnIdle { assertTrue(finished) }
+    }
+
+    @Test
     fun windowControlsInvokeCallbacks() {
         var pinned = false
         var compact = false
@@ -269,9 +288,11 @@ class RockyVisualCaptureTest {
         twitchClientId: String = "",
         aiSuggestionClient: AiSuggestionClient? = null,
         onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
+        firstUseOpen: Boolean = false,
+        onFirstUseFinished: () -> Unit = {},
     ) {
         rule.setContent {
-            key(mainSection, settingsOpen, settingsSection) {
+            key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
                 Box(Modifier.size(420.dp, if (settingsOpen) 520.dp else 720.dp)) {
                     RockyWindow(
                         compact = false,
@@ -288,6 +309,8 @@ class RockyVisualCaptureTest {
                         initialMainSectionIndex = mainSection.ordinal,
                         initialSettingsOpen = settingsOpen,
                         initialSettingsSectionIndex = settingsSection.ordinal,
+                        initialFirstUseOpen = firstUseOpen,
+                        onFirstUseFinished = onFirstUseFinished,
                     )
                 }
             }

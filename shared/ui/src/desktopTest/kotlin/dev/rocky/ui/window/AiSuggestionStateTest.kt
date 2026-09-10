@@ -21,6 +21,7 @@ class AiSuggestionStateTest {
     fun batchesAutomaticAnalysisAndResetsForANewSession() = runBlocking {
         val client = FakeAiSuggestionClient()
         val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.updateAutomaticAnalysis(true)
 
         state.analyze(this, messages(2), automatic = true)
         state.analyze(this, messages(3), automatic = true)
@@ -43,6 +44,7 @@ class AiSuggestionStateTest {
     fun continuesAutomaticAnalysisWhenTheChatBufferIsFull() = runBlocking {
         val client = FakeAiSuggestionClient()
         val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.updateAutomaticAnalysis(true)
 
         state.analyze(this, messages(1_000))
         while (state.generating) delay(1)
@@ -51,6 +53,13 @@ class AiSuggestionStateTest {
         while (state.generating) delay(1)
 
         assertEquals(2, client.requests)
+    }
+
+    @Test
+    fun startsWithAutomaticAnalysisDisabled() {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+
+        assertFalse(state.automaticAnalysis)
     }
 
     @Test

@@ -24,7 +24,7 @@ internal class AiSuggestionState(
     var configuration by mutableStateOf(initialConfiguration)
         private set
 
-    var automaticAnalysis by mutableStateOf(true)
+    var automaticAnalysis by mutableStateOf(false)
         private set
 
     var testing by mutableStateOf(false)

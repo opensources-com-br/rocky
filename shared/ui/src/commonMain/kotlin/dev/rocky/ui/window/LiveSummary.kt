@@ -80,6 +80,7 @@ internal fun LiveSummary(
     sessionMode: LiveSessionMode = LiveSessionMode.Demonstration,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
+    speaking: Boolean = false,
     generatingSuggestion: Boolean = false,
     canAnalyze: Boolean = false,
     analysisStatus: String? = null,
@@ -109,7 +110,8 @@ internal fun LiveSummary(
             Spacer(Modifier.width(8.dp))
             Text(
                 text = when {
-                    suggestion != null -> "TOCANDO AGORA"
+                    suggestion != null && speaking -> "TOCANDO AGORA"
+                    suggestion != null -> "SUGESTÃO DO ROCKY"
                     sessionMode == LiveSessionMode.Real -> "CHAT REAL DA TWITCH"
                     sessionStatus == LiveSessionStatus.Stopped -> "DEMONSTRAÇÃO PRONTA"
                     sessionStatus == LiveSessionStatus.Ended -> "DEMONSTRAÇÃO ENCERRADA"

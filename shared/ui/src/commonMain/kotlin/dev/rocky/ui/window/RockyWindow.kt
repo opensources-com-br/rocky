@@ -231,6 +231,7 @@ fun RockyWindow(
                             sessionMode = if (twitch.isRealSession) LiveSessionMode.Real else LiveSessionMode.Demonstration,
                             suggestionSaved = live.suggestionSaved,
                             silenced = silenced,
+                            speaking = voice.speaking,
                             generatingSuggestion = ai.generating,
                             canAnalyze = twitch.isRealSession && twitch.messages.isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,

@@ -1,7 +1,11 @@
 # Website
 
-Future home of Rocky's landing page and public documentation.
+Rocky's static landing page. English is served from `/` and Brazilian Portuguese from `/pt-BR/`.
 
-Keep the website independently buildable from the Kotlin applications. English is the primary language, with Brazilian Portuguese translations.
+Preview it locally with:
 
-Status: directory scaffold only. The website framework and build configuration will be added in the web implementation stage.
+```shell
+python3 -m http.server 4173 --directory apps/web
+```
+
+The `Site` GitHub Actions workflow publishes this directory to GitHub Pages after changes reach `main`.

@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
+import java.util.Base64
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioInputStream
@@ -221,21 +222,23 @@ class DesktopVoiceService : VoiceService {
             }
             add("-r")
             add((configuration.speedPercent.coerceIn(50, 150) * 2).toString())
+            add("--")
             add(text)
         }
 
         internal fun windowsSpeechCommand(text: String, configuration: VoiceOutputConfiguration): List<String> {
+            fun literal(value: String) = "[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('" +
+                Base64.getEncoder().encodeToString(value.toByteArray(Charsets.UTF_8)) + "'))"
             val script = "Add-Type -AssemblyName System.Speech; " +
                 "${'$'}s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                "if (${'$'}args[0]) { ${'$'}s.SelectVoice(${'$'}args[0]) }; " +
-                "${'$'}s.Rate = [Math]::Round(([int]${'$'}args[1] - 100) / 5); " +
-                "${'$'}s.Volume = [int]${'$'}args[2]; ${'$'}s.Speak(${'$'}args[3])"
+                "${'$'}voice = ${literal(configuration.voiceId.orEmpty())}; " +
+                "if (${'$'}voice) { ${'$'}s.SelectVoice(${'$'}voice) }; " +
+                "${'$'}s.Rate = [Math]::Round((${configuration.speedPercent.coerceIn(50, 150)} - 100) / 5); " +
+                "${'$'}s.Volume = ${configuration.volumePercent.coerceIn(0, 100)}; " +
+                "try { ${'$'}s.Speak((${literal(text)})) } finally { ${'$'}s.Dispose() }"
             return listOf(
-                "powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script,
-                configuration.voiceId.orEmpty(),
-                configuration.speedPercent.coerceIn(50, 150).toString(),
-                configuration.volumePercent.coerceIn(0, 100).toString(),
-                text,
+                "powershell.exe", "-NoProfile", "-NonInteractive", "-EncodedCommand",
+                Base64.getEncoder().encodeToString(script.toByteArray(Charsets.UTF_16LE)),
             )
         }
 

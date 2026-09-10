@@ -27,9 +27,12 @@ class DesktopVoiceServiceTest {
             VoiceOutputConfiguration("Maria", speedPercent = 120, volumePercent = 70),
         )
 
-        assertEquals(text, command.last())
-        assertEquals("Maria", command[5])
-        assertTrue(command[4].contains("System.Speech"))
+        assertEquals("-EncodedCommand", command[3])
+        val script = String(java.util.Base64.getDecoder().decode(command.last()), Charsets.UTF_16LE)
+        assertTrue(script.contains("System.Speech"))
+        assertTrue(!script.contains(text))
+        assertTrue(script.contains(java.util.Base64.getEncoder().encodeToString(text.toByteArray(Charsets.UTF_8))))
+        assertTrue(script.contains("Volume = 70"))
     }
 
     @Test

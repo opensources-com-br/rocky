@@ -74,6 +74,8 @@ Packages are generated under `apps/desktop/build/compose/binaries/main/`. See th
 
 Tagged alpha versions publish the macOS DMG, Windows MSI and EXE, and SHA-256 checksums on [GitHub Releases](https://github.com/opensources-com-br/rocky/releases).
 
+Before promoting an alpha, follow the [streamer test protocol](docs/STREAMER_TEST.md) for clean installation, a prolonged live session, OBS, and connection recovery.
+
 ## Repository structure
 
 | Directory | Responsibility |

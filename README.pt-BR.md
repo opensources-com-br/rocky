@@ -74,6 +74,8 @@ Os pacotes são gerados em `apps/desktop/build/compose/binaries/main/`. Consulte
 
 Versões alpha com tag publicam o DMG do macOS, o MSI e EXE do Windows e checksums SHA-256 nos [Releases do GitHub](https://github.com/opensources-com-br/rocky/releases).
 
+Antes de promover uma alpha, siga o [protocolo de teste com streamers](docs/STREAMER_TEST.pt-BR.md) para instalação limpa, live prolongada, OBS e recuperação da conexão.
+
 ## Estrutura do repositório
 
 | Diretório | Responsabilidade |

@@ -52,6 +52,11 @@ internal class VoiceState(
             configuration.transcription.modelPath.isNotBlank()
 
     private var captureTimeout: Job? = null
+    private var captureJob: Job? = null
+    private var transcriptionJob: Job? = null
+    private var speechJob: Job? = null
+    private var captureGeneration = 0L
+    private var speechGeneration = 0L
     private var lastSpokenSuggestionId: String? = null
     private var queuedSpeech: String? = null
 
@@ -114,27 +119,37 @@ internal class VoiceState(
     }
 
     fun stopSpeaking() {
-        if (!speaking) return
+        val wasSpeaking = speaking || speechJob?.isActive == true
+        speechGeneration += 1
+        speechJob?.cancel()
+        speechJob = null
         queuedSpeech = null
         service.stopSpeaking()
         speaking = false
-        status = "Leitura interrompida"
+        if (wasSpeaking) status = "Leitura interrompida"
     }
 
     fun startCapture(scope: CoroutineScope, onTranscript: (String) -> Unit) {
-        if (capturing || transcribing) return
+        if (capturing || transcribing || captureJob?.isActive == true) return
         if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
             return
         }
+        stopSpeaking()
         transcript = null
-        capturing = true
         status = "Ativando o microfone…"
-        scope.launch {
+        val generation = ++captureGeneration
+        captureJob = scope.launch {
             val result = withContext(Dispatchers.Default) {
                 runCatching { service.startCapture(configuration.transcription.microphoneId) }
             }
+            if (generation != captureGeneration) {
+                if (result.isSuccess) service.cancelCapture()
+                return@launch
+            }
+            captureJob = null
             result.onSuccess {
+                capturing = true
                 status = "Microfone ativo · clique para concluir"
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
@@ -142,7 +157,6 @@ internal class VoiceState(
                     if (capturing) stopCapture(scope, onTranscript)
                 }
             }.onFailure {
-                capturing = false
                 status = "Não foi possível acessar o microfone"
             }
         }
@@ -155,10 +169,13 @@ internal class VoiceState(
         transcribing = true
         status = "Transcrevendo localmente…"
         val activeConfiguration: LocalTranscriptionConfiguration = configuration.transcription
-        scope.launch {
+        val generation = ++captureGeneration
+        transcriptionJob = scope.launch {
             val result = withContext(Dispatchers.Default) {
                 runCatching { service.stopCaptureAndTranscribe(activeConfiguration) }
             }
+            if (generation != captureGeneration) return@launch
+            transcriptionJob = null
             transcribing = false
             result.onSuccess { text ->
                 transcript = text
@@ -169,19 +186,31 @@ internal class VoiceState(
     }
 
     fun cancelCapture() {
+        val wasActive = capturing || transcribing || captureJob?.isActive == true ||
+            transcriptionJob?.isActive == true
+        captureGeneration += 1
         captureTimeout?.cancel()
-        if (capturing) service.cancelCapture()
+        captureTimeout = null
+        captureJob?.cancel()
+        captureJob = null
+        transcriptionJob?.cancel()
+        transcriptionJob = null
+        if (wasActive) service.cancelCapture()
         capturing = false
         transcribing = false
+        if (wasActive) status = "Captura cancelada"
     }
 
     private fun speak(scope: CoroutineScope, text: String, force: Boolean = false) {
         if (speaking || (!force && !configuration.readSuggestions)) return
+        val generation = ++speechGeneration
         speaking = true
         status = "Rocky está falando…"
         val output = configuration.output
-        scope.launch {
+        speechJob = scope.launch {
             val result = withContext(Dispatchers.Default) { runCatching { service.speak(text, output) } }
+            if (generation != speechGeneration) return@launch
+            speechJob = null
             speaking = false
             status = result.fold(
                 onSuccess = { "Leitura concluída" },

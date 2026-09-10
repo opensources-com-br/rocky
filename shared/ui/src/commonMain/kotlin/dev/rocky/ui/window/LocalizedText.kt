@@ -63,6 +63,8 @@ private fun localize(text: String): String {
 }
 
 private fun dynamicEnglish(text: String): String = when {
+    text.length > 3 && text[0].isDigit() && text.substring(1, 3) == ". " ->
+        "${text[0]}. ${allTranslations[text.substring(3)] ?: text.substring(3)}"
     text.endsWith(" mensagens recebidas") -> text.removeSuffix(" mensagens recebidas") + " messages received"
     text.endsWith(" mensagem recebida") -> text.removeSuffix(" mensagem recebida") + " message received"
     text.endsWith(" mensagens simuladas · sem live real") -> text.removeSuffix(" mensagens simuladas · sem live real") + " simulated messages · no real stream"
@@ -74,9 +76,15 @@ private fun dynamicEnglish(text: String): String = when {
     text.startsWith("Analisando ") && text.endsWith(" mensagens…") -> text.replaceFirst("Analisando ", "Analyzing ").replace(" mensagens…", " messages…")
     text.startsWith("Você: ") -> text.replaceFirst("Você: ", "You: ")
     text.startsWith("Fale com ") -> text.replaceFirst("Fale com ", "Talk to ")
+    text.startsWith("Clique em “Fale com ") -> text
+        .replaceFirst("Clique em “Fale com ", "Click “Talk to ")
+        .replace("” para gravar e clique novamente para transcrever localmente.", "” to record, then click again to transcribe locally.")
     text.startsWith("Olá, eu sou ") -> text.replaceFirst("Olá, eu sou ", "Hello, I am ").replace(". A voz do chat, em acordes.", ". The voice of chat, in tune.")
     text.startsWith("SUGESTÃO DO ") -> text.replaceFirst("SUGESTÃO DO ", "SUGGESTION FROM ")
     text.contains(" assistindo · ") -> text.replace(" assistindo · ", " watching · ")
+    text.contains(" na Twitch") -> text.replace(" na Twitch", " on Twitch")
+    text.contains(" no YouTube") -> text.replace(" no YouTube", " on YouTube")
+    text.contains(" no Kick") -> text.replace(" no Kick", " on Kick")
     text.startsWith("audiência indisponível · ") -> text.replaceFirst("audiência indisponível", "audience unavailable")
     else -> text
 }
@@ -245,6 +253,7 @@ private val liveTranslations = mapOf(
     "Reconectando" to "Reconnecting",
     "Não conectada" to "Not connected",
     "Conectada" to "Connected",
+    "Conectado" to "Connected",
     "Falha na conexão" to "Connection failed",
     "Aguardando autorização" to "Waiting for authorization",
     "Iniciando autenticação" to "Starting authentication",
@@ -255,6 +264,25 @@ private val liveTranslations = mapOf(
     "OUVINDO O CHAT" to "LISTENING TO CHAT",
     "Rocky está falando…" to "Rocky is speaking…",
     "Rocky está transcrevendo" to "Rocky is transcribing",
+    "Microfone ativo" to "Microphone active",
+    "Microfone ativo · clique para concluir" to "Microphone active · click to finish",
+    "Transcrevendo localmente…" to "Transcribing locally…",
+    "Ativando o microfone…" to "Starting microphone…",
+    "Captura cancelada" to "Capture canceled",
+    "Leitura concluída" to "Playback finished",
+    "Leitura interrompida" to "Playback stopped",
+    "Não foi possível acessar o microfone" to "Could not access the microphone",
+    "Não foi possível consultar os dispositivos de áudio" to "Could not load audio devices",
+    "Não foi possível transcrever a fala" to "Could not transcribe speech",
+    "Não foi possível usar a voz do sistema" to "Could not use the system voice",
+    "Não foi possível gerar a sugestão" to "Could not generate a suggestion",
+    "Não foi possível testar a conexão" to "Could not test the connection",
+    "Sugestão gerada" to "Suggestion generated",
+    "Testando conexão…" to "Testing connection…",
+    "Nenhuma sugestão relevante agora" to "No relevant suggestion right now",
+    "Provedor de IA indisponível" to "AI provider unavailable",
+    "Configure o provedor de IA antes de analisar" to "Configure the AI provider before analyzing",
+    "Configure o whisper.cpp na aba Voz antes de usar o microfone" to "Configure whisper.cpp in the Voice tab before using the microphone",
     "clique para começar" to "click to start",
     "clique novamente para concluir" to "click again to finish",
     "SUGESTÃO" to "SUGGESTION",

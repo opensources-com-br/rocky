@@ -274,6 +274,16 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun showsFirstUseGuideInEnglish() {
+        render(firstUseOpen = true, language = RockyLanguage.English)
+
+        rule.onNodeWithText("Set up Rocky").assertExists()
+        rule.onNodeWithText("1. Connect your Twitch").assertExists()
+        rule.onNodeWithText("2. Configure AI").assertExists()
+        rule.onNodeWithText("3. Test voice").assertExists()
+    }
+
+    @Test
     fun windowControlsInvokeCallbacks() {
         var pinned = false
         var compact = false
@@ -311,6 +321,7 @@ class RockyVisualCaptureTest {
         firstUseOpen: Boolean = false,
         onFirstUseFinished: () -> Unit = {},
         onLanguageChange: (RockyLanguage) -> Unit = {},
+        language: RockyLanguage = RockyLanguage.PortugueseBrazil,
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
@@ -332,7 +343,7 @@ class RockyVisualCaptureTest {
                         initialSettingsSectionIndex = settingsSection.ordinal,
                         initialFirstUseOpen = firstUseOpen,
                         onFirstUseFinished = onFirstUseFinished,
-                        initialLanguage = RockyLanguage.PortugueseBrazil,
+                        initialLanguage = language,
                         onLanguageChange = onLanguageChange,
                     )
                 }

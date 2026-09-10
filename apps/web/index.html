@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rocky is a local-first desktop assistant that turns live chat into useful suggestions, notes, and ideas.">
+  <title>Rocky — the voice of your live chat</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="./" aria-label="Rocky home"><span class="signal">● ● ●</span> Rocky</a>
+    <nav aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/opensources-com-br/rocky/tree/main/docs">Docs</a>
+      <a href="pt-BR/" lang="pt-BR">PT-BR</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">OPEN-SOURCE · DESKTOP · ALPHA</p>
+        <h1>Your live chat,<br><em>in tune.</em></h1>
+        <p class="lead">Rocky follows the conversation, finds recurring questions, suggests useful replies, and keeps the notes and ideas worth revisiting.</p>
+        <div class="actions">
+          <a class="primary" href="https://github.com/opensources-com-br/rocky/releases/latest">Download the alpha</a>
+          <a class="secondary" href="https://github.com/opensources-com-br/rocky">View source</a>
+        </div>
+        <p class="fine">Unsigned alpha builds for macOS and Windows. Review the release notes before installing.</p>
+      </div>
+      <div class="assistant" aria-label="Example Rocky suggestion">
+        <div class="assistant-head"><strong>Rocky</strong><span>LISTENING</span></div>
+        <p class="playing">♪ PLAYING NOW</p>
+        <blockquote>Seven people asked about the course price in the last two minutes. This is a good time to answer.</blockquote>
+        <p class="sources"><i class="twitch"></i> 4 on Twitch <i class="youtube"></i> 2 on YouTube <i class="kick"></i> 1 on Kick</p>
+        <button type="button" disabled>Save as note</button>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="section">
+      <p class="eyebrow">ONE WINDOW, THREE STEPS</p>
+      <h2>Stay focused on the stream.</h2>
+      <div class="grid">
+        <article><b>01</b><h3>Connect Twitch</h3><p>Authorize the channel through Twitch's device flow. New chat messages appear in Rocky as they arrive.</p></article>
+        <article><b>02</b><h3>Choose your AI</h3><p>Use an Ollama model on your computer or provide an OpenAI API key for the current session.</p></article>
+        <article><b>03</b><h3>Listen and remember</h3><p>Hear suggestions with a system voice, then save and export useful notes as Markdown.</p></article>
+      </div>
+    </section>
+
+    <section id="privacy" class="section privacy">
+      <div><p class="eyebrow">LOCAL-FIRST BY DESIGN</p><h2>Your setup remains yours.</h2></div>
+      <div>
+        <p>Rocky does not require a Rocky account or backend. Notes stay in a local SQLite database. Twitch tokens and OpenAI keys remain in memory and are cleared when the app closes.</p>
+        <p>When you select a cloud AI provider, the chat messages used as context are sent to that provider. Ollama can run the suggestion flow locally.</p>
+      </div>
+    </section>
+
+    <section class="section alpha">
+      <p class="eyebrow">EARLY ALPHA</p>
+      <h2>Help shape Rocky.</h2>
+      <p>Twitch chat, AI suggestions, system voice, local notes, and Markdown export are ready for testing. Super Chats, viewer metrics, and additional platforms are still planned.</p>
+      <div class="actions"><a class="primary" href="https://github.com/opensources-com-br/rocky/releases/latest">Get the latest build</a><a class="secondary" href="https://github.com/opensources-com-br/rocky/issues">Report an issue</a></div>
+    </section>
+  </main>
+
+  <footer><span>Rocky · MIT licensed</span><a href="https://github.com/opensources-com-br/rocky/blob/main/LICENSE">License</a></footer>
+</body>
+</html>

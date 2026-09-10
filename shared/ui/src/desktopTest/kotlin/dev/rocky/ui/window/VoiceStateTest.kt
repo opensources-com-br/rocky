@@ -60,6 +60,20 @@ class VoiceStateTest {
     }
 
     @Test
+    fun clearsTranscriptForANewSession() = runBlocking {
+        val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
+
+        state.startCapture(this) {}
+        waitUntil { state.capturing }
+        state.stopCapture(this) {}
+        waitUntil { !state.transcribing }
+        state.resetSession()
+
+        assertEquals(null, state.transcript)
+        assertEquals(null, state.status)
+    }
+
+    @Test
     fun ignoresTranscriptionAfterCaptureIsCancelled() = runBlocking {
         val service = FakeVoiceService().apply { transcriptionGate = CountDownLatch(1) }
         val state = VoiceState(service, readyConfiguration) {}

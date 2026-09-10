@@ -8,6 +8,8 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 
 [Read in English](README.md).
 
+[Site](https://opensources-com-br.github.io/rocky/pt-BR/) · [Alpha mais recente](https://github.com/opensources-com-br/rocky/releases/latest)
+
 ## O que funciona hoje
 
 - janela desktop móvel, redimensionável, fixável sobre outros apps e com modo compacto;
@@ -18,7 +20,8 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - comandos push-to-talk com transcrição local pelo `whisper.cpp`;
 - notas locais em SQLite, com criação, edição, exclusão, recuperação e exportação em Markdown;
 - exportação em Markdown das ideias exibidas na demonstração;
-- builds automatizados e instaladores de desenvolvimento para macOS e Windows.
+- builds automatizados e instaladores de desenvolvimento para macOS e Windows;
+- interface em inglês e português brasileiro, selecionada pelo idioma do sistema e ajustável nas Configurações.
 
 Rocky não exige uma conta própria nem um backend remoto. Tokens de acesso da Twitch e API keys da OpenAI permanecem em memória. As notas ficam armazenadas localmente no computador. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
 
@@ -69,12 +72,14 @@ O conector da Twitch atualmente lê apenas novas mensagens do chat. Contagem de 
 
 Os pacotes são gerados em `apps/desktop/build/compose/binaries/main/`. Consulte o [guia de validação desktop](docs/VALIDATION.pt-BR.md) para ver a matriz de builds e a lista de testes manuais.
 
+Versões alpha com tag publicam o DMG do macOS, o MSI e EXE do Windows e checksums SHA-256 nos [Releases do GitHub](https://github.com/opensources-com-br/rocky/releases).
+
 ## Estrutura do repositório
 
 | Diretório | Responsabilidade |
 | --- | --- |
 | [apps/desktop](apps/desktop/) | Ponto de entrada, empacotamento e ciclo de vida do aplicativo desktop |
-| [apps/web](apps/web/) | Landing page e documentação pública planejadas |
+| [apps/web](apps/web/) | Landing page estática bilíngue publicada pelo GitHub Pages |
 | [shared/core](shared/core/) | Modelos de domínio, contratos e regras de exportação |
 | [shared/data](shared/data/) | Implementações da Twitch, IA e SQLite |
 | [shared/ui](shared/ui/) | Interface Compose e estado de apresentação |
@@ -83,3 +88,7 @@ Os pacotes são gerados em `apps/desktop/build/compose/binaries/main/`. Consulte
 | [docs/adr](docs/adr/) | Registros de decisões de arquitetura |
 
 O [plano de implementação](docs/PLAN.pt-BR.md) descreve a direção do produto, o modelo de privacidade, a arquitetura, as etapas de entrega e os critérios de lançamento.
+
+## Licença
+
+Rocky é um software de código aberto disponibilizado sob a [Licença MIT](LICENSE).

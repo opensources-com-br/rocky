@@ -201,6 +201,14 @@ internal class VoiceState(
         if (wasActive) status = "Captura cancelada"
     }
 
+    fun resetSession() {
+        stopSpeaking()
+        cancelCapture()
+        transcript = null
+        status = null
+        lastSpokenSuggestionId = null
+    }
+
     private fun speak(scope: CoroutineScope, text: String, force: Boolean = false) {
         if (speaking || (!force && !configuration.readSuggestions)) return
         val generation = ++speechGeneration

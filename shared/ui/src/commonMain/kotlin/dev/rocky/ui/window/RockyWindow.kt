@@ -125,8 +125,7 @@ fun RockyWindow(
 
         LaunchedEffect(sessionStatus) {
             if (sessionStatus != LiveSessionStatus.Running) {
-                voice.stopSpeaking()
-                voice.cancelCapture()
+                voice.resetSession()
                 if (twitch.isRealSession) ai.resetSession()
             }
         }
@@ -188,12 +187,14 @@ fun RockyWindow(
                                     twitch = twitch,
                                     onConnect = {
                                         silenced = false
+                                        voice.resetSession()
                                         live.end()
                                         ai.resetSession()
                                         twitch.connect(twitchClientId)
                                     },
                                     onDisconnect = {
                                         silenced = false
+                                        voice.resetSession()
                                         ai.resetSession()
                                         twitch.disconnect()
                                     },
@@ -206,6 +207,7 @@ fun RockyWindow(
                         if (twitch.isRealSession) {
                             TwitchSessionControls(twitch) {
                                 silenced = false
+                                voice.resetSession()
                                 ai.resetSession()
                                 twitch.disconnect()
                             }

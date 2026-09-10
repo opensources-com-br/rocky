@@ -32,11 +32,11 @@ internal fun FirstUseContent(
     onComplete: () -> Unit,
     onUseDemonstration: () -> Unit,
 ) {
-    val ready = twitchConnected && aiVerified && voiceVerified
+    val ready = firstUseReady(twitchConnected, aiVerified)
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 16.dp)) {
         Text("Configure o Rocky", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold)
         Text(
-            text = "Complete os três passos para acompanhar uma live real. Você pode voltar a este guia até concluir.",
+            text = "Conecte a Twitch e a IA para acompanhar uma live real. A voz é opcional e pode ser configurada depois.",
             modifier = Modifier.padding(top = 5.dp, bottom = 14.dp),
             color = RockyColors.TextSecondary,
             style = MaterialTheme.typography.body2,
@@ -62,6 +62,7 @@ internal fun FirstUseContent(
             title = "Teste a voz",
             description = "Escolha uma voz do sistema e confirme o áudio com “Testar voz”. O microfone é opcional.",
             complete = voiceVerified,
+            optional = true,
             action = if (voiceVerified) "Revisar voz" else "Configurar voz",
             onAction = onConfigureVoice,
         )
@@ -98,6 +99,7 @@ private fun SetupStep(
     title: String,
     description: String,
     complete: Boolean,
+    optional: Boolean = false,
     action: String,
     onAction: () -> Unit,
 ) {
@@ -117,7 +119,11 @@ private fun SetupStep(
                     fontWeight = FontWeight.Medium,
                 )
                 Text(
-                    text = if (complete) "pronto" else "pendente",
+                    text = when {
+                        complete -> "pronto"
+                        optional -> "opcional"
+                        else -> "pendente"
+                    },
                     color = if (complete) RockyColors.Accent else RockyColors.TextMuted,
                     style = MaterialTheme.typography.caption,
                 )
@@ -139,3 +145,6 @@ private fun SetupStep(
         }
     }
 }
+
+internal fun firstUseReady(twitchConnected: Boolean, aiVerified: Boolean): Boolean =
+    twitchConnected && aiVerified

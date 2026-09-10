@@ -199,6 +199,17 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun configuresOpenRouterFromAiSettings() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+
+        rule.onNodeWithText("OpenRouter").performClick()
+
+        rule.onNodeWithText("https://openrouter.ai/api").assertExists()
+        rule.onNodeWithText("openrouter/free").assertExists()
+        rule.onNodeWithTag("ai-api-key").assertExists()
+    }
+
+    @Test
     fun showsRealSuggestionInCompactMode() {
         var stopped = false
         rule.setContent {

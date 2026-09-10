@@ -11,12 +11,31 @@ import dev.rocky.core.live.StreamPlatform
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.delay
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AiSuggestionStateTest {
+    @Test
+    fun cancelInterruptsBlockingProviderAndAllowsAnotherRequest() = runBlocking {
+        val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.analyze(this, messages(1))
+        withTimeout(3_000) { while (client.started.count > 0) delay(1) }
+        state.cancelAnalysis()
+        withTimeout(3_000) { while (!client.interrupted.get()) delay(1) }
+        assertFalse(state.generating)
+        assertEquals(null, state.suggestion)
+        client.responseGate = null
+        state.analyze(this, messages(2))
+        withTimeout(3_000) { while (state.generating) delay(1) }
+        assertEquals(setOf("m2"), state.suggestion?.sourceMessageIds)
+    }
+
     @Test
     fun keepsEvidenceAfterLiveBufferChanges() = runBlocking {
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
@@ -135,6 +154,8 @@ class AiSuggestionStateTest {
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
+        val started = CountDownLatch(1)
+        val interrupted = AtomicBoolean(false)
         var requests = 0
         var lastStreamerRequest: String? = null
         var responseGate: CountDownLatch? = null
@@ -149,7 +170,13 @@ class AiSuggestionStateTest {
         ): AiGeneratedSuggestion {
             requests += 1
             lastStreamerRequest = streamerRequest
-            responseGate?.await()
+            started.countDown()
+            try {
+                check(responseGate?.await(3, TimeUnit.SECONDS) != false)
+            } catch (error: InterruptedException) {
+                interrupted.set(true)
+                throw error
+            }
             return AiGeneratedSuggestion("Sugestão", setOf(messages.last().id))
         }
 

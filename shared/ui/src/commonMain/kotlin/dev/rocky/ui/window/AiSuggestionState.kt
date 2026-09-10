@@ -46,7 +46,7 @@ internal class AiSuggestionState(
 
     val isReady: Boolean
         get() = configuration.endpoint.isNotBlank() && configuration.model.isNotBlank() &&
-            (configuration.provider != AiProviderKind.OpenAI || configuration.apiKey.isNotBlank())
+            (configuration.provider == AiProviderKind.Ollama || configuration.apiKey.isNotBlank())
 
     private var lastAnalyzedMessageId: String? = null
     private var sessionGeneration = 0L
@@ -54,10 +54,16 @@ internal class AiSuggestionState(
 
     fun updateProvider(provider: AiProviderKind) {
         connectionVerified = false
-        configuration = if (provider == AiProviderKind.Ollama) {
-            configuration.copy(provider = provider, endpoint = DEFAULT_OLLAMA_ENDPOINT, model = DEFAULT_OLLAMA_MODEL)
-        } else {
-            configuration.copy(provider = provider, endpoint = DEFAULT_OPENAI_ENDPOINT, model = DEFAULT_OPENAI_MODEL)
+        configuration = when (provider) {
+            AiProviderKind.Ollama -> configuration.copy(
+                provider = provider, endpoint = DEFAULT_OLLAMA_ENDPOINT, model = DEFAULT_OLLAMA_MODEL,
+            )
+            AiProviderKind.OpenAI -> configuration.copy(
+                provider = provider, endpoint = DEFAULT_OPENAI_ENDPOINT, model = DEFAULT_OPENAI_MODEL,
+            )
+            AiProviderKind.OpenRouter -> configuration.copy(
+                provider = provider, endpoint = DEFAULT_OPENROUTER_ENDPOINT, model = DEFAULT_OPENROUTER_MODEL,
+            )
         }
         saveConfiguration()
     }
@@ -190,6 +196,8 @@ internal class AiSuggestionState(
         const val DEFAULT_OLLAMA_MODEL = "llama3.2"
         const val DEFAULT_OPENAI_ENDPOINT = "https://api.openai.com"
         const val DEFAULT_OPENAI_MODEL = ""
+        const val DEFAULT_OPENROUTER_ENDPOINT = "https://openrouter.ai/api"
+        const val DEFAULT_OPENROUTER_MODEL = "openrouter/free"
 
         private const val AUTOMATIC_BATCH_SIZE = 3
         private const val MAX_ANALYSIS_MESSAGES = 30

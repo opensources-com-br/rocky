@@ -18,13 +18,19 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.put
 
 internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
-    fun testConnection(endpoint: String, apiKey: String, model: String): AiConnectionResult = runCatching {
+    fun testConnection(
+        endpoint: String,
+        apiKey: String,
+        model: String,
+        modelPath: String = "/v1/models/${model.urlEncode()}",
+        providerName: String = "OpenAI",
+    ): AiConnectionResult = runCatching {
         httpClient.send(
-            request(endpoint, "/v1/models/${model.urlEncode()}", apiKey).GET().build(),
+            request(endpoint, modelPath, apiKey).GET().build(),
             HttpResponse.BodyHandlers.ofString(),
         ).requireOpenAiSuccess()
-        AiConnectionResult(true, "OpenAI conectada · $model disponível")
-    }.getOrElse { AiConnectionResult(false, it.userMessage("Não foi possível conectar à OpenAI")) }
+        AiConnectionResult(true, "$providerName conectado · $model disponível")
+    }.getOrElse { AiConnectionResult(false, it.userMessage("Não foi possível conectar ao $providerName")) }
 
     fun generate(
         endpoint: String,

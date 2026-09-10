@@ -1,6 +1,6 @@
 # Configuração de voz
 
-Rocky lê novas sugestões usando uma voz instalada no computador. A síntese acontece no próprio dispositivo: o macOS usa `say`, e o Windows usa `System.Speech`. Abra **Configurações → Voz** para escolher uma voz, ajustar a velocidade, testar a reprodução ou desativar a leitura automática.
+Rocky pode ler novas sugestões usando uma voz instalada no computador. A leitura começa desativada em instalações novas; preferências já salvas são preservadas. A síntese acontece no próprio dispositivo: o macOS usa `say`, e o Windows usa `System.Speech`. Abra **Configurações → Voz** para ativar a leitura, escolher uma voz, ajustar a velocidade ou testar a reprodução.
 
 Rocky usa a saída de áudio padrão do sistema. No Windows, também aplica o volume selecionado no Rocky. No macOS, use o volume de saída do sistema. Uma fonte que capture todo o áudio do computador no OBS pode incluir a voz do Rocky; faça uma gravação curta de teste antes da live.
 

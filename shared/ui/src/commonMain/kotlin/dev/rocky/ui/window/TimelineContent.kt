@@ -48,15 +48,17 @@ private val ideas = listOf(
 internal fun TimelineContent(
     section: MainSection,
     savedNotes: List<LiveNote> = emptyList(),
+    demonstration: Boolean = true,
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
 ) {
     var exportNotice by remember { mutableStateOf<String?>(null) }
+    val visibleIdeas = if (demonstration) ideas else emptyList()
     val entries = if (section == MainSection.Notes) {
         savedNotes.map { note ->
             TimelineEntry(note.timestamp, note.text, note.tag)
         } + notes
     } else {
-        ideas.map { idea -> TimelineEntry(idea.timestamp, idea.text, idea.tag) }
+        visibleIdeas.map { idea -> TimelineEntry(idea.timestamp, idea.text, idea.tag) }
     }
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp)) {
         if (section == MainSection.Ideas) {
@@ -76,14 +78,23 @@ internal fun TimelineContent(
                 }
                 OutlinedButton(
                     onClick = {
-                        if (onExportIdeas(ideas)) exportNotice = "Markdown exportado."
+                        if (onExportIdeas(visibleIdeas)) exportNotice = "Markdown exportado."
                     },
+                    enabled = visibleIdeas.isNotEmpty(),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
                 ) {
                     Icon(Icons.Outlined.Download, contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text("Exportar .md")
                 }
+            }
+            if (visibleIdeas.isEmpty()) {
+                Text(
+                    text = "A geração automática de ideias ainda não está disponível em sessões reais.",
+                    modifier = Modifier.padding(vertical = 28.dp),
+                    color = RockyColors.TextSecondary,
+                    style = MaterialTheme.typography.body2,
+                )
             }
         }
         entries.forEachIndexed { index, entry ->

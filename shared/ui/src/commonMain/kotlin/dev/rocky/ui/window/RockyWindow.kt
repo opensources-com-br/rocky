@@ -277,6 +277,7 @@ fun RockyWindow(
                                 )
                                 MainSection.Ideas -> TimelineContent(
                                     section = mainSection,
+                                    demonstration = !twitch.isRealSession,
                                     onExportIdeas = onExportIdeas,
                                 )
                                 MainSection.Pulse -> PulseContent(

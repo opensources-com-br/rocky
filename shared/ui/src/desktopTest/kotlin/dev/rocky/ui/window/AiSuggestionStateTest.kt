@@ -67,6 +67,18 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun verifiesAndInvalidatesTheAiConnection() = runBlocking {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+
+        state.testConnection(this)
+        while (state.testing) delay(1)
+        assertTrue(state.connectionVerified)
+
+        state.updateModel("another-model")
+        assertFalse(state.connectionVerified)
+    }
+
+    @Test
     fun forwardsStreamerSpeechToTheProvider() = runBlocking {
         val client = FakeAiSuggestionClient()
         val state = AiSuggestionState(client, ollamaConfiguration) {}

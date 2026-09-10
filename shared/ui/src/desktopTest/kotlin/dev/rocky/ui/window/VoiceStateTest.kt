@@ -29,6 +29,18 @@ class VoiceStateTest {
     }
 
     @Test
+    fun verifiesAndInvalidatesTheSelectedVoice() = runBlocking {
+        val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
+
+        state.testVoice(this)
+        waitUntil { !state.speaking }
+        assertTrue(state.voiceTested)
+
+        state.updateSpeed(110)
+        assertFalse(state.voiceTested)
+    }
+
+    @Test
     fun queuesTheNextSuggestionWhileSpeaking() = runBlocking {
         val service = FakeVoiceService().apply { speechGate = CountDownLatch(1) }
         val state = VoiceState(service, readyConfiguration) {}

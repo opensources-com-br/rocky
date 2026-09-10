@@ -10,27 +10,23 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.rocky.core.agent.AgentTone
 import dev.rocky.ui.theme.RockyColors
+import kotlin.math.roundToInt
 
 @Composable
-internal fun AgentSettings() {
-    var agentName by remember { mutableStateOf("Rocky") }
-    var tone by remember { mutableStateOf("Direto") }
-    var frequency by remember { mutableStateOf(0.3f) }
-    var canInterrupt by remember { mutableStateOf(true) }
-
+internal fun AgentSettings(agent: AgentState) {
+    val configuration = agent.configuration
+    val toneLabel = configuration.tone.label
+    val frequency = (configuration.interventionsPerTenMinutes - 1) / 8f
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle("Nome do agente", "Como o chat e você chamam o assistente.")
         OutlinedTextField(
-            value = agentName,
-            onValueChange = { agentName = it },
+            value = configuration.name,
+            onValueChange = agent::updateName,
             modifier = Modifier.fillMaxWidth().padding(top = 10.dp).height(48.dp),
             singleLine = true,
             textStyle = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium),
@@ -44,22 +40,30 @@ internal fun AgentSettings() {
             ),
         )
         Spacer(Modifier.height(16.dp))
-        SettingTitle("Tom de voz", "Define como o agente formula as intervenções.", tone)
-        ChoiceRow(listOf("Direto", "Animado", "Analítico", "Irônico"), tone) { tone = it }
+        SettingTitle("Tom de voz", "Define como o agente formula as intervenções.", toneLabel)
+        ChoiceRow(AgentTone.entries.map { it.label }, toneLabel) { selected ->
+            agent.updateTone(AgentTone.entries.first { it.label == selected })
+        }
         Spacer(Modifier.height(16.dp))
         SettingTitle(
             "Frequência de fala",
             "Quantas vezes por 10 minutos ele pode intervir.",
-            "${(frequency * 8).toInt() + 1}×",
+            "${configuration.interventionsPerTenMinutes}×",
         )
-        RockySlider(frequency) { frequency = it }
+        RockySlider(frequency) { value -> agent.updateFrequency((value * 8).roundToInt() + 1) }
         Spacer(Modifier.height(8.dp))
         SettingTitle(
-            "Interromper enquanto você fala",
-            "Se desligado, ele espera uma pausa de 3 segundos.",
-            if (canInterrupt) "ativo" else "inativo",
+            "Interrupção automática",
+            "A entrada de voz atual funciona por clique e não interrompe o streamer.",
+            "em breve",
         )
-        Spacer(Modifier.height(8.dp))
-        SettingSwitch("pode interromper", canInterrupt) { canInterrupt = it }
     }
 }
+
+private val AgentTone.label: String
+    get() = when (this) {
+        AgentTone.Direct -> "Direto"
+        AgentTone.Energetic -> "Animado"
+        AgentTone.Analytical -> "Analítico"
+        AgentTone.Ironic -> "Irônico"
+    }

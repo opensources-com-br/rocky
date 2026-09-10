@@ -74,6 +74,7 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
 
 @Composable
 internal fun LiveSummary(
+    agentName: String = "Rocky",
     suggestion: RockySuggestion? = previewSuggestion,
     sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Running,
@@ -111,7 +112,7 @@ internal fun LiveSummary(
             Text(
                 text = when {
                     suggestion != null && speaking -> "TOCANDO AGORA"
-                    suggestion != null -> "SUGESTÃO DO ROCKY"
+                    suggestion != null -> "SUGESTÃO DO ${agentName.uppercase()}"
                     sessionMode == LiveSessionMode.Real -> "CHAT REAL DA TWITCH"
                     sessionStatus == LiveSessionStatus.Stopped -> "DEMONSTRAÇÃO PRONTA"
                     sessionStatus == LiveSessionStatus.Ended -> "DEMONSTRAÇÃO ENCERRADA"

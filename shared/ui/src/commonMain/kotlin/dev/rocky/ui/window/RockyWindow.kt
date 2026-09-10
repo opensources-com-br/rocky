@@ -56,6 +56,8 @@ fun RockyWindow(
     noteRepository: NoteRepository? = null,
     twitchChatClient: TwitchChatClient = InactiveTwitchChatClient,
     aiSuggestionClient: AiSuggestionClient = InactiveAiSuggestionClient,
+    initialAgentConfiguration: AgentConfiguration = AgentConfiguration(),
+    onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
     voiceService: VoiceService = InactiveVoiceService,
     initialAiConfiguration: AiProviderConfiguration = AiProviderConfiguration(
         AiProviderKind.Ollama,
@@ -91,6 +93,7 @@ fun RockyWindow(
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(aiSuggestionClient, initialAiConfiguration, onAiConfigurationChange)
         }
+        val agent = remember { AgentState(initialAgentConfiguration, onAgentConfigurationChange) }
         val voice = remember(voiceService) {
             VoiceState(voiceService, initialVoiceConfiguration, onVoiceConfigurationChange)
         }
@@ -109,10 +112,10 @@ fun RockyWindow(
         val visibleSuggestion = if (twitch.isRealSession) ai.suggestion else live.suggestion
         val visiblePlatforms = if (twitch.isRealSession) twitch.platforms else samplePlatforms
 
-        LaunchedEffect(twitch.phase, ai.automaticAnalysis) {
+        LaunchedEffect(twitch.phase, ai.automaticAnalysis, agent.configuration.interventionsPerTenMinutes) {
             while (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {
-                delay(AUTOMATIC_ANALYSIS_INTERVAL_MILLIS)
-                ai.analyze(aiScope, twitch.messages, automatic = true)
+                delay(agent.configuration.analysisIntervalMillis)
+                ai.analyze(aiScope, twitch.messages, automatic = true, agent = agent.configuration)
             }
         }
 
@@ -134,6 +137,7 @@ fun RockyWindow(
         ) {
             Column {
                 RockyHeader(
+                    agentName = agent.displayName,
                     compact = compact,
                     pinned = pinned,
                     sessionStatus = sessionStatus,
@@ -167,7 +171,7 @@ fun RockyWindow(
                                 .verticalScroll(rememberScrollState()),
                         ) {
                             when (settingsSection) {
-                                SettingsSection.Agent -> AgentSettings()
+                                SettingsSection.Agent -> AgentSettings(agent)
                                 SettingsSection.Ai -> AiSettings(ai)
                                 SettingsSection.Voice -> VoiceSettings(
                                     voice,
@@ -222,6 +226,7 @@ fun RockyWindow(
                         PlatformStrip(visiblePlatforms)
                         Divider(color = RockyColors.Divider)
                         LiveSummary(
+                            agentName = agent.displayName,
                             suggestion = visibleSuggestion,
                             sourceCounts = if (twitch.isRealSession) {
                                 mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0))
@@ -249,7 +254,7 @@ fun RockyWindow(
                                     mainSection = MainSection.Notes
                                 }
                             },
-                            onAnalyze = { ai.analyze(aiScope, twitch.messages) },
+                            onAnalyze = { ai.analyze(aiScope, twitch.messages, agent = agent.configuration) },
                             onNext = {
                                 voice.stopSpeaking()
                                 if (twitch.isRealSession) ai.dismissSuggestion() else live.dismissSuggestion()
@@ -291,6 +296,7 @@ fun RockyWindow(
                         }
                         Divider(color = RockyColors.Divider)
                         AssistantFooter(
+                            agentName = agent.displayName,
                             active = voice.capturing,
                             busy = voice.transcribing,
                             status = voice.status,
@@ -300,13 +306,23 @@ fun RockyWindow(
                                 if (voice.capturing) {
                                     voice.stopCapture(aiScope) { request ->
                                         if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
-                                            ai.analyze(aiScope, twitch.messages, streamerRequest = request)
+                                            ai.analyze(
+                                                aiScope,
+                                                twitch.messages,
+                                                streamerRequest = request,
+                                                agent = agent.configuration,
+                                            )
                                         }
                                     }
                                 } else {
                                     voice.startCapture(aiScope) { request ->
                                         if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
-                                            ai.analyze(aiScope, twitch.messages, streamerRequest = request)
+                                            ai.analyze(
+                                                aiScope,
+                                                twitch.messages,
+                                                streamerRequest = request,
+                                                agent = agent.configuration,
+                                            )
                                         }
                                     }
                                 }
@@ -394,4 +410,5 @@ private val TwitchLiveState.platforms: List<PlatformStatus>
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
     )
 
-private const val AUTOMATIC_ANALYSIS_INTERVAL_MILLIS = 15_000L
+private val AgentConfiguration.analysisIntervalMillis: Long
+    get() = 600_000L / interventionsPerTenMinutes.coerceIn(1, 9)

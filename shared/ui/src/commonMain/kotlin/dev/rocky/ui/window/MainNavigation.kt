@@ -63,6 +63,7 @@ internal fun MainNavigation(
 
 @Composable
 internal fun AssistantFooter(
+    agentName: String = "Rocky",
     active: Boolean = false,
     busy: Boolean = false,
     status: String? = null,
@@ -85,7 +86,7 @@ internal fun AssistantFooter(
                 text = when {
                     busy -> "Rocky está transcrevendo"
                     active -> "Microfone ativo"
-                    else -> "Fale com o Rocky"
+                    else -> "Fale com $agentName"
                 },
                 color = RockyColors.TextPrimary,
                 style = MaterialTheme.typography.body1,

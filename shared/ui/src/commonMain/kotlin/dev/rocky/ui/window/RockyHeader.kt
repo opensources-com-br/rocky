@@ -32,6 +32,7 @@ import dev.rocky.ui.theme.RockyColors
 
 @Composable
 internal fun RockyHeader(
+    agentName: String = "Rocky",
     compact: Boolean = false,
     pinned: Boolean = false,
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Stopped,
@@ -48,7 +49,7 @@ internal fun RockyHeader(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Rocky",
+                text = agentName,
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
                 color = RockyColors.TextPrimary,

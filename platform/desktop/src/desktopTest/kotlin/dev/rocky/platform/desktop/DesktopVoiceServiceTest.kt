@@ -3,6 +3,9 @@ package dev.rocky.platform.desktop
 import dev.rocky.core.voice.LocalTranscriptionConfiguration
 import dev.rocky.core.voice.VoiceOutputConfiguration
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
+import kotlin.io.path.createTempFile
+import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -44,5 +47,27 @@ class DesktopVoiceServiceTest {
             listOf("-nt", "-otxt", "-of", Path.of("C:/Temp/transcript").toString()),
             command.takeLast(4),
         )
+    }
+
+    @Test
+    fun stopsAProcessAfterItsTimeout() {
+        val javaExecutable = Path.of(
+            System.getProperty("java.home"),
+            "bin",
+            if (System.getProperty("os.name").startsWith("Windows")) "java.exe" else "java",
+        )
+        val source = createTempFile(suffix = ".java")
+        try {
+            source.writeText(
+                "class RockyWait { public static void main(String[] args) throws Exception { Thread.sleep(10000); } }",
+            )
+            val process = ProcessBuilder(javaExecutable.toString(), source.toString()).start()
+
+            assertTrue(!DesktopVoiceService.waitForProcess(process, 50, TimeUnit.MILLISECONDS))
+            process.waitFor(1, TimeUnit.SECONDS)
+            assertTrue(!process.isAlive)
+        } finally {
+            java.nio.file.Files.deleteIfExists(source)
+        }
     }
 }

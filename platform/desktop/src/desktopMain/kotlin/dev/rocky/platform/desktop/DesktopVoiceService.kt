@@ -20,6 +20,7 @@ import javax.sound.sampled.TargetDataLine
 class DesktopVoiceService : VoiceService {
     private val operatingSystem = System.getProperty("os.name").lowercase()
     private val captureLock = Any()
+    private val transcriptionLock = Any()
 
     @Volatile
     private var speechProcess: Process? = null
@@ -29,6 +30,12 @@ class DesktopVoiceService : VoiceService {
 
     @Volatile
     private var captureThread: Thread? = null
+
+    @Volatile
+    private var transcriptionProcess: Process? = null
+
+    @Volatile
+    private var transcriptionCancelled = false
 
     private var capturedAudio: ByteArrayOutputStream? = null
 
@@ -73,6 +80,10 @@ class DesktopVoiceService : VoiceService {
     }
 
     override fun startCapture(microphoneId: String?) {
+        synchronized(transcriptionLock) {
+            check(transcriptionProcess == null) { "A transcription is already active" }
+            transcriptionCancelled = false
+        }
         synchronized(captureLock) {
             check(captureLine == null) { "Microphone capture is already active" }
             val format = captureFormat()
@@ -101,16 +112,22 @@ class DesktopVoiceService : VoiceService {
         val wav = Files.createTempFile("rocky-command-", ".wav")
         val outputBase = wav.resolveSibling(wav.fileName.toString().removeSuffix(".wav") + "-transcript")
         val transcript = Path.of("$outputBase.txt")
+        val processOutput = Files.createTempFile("rocky-whisper-", ".log")
+        var process: Process? = null
         try {
             writeWav(wav, audio)
-            val process = ProcessBuilder(whisperCommand(configuration, wav, outputBase))
-                .redirectErrorStream(true)
-                .start()
-            val output = process.inputStream.bufferedReader().use { it.readText() }
-            if (!process.waitFor(TRANSCRIPTION_TIMEOUT_MINUTES, TimeUnit.MINUTES)) {
-                process.destroyForcibly()
+            process = synchronized(transcriptionLock) {
+                check(!transcriptionCancelled) { "A transcrição foi cancelada" }
+                ProcessBuilder(whisperCommand(configuration, wav, outputBase))
+                    .redirectErrorStream(true)
+                    .redirectOutput(processOutput.toFile())
+                    .start()
+                    .also { transcriptionProcess = it }
+            }
+            if (!waitForProcess(process, TRANSCRIPTION_TIMEOUT_MINUTES, TimeUnit.MINUTES)) {
                 error("A transcrição excedeu o limite de tempo")
             }
+            val output = Files.readString(processOutput)
             check(process.exitValue() == 0) {
                 output.lineSequence().lastOrNull { it.isNotBlank() } ?: "Falha ao executar whisper.cpp"
             }
@@ -118,13 +135,23 @@ class DesktopVoiceService : VoiceService {
                 require(it.isNotBlank()) { "Nenhuma fala foi reconhecida" }
             }
         } finally {
+            synchronized(transcriptionLock) {
+                if (transcriptionProcess === process) transcriptionProcess = null
+            }
+            process?.takeIf { it.isAlive }?.let(::stopProcess)
             Files.deleteIfExists(wav)
             Files.deleteIfExists(transcript)
+            Files.deleteIfExists(processOutput)
         }
     }
 
     override fun cancelCapture() {
         runCatching { finishCapture() }
+        val process = synchronized(transcriptionLock) {
+            transcriptionCancelled = true
+            transcriptionProcess.also { transcriptionProcess = null }
+        }
+        process?.let(::stopProcess)
     }
 
     override fun close() {
@@ -220,6 +247,17 @@ class DesktopVoiceService : VoiceService {
             "-l", configuration.language,
             "-nt", "-otxt", "-of", outputBase.toString(),
         )
+
+        internal fun waitForProcess(process: Process, timeout: Long, unit: TimeUnit): Boolean {
+            if (process.waitFor(timeout, unit)) return true
+            stopProcess(process)
+            return false
+        }
+
+        private fun stopProcess(process: Process) {
+            process.destroy()
+            if (!process.waitFor(STOP_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) process.destroyForcibly()
+        }
 
         private fun validateTranscriptionConfiguration(configuration: LocalTranscriptionConfiguration) {
             require(Files.isRegularFile(Path.of(configuration.executablePath))) {

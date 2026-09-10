@@ -2,6 +2,7 @@ package dev.rocky.ui.window
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -16,7 +17,9 @@ internal class TwitchLiveState(
     private val currentTimeMillis: () -> Long = { 0L },
 ) {
     val messages = mutableStateListOf<ChatMessage>()
-    private val receivedMessageTimes = mutableStateListOf<Long>()
+    // One bucket per second, independent of the chat rate.
+    private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
+    internal val metricBucketCount: Int get() = receivedMessageTimes.size
     private var sessionGeneration = 0L
 
     var phase by mutableStateOf(TwitchConnectionPhase.Disconnected)
@@ -63,8 +66,8 @@ internal class TwitchLiveState(
     }
 
     fun disconnect() {
-        client.disconnect()
         sessionGeneration += 1
+        client.disconnect()
         Snapshot.withMutableSnapshot {
             phase = TwitchConnectionPhase.Disconnected
             detail = null
@@ -103,21 +106,21 @@ internal class TwitchLiveState(
                     if (messages.size == MAX_CHAT_MESSAGES) messages.removeAt(0)
                     messages += event.message
                     totalMessages += 1
-                    receivedMessageTimes += currentTimeMillis()
+                    val second = currentTimeMillis() / 1_000
+                    receivedMessageTimes[second] = (receivedMessageTimes[second] ?: 0) + 1
                     refreshMetrics()
                 }
             }
         }
     }
 
-    fun refreshMetrics() {
-        val cutoff = currentTimeMillis() - ONE_MINUTE_MILLIS
-        receivedMessageTimes.removeAll { it < cutoff }
-        messagesPerMinute = receivedMessageTimes.size
+    fun refreshMetrics() = Snapshot.withMutableSnapshot {
+        val cutoff = currentTimeMillis() / 1_000 - 59
+        receivedMessageTimes.keys.filter { it < cutoff }.forEach(receivedMessageTimes::remove)
+        messagesPerMinute = receivedMessageTimes.values.sum()
     }
 
     companion object {
         internal const val MAX_CHAT_MESSAGES = 1_000
-        private const val ONE_MINUTE_MILLIS = 60_000L
     }
 }

@@ -130,7 +130,7 @@ fun RockyWindow(
         }
 
         LaunchedEffect(twitch.phase) {
-            while (twitch.phase == TwitchConnectionPhase.Connected) {
+            while (twitch.isRealSession) {
                 delay(METRICS_REFRESH_MILLIS)
                 twitch.refreshMetrics()
             }

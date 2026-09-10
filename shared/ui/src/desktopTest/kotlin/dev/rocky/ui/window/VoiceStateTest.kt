@@ -59,6 +59,38 @@ class VoiceStateTest {
         assertEquals("O que o chat achou?", received)
     }
 
+    @Test
+    fun ignoresTranscriptionAfterCaptureIsCancelled() = runBlocking {
+        val service = FakeVoiceService().apply { transcriptionGate = CountDownLatch(1) }
+        val state = VoiceState(service, readyConfiguration) {}
+
+        state.startCapture(this) {}
+        waitUntil { state.capturing }
+        state.stopCapture(this) {}
+        waitUntil { state.transcribing }
+        state.cancelCapture()
+        service.transcriptionGate?.countDown()
+        delay(20)
+
+        assertFalse(state.transcribing)
+        assertEquals(null, state.transcript)
+        assertEquals("Captura cancelada", state.status)
+    }
+
+    @Test
+    fun keepsSpeechStoppedAfterItsWorkerCompletes() = runBlocking {
+        val service = FakeVoiceService().apply { speechGate = CountDownLatch(1) }
+        val state = VoiceState(service, readyConfiguration) {}
+
+        state.speakSuggestion(this, "suggestion-1", "Uma ideia", silenced = false)
+        waitUntil { state.speaking }
+        state.stopSpeaking()
+        delay(20)
+
+        assertFalse(state.speaking)
+        assertEquals("Leitura interrompida", state.status)
+    }
+
     private suspend fun waitUntil(condition: () -> Boolean) {
         repeat(1_000) {
             if (condition()) return
@@ -71,6 +103,7 @@ class VoiceStateTest {
         val spoken = mutableListOf<String>()
         var captureStarted = false
         var speechGate: CountDownLatch? = null
+        var transcriptionGate: CountDownLatch? = null
 
         override fun availableVoices() = listOf(SystemVoice("voice", "Voice", "pt-BR"))
         override fun availableMicrophones() = listOf(AudioInputDevice("mic", "Microphone"))
@@ -78,13 +111,19 @@ class VoiceStateTest {
             spoken += text
             speechGate?.await()
         }
-        override fun stopSpeaking() = Unit
+        override fun stopSpeaking() {
+            speechGate?.countDown()
+        }
         override fun startCapture(microphoneId: String?) {
             captureStarted = true
         }
-        override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) =
-            "O que o chat achou?"
-        override fun cancelCapture() = Unit
+        override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
+            transcriptionGate?.await()
+            return "O que o chat achou?"
+        }
+        override fun cancelCapture() {
+            transcriptionGate?.countDown()
+        }
         override fun close() = Unit
     }
 

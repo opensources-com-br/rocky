@@ -264,6 +264,15 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun togglesAiApiKeyVisibility() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+        rule.onNodeWithText("OpenRouter").performClick()
+
+        rule.onNodeWithContentDescription("Mostrar valor").performClick()
+        rule.onNodeWithContentDescription("Ocultar valor").assertExists()
+    }
+
+    @Test
     fun showsRealSuggestionInCompactMode() {
         var stopped = false
         rule.setContent {

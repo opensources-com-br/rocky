@@ -25,6 +25,20 @@ class VoiceStateTest {
     }
 
     @Test
+    fun alwaysSpeaksAnAnswerRequestedByVoice() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, VoiceConfiguration()) {}
+        var finished = false
+
+        state.speakSuggestion(this, "voice-1", "Resposta", silenced = false, force = true) {
+            finished = true
+        }
+        waitUntil { finished }
+
+        assertEquals(listOf("Resposta"), service.spoken)
+    }
+
+    @Test
     fun readsEachSuggestionOnlyOnce() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}

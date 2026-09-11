@@ -156,7 +156,7 @@ class AiSuggestionStateTest {
     }
 
     @Test
-    fun neverPersistsOpenAiApiKey() {
+    fun persistsOpenAiApiKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }
 
@@ -165,11 +165,11 @@ class AiSuggestionStateTest {
         state.updateModel("another-model")
 
         assertTrue(state.isReady)
-        assertEquals("", saved?.apiKey)
+        assertEquals("secret-key", saved?.apiKey)
     }
 
     @Test
-    fun configuresTheFreeOpenRouterWithoutPersistingItsKey() {
+    fun persistsTheFreeOpenRouterKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }
 
@@ -180,7 +180,7 @@ class AiSuggestionStateTest {
         assertEquals("https://openrouter.ai/api", state.configuration.endpoint)
         assertEquals("openrouter/free", state.configuration.model)
         assertTrue(state.isReady)
-        assertEquals("", saved?.apiKey)
+        assertEquals("router-key", saved?.apiKey)
     }
 
     @Test

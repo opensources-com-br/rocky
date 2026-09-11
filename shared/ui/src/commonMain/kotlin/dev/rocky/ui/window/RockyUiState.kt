@@ -30,10 +30,3 @@ internal enum class PlatformColor {
     YouTube,
     Offline,
 }
-
-internal val samplePlatforms = listOf(
-    PlatformStatus("Twitch", "@seucanal", "820", 26, PlatformColor.Twitch),
-    PlatformStatus("Kick", "@seucanal", "214", 9, PlatformColor.Kick),
-    PlatformStatus("YouTube", "Canal principal", "187", 6, PlatformColor.YouTube),
-    PlatformStatus("Facebook", "Página não conectada", "0", 0, PlatformColor.Offline, enabled = false),
-)

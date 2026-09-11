@@ -36,6 +36,7 @@ compose.desktop {
         jvmArgs += "-Drocky.twitch.clientId=${providers.gradleProperty("rockyTwitchClientId").orElse("").get()}"
 
         nativeDistributions {
+            modules("java.sql", "java.net.http")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Rocky"
             packageVersion = providers.gradleProperty("rockyPackageVersion").get()

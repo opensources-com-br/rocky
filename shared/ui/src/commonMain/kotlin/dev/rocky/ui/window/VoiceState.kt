@@ -70,6 +70,10 @@ internal class VoiceState(
     private var listenerTranscript: ((String) -> Unit)? = null
 
     fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+        if (!listenerEnabled && !transcriptionReady) {
+            status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
+            return
+        }
         listenerEnabled = !listenerEnabled
         if (listenerEnabled) {
             listenerScope = scope

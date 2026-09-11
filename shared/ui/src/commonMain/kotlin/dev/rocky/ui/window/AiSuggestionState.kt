@@ -49,6 +49,7 @@ internal class AiSuggestionState(
             (configuration.provider == AiProviderKind.Ollama || configuration.apiKey.isNotBlank())
 
     private var lastAnalyzedMessageId: String? = null
+    private var lastAutomaticAnalysisAtMillis: Long? = null
     private var sessionGeneration = 0L
     private var analysisJob: Job? = null
 
@@ -87,6 +88,10 @@ internal class AiSuggestionState(
         automaticAnalysis = enabled
     }
 
+    fun automaticAnalysisDelay(nowMillis: Long, intervalMillis: Long): Long = lastAutomaticAnalysisAtMillis
+        ?.let { lastAnalysis -> (lastAnalysis + intervalMillis - nowMillis).coerceAtLeast(0L) }
+        ?: 0L
+
     fun testConnection(scope: CoroutineScope) {
         if (testing) return
         testing = true
@@ -115,6 +120,7 @@ internal class AiSuggestionState(
         automatic: Boolean = false,
         streamerRequest: String? = null,
         agent: AgentConfiguration = AgentConfiguration(),
+        automaticTimeMillis: Long = 0L,
     ) {
         if (generating || messages.isEmpty()) return
         if (!isReady) {
@@ -130,6 +136,7 @@ internal class AiSuggestionState(
                 messages.lastIndex - lastIndex
             }
             if (!automaticAnalysis || newMessageCount < AUTOMATIC_BATCH_SIZE) return
+            lastAutomaticAnalysisAtMillis = automaticTimeMillis
         }
         lastAnalyzedMessageId = messages.last().id
         val snapshot = messages.takeLast(MAX_ANALYSIS_MESSAGES)
@@ -163,6 +170,7 @@ internal class AiSuggestionState(
         analysisJob?.cancel()
         analysisJob = null
         lastAnalyzedMessageId = null
+        lastAutomaticAnalysisAtMillis = null
         generating = false
         suggestion = null
         suggestionSources = emptyList()

@@ -189,6 +189,24 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun analyzesTheFirstAutomaticBatchWhenTheThirdMessageArrives() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient()
+        prepareAutomaticSession(twitch, ai)
+
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(3)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.waitUntil(timeoutMillis = 3_000) {
+            rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        assertEquals(1, ai.requests)
+    }
+
+    @Test
     fun sendsTypedStreamerRequest() {
         var request: String? = null
         rule.setContent {
@@ -371,6 +389,19 @@ class RockyVisualCaptureTest {
         }
     }
 
+    private fun prepareAutomaticSession(twitch: FakeTwitchChatClient, ai: FakeAiSuggestionClient) {
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Ai,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+            aiSuggestionClient = ai,
+        )
+        rule.onNodeWithTag("automatic-analysis").performScrollTo().performClick()
+        rule.onNodeWithText("Plataformas").performClick()
+        rule.onNodeWithText("Conectar Twitch").performClick()
+    }
+
     private fun render(
         compact: Boolean = false,
         mainSection: MainSection = MainSection.Conversation,
@@ -447,10 +478,19 @@ class RockyVisualCaptureTest {
         override fun close() = Unit
 
         fun emit(event: TwitchConnectionEvent) = listener.onEvent(event)
+
+        fun emitMessages(count: Int) = repeat(count) { index ->
+            emit(
+                TwitchConnectionEvent.MessageReceived(
+                    ChatMessage("message-$index", "viewer", "Mensagem $index", StreamPlatform.Twitch),
+                ),
+            )
+        }
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
         var lastRequest: String? = null
+        var requests = 0
         override fun testConnection(configuration: AiProviderConfiguration) =
             AiConnectionResult(true, "Conectado")
 
@@ -460,6 +500,7 @@ class RockyVisualCaptureTest {
             streamerRequest: String?,
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
+            requests += 1
             lastRequest = streamerRequest
             return AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
         }

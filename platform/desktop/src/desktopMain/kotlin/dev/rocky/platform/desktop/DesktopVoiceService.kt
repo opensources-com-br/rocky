@@ -258,10 +258,12 @@ class DesktopVoiceService : VoiceService {
     ).firstOrNull(Files::isExecutable)
 
     private fun runSetupCommand(command: List<String>) {
-        val process = ProcessBuilder(command)
+        val builder = ProcessBuilder(command)
             .redirectErrorStream(true)
             .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-            .start()
+        builder.environment()["HOMEBREW_NO_AUTO_UPDATE"] = "1"
+        builder.environment()["HOMEBREW_NO_INSTALL_CLEANUP"] = "1"
+        val process = builder.start()
         check(waitForProcess(process, SETUP_TIMEOUT_MINUTES, TimeUnit.MINUTES) && process.exitValue() == 0) {
             "Não foi possível instalar o mecanismo de reconhecimento"
         }

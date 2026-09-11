@@ -211,6 +211,24 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun retriesAnAutomaticBatchAfterAProviderFailure() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient().apply { failuresRemaining = 1 }
+        prepareAutomaticSession(twitch, ai)
+
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(3)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 1 }
+        rule.mainClock.advanceTimeBy(200_100)
+        rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 2 }
+
+        rule.onNodeWithText("O chat quer saber o preço.").assertExists()
+    }
+
+    @Test
     fun sendsTypedStreamerRequest() {
         var request: String? = null
         rule.setContent {

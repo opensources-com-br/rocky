@@ -70,8 +70,8 @@ class RockyVisualCaptureTest {
         }
 
         rule.onNodeWithTag("microphone-level", useUnmergedTree = true).assertIsDisplayed()
-        rule.onNodeWithText("Microfone ouvindo").assertIsDisplayed()
-        rule.onNodeWithText("Fale agora · nível 42%").assertIsDisplayed()
+        rule.onNodeWithText("Microphone listening").assertIsDisplayed()
+        rule.onNodeWithText("Speak now · level 42%").assertIsDisplayed()
     }
 
     @Test

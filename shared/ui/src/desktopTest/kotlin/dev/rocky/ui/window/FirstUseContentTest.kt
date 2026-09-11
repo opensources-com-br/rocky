@@ -7,8 +7,9 @@ import org.junit.Test
 class FirstUseContentTest {
     @Test
     fun requiresTwitchAndAiButNotVoice() {
-        assertFalse(firstUseReady(twitchConnected = true, aiVerified = false))
-        assertFalse(firstUseReady(twitchConnected = false, aiVerified = true))
-        assertTrue(firstUseReady(twitchConnected = true, aiVerified = true))
+        assertFalse(firstUseReady(twitchConnected = true, aiVerified = false, voiceVerified = true))
+        assertFalse(firstUseReady(twitchConnected = false, aiVerified = true, voiceVerified = true))
+        assertFalse(firstUseReady(twitchConnected = true, aiVerified = true, voiceVerified = false))
+        assertTrue(firstUseReady(twitchConnected = true, aiVerified = true, voiceVerified = true))
     }
 }

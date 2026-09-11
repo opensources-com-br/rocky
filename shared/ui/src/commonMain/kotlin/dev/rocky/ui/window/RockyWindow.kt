@@ -177,7 +177,9 @@ fun RockyWindow(
                 streamerRequest = request,
                 agent = agent.configuration,
                 onComplete = { suggestion ->
-                    if (suggestion == null) {
+                    if (!voice.listenerEnabled) {
+                        Unit
+                    } else if (suggestion == null) {
                         voice.resumeListener()
                     } else {
                         voice.speakSuggestion(

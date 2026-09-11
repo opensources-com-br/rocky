@@ -623,13 +623,15 @@ class RockyVisualCaptureTest {
     private class FakeVoiceService : VoiceService {
         var captureStarts = 0
         var transcript = ""
+        val transcripts = mutableListOf<String>()
         val spoken = mutableListOf<String>()
         override fun availableVoices(): List<SystemVoice> = emptyList()
         override fun availableMicrophones(): List<AudioInputDevice> = emptyList()
         override fun speak(text: String, configuration: VoiceOutputConfiguration) { spoken += text }
         override fun stopSpeaking() = Unit
         override fun startCapture(microphoneId: String?) { captureStarts += 1 }
-        override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) = transcript
+        override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) =
+            if (transcripts.isEmpty()) transcript else transcripts.removeAt(0)
         override fun cancelCapture() = Unit
         override fun close() = Unit
     }

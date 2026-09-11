@@ -520,7 +520,7 @@ private val TwitchLiveState.platforms: List<PlatformStatus>
         PlatformStatus(
             name = "Twitch",
             account = account?.let { "@${it.login}" } ?: "Conectando",
-            audience = "—",
+            audience = viewerCount?.toString() ?: "—",
             messagesPerMinute = messagesPerMinute,
             colorKey = PlatformColor.Twitch,
             enabled = phase != TwitchConnectionPhase.Failed,

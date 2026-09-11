@@ -172,7 +172,14 @@ fun RockyWindow(
 
         val analyzeVoiceCommand: (String) -> Unit = { request ->
             val recentMessages = twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
-            ai.analyze(
+            if (recentMessages.isEmpty()) {
+                voice.speakAcknowledgement(
+                    aiScope,
+                    "Não encontrei mensagens nos últimos dois minutos.",
+                    silenced,
+                    voice::resumeListener,
+                )
+            } else ai.analyze(
                 scope = aiScope,
                 messages = recentMessages,
                 streamerRequest = request,

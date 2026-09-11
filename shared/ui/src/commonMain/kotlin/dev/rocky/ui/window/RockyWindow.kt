@@ -466,8 +466,8 @@ fun RockyWindow(
                             inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
-                            realSession = twitch.isRealSession,
-                            messageCount = visibleMessageCount,
+                            viewerCount = twitch.viewerCount,
+                            messagesPerMinute = twitch.messagesPerMinute,
                             onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }

@@ -75,6 +75,22 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun showsCurrentLiveMetricsInFooter() {
+        rule.setContent {
+            AssistantFooter(
+                viewerCount = 321,
+                messagesPerMinute = 18,
+                onTalk = {},
+            )
+        }
+
+        rule.onNodeWithText("321").assertIsDisplayed()
+        rule.onNodeWithText("18").assertIsDisplayed()
+        rule.onNodeWithText("assistindo").assertIsDisplayed()
+        rule.onNodeWithText("msg/min").assertIsDisplayed()
+    }
+
+    @Test
     fun distinguishesAnActiveChatFromAnActiveMicrophone() {
         rule.setContent {
             RockyHeader(

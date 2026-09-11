@@ -39,6 +39,18 @@ class VoiceStateTest {
     }
 
     @Test
+    fun acknowledgesACommandBeforeContinuing() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, VoiceConfiguration()) {}
+        var finished = false
+
+        state.speakAcknowledgement(this, "Vou verificar.", silenced = false) { finished = true }
+        waitUntil { finished }
+
+        assertEquals(listOf("Vou verificar."), service.spoken)
+    }
+
+    @Test
     fun readsEachSuggestionOnlyOnce() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}

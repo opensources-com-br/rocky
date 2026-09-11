@@ -57,6 +57,15 @@ internal class VoiceState(
     var transcript by mutableStateOf<String?>(null)
         private set
 
+    var conversationTestTranscript by mutableStateOf<String?>(null)
+        private set
+
+    var conversationTestResponse by mutableStateOf<String?>(null)
+        private set
+
+    var conversationTesting by mutableStateOf(false)
+        private set
+
     val transcriptionReady: Boolean
         get() = configuration.transcription.executablePath.isNotBlank() &&
             configuration.transcription.modelPath.isNotBlank()
@@ -86,7 +95,7 @@ internal class VoiceState(
         listenerEnabled = true
         listenerScope = scope
         listenerTranscript = onTranscript
-        startCapture(scope, onTranscript)
+        startCapture(scope, onTranscript = onTranscript)
     }
 
     fun disableListener() {
@@ -100,7 +109,7 @@ internal class VoiceState(
         if (!listenerEnabled || capturing || transcribing || speaking) return
         val scope = listenerScope ?: return
         val onTranscript = listenerTranscript ?: return
-        startCapture(scope, onTranscript)
+        startCapture(scope, onTranscript = onTranscript)
     }
 
     fun loadDevices(scope: CoroutineScope) {
@@ -160,6 +169,31 @@ internal class VoiceState(
         )
     }
 
+    fun testConversation(scope: CoroutineScope, agentName: String = "Rocky") {
+        if (conversationTesting) return
+        if (!transcriptionReady) {
+            status = "Configure o reconhecimento de voz para iniciar o teste"
+            return
+        }
+        cancelCapture()
+        conversationTesting = true
+        conversationTestTranscript = null
+        conversationTestResponse = null
+        startCapture(
+            scope,
+            onTranscript = { text ->
+                conversationTestTranscript = text
+                val response = "Eu ouvi você dizer: $text. Meu microfone está funcionando."
+                conversationTestResponse = response
+                speakAcknowledgement(scope, response, silenced = false) {
+                    conversationTesting = false
+                    resumeListener()
+                }
+            },
+            onFailure = { conversationTesting = false },
+        )
+    }
+
     fun speakSuggestion(
         scope: CoroutineScope,
         suggestionId: String,
@@ -205,7 +239,11 @@ internal class VoiceState(
         if (wasSpeaking) status = "Leitura interrompida"
     }
 
-    fun startCapture(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+    fun startCapture(
+        scope: CoroutineScope,
+        onFailure: () -> Unit = {},
+        onTranscript: (String) -> Unit,
+    ) {
         if (capturing || transcribing || captureJob?.isActive == true) return
         if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
@@ -238,15 +276,20 @@ internal class VoiceState(
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)
-                    if (capturing) stopCapture(scope, onTranscript)
+                    if (capturing) stopCapture(scope, onFailure, onTranscript)
                 }
             }.onFailure {
                 status = "Não foi possível acessar o microfone"
+                onFailure()
             }
         }
     }
 
-    fun stopCapture(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+    fun stopCapture(
+        scope: CoroutineScope,
+        onFailure: () -> Unit = {},
+        onTranscript: (String) -> Unit,
+    ) {
         if (!capturing || transcribing) return
         captureTimeout?.cancel()
         capturing = false
@@ -270,6 +313,7 @@ internal class VoiceState(
                 onTranscript(text)
             }.onFailure {
                 status = it.message ?: "Não foi possível transcrever a fala"
+                onFailure()
                 resumeListener()
             }
         }
@@ -301,6 +345,9 @@ internal class VoiceState(
         stopSpeaking()
         cancelCapture()
         transcript = null
+        conversationTesting = false
+        conversationTestTranscript = null
+        conversationTestResponse = null
         status = null
         lastSpokenSuggestionId = null
     }

@@ -107,6 +107,22 @@ class VoiceStateTest {
     }
 
     @Test
+    fun testsACompleteMicrophoneConversation() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 5L) {}
+
+        state.testConversation(this)
+        waitUntil { !state.conversationTesting }
+
+        assertEquals("O que o chat achou?", state.conversationTestTranscript)
+        assertEquals(
+            "Eu ouvi você dizer: O que o chat achou?. Meu microfone está funcionando.",
+            state.conversationTestResponse,
+        )
+        assertEquals(listOf(state.conversationTestResponse), service.spoken)
+    }
+
+    @Test
     fun keepsListeningAfterSubmittingAnAutomaticTurn() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration, captureDurationMillis = 5L) {}

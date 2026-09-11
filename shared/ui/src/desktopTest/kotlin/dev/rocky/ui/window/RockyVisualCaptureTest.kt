@@ -451,6 +451,7 @@ class RockyVisualCaptureTest {
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
         var lastRequest: String? = null
+        var requests = 0
         override fun testConnection(configuration: AiProviderConfiguration) =
             AiConnectionResult(true, "Conectado")
 
@@ -460,6 +461,7 @@ class RockyVisualCaptureTest {
             streamerRequest: String?,
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
+            requests += 1
             lastRequest = streamerRequest
             return AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
         }

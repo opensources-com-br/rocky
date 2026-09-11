@@ -200,6 +200,8 @@ private val liveTranslations = mapOf(
     "DEMONSTRAÇÃO ENCERRADA" to "DEMO ENDED",
     "PARADO" to "STOPPED",
     "OUVINDO" to "LISTENING",
+    "CHAT ATIVO" to "CHAT ACTIVE",
+    "MICROFONE ON" to "MIC ON",
     "ENCERRADO" to "ENDED",
     "ERRO" to "ERROR",
     "Pronta para iniciar" to "Ready to start",

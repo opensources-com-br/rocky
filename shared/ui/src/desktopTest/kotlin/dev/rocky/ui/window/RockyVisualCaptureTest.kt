@@ -75,6 +75,20 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun distinguishesAnActiveChatFromAnActiveMicrophone() {
+        rule.setContent {
+            RockyHeader(
+                sessionStatus = LiveSessionStatus.Running,
+                twitchPhase = dev.rocky.core.twitch.TwitchConnectionPhase.Connected,
+                microphoneActive = false,
+            )
+        }
+
+        rule.onNodeWithText("CHAT ACTIVE").assertIsDisplayed()
+        assertTrue(rule.onAllNodesWithText("MIC ON").fetchSemanticsNodes().isEmpty())
+    }
+
+    @Test
     fun testsAConversationFromVoiceSettings() {
         val voice = FakeVoiceService().apply { transcript = "Rocky, você está me ouvindo?" }
         render(

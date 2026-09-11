@@ -242,6 +242,7 @@ fun RockyWindow(
                     pinned = pinned,
                     sessionStatus = sessionStatus,
                     twitchPhase = twitch.phase.takeIf { twitch.isRealSession },
+                    microphoneActive = voice.capturing,
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
                     onOpenSettings = {

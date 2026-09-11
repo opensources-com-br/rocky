@@ -36,6 +36,7 @@ internal fun RockyHeader(
     pinned: Boolean = false,
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Stopped,
     twitchPhase: TwitchConnectionPhase? = null,
+    microphoneActive: Boolean = false,
     onTogglePinned: () -> Unit = {},
     onToggleCompact: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
@@ -61,7 +62,7 @@ internal fun RockyHeader(
                 )
             }
         }
-        ListeningBadge(sessionStatus, twitchPhase)
+        ListeningBadge(sessionStatus, twitchPhase, microphoneActive)
         IconButton(onClick = onToggleCompact, modifier = Modifier.size(34.dp)) {
             Icon(
                 imageVector = if (compact) Icons.Outlined.OpenInFull else Icons.Outlined.CloseFullscreen,
@@ -92,7 +93,11 @@ internal fun RockyHeader(
 }
 
 @Composable
-private fun ListeningBadge(status: LiveSessionStatus, twitchPhase: TwitchConnectionPhase?) {
+private fun ListeningBadge(
+    status: LiveSessionStatus,
+    twitchPhase: TwitchConnectionPhase?,
+    microphoneActive: Boolean,
+) {
     val active = twitchPhase == TwitchConnectionPhase.Connected || status == LiveSessionStatus.Running
     Box(
         modifier = Modifier
@@ -101,7 +106,11 @@ private fun ListeningBadge(status: LiveSessionStatus, twitchPhase: TwitchConnect
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = twitchPhase?.badgeLabel ?: status.badgeLabel,
+            text = when {
+                microphoneActive -> "MICROFONE ON"
+                twitchPhase == TwitchConnectionPhase.Connected -> "CHAT ATIVO"
+                else -> twitchPhase?.badgeLabel ?: status.badgeLabel
+            },
             color = if (active) RockyColors.Accent else RockyColors.TextSecondary,
             fontSize = 11.sp,
             letterSpacing = 1.6.sp,
@@ -123,7 +132,7 @@ private val TwitchConnectionPhase.badgeLabel: String
         TwitchConnectionPhase.Authenticating,
         TwitchConnectionPhase.AwaitingAuthorization,
         TwitchConnectionPhase.Connecting -> "CONECTANDO"
-        TwitchConnectionPhase.Connected -> "OUVINDO"
+        TwitchConnectionPhase.Connected -> "CHAT ATIVO"
         TwitchConnectionPhase.Reconnecting -> "RECONECTANDO"
         TwitchConnectionPhase.Failed -> "ERRO"
     }

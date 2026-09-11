@@ -86,7 +86,7 @@ internal class AiSuggestionState(
 
     fun updateApiKey(apiKey: String) {
         connectionVerified = false
-        configuration = configuration.copy(apiKey = apiKey)
+        update(configuration.copy(apiKey = apiKey))
     }
 
     fun updateAutomaticAnalysis(enabled: Boolean) {
@@ -203,7 +203,7 @@ internal class AiSuggestionState(
     }
 
     private fun saveConfiguration() {
-        onConfigurationChange(configuration.copy(apiKey = ""))
+        onConfigurationChange(configuration)
     }
 
     companion object {

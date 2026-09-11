@@ -177,6 +177,7 @@ fun RockyWindow(
                 messages = recentMessages,
                 streamerRequest = request,
                 agent = agent.configuration,
+                messageLimit = recentMessages.size,
                 onComplete = { suggestion ->
                     if (voice.listenerEnabled) {
                         if (suggestion == null) {

@@ -127,6 +127,7 @@ internal class AiSuggestionState(
         streamerRequest: String? = null,
         agent: AgentConfiguration = AgentConfiguration(),
         automaticTimeMillis: Long = 0L,
+        messageLimit: Int = MAX_ANALYSIS_MESSAGES,
         onComplete: (RockySuggestion?) -> Unit = {},
     ) {
         if (generating || messages.isEmpty()) {
@@ -149,7 +150,7 @@ internal class AiSuggestionState(
             lastAutomaticAnalysisAtMillis = automaticTimeMillis
         }
         if (!automatic) lastAnalyzedMessageId = messages.last().id
-        val snapshot = messages.takeLast(MAX_ANALYSIS_MESSAGES)
+        val snapshot = messages.takeLast(messageLimit.coerceAtLeast(1))
         val activeConfiguration = configuration
         val activeSession = sessionGeneration
         generating = true

@@ -170,6 +170,19 @@ internal class VoiceState(
         speak(scope, text, force = force, onFinished = onFinished)
     }
 
+    fun speakAcknowledgement(
+        scope: CoroutineScope,
+        text: String,
+        silenced: Boolean,
+        onFinished: () -> Unit,
+    ) {
+        if (silenced) {
+            onFinished()
+            return
+        }
+        speak(scope, text, force = true, onFinished = onFinished)
+    }
+
     fun stopSpeaking() {
         val wasSpeaking = speaking || speechJob?.isActive == true
         speechGeneration += 1

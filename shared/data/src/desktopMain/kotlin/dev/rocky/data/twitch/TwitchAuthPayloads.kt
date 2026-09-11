@@ -3,6 +3,7 @@ package dev.rocky.data.twitch
 import dev.rocky.core.twitch.TwitchAccount
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -47,6 +48,11 @@ internal object TwitchAuthPayloads {
             userId = payload.requiredString("user_id"),
             login = payload.requiredString("login"),
         )
+    }
+
+    fun viewerCount(body: String): Int {
+        val stream = body.asObject()["data"]?.jsonArray?.firstOrNull()?.jsonObject
+        return stream?.get("viewer_count")?.jsonPrimitive?.content?.toIntOrNull() ?: 0
     }
 
     fun error(body: String): String? = runCatching {

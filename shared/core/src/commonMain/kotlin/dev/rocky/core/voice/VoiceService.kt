@@ -41,6 +41,8 @@ interface VoiceService : AutoCloseable {
 
     fun startCapture(microphoneId: String?)
 
+    fun inputLevel(): Float = 0f
+
     fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String
 
     fun cancelCapture()

@@ -48,6 +48,9 @@ internal class VoiceState(
     var listenerEnabled by mutableStateOf(false)
         private set
 
+    var inputLevel by mutableStateOf(0f)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
@@ -61,6 +64,7 @@ internal class VoiceState(
     private var captureTimeout: Job? = null
     private var captureJob: Job? = null
     private var transcriptionJob: Job? = null
+    private var levelJob: Job? = null
     private var speechJob: Job? = null
     private var captureGeneration = 0L
     private var speechGeneration = 0L
@@ -223,6 +227,14 @@ internal class VoiceState(
             result.onSuccess {
                 capturing = true
                 status = "Ouvinte ativo · diga “Rocky” e faça sua pergunta"
+                levelJob?.cancel()
+                levelJob = scope.launch {
+                    while (capturing) {
+                        inputLevel = service.inputLevel()
+                        delay(INPUT_LEVEL_REFRESH_MILLIS)
+                    }
+                    inputLevel = 0f
+                }
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)
@@ -238,6 +250,9 @@ internal class VoiceState(
         if (!capturing || transcribing) return
         captureTimeout?.cancel()
         capturing = false
+        levelJob?.cancel()
+        levelJob = null
+        inputLevel = 0f
         transcribing = true
         status = "Transcrevendo localmente…"
         val activeConfiguration: LocalTranscriptionConfiguration = configuration.transcription
@@ -266,6 +281,8 @@ internal class VoiceState(
         captureGeneration += 1
         captureTimeout?.cancel()
         captureTimeout = null
+        levelJob?.cancel()
+        levelJob = null
         captureJob?.cancel()
         captureJob = null
         transcriptionJob?.cancel()
@@ -273,6 +290,7 @@ internal class VoiceState(
         if (wasActive) service.cancelCapture()
         capturing = false
         transcribing = false
+        inputLevel = 0f
         if (wasActive) status = "Captura cancelada"
     }
 
@@ -324,6 +342,10 @@ internal class VoiceState(
     private fun update(value: VoiceConfiguration) {
         configuration = value
         onConfigurationChange(value)
+    }
+
+    private companion object {
+        const val INPUT_LEVEL_REFRESH_MILLIS = 75L
     }
 
 }

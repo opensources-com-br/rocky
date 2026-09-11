@@ -34,6 +34,9 @@ class DesktopVoiceService : VoiceService {
     private var captureThread: Thread? = null
 
     @Volatile
+    private var currentInputLevel = 0f
+
+    @Volatile
     private var transcriptionProcess: Process? = null
 
     @Volatile
@@ -100,6 +103,7 @@ class DesktopVoiceService : VoiceService {
             val output = ByteArrayOutputStream()
             line.open(format)
             line.start()
+            currentInputLevel = 0f
             captureLine = line
             capturedAudio = output
             captureThread = Thread({ capture(line, output) }, "rocky-microphone-capture").apply {
@@ -108,6 +112,8 @@ class DesktopVoiceService : VoiceService {
             }
         }
     }
+
+    override fun inputLevel(): Float = currentInputLevel
 
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
         val audio = finishCapture()
@@ -169,6 +175,7 @@ class DesktopVoiceService : VoiceService {
             val count = runCatching { line.read(buffer, 0, buffer.size) }.getOrDefault(-1)
             if (count <= 0) break
             output.write(buffer, 0, count)
+            currentInputLevel = pcmLevel(buffer, count)
         }
     }
 
@@ -179,6 +186,7 @@ class DesktopVoiceService : VoiceService {
         captureThread?.join(CAPTURE_JOIN_TIMEOUT_MILLIS)
         captureLine = null
         captureThread = null
+        currentInputLevel = 0f
         (capturedAudio?.toByteArray() ?: byteArrayOf()).also { capturedAudio = null }
     }
 
@@ -258,6 +266,21 @@ class DesktopVoiceService : VoiceService {
             if (process.waitFor(timeout, unit)) return true
             stopProcess(process)
             return false
+        }
+
+        internal fun pcmLevel(bytes: ByteArray, count: Int): Float {
+            if (count < 2) return 0f
+            var sum = 0.0
+            var samples = 0
+            var index = 0
+            while (index + 1 < count) {
+                val sample = ((bytes[index + 1].toInt() shl 8) or (bytes[index].toInt() and 0xff)).toShort().toInt()
+                val normalized = sample / 32768.0
+                sum += normalized * normalized
+                samples += 1
+                index += 2
+            }
+            return kotlin.math.sqrt(sum / samples).toFloat().coerceIn(0f, 1f)
         }
 
         private fun stopProcess(process: Process) {

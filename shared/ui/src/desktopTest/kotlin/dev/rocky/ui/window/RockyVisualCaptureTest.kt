@@ -189,7 +189,7 @@ class RockyVisualCaptureTest {
     }
 
     @Test
-    fun analyzesTheFirstAutomaticBatchWhenTheThirdMessageArrives() {
+    fun analyzesAutomaticBatchesWithoutUsingNext() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient()
         prepareAutomaticSession(twitch, ai)
@@ -204,6 +204,10 @@ class RockyVisualCaptureTest {
         }
 
         assertEquals(1, ai.requests)
+        rule.runOnIdle { twitch.emitMessages(3, startAt = 3) }
+        rule.mainClock.advanceTimeBy(200_100)
+        rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 2 }
+        assertEquals(2, ai.requests)
     }
 
     @Test
@@ -479,7 +483,8 @@ class RockyVisualCaptureTest {
 
         fun emit(event: TwitchConnectionEvent) = listener.onEvent(event)
 
-        fun emitMessages(count: Int) = repeat(count) { index ->
+        fun emitMessages(count: Int, startAt: Int = 0) = repeat(count) { offset ->
+            val index = startAt + offset
             emit(
                 TwitchConnectionEvent.MessageReceived(
                     ChatMessage("message-$index", "viewer", "Mensagem $index", StreamPlatform.Twitch),

@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.rocky.core.live.RockySuggestion
 import dev.rocky.core.live.LiveSessionStatus
-import dev.rocky.core.live.LiveSessionMode
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
@@ -79,7 +78,6 @@ internal fun LiveSummary(
     suggestion: RockySuggestion? = previewSuggestion,
     sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Running,
-    sessionMode: LiveSessionMode = LiveSessionMode.Demonstration,
     sessionAvailable: Boolean = true,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
@@ -93,7 +91,7 @@ internal fun LiveSummary(
     onNext: () -> Unit,
     onSilence: () -> Unit,
 ) {
-    val analyzeAction = sessionMode == LiveSessionMode.Real && suggestion == null
+    val analyzeAction = suggestion == null
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,10 +114,7 @@ internal fun LiveSummary(
                 text = when {
                     suggestion != null && speaking -> "TOCANDO AGORA"
                     suggestion != null -> "SUGESTÃO DO ${agentName.uppercase()}"
-                    sessionMode == LiveSessionMode.Real -> "CHAT REAL DA TWITCH"
-                    sessionStatus == LiveSessionStatus.Stopped -> "DEMONSTRAÇÃO PRONTA"
-                    sessionStatus == LiveSessionStatus.Ended -> "DEMONSTRAÇÃO ENCERRADA"
-                    else -> "OUVINDO O CHAT"
+                    else -> "CHAT REAL DA TWITCH"
                 },
                 color = RockyColors.Accent,
                 fontSize = 12.sp,
@@ -135,7 +130,7 @@ internal fun LiveSummary(
         }
         Spacer(Modifier.height(17.dp))
         Text(
-            text = suggestion?.text ?: if (sessionMode == LiveSessionMode.Real) {
+            text = suggestion?.text ?: run {
                 if (!sessionAvailable) {
                     "Conecte sua Twitch nas configurações para acompanhar uma live."
                 } else if (generatingSuggestion) {
@@ -147,10 +142,6 @@ internal fun LiveSummary(
                 } else {
                     "Estou recebendo o chat real. Posso analisar agora ou aguardar o próximo lote automático."
                 }
-            } else when (sessionStatus) {
-                LiveSessionStatus.Stopped -> "Inicie a demonstração para receber mensagens simuladas."
-                LiveSessionStatus.Running -> "Estou acompanhando as mensagens para encontrar algo útil."
-                LiveSessionStatus.Ended -> "A demonstração terminou. Reinicie quando quiser testar novamente."
             },
             style = MaterialTheme.typography.h1,
             modifier = Modifier.heightIn(max = 140.dp).verticalScroll(rememberScrollState()),
@@ -158,10 +149,6 @@ internal fun LiveSummary(
         Spacer(Modifier.height(13.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             SourceCount(sourceCounts[StreamPlatform.Twitch] ?: 0, "Twitch", RockyColors.Twitch)
-            if (sessionMode == LiveSessionMode.Demonstration) {
-                SourceCount(sourceCounts[StreamPlatform.YouTube] ?: 0, "YouTube", RockyColors.YouTube)
-                SourceCount(sourceCounts[StreamPlatform.Kick] ?: 0, "Kick", RockyColors.Kick)
-            }
         }
         EvidenceButton(evidence)
         Spacer(Modifier.height(17.dp))
@@ -172,7 +159,7 @@ internal fun LiveSummary(
             Button(
                 modifier = Modifier.weight(1f).height(42.dp),
                 onClick = if (analyzeAction) onAnalyze else onSaveNote,
-                enabled = if (analyzeAction) canAnalyze && !generatingSuggestion else suggestion != null && !suggestionSaved,
+                enabled = if (analyzeAction) canAnalyze && !generatingSuggestion else !suggestionSaved,
                 shape = RoundedCornerShape(11.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = RockyColors.Accent,
@@ -239,8 +226,6 @@ private val previewSuggestion = RockySuggestion(
 
 private val previewSourceCounts = mapOf(
     StreamPlatform.Twitch to 4,
-    StreamPlatform.YouTube to 2,
-    StreamPlatform.Kick to 1,
 )
 
 internal fun PlatformStatus.color(): Color {

@@ -32,7 +32,6 @@ import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.LiveIdea
-import dev.rocky.core.live.LiveSessionMode
 import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.notes.NoteRepository
@@ -368,7 +367,6 @@ fun RockyWindow(
                             suggestion = visibleSuggestion,
                             sourceCounts = mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0)),
                             sessionStatus = sessionStatus,
-                            sessionMode = LiveSessionMode.Real,
                             sessionAvailable = twitch.isRealSession,
                             suggestionSaved = false,
                             silenced = silenced,

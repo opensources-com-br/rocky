@@ -13,6 +13,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -176,16 +177,10 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Pulso").performClick()
         rule.onNodeWithText("1 mensagem recebida").assertExists()
         rule.onNodeWithText("Conversa").performClick()
-        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Quais dúvidas responder?")
-        rule.onNodeWithTag("send-streamer-text-request").performClick()
-        rule.waitUntil(timeoutMillis = 5_000) {
-            rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()
-        }
+        assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
         rule.runOnIdle {
-            assertEquals("Quais dúvidas responder?", ai.lastRequest)
             twitch.emit(TwitchConnectionEvent.PhaseChanged(dev.rocky.core.twitch.TwitchConnectionPhase.Reconnecting))
         }
-        rule.onNodeWithText("O chat quer saber o preço.").assertExists()
         capture("implementation-real-session.png")
     }
 

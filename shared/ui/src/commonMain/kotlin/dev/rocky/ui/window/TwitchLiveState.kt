@@ -47,6 +47,9 @@ internal class TwitchLiveState(
     var messagesPerMinute by mutableStateOf(0)
         private set
 
+    var viewerCount by mutableStateOf<Int?>(null)
+        private set
+
     fun connect(clientId: String) {
         if (clientId.isBlank()) {
             phase = TwitchConnectionPhase.Failed
@@ -58,6 +61,7 @@ internal class TwitchLiveState(
         receivedMessageTimes.clear()
         totalMessages = 0
         messagesPerMinute = 0
+        viewerCount = null
         account = null
         userCode = null
         verificationUri = null
@@ -74,6 +78,7 @@ internal class TwitchLiveState(
             phase = TwitchConnectionPhase.Disconnected
             detail = null
             account = null
+            viewerCount = null
             userCode = null
             verificationUri = null
         }
@@ -87,6 +92,7 @@ internal class TwitchLiveState(
                     detail = event.detail
                     if (event.phase == TwitchConnectionPhase.Disconnected) {
                         account = null
+                        viewerCount = null
                         userCode = null
                         verificationUri = null
                     }
@@ -104,6 +110,7 @@ internal class TwitchLiveState(
                     userCode = null
                     verificationUri = null
                 }
+                is TwitchConnectionEvent.AudienceUpdated -> viewerCount = event.viewerCount
                 is TwitchConnectionEvent.MessageReceived -> {
                     if (messages.size == MAX_CHAT_MESSAGES) {
                         receivedAtByMessageId.remove(messages.removeAt(0).id)

@@ -44,6 +44,7 @@ class TwitchLiveStateTest {
         assertEquals("ABCD-1234", state.userCode)
 
         client.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+        client.emit(TwitchConnectionEvent.AudienceUpdated(321))
         client.emit(
             TwitchConnectionEvent.MessageReceived(
                 ChatMessage("message-1", "viewer", "Olá!", StreamPlatform.Twitch),
@@ -52,6 +53,7 @@ class TwitchLiveStateTest {
 
         assertEquals(TwitchConnectionPhase.Connected, state.phase)
         assertEquals("rocky_live", state.account?.login)
+        assertEquals(321, state.viewerCount)
         assertEquals("Olá!", state.messages.single().text)
         assertTrue(state.isRealSession)
 

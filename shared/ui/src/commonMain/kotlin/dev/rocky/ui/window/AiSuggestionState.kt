@@ -129,9 +129,13 @@ internal class AiSuggestionState(
         automaticTimeMillis: Long = 0L,
         onComplete: (RockySuggestion?) -> Unit = {},
     ) {
-        if (generating || messages.isEmpty()) return
+        if (generating || messages.isEmpty()) {
+            onComplete(null)
+            return
+        }
         if (!isReady) {
             status = "Configure o provedor de IA antes de analisar"
+            onComplete(null)
             return
         }
         if (automatic) {

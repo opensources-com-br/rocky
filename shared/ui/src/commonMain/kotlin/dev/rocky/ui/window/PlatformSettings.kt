@@ -17,11 +17,17 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.twitch.TwitchConnectionPhase
 import dev.rocky.ui.theme.RockyColors
@@ -80,6 +86,8 @@ private fun TwitchAccount(
     onDisconnect: () -> Unit,
     onOpenAuthorization: (String) -> Unit,
 ) {
+    var clientIdVisible by remember { mutableStateOf(false) }
+
     Surface(
         modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 6.dp),
         color = RockyColors.SurfaceElevated,
@@ -107,6 +115,10 @@ private fun TwitchAccount(
                 placeholder = { Text("Cole o Client ID do seu aplicativo") },
                 singleLine = true,
                 enabled = !twitch.phase.isConnecting,
+                visualTransformation = if (clientIdVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    CredentialVisibilityButton(clientIdVisible) { clientIdVisible = !clientIdVisible }
+                },
             )
             twitch.userCode?.let { code ->
                 Text(

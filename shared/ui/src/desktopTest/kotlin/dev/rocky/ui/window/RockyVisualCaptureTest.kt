@@ -241,6 +241,40 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun listensForAQuestionAfterCallingRocky() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient()
+        val voice = FakeVoiceService().apply {
+            transcripts += listOf("Rocky", "o pessoal está gostando?")
+        }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+            aiSuggestionClient = ai,
+            voiceService = voice,
+            voiceConfiguration = VoiceConfiguration(
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
+            ),
+        )
+
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emit(TwitchConnectionEvent.MessageReceived(ChatMessage("m1", "viewer", "Gostei", StreamPlatform.Twitch)))
+        }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 1 }
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 2 }
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 3 }
+
+        assertEquals("o pessoal está gostando?", ai.lastRequest)
+        assertEquals("Estou ouvindo.", voice.spoken.first())
+    }
+
+    @Test
     fun analyzesAutomaticBatchesWithoutUsingNext() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient()

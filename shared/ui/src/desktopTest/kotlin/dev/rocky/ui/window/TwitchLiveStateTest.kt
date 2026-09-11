@@ -98,6 +98,20 @@ class TwitchLiveStateTest {
     }
 
     @Test
+    fun selectsChatFromTheLastTwoMinutes() {
+        var now = 0L
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client) { now }
+        state.connect("client-id")
+
+        client.emit(message("old"))
+        now = 121_000L
+        client.emit(message("recent"))
+
+        assertEquals(listOf("recent"), state.messagesReceivedWithin(120_000L).map(ChatMessage::id))
+    }
+
+    @Test
     fun ignoresEventsFromAPreviousConnection() {
         val client = FakeTwitchChatClient()
         val state = TwitchLiveState(client)

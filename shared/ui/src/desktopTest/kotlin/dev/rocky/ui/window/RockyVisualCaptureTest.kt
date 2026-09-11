@@ -39,6 +39,12 @@ import dev.rocky.core.twitch.TwitchAccount
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionEvent
 import dev.rocky.core.twitch.TwitchConnectionListener
+import dev.rocky.core.voice.AudioInputDevice
+import dev.rocky.core.voice.LocalTranscriptionConfiguration
+import dev.rocky.core.voice.SystemVoice
+import dev.rocky.core.voice.VoiceConfiguration
+import dev.rocky.core.voice.VoiceOutputConfiguration
+import dev.rocky.core.voice.VoiceService
 import java.nio.file.Files
 import java.nio.file.Path
 import org.jetbrains.skia.EncodedImageFormat
@@ -462,6 +468,8 @@ class RockyVisualCaptureTest {
         twitchChatClient: TwitchChatClient? = null,
         twitchClientId: String = "",
         aiSuggestionClient: AiSuggestionClient? = null,
+        voiceService: VoiceService = FakeVoiceService(),
+        voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
         onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
         firstUseOpen: Boolean = false,
         onFirstUseFinished: () -> Unit = {},
@@ -480,6 +488,8 @@ class RockyVisualCaptureTest {
                         noteRepository = noteRepository,
                         twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
+                        voiceService = voiceService,
+                        initialVoiceConfiguration = voiceConfiguration,
                         onAgentConfigurationChange = onAgentConfigurationChange,
                         initialTwitchClientId = twitchClientId,
                         onExportNotes = onExportNotes,
@@ -557,6 +567,18 @@ class RockyVisualCaptureTest {
             return AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
         }
 
+        override fun close() = Unit
+    }
+
+    private class FakeVoiceService : VoiceService {
+        var captureStarts = 0
+        override fun availableVoices(): List<SystemVoice> = emptyList()
+        override fun availableMicrophones(): List<AudioInputDevice> = emptyList()
+        override fun speak(text: String, configuration: VoiceOutputConfiguration) = Unit
+        override fun stopSpeaking() = Unit
+        override fun startCapture(microphoneId: String?) { captureStarts += 1 }
+        override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) = ""
+        override fun cancelCapture() = Unit
         override fun close() = Unit
     }
 }

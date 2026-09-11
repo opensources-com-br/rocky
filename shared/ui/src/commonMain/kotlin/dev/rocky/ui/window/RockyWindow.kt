@@ -351,14 +351,6 @@ fun RockyWindow(
                                     firstUseOpen = false
                                     onFirstUseFinished()
                                 },
-                                onUseDemonstration = {
-                                    silenced = false
-                                    voice.resetSession()
-                                    ai.resetSession()
-                                    if (twitch.isRealSession) twitch.disconnect()
-                                    firstUseOpen = false
-                                    onFirstUseFinished()
-                                },
                             )
                         }
                     }

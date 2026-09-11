@@ -559,10 +559,8 @@ class RockyVisualCaptureTest {
 
     @Test
     fun guidesFirstUseThroughSettings() {
-        var finished = false
         render(
             firstUseOpen = true,
-            onFirstUseFinished = { finished = true },
         )
 
         rule.onNodeWithText("Configure o Rocky").assertExists()
@@ -571,9 +569,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("concluir").performClick()
         rule.onNodeWithText("Configure o Rocky").assertExists()
 
-        rule.onNodeWithText("Usar demonstração").performScrollTo().performClick()
-        rule.onNodeWithText("MODO DEMONSTRAÇÃO").assertExists()
-        rule.runOnIdle { assertTrue(finished) }
+        assertTrue(rule.onAllNodesWithText("Usar demonstração").fetchSemanticsNodes().isEmpty())
     }
 
     @Test

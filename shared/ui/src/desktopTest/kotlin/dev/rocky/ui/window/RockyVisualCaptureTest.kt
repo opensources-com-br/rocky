@@ -75,6 +75,30 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun testsAConversationFromVoiceSettings() {
+        val voice = FakeVoiceService().apply { transcript = "Rocky, você está me ouvindo?" }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Voice,
+            voiceService = voice,
+            voiceConfiguration = VoiceConfiguration(
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
+            ),
+        )
+
+        rule.onNodeWithTag("test-conversation").performScrollTo().performClick()
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.isNotEmpty() }
+
+        rule.onNodeWithTag("voice-test-transcript").assertIsDisplayed()
+        rule.onNodeWithTag("voice-test-response").assertIsDisplayed()
+        assertEquals(
+            "Eu ouvi você dizer: Rocky, você está me ouvindo?. Meu microfone está funcionando.",
+            voice.spoken.single(),
+        )
+    }
+
+    @Test
     fun captureMainInterface() {
         when (System.getenv("ROCKY_CAPTURE_STATE")) {
             "settings-ai" -> {

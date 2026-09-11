@@ -190,7 +190,12 @@ fun RockyWindow(
                 onComplete = { suggestion ->
                     if (voice.listenerEnabled) {
                         if (suggestion == null) {
-                            voice.resumeListener()
+                            voice.speakAcknowledgement(
+                                aiScope,
+                                "Não consegui consultar o chat agora. Vou continuar ouvindo.",
+                                silenced,
+                                voice::resumeListener,
+                            )
                         } else {
                             voice.speakSuggestion(
                                 aiScope,

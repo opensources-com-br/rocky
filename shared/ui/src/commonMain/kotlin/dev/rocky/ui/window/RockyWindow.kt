@@ -418,8 +418,6 @@ fun RockyWindow(
                                     },
                                 )
                                 MainSection.Ideas -> TimelineContent(
-                                    section = mainSection,
-                                    demonstration = false,
                                     onExportIdeas = onExportIdeas,
                                 )
                                 MainSection.Pulse -> PulseContent(

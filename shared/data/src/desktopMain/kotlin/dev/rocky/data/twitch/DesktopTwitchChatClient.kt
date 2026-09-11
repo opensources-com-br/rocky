@@ -64,6 +64,12 @@ class DesktopTwitchChatClient : TwitchChatClient {
     @Volatile
     private var validationRunning = false
 
+    @Volatile
+    private var audienceRefreshRunning = false
+
+    @Volatile
+    private var lastAudienceRefreshAt = 0L
+
     private var reconnectAttempt = 0
     private var validationRetryAttempt = 0
 
@@ -254,12 +260,32 @@ class DesktopTwitchChatClient : TwitchChatClient {
 
     private fun checkKeepalive() {
         checkTokenValidation()
+        checkAudience()
         val timeout = keepaliveTimeoutMillis
         if (!active || timeout == 0L || System.currentTimeMillis() - lastEventAt <= timeout + 5_000) return
         val currentRun = generation.get()
         keepaliveTimeoutMillis = 0
         socket?.abort()
         scheduleReconnect(currentRun)
+    }
+
+    @Synchronized
+    private fun checkAudience() {
+        val now = System.currentTimeMillis()
+        val run = generation.get()
+        val currentTokens = tokens ?: return
+        val currentAccount = account ?: return
+        if (!isCurrent(run) || audienceRefreshRunning || now - lastAudienceRefreshAt < TWITCH_AUDIENCE_REFRESH_INTERVAL_MILLIS) return
+        audienceRefreshRunning = true
+        lastAudienceRefreshAt = now
+        ioExecutor.execute {
+            runCatching {
+                api.viewerCount(clientId, currentTokens.accessToken, currentAccount.userId)
+            }.onSuccess { viewerCount ->
+                if (isCurrent(run)) listener.onEvent(TwitchConnectionEvent.AudienceUpdated(viewerCount))
+            }
+            audienceRefreshRunning = false
+        }
     }
 
     @Synchronized
@@ -317,6 +343,8 @@ class DesktopTwitchChatClient : TwitchChatClient {
         keepaliveTimeoutMillis = 0
         lastValidationAt = 0
         validationRunning = false
+        audienceRefreshRunning = false
+        lastAudienceRefreshAt = 0
         validationRetryAttempt = 0
         socket?.sendClose(WebSocket.NORMAL_CLOSURE, "disconnected")
         socket = null
@@ -338,6 +366,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
 }
 
 internal const val TWITCH_TOKEN_VALIDATION_INTERVAL_MILLIS = 60 * 60 * 1_000L
+internal const val TWITCH_AUDIENCE_REFRESH_INTERVAL_MILLIS = 30_000L
 
 internal fun Throwable.isTransientTwitchFailure(): Boolean =
     this is IOException || (this is TwitchApiException && (statusCode == 429 || statusCode in 500..599))

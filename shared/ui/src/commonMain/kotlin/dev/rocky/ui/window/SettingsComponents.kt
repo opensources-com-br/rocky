@@ -151,10 +151,11 @@ internal fun SettingSwitch(
     label: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Switch(
-            modifier = Modifier.height(34.dp),
+            modifier = modifier.height(34.dp),
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(

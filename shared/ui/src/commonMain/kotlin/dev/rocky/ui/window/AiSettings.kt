@@ -123,7 +123,12 @@ internal fun AiSettings(ai: AiSuggestionState) {
             if (ai.automaticAnalysis) "ativo" else "inativo",
         )
         Spacer(Modifier.height(8.dp))
-        SettingSwitch("analisar durante a live", ai.automaticAnalysis, ai::updateAutomaticAnalysis)
+        SettingSwitch(
+            "analisar durante a live",
+            ai.automaticAnalysis,
+            ai::updateAutomaticAnalysis,
+            Modifier.testTag("automatic-analysis"),
+        )
         Text(
             "Ao usar uma API, as mensagens selecionadas são enviadas ao provedor configurado.",
             modifier = Modifier.padding(top = 10.dp),

@@ -414,18 +414,6 @@ fun RockyWindow(
                                 MainSection.Conversation -> ConversationContent(
                                     messages = visibleMessages,
                                     streamerSpeech = voice.transcript,
-                                    showTextRequest = twitch.isRealSession,
-                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && !ai.generating,
-                                    analyzing = ai.generating,
-                                    onCancelAnalysis = ai::cancelAnalysis,
-                                    onTextRequest = { request ->
-                                        ai.analyze(
-                                            aiScope,
-                                            twitch.messages,
-                                            streamerRequest = request,
-                                            agent = agent.configuration,
-                                        )
-                                    },
                                 )
                                 MainSection.Support -> SupportContent(demonstration = !twitch.isRealSession)
                                 MainSection.Notes -> NotesContent(

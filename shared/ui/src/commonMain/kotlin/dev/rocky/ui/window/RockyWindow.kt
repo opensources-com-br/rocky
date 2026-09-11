@@ -101,7 +101,6 @@ fun RockyWindow(
         }
         var silenced by remember { mutableStateOf(false) }
         var waitingForVoiceCommand by remember { mutableStateOf(false) }
-        val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
@@ -124,15 +123,14 @@ fun RockyWindow(
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
         val sessionStatus = when {
-            !twitch.isRealSession -> live.status
             twitch.phase == TwitchConnectionPhase.Connected -> LiveSessionStatus.Running
             twitch.phase == TwitchConnectionPhase.Failed -> LiveSessionStatus.Ended
             else -> LiveSessionStatus.Stopped
         }
-        val visibleMessages = if (twitch.isRealSession) twitch.messages else live.messages
-        val visibleMessageCount = if (twitch.isRealSession) twitch.totalMessages else visibleMessages.size
-        val visibleSuggestion = if (twitch.isRealSession) ai.suggestion else live.suggestion
-        val visiblePlatforms = if (twitch.isRealSession) twitch.platforms else samplePlatforms
+        val visibleMessages = twitch.messages
+        val visibleMessageCount = twitch.totalMessages
+        val visibleSuggestion = ai.suggestion
+        val visiblePlatforms = twitch.platforms
 
         LaunchedEffect(
             twitch.phase,
@@ -261,7 +259,7 @@ fun RockyWindow(
                         status = sessionStatus,
                         messageCount = visibleMessageCount,
                         suggestion = visibleSuggestion?.text,
-                        real = twitch.isRealSession,
+                        real = true,
                         silenced = silenced,
                         onToggleSilence = {
                             silenced = !silenced
@@ -307,7 +305,6 @@ fun RockyWindow(
                                     onConnect = {
                                         silenced = false
                                         voice.resetSession()
-                                        live.end()
                                         ai.resetSession()
                                         twitch.connect(twitchClientId)
                                     },
@@ -362,22 +359,6 @@ fun RockyWindow(
                                 ai.resetSession()
                                 twitch.disconnect()
                             }
-                        } else {
-                            LiveSessionControls(
-                                status = live.status,
-                                onStart = {
-                                    silenced = false
-                                    live.start()
-                                },
-                                onEnd = {
-                                    silenced = false
-                                    live.end()
-                                },
-                                onRestart = {
-                                    silenced = false
-                                    live.restart()
-                                },
-                            )
                         }
                         Divider(color = RockyColors.Divider)
                         PlatformStrip(visiblePlatforms)
@@ -385,37 +366,30 @@ fun RockyWindow(
                         LiveSummary(
                             agentName = agent.displayName,
                             suggestion = visibleSuggestion,
-                            sourceCounts = if (twitch.isRealSession) {
-                                mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0))
-                            } else {
-                                live.sourceCounts
-                            },
+                            sourceCounts = mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0)),
                             sessionStatus = sessionStatus,
-                            sessionMode = if (twitch.isRealSession) LiveSessionMode.Real else LiveSessionMode.Demonstration,
-                            suggestionSaved = !twitch.isRealSession && live.suggestionSaved,
+                            sessionMode = LiveSessionMode.Real,
+                            sessionAvailable = twitch.isRealSession,
+                            suggestionSaved = false,
                             silenced = silenced,
                             speaking = voice.speaking,
                             generatingSuggestion = ai.generating,
                             canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messages.isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
-                            evidence = if (twitch.isRealSession) ai.suggestionSources.map { "${it.author}: ${it.text}" } else emptyList(),
+                            evidence = ai.suggestionSources.map { "${it.author}: ${it.text}" },
                             onSaveNote = {
-                                val note = if (twitch.isRealSession) {
-                                    ai.suggestion?.let { suggestion ->
-                                        suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())
-                                    }
-                                } else {
-                                    live.createNoteFromSuggestion()
+                                val note = ai.suggestion?.let { suggestion ->
+                                    suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())
                                 }
                                 if (note != null && localNotes.save(note)) {
-                                    if (twitch.isRealSession) ai.dismissSuggestion() else live.markSuggestionSaved()
+                                    ai.dismissSuggestion()
                                     mainSection = MainSection.Notes
                                 }
                             },
                             onAnalyze = { ai.analyze(aiScope, twitch.messages, agent = agent.configuration) },
                             onNext = {
                                 voice.stopSpeaking()
-                                if (twitch.isRealSession) ai.dismissSuggestion() else live.dismissSuggestion()
+                                ai.dismissSuggestion()
                             },
                             onSilence = {
                                 silenced = !silenced
@@ -436,7 +410,7 @@ fun RockyWindow(
                                     messages = visibleMessages,
                                     streamerSpeech = voice.transcript,
                                 )
-                                MainSection.Support -> SupportContent(demonstration = !twitch.isRealSession)
+                                MainSection.Support -> SupportContent(demonstration = false)
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,
                                     notice = localNotes.notice,
@@ -448,12 +422,12 @@ fun RockyWindow(
                                 )
                                 MainSection.Ideas -> TimelineContent(
                                     section = mainSection,
-                                    demonstration = !twitch.isRealSession,
+                                    demonstration = false,
                                     onExportIdeas = onExportIdeas,
                                 )
                                 MainSection.Pulse -> PulseContent(
                                     platforms = visiblePlatforms,
-                                    realSession = twitch.isRealSession,
+                                    realSession = true,
                                     messageCount = visibleMessageCount,
                                 )
                             }

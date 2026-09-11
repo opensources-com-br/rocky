@@ -80,6 +80,7 @@ internal fun LiveSummary(
     sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Running,
     sessionMode: LiveSessionMode = LiveSessionMode.Demonstration,
+    sessionAvailable: Boolean = true,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
     speaking: Boolean = false,
@@ -135,7 +136,9 @@ internal fun LiveSummary(
         Spacer(Modifier.height(17.dp))
         Text(
             text = suggestion?.text ?: if (sessionMode == LiveSessionMode.Real) {
-                if (generatingSuggestion) {
+                if (!sessionAvailable) {
+                    "Conecte sua Twitch nas configurações para acompanhar uma live."
+                } else if (generatingSuggestion) {
                     "Estou analisando o chat para encontrar uma resposta ou ideia útil."
                 } else if (!canAnalyze) {
                     "Configure e teste um provedor na aba IA para gerar sugestões."

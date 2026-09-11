@@ -211,6 +211,36 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun answersACompleteRockyVoiceCommand() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient()
+        val voice = FakeVoiceService().apply { transcript = "Rocky, o que o chat quer?" }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+            aiSuggestionClient = ai,
+            voiceService = voice,
+            voiceConfiguration = VoiceConfiguration(
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
+            ),
+        )
+
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emit(TwitchConnectionEvent.MessageReceived(ChatMessage("m1", "viewer", "CS", StreamPlatform.Twitch)))
+        }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 1 }
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 2 }
+
+        assertEquals("o que o chat quer?", ai.lastRequest)
+        assertEquals(listOf("Vou verificar o chat.", "O chat quer saber o preço."), voice.spoken.take(2))
+    }
+
+    @Test
     fun analyzesAutomaticBatchesWithoutUsingNext() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient()

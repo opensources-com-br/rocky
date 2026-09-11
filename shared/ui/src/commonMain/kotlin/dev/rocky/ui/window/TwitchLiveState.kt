@@ -17,6 +17,7 @@ internal class TwitchLiveState(
     private val currentTimeMillis: () -> Long = { 0L },
 ) {
     val messages = mutableStateListOf<ChatMessage>()
+    private val receivedAtByMessageId = mutableMapOf<String, Long>()
     // One bucket per second, independent of the chat rate.
     private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
     internal val metricBucketCount: Int get() = receivedMessageTimes.size
@@ -53,6 +54,7 @@ internal class TwitchLiveState(
             return
         }
         messages.clear()
+        receivedAtByMessageId.clear()
         receivedMessageTimes.clear()
         totalMessages = 0
         messagesPerMinute = 0
@@ -103,8 +105,11 @@ internal class TwitchLiveState(
                     verificationUri = null
                 }
                 is TwitchConnectionEvent.MessageReceived -> {
-                    if (messages.size == MAX_CHAT_MESSAGES) messages.removeAt(0)
+                    if (messages.size == MAX_CHAT_MESSAGES) {
+                        receivedAtByMessageId.remove(messages.removeAt(0).id)
+                    }
                     messages += event.message
+                    receivedAtByMessageId[event.message.id] = currentTimeMillis()
                     totalMessages += 1
                     val second = currentTimeMillis() / 1_000
                     receivedMessageTimes[second] = (receivedMessageTimes[second] ?: 0) + 1
@@ -118,6 +123,11 @@ internal class TwitchLiveState(
         val cutoff = currentTimeMillis() / 1_000 - 59
         receivedMessageTimes.keys.filter { it < cutoff }.forEach(receivedMessageTimes::remove)
         messagesPerMinute = receivedMessageTimes.values.sum()
+    }
+
+    fun messagesReceivedWithin(durationMillis: Long): List<ChatMessage> {
+        val cutoff = currentTimeMillis() - durationMillis
+        return messages.filter { (receivedAtByMessageId[it.id] ?: Long.MIN_VALUE) >= cutoff }
     }
 
     companion object {

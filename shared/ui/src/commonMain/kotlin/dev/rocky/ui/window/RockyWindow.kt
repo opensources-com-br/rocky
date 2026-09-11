@@ -315,7 +315,7 @@ fun RockyWindow(
                             FirstUseContent(
                                 twitchConnected = twitch.phase == TwitchConnectionPhase.Connected,
                                 aiVerified = ai.connectionVerified,
-                                voiceVerified = voice.voiceTested,
+                                voiceVerified = voice.voiceTested && voice.transcriptionReady,
                                 onConfigureTwitch = {
                                     settingsSection = SettingsSection.Platforms
                                     settingsOpen = true

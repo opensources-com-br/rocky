@@ -112,6 +112,21 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun replacesAnAutomaticSuggestionWithoutWaitingForNext() = runBlocking {
+        val client = FakeAiSuggestionClient()
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.updateAutomaticAnalysis(true)
+
+        state.analyze(this, messages(3), automatic = true)
+        while (state.generating) delay(1)
+        state.analyze(this, messages(6), automatic = true)
+        while (state.generating) delay(1)
+
+        assertEquals(2, client.requests)
+        assertEquals(setOf("m6"), state.suggestion?.sourceMessageIds)
+    }
+
+    @Test
     fun neverPersistsOpenAiApiKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }

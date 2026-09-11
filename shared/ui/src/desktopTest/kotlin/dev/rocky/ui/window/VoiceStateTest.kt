@@ -123,6 +123,19 @@ class VoiceStateTest {
     }
 
     @Test
+    fun enablingTheListenerTwiceKeepsOneMicrophoneCapture() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) {}
+
+        state.enableListener(this) {}
+        waitUntil { state.capturing }
+        state.enableListener(this) {}
+
+        assertEquals(1, service.captureStarts)
+        state.disableListener()
+    }
+
+    @Test
     fun doesNotEnableTheListenerBeforeVoiceSetup() = runBlocking {
         val state = VoiceState(FakeVoiceService(), VoiceConfiguration()) {}
 

@@ -59,6 +59,22 @@ class RockyVisualCaptureTest {
     val rule = createComposeRule()
 
     @Test
+    fun showsWhenTheMicrophoneIsCapturing() {
+        rule.setContent {
+            AssistantFooter(
+                active = true,
+                capturing = true,
+                inputLevel = 0.42f,
+                onTalk = {},
+            )
+        }
+
+        rule.onNodeWithTag("microphone-level", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("Microfone ouvindo").assertIsDisplayed()
+        rule.onNodeWithText("Fale agora · nível 42%").assertIsDisplayed()
+    }
+
+    @Test
     fun captureMainInterface() {
         when (System.getenv("ROCKY_CAPTURE_STATE")) {
             "settings-ai" -> {

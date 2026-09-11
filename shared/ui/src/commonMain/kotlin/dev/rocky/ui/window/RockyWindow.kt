@@ -464,6 +464,8 @@ fun RockyWindow(
                         AssistantFooter(
                             agentName = agent.displayName,
                             active = voice.listenerEnabled,
+                            capturing = voice.capturing,
+                            inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
                             realSession = twitch.isRealSession,

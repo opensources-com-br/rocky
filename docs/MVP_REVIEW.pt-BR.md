@@ -2,7 +2,7 @@
 
 Data: 10/09/2026. Código analisado: `b930ad518eccaa990260167f8457bdd43dfe9c37`.
 
-Esta avaliação é histórica. As correções posteriores e os critérios de teste do candidato 1.0.10-alpha.6 estão no [roteiro de validação de hoje](TEST_TODAY.pt-BR.md). Os achados abaixo descrevem o commit analisado, não o estado atual de cada funcionalidade.
+Esta avaliação é histórica. As correções posteriores e os critérios de teste do candidato 1.0.10-alpha.7 estão no [roteiro de validação de hoje](TEST_TODAY.pt-BR.md). Os achados abaixo descrevem o commit analisado, não o estado atual de cada funcionalidade.
 
 ## Parecer
 

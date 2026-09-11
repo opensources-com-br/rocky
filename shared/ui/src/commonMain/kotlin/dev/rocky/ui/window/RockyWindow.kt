@@ -170,6 +170,29 @@ fun RockyWindow(
             }
         }
 
+        val handleVoiceRequest: (String) -> Unit = { request ->
+            ai.analyze(
+                scope = aiScope,
+                messages = twitch.messages,
+                streamerRequest = request,
+                agent = agent.configuration,
+                onComplete = { suggestion ->
+                    if (suggestion == null) {
+                        voice.resumeListener()
+                    } else {
+                        voice.speakSuggestion(
+                            aiScope,
+                            suggestion.id,
+                            suggestion.text,
+                            silenced,
+                            force = true,
+                            onFinished = voice::resumeListener,
+                        )
+                    }
+                },
+            )
+        }
+
         CompositionLocalProvider(LocalRockyLanguage provides language) {
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
@@ -415,36 +438,12 @@ fun RockyWindow(
                         Divider(color = RockyColors.Divider)
                         AssistantFooter(
                             agentName = agent.displayName,
-                            active = voice.capturing,
+                            active = voice.listenerEnabled,
                             busy = voice.transcribing,
                             status = voice.status,
                             realSession = twitch.isRealSession,
                             messageCount = visibleMessageCount,
-                            onTalk = {
-                                if (voice.capturing) {
-                                    voice.stopCapture(aiScope) { request ->
-                                        if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
-                                            ai.analyze(
-                                                aiScope,
-                                                twitch.messages,
-                                                streamerRequest = request,
-                                                agent = agent.configuration,
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    voice.startCapture(aiScope) { request ->
-                                        if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
-                                            ai.analyze(
-                                                aiScope,
-                                                twitch.messages,
-                                                streamerRequest = request,
-                                                agent = agent.configuration,
-                                            )
-                                        }
-                                    }
-                                }
-                            },
+                            onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }
                 }

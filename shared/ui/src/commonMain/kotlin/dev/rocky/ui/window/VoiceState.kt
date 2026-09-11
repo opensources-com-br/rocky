@@ -44,6 +44,9 @@ internal class VoiceState(
     var transcribing by mutableStateOf(false)
         private set
 
+    var listenerEnabled by mutableStateOf(false)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
@@ -62,6 +65,20 @@ internal class VoiceState(
     private var speechGeneration = 0L
     private var lastSpokenSuggestionId: String? = null
     private var queuedSpeech: String? = null
+    private var listenerScope: CoroutineScope? = null
+    private var listenerTranscript: ((String) -> Unit)? = null
+
+    fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+        listenerEnabled = !listenerEnabled
+        if (listenerEnabled) {
+            listenerScope = scope
+            listenerTranscript = onTranscript
+            startCapture(scope, onTranscript)
+        } else {
+            cancelCapture()
+            status = "Ouvinte desativado"
+        }
+    }
 
     fun loadDevices(scope: CoroutineScope) {
         if (loadingDevices || voices.isNotEmpty() || microphones.isNotEmpty()) return

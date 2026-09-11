@@ -45,7 +45,7 @@ compose.desktop {
                 infoPlist {
                     extraKeysRawXml = """
                         <key>NSMicrophoneUsageDescription</key>
-                        <string>Rocky uses the microphone only while you record a command for local transcription.</string>
+                        <string>Rocky listens locally for its wake word and transcribes your voice commands.</string>
                     """.trimIndent()
                 }
             }

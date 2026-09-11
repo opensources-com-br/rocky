@@ -1,7 +1,7 @@
 package dev.rocky.ui.window
 
 private val rockyWakeWord = Regex(
-    pattern = """\b(?:rocky|rocki|roque)\b""",
+    pattern = """\b(?:rocky|rocki|roque|roqui|raki|raqui|ráqui)\b""",
     option = RegexOption.IGNORE_CASE,
 )
 

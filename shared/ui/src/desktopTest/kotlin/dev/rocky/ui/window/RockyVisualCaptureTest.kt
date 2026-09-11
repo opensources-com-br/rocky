@@ -463,7 +463,7 @@ class RockyVisualCaptureTest {
         var stopped = false
         rule.setContent {
             Box(Modifier.size(340.dp, 125.dp)) {
-                CompactContent(LiveSessionStatus.Running, 10, "Resposta ".repeat(80), true, false) {
+                CompactContent(LiveSessionStatus.Running, 10, "Resposta ".repeat(80), false) {
                     stopped = true
                 }
             }
@@ -472,7 +472,7 @@ class RockyVisualCaptureTest {
         rule.runOnIdle { assertTrue(stopped) }
         assertEquals(
             "O chat quer saber o preço.",
-            compactHeadline(LiveSessionStatus.Running, "O chat quer saber o preço.", real = true),
+            compactHeadline(LiveSessionStatus.Running, "O chat quer saber o preço."),
         )
     }
 

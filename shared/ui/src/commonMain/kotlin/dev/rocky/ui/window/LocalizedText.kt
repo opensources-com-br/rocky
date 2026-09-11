@@ -184,6 +184,8 @@ private val settingsTranslations = mapOf(
     "Complete os três passos para acompanhar uma live real. Você pode voltar a este guia até concluir." to "Complete all three steps to follow a real stream. You can return to this guide until you finish.",
     "Conecte a Twitch e a IA para acompanhar uma live real. A voz é opcional e pode ser configurada depois." to "Connect Twitch and AI to follow a real stream. Voice is optional and can be configured later.",
     "Conecte sua Twitch nas configurações para acompanhar uma live." to "Connect your Twitch in settings to follow a stream.",
+    "Conecte sua Twitch" to "Connect your Twitch",
+    "Conexão da Twitch encerrada" to "Twitch connection ended",
     "Conecte a Twitch, a IA e a voz para usar o Rocky durante a live." to "Connect Twitch, AI, and voice to use Rocky during your stream.",
     "Informe o Client ID de um aplicativo público e autorize o canal que fará a transmissão." to "Enter the Client ID of a public application and authorize the channel that will stream.",
     "Conecte sua Twitch" to "Connect your Twitch",

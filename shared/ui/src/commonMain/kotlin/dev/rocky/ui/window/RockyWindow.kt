@@ -258,7 +258,6 @@ fun RockyWindow(
                         status = sessionStatus,
                         messageCount = visibleMessageCount,
                         suggestion = visibleSuggestion?.text,
-                        real = true,
                         silenced = silenced,
                         onToggleSilence = {
                             silenced = !silenced
@@ -489,14 +488,13 @@ internal fun CompactContent(
     status: LiveSessionStatus,
     messageCount: Int,
     suggestion: String?,
-    real: Boolean,
     silenced: Boolean,
     onToggleSilence: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 4.dp)) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             Text(
-                text = if (real) "$messageCount mensagens recebidas" else "$messageCount mensagens simuladas · sem live real",
+                text = "$messageCount mensagens recebidas",
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.caption,
             )
@@ -505,7 +503,7 @@ internal fun CompactContent(
             }
         }
         Text(
-            text = compactHeadline(status, suggestion, real),
+            text = compactHeadline(status, suggestion),
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             style = MaterialTheme.typography.subtitle1,
             color = RockyColors.TextPrimary,
@@ -513,12 +511,11 @@ internal fun CompactContent(
     }
 }
 
-internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?, real: Boolean): String =
-    if (real) suggestion ?: "Chat real da Twitch" else when (status) {
-        LiveSessionStatus.Stopped -> "Demonstração parada"
-        LiveSessionStatus.Running -> suggestion ?: "Ouvindo a demonstração"
-        LiveSessionStatus.Ended -> "Demonstração encerrada"
-    }
+internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): String = suggestion ?: when (status) {
+    LiveSessionStatus.Stopped -> "Conecte sua Twitch"
+    LiveSessionStatus.Running -> "Chat real da Twitch"
+    LiveSessionStatus.Ended -> "Conexão da Twitch encerrada"
+}
 
 private val TwitchLiveState.platforms: List<PlatformStatus>
     get() = listOf(

@@ -19,8 +19,6 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun PulseContent(
     platforms: List<PlatformStatus>,
-    realSession: Boolean = false,
-    messageCount: Int = 0,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 3.dp)) {
         platforms.forEach { platform ->
@@ -32,16 +30,14 @@ internal fun PulseContent(
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = if (realSession && platform.enabled) {
-                        "$messageCount ${if (messageCount == 1) "mensagem recebida" else "mensagens recebidas"}"
-                    } else if (platform.enabled) {
+                    text = if (platform.enabled) {
                         if (platform.audience == "—") {
                             "audiência indisponível · ${platform.messagesPerMinute} msg/min"
                         } else {
                             "${platform.audience} assistindo · ${platform.messagesPerMinute} msg/min"
                         }
                     } else {
-                        if (realSession) "em breve" else "desconectado"
+                        "em breve"
                     },
                     color = RockyColors.TextSecondary,
                     style = MaterialTheme.typography.caption,
@@ -55,7 +51,7 @@ internal fun PulseContent(
                     .height(7.dp)
                     .background(RockyColors.SurfaceElevated, RoundedCornerShape(6.dp)),
             ) {
-                if (platform.enabled && !realSession) {
+                if (platform.enabled && platform.audience != "—") {
                     Spacer(
                         Modifier
                             .fillMaxWidth((platform.audience.toFloatOrNull() ?: 0f) / 820f)

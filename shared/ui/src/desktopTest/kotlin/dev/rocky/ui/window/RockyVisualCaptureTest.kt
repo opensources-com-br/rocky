@@ -175,7 +175,7 @@ class RockyVisualCaptureTest {
             MainSection.Support to "Super Chats ainda não estão conectados.",
             MainSection.Notes to "Notas locais",
             MainSection.Ideas to "A geração automática de ideias ainda não está disponível em sessões reais.",
-            MainSection.Pulse to "0 mensagens recebidas",
+            MainSection.Pulse to "audiência indisponível · 0 msg/min",
         )
         mainSections.forEach { (section, visibleText) ->
             render(mainSection = section)
@@ -216,6 +216,7 @@ class RockyVisualCaptureTest {
 
         rule.runOnIdle {
             twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emit(TwitchConnectionEvent.AudienceUpdated(321))
             twitch.emit(
                 TwitchConnectionEvent.MessageReceived(
                     ChatMessage("message-1", "viewer", "Mensagem real", StreamPlatform.Twitch),
@@ -237,7 +238,7 @@ class RockyVisualCaptureTest {
                 .fetchSemanticsNodes().isEmpty(),
         )
         rule.onNodeWithText("Pulso").performClick()
-        rule.onNodeWithText("1 mensagem recebida").assertExists()
+        rule.onNodeWithText("321 assistindo · 1 msg/min").assertExists()
         rule.onNodeWithText("Conversa").performClick()
         assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
         rule.runOnIdle {

@@ -422,8 +422,6 @@ fun RockyWindow(
                                 )
                                 MainSection.Pulse -> PulseContent(
                                     platforms = visiblePlatforms,
-                                    realSession = true,
-                                    messageCount = visibleMessageCount,
                                 )
                             }
                         }

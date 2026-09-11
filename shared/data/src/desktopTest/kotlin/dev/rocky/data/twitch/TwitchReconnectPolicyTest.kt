@@ -43,4 +43,34 @@ class TwitchReconnectPolicyTest {
         assertTrue(TwitchApiException(403, "forbidden").requiresNewTwitchAuthorization())
         assertFalse(TwitchApiException(500, "temporary failure").requiresNewTwitchAuthorization())
     }
+
+    @Test
+    fun retriesInitialAuthorizationAfterTemporaryFailures() {
+        var calls = 0
+        val delays = mutableListOf<Long>()
+
+        val result = retryTransientTwitchRequest(sleep = delays::add) {
+            calls += 1
+            if (calls < 3) throw java.io.IOException("offline")
+            "authorized"
+        }
+
+        assertEquals("authorized", result)
+        assertEquals(3, calls)
+        assertEquals(listOf(1_000L, 2_000L), delays)
+    }
+
+    @Test
+    fun doesNotRetryRejectedClientId() {
+        var calls = 0
+
+        runCatching {
+            retryTransientTwitchRequest(sleep = {}) {
+                calls += 1
+                throw TwitchApiException(400, "invalid client id")
+            }
+        }
+
+        assertEquals(1, calls)
+    }
 }

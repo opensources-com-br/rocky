@@ -110,7 +110,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                 }
             }.onFailure { error ->
                 if (error !is InterruptedException && isCurrent(run)) {
-                    fail(run, error.userMessage("Não foi possível autenticar com a Twitch."))
+                    fail(run, error.twitchUserMessage("Não foi possível autenticar com a Twitch."))
                 }
             }
         }
@@ -209,7 +209,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                         webSocket.abort()
                         scheduleReconnect(run)
                     } else {
-                        fail(run, error.userMessage("Não foi possível assinar o chat da Twitch."))
+                        fail(run, error.twitchUserMessage("Não foi possível assinar o chat da Twitch."))
                     }
                 }
             }
@@ -330,9 +330,6 @@ class DesktopTwitchChatClient : TwitchChatClient {
     }
 
     private fun isCurrent(run: Long): Boolean = active && generation.get() == run
-
-    private fun Throwable.userMessage(fallback: String): String =
-        (this as? TwitchApiException)?.twitchMessage ?: fallback
 
     private companion object {
         const val DEFAULT_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds=30"

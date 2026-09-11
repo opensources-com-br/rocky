@@ -110,7 +110,11 @@ fun RockyWindow(
         }
         val agent = remember { AgentState(initialAgentConfiguration, onAgentConfigurationChange) }
         val voice = remember(voiceService) {
-            VoiceState(voiceService, initialVoiceConfiguration, onVoiceConfigurationChange)
+            VoiceState(
+                voiceService,
+                initialVoiceConfiguration,
+                onConfigurationChange = onVoiceConfigurationChange,
+            )
         }
         val aiScope = rememberCoroutineScope()
         val mainContentScrollState = rememberScrollState()

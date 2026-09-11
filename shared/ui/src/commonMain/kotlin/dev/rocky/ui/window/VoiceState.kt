@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 internal class VoiceState(
     private val service: VoiceService,
     initialConfiguration: VoiceConfiguration,
+    private val captureDurationMillis: Long = 8_000L,
     private val onConfigurationChange: (VoiceConfiguration) -> Unit,
 ) {
     var configuration by mutableStateOf(initialConfiguration)
@@ -182,7 +183,7 @@ internal class VoiceState(
                 status = "Microfone ativo · clique para concluir"
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
-                    delay(MAX_CAPTURE_MILLIS)
+                    delay(captureDurationMillis)
                     if (capturing) stopCapture(scope, onTranscript)
                 }
             }.onFailure {
@@ -275,7 +276,4 @@ internal class VoiceState(
         onConfigurationChange(value)
     }
 
-    companion object {
-        private const val MAX_CAPTURE_MILLIS = 60_000L
-    }
 }

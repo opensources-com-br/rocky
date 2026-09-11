@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +38,11 @@ internal fun ConversationContent(
     onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
 ) {
+    val chatScrollState = rememberLazyListState()
+    LaunchedEffect(messages.lastOrNull()?.id) {
+        if (messages.isNotEmpty()) chatScrollState.animateScrollToItem(messages.lastIndex)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -95,6 +102,7 @@ internal fun ConversationContent(
         } else {
             LazyColumn(
                 modifier = Modifier.weight(1f),
+                state = chatScrollState,
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 items(messages, key = { it.id }) { ChatMessageRow(it) }

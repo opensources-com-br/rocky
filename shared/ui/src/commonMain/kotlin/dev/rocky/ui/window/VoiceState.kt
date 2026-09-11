@@ -70,19 +70,26 @@ internal class VoiceState(
     private var listenerTranscript: ((String) -> Unit)? = null
 
     fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
-        if (!listenerEnabled && !transcriptionReady) {
+        if (listenerEnabled) disableListener() else enableListener(scope, onTranscript)
+    }
+
+    fun enableListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+        if (listenerEnabled) return
+        if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
             return
         }
-        listenerEnabled = !listenerEnabled
-        if (listenerEnabled) {
-            listenerScope = scope
-            listenerTranscript = onTranscript
-            startCapture(scope, onTranscript)
-        } else {
-            cancelCapture()
-            status = "Ouvinte desativado"
-        }
+        listenerEnabled = true
+        listenerScope = scope
+        listenerTranscript = onTranscript
+        startCapture(scope, onTranscript)
+    }
+
+    fun disableListener() {
+        if (!listenerEnabled) return
+        listenerEnabled = false
+        cancelCapture()
+        status = "Ouvinte desativado"
     }
 
     fun resumeListener() {
@@ -170,6 +177,19 @@ internal class VoiceState(
         speak(scope, text, force = force, onFinished = onFinished)
     }
 
+    fun speakAcknowledgement(
+        scope: CoroutineScope,
+        text: String,
+        silenced: Boolean,
+        onFinished: () -> Unit,
+    ) {
+        if (silenced) {
+            onFinished()
+            return
+        }
+        speak(scope, text, force = true, onFinished = onFinished)
+    }
+
     fun stopSpeaking() {
         val wasSpeaking = speaking || speechJob?.isActive == true
         speechGeneration += 1
@@ -202,7 +222,7 @@ internal class VoiceState(
             captureJob = null
             result.onSuccess {
                 capturing = true
-                status = "Ouvinte ativo · fale sua pergunta"
+                status = "Ouvinte ativo · diga “Rocky” e faça sua pergunta"
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)

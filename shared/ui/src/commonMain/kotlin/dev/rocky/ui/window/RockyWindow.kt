@@ -100,6 +100,7 @@ fun RockyWindow(
             mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
         }
         var silenced by remember { mutableStateOf(false) }
+        var waitingForVoiceCommand by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
@@ -165,17 +166,27 @@ fun RockyWindow(
 
         LaunchedEffect(sessionStatus) {
             if (sessionStatus != LiveSessionStatus.Running) {
+                waitingForVoiceCommand = false
                 voice.resetSession()
                 if (twitch.isRealSession && ai.generating) ai.cancelAnalysis()
             }
         }
 
-        val handleVoiceRequest: (String) -> Unit = { request ->
-            ai.analyze(
+        val analyzeVoiceCommand: (String) -> Unit = { request ->
+            val recentMessages = twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
+            if (recentMessages.isEmpty()) {
+                voice.speakAcknowledgement(
+                    aiScope,
+                    "Não encontrei mensagens nos últimos dois minutos.",
+                    silenced,
+                    voice::resumeListener,
+                )
+            } else ai.analyze(
                 scope = aiScope,
-                messages = twitch.messages,
+                messages = recentMessages,
                 streamerRequest = request,
                 agent = agent.configuration,
+                messageLimit = recentMessages.size,
                 onComplete = { suggestion ->
                     if (voice.listenerEnabled) {
                         if (suggestion == null) {
@@ -193,6 +204,30 @@ fun RockyWindow(
                     }
                 },
             )
+        }
+        val submitVoiceCommand: (String) -> Unit = { command ->
+            waitingForVoiceCommand = false
+            voice.speakAcknowledgement(aiScope, "Vou verificar o chat.", silenced) {
+                if (voice.listenerEnabled) analyzeVoiceCommand(command)
+            }
+        }
+        val handleVoiceRequest: (String) -> Unit = { transcript ->
+            val directCommand = extractRockyCommand(transcript)
+            when {
+                directCommand != null -> submitVoiceCommand(directCommand)
+                waitingForVoiceCommand -> submitVoiceCommand(transcript.trim())
+                containsRockyWakeWord(transcript) -> {
+                    waitingForVoiceCommand = true
+                    voice.speakAcknowledgement(aiScope, "Estou ouvindo.", silenced, voice::resumeListener)
+                }
+                else -> voice.resumeListener()
+            }
+        }
+
+        LaunchedEffect(twitch.phase, voice.transcriptionReady) {
+            if (twitch.phase == TwitchConnectionPhase.Connected && voice.transcriptionReady) {
+                voice.enableListener(aiScope, handleVoiceRequest)
+            }
         }
 
         CompositionLocalProvider(LocalRockyLanguage provides language) {
@@ -290,7 +325,7 @@ fun RockyWindow(
                             FirstUseContent(
                                 twitchConnected = twitch.phase == TwitchConnectionPhase.Connected,
                                 aiVerified = ai.connectionVerified,
-                                voiceVerified = voice.voiceTested,
+                                voiceVerified = voice.voiceTested && voice.transcriptionReady,
                                 onConfigureTwitch = {
                                     settingsSection = SettingsSection.Platforms
                                     settingsOpen = true
@@ -402,18 +437,6 @@ fun RockyWindow(
                                 MainSection.Conversation -> ConversationContent(
                                     messages = visibleMessages,
                                     streamerSpeech = voice.transcript,
-                                    showTextRequest = twitch.isRealSession,
-                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && !ai.generating,
-                                    analyzing = ai.generating,
-                                    onCancelAnalysis = ai::cancelAnalysis,
-                                    onTextRequest = { request ->
-                                        ai.analyze(
-                                            aiScope,
-                                            twitch.messages,
-                                            streamerRequest = request,
-                                            agent = agent.configuration,
-                                        )
-                                    },
                                 )
                                 MainSection.Support -> SupportContent(demonstration = !twitch.isRealSession)
                                 MainSection.Notes -> NotesContent(
@@ -544,3 +567,4 @@ private val AgentConfiguration.analysisIntervalMillis: Long
     get() = 600_000L / interventionsPerTenMinutes.coerceIn(1, 9)
 
 private const val METRICS_REFRESH_MILLIS = 5_000L
+private const val VOICE_CHAT_WINDOW_MILLIS = 120_000L

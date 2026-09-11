@@ -48,7 +48,7 @@ private val AgentTone.instruction: String
         AgentTone.Ironic -> "Use ironia leve, sem hostilidade e sem atacar participantes."
     }
 
-private const val MAX_CONTEXT_MESSAGES = 30
+private const val MAX_CONTEXT_MESSAGES = 200
 private const val MAX_MESSAGE_LENGTH = 300
 private const val MAX_STREAMER_REQUEST_LENGTH = 500
 private const val MAX_AGENT_NAME_LENGTH = 40

@@ -39,6 +39,18 @@ class VoiceStateTest {
     }
 
     @Test
+    fun acknowledgesACommandBeforeContinuing() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, VoiceConfiguration()) {}
+        var finished = false
+
+        state.speakAcknowledgement(this, "Vou verificar.", silenced = false) { finished = true }
+        waitUntil { finished }
+
+        assertEquals(listOf("Vou verificar."), service.spoken)
+    }
+
+    @Test
     fun readsEachSuggestionOnlyOnce() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}
@@ -108,6 +120,19 @@ class VoiceStateTest {
         waitUntil { service.captureStarts >= 2 }
         state.toggleListener(this) {}
         assertFalse(state.listenerEnabled)
+    }
+
+    @Test
+    fun enablingTheListenerTwiceKeepsOneMicrophoneCapture() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) {}
+
+        state.enableListener(this) {}
+        waitUntil { state.capturing }
+        state.enableListener(this) {}
+
+        assertEquals(1, service.captureStarts)
+        state.disableListener()
     }
 
     @Test

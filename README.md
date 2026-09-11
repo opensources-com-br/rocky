@@ -17,7 +17,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - Twitch authentication through Device Code Flow, live chat through EventSub, and automatic reconnection;
 - grounded AI suggestions using local Ollama models or the OpenAI Responses API;
 - on-device speech synthesis through macOS and Windows system voices;
-- push-to-talk commands with local `whisper.cpp` transcription;
+- wake-word voice commands with local `whisper.cpp` transcription;
 - local SQLite notes with create, edit, delete, restore, and Markdown export;
 - Markdown export for the ideas shown during the demonstration;
 - automated builds and development installers for macOS and Windows;

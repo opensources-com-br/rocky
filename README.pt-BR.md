@@ -17,7 +17,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - autenticação da Twitch pelo Device Code Flow, chat ao vivo pelo EventSub e reconexão automática;
 - sugestões fundamentadas no chat usando modelos locais do Ollama ou a Responses API da OpenAI;
 - leitura local por meio das vozes do macOS e Windows;
-- comandos push-to-talk com transcrição local pelo `whisper.cpp`;
+- comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
 - notas locais em SQLite, com criação, edição, exclusão, recuperação e exportação em Markdown;
 - exportação em Markdown das ideias exibidas na demonstração;
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;

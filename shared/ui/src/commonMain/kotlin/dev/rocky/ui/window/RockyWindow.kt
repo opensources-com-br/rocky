@@ -100,6 +100,7 @@ fun RockyWindow(
             mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
         }
         var silenced by remember { mutableStateOf(false) }
+        var waitingForVoiceCommand by remember { mutableStateOf(false) }
         val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
@@ -165,6 +166,7 @@ fun RockyWindow(
 
         LaunchedEffect(sessionStatus) {
             if (sessionStatus != LiveSessionStatus.Running) {
+                waitingForVoiceCommand = false
                 voice.resetSession()
                 if (twitch.isRealSession && ai.generating) ai.cancelAnalysis()
             }
@@ -203,14 +205,22 @@ fun RockyWindow(
                 },
             )
         }
-        val handleVoiceRequest: (String) -> Unit = handle@{ transcript ->
-            val command = extractRockyCommand(transcript)
-            if (command == null) {
-                voice.resumeListener()
-                return@handle
-            }
+        val submitVoiceCommand: (String) -> Unit = { command ->
+            waitingForVoiceCommand = false
             voice.speakAcknowledgement(aiScope, "Vou verificar o chat.", silenced) {
                 if (voice.listenerEnabled) analyzeVoiceCommand(command)
+            }
+        }
+        val handleVoiceRequest: (String) -> Unit = { transcript ->
+            when {
+                extractRockyCommand(transcript) != null ->
+                    submitVoiceCommand(requireNotNull(extractRockyCommand(transcript)))
+                waitingForVoiceCommand -> submitVoiceCommand(transcript.trim())
+                containsRockyWakeWord(transcript) -> {
+                    waitingForVoiceCommand = true
+                    voice.speakAcknowledgement(aiScope, "Estou ouvindo.", silenced, voice::resumeListener)
+                }
+                else -> voice.resumeListener()
             }
         }
 

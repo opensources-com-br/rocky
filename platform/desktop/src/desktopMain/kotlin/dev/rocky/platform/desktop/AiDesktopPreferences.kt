@@ -20,12 +20,14 @@ object AiDesktopPreferences {
                 provider = provider,
                 endpoint = preferences.get(ENDPOINT_KEY, defaultEndpoint(provider)),
                 model = preferences.get(MODEL_KEY, defaultModel(provider)),
+                apiKey = preferences.get(API_KEY_KEY, ""),
             )
         }
         set(value) {
             preferences.put(PROVIDER_KEY, value.provider.name)
             preferences.put(ENDPOINT_KEY, value.endpoint.trim())
             preferences.put(MODEL_KEY, value.model.trim())
+            preferences.put(API_KEY_KEY, value.apiKey.trim())
         }
 
     private fun defaultEndpoint(provider: AiProviderKind): String = when (provider) {
@@ -43,5 +45,6 @@ object AiDesktopPreferences {
     private const val PROVIDER_KEY = "provider"
     private const val ENDPOINT_KEY = "endpoint"
     private const val MODEL_KEY = "model"
+    private const val API_KEY_KEY = "apiKey"
     private const val AUTOMATIC_ANALYSIS_KEY = "automaticAnalysis"
 }

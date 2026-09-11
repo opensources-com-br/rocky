@@ -141,6 +141,21 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun retriesAFailedAutomaticBatch() = runBlocking {
+        val client = FakeAiSuggestionClient().apply { failuresRemaining = 1 }
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.updateAutomaticAnalysis(true)
+
+        state.analyze(this, messages(3), automatic = true, automaticTimeMillis = 1_000L)
+        while (state.generating) delay(1)
+        state.analyze(this, messages(3), automatic = true, automaticTimeMillis = 3_000L)
+        while (state.generating) delay(1)
+
+        assertEquals(2, client.requests)
+        assertEquals(setOf("m3"), state.suggestion?.sourceMessageIds)
+    }
+
+    @Test
     fun neverPersistsOpenAiApiKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }

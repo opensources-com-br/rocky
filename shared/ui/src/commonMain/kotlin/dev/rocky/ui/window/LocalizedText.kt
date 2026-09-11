@@ -67,7 +67,6 @@ private fun dynamicEnglish(text: String): String = when {
         "${text[0]}. ${allTranslations[text.substring(3)] ?: text.substring(3)}"
     text.endsWith(" mensagens recebidas") -> text.removeSuffix(" mensagens recebidas") + " messages received"
     text.endsWith(" mensagem recebida") -> text.removeSuffix(" mensagem recebida") + " message received"
-    text.endsWith(" mensagens simuladas · sem live real") -> text.removeSuffix(" mensagens simuladas · sem live real") + " simulated messages · no real stream"
     text.endsWith(" notas salvas") -> text.removeSuffix(" notas salvas") + " saved notes"
     text.endsWith(" nota salva") -> text.removeSuffix(" nota salva") + " saved note"
     text.endsWith(" mensagens") -> text.removeSuffix(" mensagens") + " messages"
@@ -167,7 +166,7 @@ private val settingsTranslations = mapOf(
     "O Client ID já está configurado. Conecte e autorize o canal que fará a transmissão." to "The client ID is already configured. Connect and authorize the channel that will stream.",
     "Criar Client ID" to "Create client ID",
     "Sobre o Client ID" to "About the client ID",
-    "A demonstração funciona sem conta. Conecte a Twitch para receber um chat real." to "The demo works without an account. Connect Twitch to receive real chat.",
+    "Conecte a Twitch para receber o chat e os dados da sua live." to "Connect Twitch to receive chat and data from your stream.",
     "1. Crie um aplicativo do tipo Public na Twitch. 2. Copie o Client ID. 3. Conecte e autorize o canal da live." to "1. Create a Public Twitch application. 2. Copy its Client ID. 3. Connect and authorize the stream channel.",
     "O Client ID identifica seu aplicativo público da Twitch. Tokens ficam apenas na memória e são apagados ao desconectar ou fechar o Rocky." to "The Client ID identifies your public Twitch application. Tokens stay in memory and are cleared when you disconnect or close Rocky.",
     "Como criar o Client ID" to "How to create a Client ID",
@@ -204,7 +203,6 @@ private val settingsTranslations = mapOf(
     "pronto" to "ready",
     "opcional" to "optional",
     "Concluir configuração" to "Finish setup",
-    "Usar demonstração" to "Use demo",
     "Rocky não exige uma conta própria. As notas ficam no computador e as credenciais sensíveis não são salvas." to "Rocky requires no account of its own. Notes stay on your computer and sensitive credentials are not saved.",
 )
 
@@ -215,24 +213,13 @@ private val liveTranslations = mapOf(
     "Desafixar janela" to "Unpin window",
     "Modo compacto" to "Compact mode",
     "Modo expandido" to "Expanded mode",
-    "MODO DEMONSTRAÇÃO" to "DEMO MODE",
-    "Sem conexão com uma live real" to "No real stream connected",
-    "DEMONSTRAÇÃO PRONTA" to "DEMO READY",
-    "DEMONSTRAÇÃO ENCERRADA" to "DEMO ENDED",
     "PARADO" to "STOPPED",
     "OUVINDO" to "LISTENING",
     "CHAT ATIVO" to "CHAT ACTIVE",
     "MICROFONE ON" to "MIC ON",
     "ENCERRADO" to "ENDED",
     "ERRO" to "ERROR",
-    "Pronta para iniciar" to "Ready to start",
-    "Sessão em andamento" to "Session in progress",
-    "Sessão encerrada" to "Session ended",
-    "Iniciar" to "Start",
-    "Encerrar" to "End",
-    "Reiniciar" to "Restart",
     "Retomar" to "Resume",
-    "A demonstração terminou. Reinicie quando quiser testar novamente." to "The demo has ended. Restart whenever you want to test again.",
     "TOCANDO AGORA" to "PLAYING NOW",
     "Salvar como nota" to "Save as note",
     "Nota salva" to "Note saved",
@@ -277,9 +264,6 @@ private val liveTranslations = mapOf(
     "CONECTANDO" to "CONNECTING",
     "RECONECTANDO" to "RECONNECTING",
     "Chat real da Twitch" to "Real Twitch chat",
-    "Demonstração parada" to "Demo stopped",
-    "Ouvindo a demonstração" to "Listening to the demo",
-    "Demonstração encerrada" to "Demo ended",
     "Conectando" to "Connecting",
     "Reconectando" to "Reconnecting",
     "Não conectada" to "Not connected",

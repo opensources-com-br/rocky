@@ -44,7 +44,7 @@ internal fun PlatformSettings(
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
             "Conexão com plataformas",
-            "A demonstração funciona sem conta. Conecte a Twitch para receber um chat real.",
+            "Conecte a Twitch para receber o chat e os dados da sua live.",
         )
         Text(
             text = if (clientId.isBlank()) {

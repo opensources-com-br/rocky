@@ -14,5 +14,7 @@ class VoiceCommandTest {
     fun ignoresSpeechWithoutACompleteRockyCommand() {
         assertEquals(null, extractRockyCommand("o pessoal está gostando do jogo"))
         assertEquals(null, extractRockyCommand("Rocky"))
+        assertEquals(true, containsRockyWakeWord("Rocky"))
+        assertEquals(false, containsRockyWakeWord("o chat está falando"))
     }
 }

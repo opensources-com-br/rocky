@@ -75,6 +75,12 @@ private fun dynamicEnglish(text: String): String = when {
     text.startsWith("Recebendo o chat de ") -> text.replaceFirst("Recebendo o chat de ", "Receiving chat from ")
     text.startsWith("Analisando ") && text.endsWith(" mensagens…") -> text.replaceFirst("Analisando ", "Analyzing ").replace(" mensagens…", " messages…")
     text.startsWith("Você: ") -> text.replaceFirst("Você: ", "You: ")
+    text.startsWith("Fale agora · nível ") -> text.replaceFirst("Fale agora · nível ", "Speak now · level ")
+    text.startsWith("O microfone fica ativo e reage quando você chama “") -> text
+        .replaceFirst("O microfone fica ativo e reage quando você chama “", "The microphone stays active and reacts when you say “")
+    text.startsWith("Fale uma frase; ") -> text
+        .replaceFirst("Fale uma frase; ", "Say something; ")
+        .replace(" transcreve e responde em áudio.", " transcribes it and answers aloud.")
     text.startsWith("Fale com ") -> text.replaceFirst("Fale com ", "Talk to ")
     text.startsWith("Clique em “Fale com ") -> text
         .replaceFirst("Clique em “Fale com ", "Click “Talk to ")
@@ -136,6 +142,18 @@ private val settingsTranslations = mapOf(
     "Testar voz" to "Test voice",
     "Parar voz" to "Stop voice",
     "Entrada do streamer" to "Streamer input",
+    "Microfone ouvindo" to "Microphone listening",
+    "Teste de conversa" to "Conversation test",
+    "Fale agora. A gravação termina automaticamente." to "Speak now. Recording stops automatically.",
+    "Prepare o reconhecimento local uma vez. O Rocky instalará o mecanismo e baixará o modelo de voz." to "Set up local recognition once. Rocky will install the engine and download the voice model.",
+    "Configurar reconhecimento de voz" to "Set up voice recognition",
+    "Preparando…" to "Setting up…",
+    "Preparando reconhecimento de voz…" to "Setting up voice recognition…",
+    "Reconhecimento de voz pronto" to "Voice recognition ready",
+    "Faça o teste de conversa abaixo" to "Run the conversation test below",
+    "Configure o reconhecimento de voz para iniciar o teste" to "Set up voice recognition to start the test",
+    "Testar conversa por voz" to "Test voice conversation",
+    "Ouvindo…" to "Listening…",
     "configurar" to "configure",
     "pronta" to "ready",
     "Microfone" to "Microphone",

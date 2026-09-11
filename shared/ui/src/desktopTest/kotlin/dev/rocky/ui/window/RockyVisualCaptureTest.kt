@@ -189,6 +189,24 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun analyzesTheFirstAutomaticBatchWhenTheThirdMessageArrives() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient()
+        prepareAutomaticSession(twitch, ai)
+
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(3)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.waitUntil(timeoutMillis = 3_000) {
+            rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        assertEquals(1, ai.requests)
+    }
+
+    @Test
     fun sendsTypedStreamerRequest() {
         var request: String? = null
         rule.setContent {

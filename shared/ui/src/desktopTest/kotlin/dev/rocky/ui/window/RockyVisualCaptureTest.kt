@@ -99,6 +99,23 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun preparesVoiceRecognitionFromSettings() {
+        val voice = FakeVoiceService().apply { automaticSetupSupported = true }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Voice,
+            voiceService = voice,
+        )
+
+        rule.onNodeWithTag("prepare-transcription").performScrollTo().performClick()
+        rule.waitUntil(timeoutMillis = 5_000) {
+            rule.onAllNodesWithText("Reconhecimento de voz pronto").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        rule.onNodeWithTag("test-conversation").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
     fun captureMainInterface() {
         when (System.getenv("ROCKY_CAPTURE_STATE")) {
             "settings-ai" -> {
@@ -697,13 +714,20 @@ class RockyVisualCaptureTest {
     private class FakeVoiceService : VoiceService {
         var captureStarts = 0
         var transcript = ""
+        var automaticSetupSupported = false
         val transcripts = mutableListOf<String>()
         val spoken = mutableListOf<String>()
+        override val automaticTranscriptionSetupSupported: Boolean
+            get() = automaticSetupSupported
         override fun availableVoices(): List<SystemVoice> = emptyList()
         override fun availableMicrophones(): List<AudioInputDevice> = emptyList()
         override fun speak(text: String, configuration: VoiceOutputConfiguration) { spoken += text }
         override fun stopSpeaking() = Unit
         override fun startCapture(microphoneId: String?) { captureStarts += 1 }
+        override fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration {
+            onProgress("Reconhecimento de voz pronto")
+            return LocalTranscriptionConfiguration("managed-whisper", "managed-model")
+        }
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) =
             if (transcripts.isEmpty()) transcript else transcripts.removeAt(0)
         override fun cancelCapture() = Unit

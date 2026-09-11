@@ -79,9 +79,41 @@ internal fun VoiceSettings(
         Spacer(Modifier.height(22.dp))
         SettingTitle(
             "Entrada do streamer",
-            "Clique em “Fale com $agentName” para gravar e clique novamente para transcrever localmente.",
+            "O microfone fica ativo e reage quando você chama “$agentName”.",
             if (voice.transcriptionReady) "pronta" else "configurar",
         )
+        if (!voice.transcriptionReady && voice.automaticTranscriptionSetupSupported) {
+            Text(
+                "Prepare o reconhecimento local uma vez. O Rocky instalará o mecanismo e baixará o modelo de voz.",
+                modifier = Modifier.padding(top = 10.dp),
+                color = RockyColors.TextSecondary,
+                style = MaterialTheme.typography.caption,
+            )
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp).height(40.dp)
+                    .testTag("prepare-transcription"),
+                enabled = !voice.preparingTranscription,
+                onClick = { voice.prepareTranscription(scope) },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = RockyColors.Accent,
+                    contentColor = Color.Black,
+                ),
+                shape = RoundedCornerShape(10.dp),
+            ) {
+                Text(
+                    if (voice.preparingTranscription) "Preparando…" else "Configurar reconhecimento de voz",
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+        voice.transcriptionSetupStatus?.let {
+            Text(
+                it,
+                modifier = Modifier.padding(top = 6.dp).testTag("transcription-setup-status"),
+                color = RockyColors.TextSecondary,
+                style = MaterialTheme.typography.caption,
+            )
+        }
         Spacer(Modifier.height(10.dp))
         MicrophoneSelector(voice)
         Spacer(Modifier.height(10.dp))

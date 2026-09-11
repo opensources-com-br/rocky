@@ -91,15 +91,15 @@ internal fun AssistantFooter(
             Text(
                 text = when {
                     busy -> "Rocky está transcrevendo"
-                    active -> "Microfone ativo"
-                    else -> "Fale com $agentName"
+                    active -> "Ouvinte ativo"
+                    else -> "Ativar ouvinte do $agentName"
                 },
                 color = RockyColors.TextPrimary,
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Medium,
             )
             Text(
-                text = status ?: if (active) "clique novamente para concluir" else "clique para começar",
+                text = status ?: if (active) "fale sua pergunta · envio automático" else "clique para ativar",
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )

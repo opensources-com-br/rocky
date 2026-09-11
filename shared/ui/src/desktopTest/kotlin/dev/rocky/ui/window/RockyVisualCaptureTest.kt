@@ -447,6 +447,14 @@ class RockyVisualCaptureTest {
         override fun close() = Unit
 
         fun emit(event: TwitchConnectionEvent) = listener.onEvent(event)
+
+        fun emitMessages(count: Int) = repeat(count) { index ->
+            emit(
+                TwitchConnectionEvent.MessageReceived(
+                    ChatMessage("message-$index", "viewer", "Mensagem $index", StreamPlatform.Twitch),
+                ),
+            )
+        }
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {

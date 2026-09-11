@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 internal class VoiceState(
     private val service: VoiceService,
     initialConfiguration: VoiceConfiguration,
+    private val captureDurationMillis: Long = 8_000L,
     private val onConfigurationChange: (VoiceConfiguration) -> Unit,
 ) {
     var configuration by mutableStateOf(initialConfiguration)
@@ -44,6 +45,9 @@ internal class VoiceState(
     var transcribing by mutableStateOf(false)
         private set
 
+    var listenerEnabled by mutableStateOf(false)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
@@ -62,6 +66,31 @@ internal class VoiceState(
     private var speechGeneration = 0L
     private var lastSpokenSuggestionId: String? = null
     private var queuedSpeech: String? = null
+    private var listenerScope: CoroutineScope? = null
+    private var listenerTranscript: ((String) -> Unit)? = null
+
+    fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+        if (!listenerEnabled && !transcriptionReady) {
+            status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
+            return
+        }
+        listenerEnabled = !listenerEnabled
+        if (listenerEnabled) {
+            listenerScope = scope
+            listenerTranscript = onTranscript
+            startCapture(scope, onTranscript)
+        } else {
+            cancelCapture()
+            status = "Ouvinte desativado"
+        }
+    }
+
+    fun resumeListener() {
+        if (!listenerEnabled || capturing || transcribing || speaking) return
+        val scope = listenerScope ?: return
+        val onTranscript = listenerTranscript ?: return
+        startCapture(scope, onTranscript)
+    }
 
     fun loadDevices(scope: CoroutineScope) {
         if (loadingDevices || voices.isNotEmpty() || microphones.isNotEmpty()) return
@@ -120,14 +149,25 @@ internal class VoiceState(
         )
     }
 
-    fun speakSuggestion(scope: CoroutineScope, suggestionId: String, text: String, silenced: Boolean) {
-        if (!configuration.readSuggestions || silenced || suggestionId == lastSpokenSuggestionId) return
+    fun speakSuggestion(
+        scope: CoroutineScope,
+        suggestionId: String,
+        text: String,
+        silenced: Boolean,
+        force: Boolean = false,
+        onFinished: () -> Unit = {},
+    ) {
+        if (silenced || suggestionId == lastSpokenSuggestionId) {
+            onFinished()
+            return
+        }
+        if (!force && !configuration.readSuggestions) return
         lastSpokenSuggestionId = suggestionId
         if (speaking) {
             queuedSpeech = text
             return
         }
-        speak(scope, text)
+        speak(scope, text, force = force, onFinished = onFinished)
     }
 
     fun stopSpeaking() {
@@ -162,10 +202,10 @@ internal class VoiceState(
             captureJob = null
             result.onSuccess {
                 capturing = true
-                status = "Microfone ativo · clique para concluir"
+                status = "Ouvinte ativo · fale sua pergunta"
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
-                    delay(MAX_CAPTURE_MILLIS)
+                    delay(captureDurationMillis)
                     if (capturing) stopCapture(scope, onTranscript)
                 }
             }.onFailure {
@@ -193,7 +233,10 @@ internal class VoiceState(
                 transcript = text
                 status = "Você: $text"
                 onTranscript(text)
-            }.onFailure { status = it.message ?: "Não foi possível transcrever a fala" }
+            }.onFailure {
+                status = it.message ?: "Não foi possível transcrever a fala"
+                resumeListener()
+            }
         }
     }
 
@@ -214,6 +257,9 @@ internal class VoiceState(
     }
 
     fun resetSession() {
+        listenerEnabled = false
+        listenerScope = null
+        listenerTranscript = null
         stopSpeaking()
         cancelCapture()
         transcript = null
@@ -226,6 +272,7 @@ internal class VoiceState(
         text: String,
         force: Boolean = false,
         onSuccess: () -> Unit = {},
+        onFinished: () -> Unit = {},
     ) {
         if (speaking || (!force && !configuration.readSuggestions)) return
         val generation = ++speechGeneration
@@ -244,6 +291,7 @@ internal class VoiceState(
                 },
                 onFailure = { "Não foi possível usar a voz do sistema" },
             )
+            onFinished()
             if (result.isSuccess) {
                 queuedSpeech?.let { next ->
                     queuedSpeech = null
@@ -258,7 +306,4 @@ internal class VoiceState(
         onConfigurationChange(value)
     }
 
-    companion object {
-        private const val MAX_CAPTURE_MILLIS = 60_000L
-    }
 }

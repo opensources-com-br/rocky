@@ -25,6 +25,20 @@ class VoiceStateTest {
     }
 
     @Test
+    fun alwaysSpeaksAnAnswerRequestedByVoice() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, VoiceConfiguration()) {}
+        var finished = false
+
+        state.speakSuggestion(this, "voice-1", "Resposta", silenced = false, force = true) {
+            finished = true
+        }
+        waitUntil { finished }
+
+        assertEquals(listOf("Resposta"), service.spoken)
+    }
+
+    @Test
     fun readsEachSuggestionOnlyOnce() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}
@@ -78,6 +92,32 @@ class VoiceStateTest {
         assertFalse(state.capturing)
         assertEquals("O que o chat achou?", state.transcript)
         assertEquals("O que o chat achou?", received)
+    }
+
+    @Test
+    fun keepsListeningAfterSubmittingAnAutomaticTurn() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 5L) {}
+        var received: String? = null
+
+        state.toggleListener(this) { received = it }
+        waitUntil { received != null }
+        assertTrue(state.listenerEnabled)
+
+        state.resumeListener()
+        waitUntil { service.captureStarts >= 2 }
+        state.toggleListener(this) {}
+        assertFalse(state.listenerEnabled)
+    }
+
+    @Test
+    fun doesNotEnableTheListenerBeforeVoiceSetup() = runBlocking {
+        val state = VoiceState(FakeVoiceService(), VoiceConfiguration()) {}
+
+        state.toggleListener(this) {}
+
+        assertFalse(state.listenerEnabled)
+        assertEquals("Configure o whisper.cpp na aba Voz antes de usar o microfone", state.status)
     }
 
     @Test
@@ -137,6 +177,7 @@ class VoiceStateTest {
     private class FakeVoiceService : VoiceService {
         val spoken = mutableListOf<String>()
         var captureStarted = false
+        var captureStarts = 0
         var speechGate: CountDownLatch? = null
         var transcriptionGate: CountDownLatch? = null
 
@@ -151,6 +192,7 @@ class VoiceStateTest {
         }
         override fun startCapture(microphoneId: String?) {
             captureStarted = true
+            captureStarts += 1
         }
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
             transcriptionGate?.await()

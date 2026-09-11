@@ -207,6 +207,19 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun returnsTheCompletedVoiceSuggestion() = runBlocking {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+        var completed: String? = null
+
+        state.analyze(this, messages(1), streamerRequest = "Resuma") {
+            completed = it?.text
+        }
+        while (state.generating) delay(1)
+
+        assertEquals("Sugestão", completed)
+    }
+
+    @Test
     fun ignoresAResultFromAnEndedSession() = runBlocking {
         val gate = CountDownLatch(1)
         val client = FakeAiSuggestionClient().apply { responseGate = gate }

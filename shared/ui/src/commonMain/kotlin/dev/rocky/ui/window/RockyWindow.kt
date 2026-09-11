@@ -110,7 +110,11 @@ fun RockyWindow(
         }
         val agent = remember { AgentState(initialAgentConfiguration, onAgentConfigurationChange) }
         val voice = remember(voiceService) {
-            VoiceState(voiceService, initialVoiceConfiguration, onVoiceConfigurationChange)
+            VoiceState(
+                voiceService,
+                initialVoiceConfiguration,
+                onConfigurationChange = onVoiceConfigurationChange,
+            )
         }
         val aiScope = rememberCoroutineScope()
         val mainContentScrollState = rememberScrollState()
@@ -166,6 +170,31 @@ fun RockyWindow(
             }
         }
 
+        val handleVoiceRequest: (String) -> Unit = { request ->
+            ai.analyze(
+                scope = aiScope,
+                messages = twitch.messages,
+                streamerRequest = request,
+                agent = agent.configuration,
+                onComplete = { suggestion ->
+                    if (voice.listenerEnabled) {
+                        if (suggestion == null) {
+                            voice.resumeListener()
+                        } else {
+                            voice.speakSuggestion(
+                                aiScope,
+                                suggestion.id,
+                                suggestion.text,
+                                silenced,
+                                force = true,
+                                onFinished = voice::resumeListener,
+                            )
+                        }
+                    }
+                },
+            )
+        }
+
         CompositionLocalProvider(LocalRockyLanguage provides language) {
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
@@ -209,10 +238,7 @@ fun RockyWindow(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .then(
-                                    if (mainSection == MainSection.Conversation) Modifier
-                                    else Modifier.verticalScroll(mainContentScrollState),
-                                ),
+                                .verticalScroll(rememberScrollState()),
                         ) {
                             when (settingsSection) {
                                 SettingsSection.Agent -> AgentSettings(
@@ -367,7 +393,10 @@ fun RockyWindow(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .verticalScroll(rememberScrollState()),
+                                .then(
+                                    if (mainSection == MainSection.Conversation) Modifier
+                                    else Modifier.verticalScroll(mainContentScrollState),
+                                ),
                         ) {
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent(
@@ -411,36 +440,12 @@ fun RockyWindow(
                         Divider(color = RockyColors.Divider)
                         AssistantFooter(
                             agentName = agent.displayName,
-                            active = voice.capturing,
+                            active = voice.listenerEnabled,
                             busy = voice.transcribing,
                             status = voice.status,
                             realSession = twitch.isRealSession,
                             messageCount = visibleMessageCount,
-                            onTalk = {
-                                if (voice.capturing) {
-                                    voice.stopCapture(aiScope) { request ->
-                                        if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
-                                            ai.analyze(
-                                                aiScope,
-                                                twitch.messages,
-                                                streamerRequest = request,
-                                                agent = agent.configuration,
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    voice.startCapture(aiScope) { request ->
-                                        if (twitch.isRealSession && twitch.messages.isNotEmpty()) {
-                                            ai.analyze(
-                                                aiScope,
-                                                twitch.messages,
-                                                streamerRequest = request,
-                                                agent = agent.configuration,
-                                            )
-                                        }
-                                    }
-                                }
-                            },
+                            onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }
                 }

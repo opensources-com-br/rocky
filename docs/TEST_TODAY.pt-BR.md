@@ -1,10 +1,10 @@
-# Candidato de teste — 1.0.10-alpha.11
+# Candidato de teste — 1.0.10-alpha.12
 
 Escopo: chat da própria conta Twitch, sugestões de IA por texto e notas com fontes. A IA pode usar Ollama, OpenAI ou modelos gratuitos pelo OpenRouter. Voz é opcional e começa desativada em instalações novas. Este candidato ainda precisa de validação em live real e OBS antes de lançamento amplo.
 
 ## Preparar
 
-1. Instale o pacote **1.0.10**. Não use um pacote de uma execução anterior.
+1. Instale o pacote **1.0.10-alpha.12**. Não use um pacote de uma execução anterior.
 2. Abra **Configurações → Plataformas**. Este pacote não inclui um Client ID oficial. Registre um aplicativo público na Twitch usando sua conta e copie o Client ID, conforme [configuração Twitch](TWITCH.pt-BR.md). Não é necessário criar outra conta de streamer nem informar Client Secret.
 3. Conecte e autorize a mesma conta em que abrirá a live. O Rocky acompanha novas mensagens desse canal; não lê histórico anterior nem mede espectadores.
 4. Em **IA**, escolha Ollama, OpenAI ou OpenRouter. Para testar sem custo por tokens, mantenha `openrouter/free`. **Testar conexão** faz uma geração curta com mensagens fictícias. Conclua o guia sem configurar microfone.
@@ -18,7 +18,7 @@ Escopo: chat da própria conta Twitch, sugestões de IA por texto e notas com fo
 - [ ] Testar uma resposta longa, alternar para o modo compacto e abrir configurações a partir dele.
 - [ ] Conferir mensagens/minuto durante uma rajada e após um minuto sem mensagens.
 - [ ] Desligar a rede por 15 e 60 segundos; restaurar e confirmar que novas mensagens chegam. A sugestão já recebida deve permanecer durante a recuperação. Mensagens enviadas durante a queda podem não ser recuperadas pela Twitch.
-- [ ] Se usar voz, ativar a leitura nas configurações, testar e silenciar nos modos completo e compacto.
+- [ ] Se usar voz, clicar uma vez em **Ativar ouvinte do Rocky**, fazer duas perguntas em turnos separados e confirmar que cada resposta é falada sem novo clique. Clicar novamente para desativar.
 
 ## Sessão e registro
 

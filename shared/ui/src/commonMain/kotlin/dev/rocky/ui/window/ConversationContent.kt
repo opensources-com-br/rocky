@@ -41,7 +41,7 @@ internal fun ConversationContent(
 ) {
     val chatScrollState = rememberLazyListState()
     LaunchedEffect(messages.lastOrNull()?.id) {
-        if (messages.isNotEmpty()) chatScrollState.animateScrollToItem(messages.lastIndex)
+        if (messages.isNotEmpty()) chatScrollState.scrollToItem(messages.lastIndex)
     }
 
     Column(

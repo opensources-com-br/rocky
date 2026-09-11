@@ -40,6 +40,9 @@ internal class AiSuggestionState(
     var generating by mutableStateOf(false)
         private set
 
+    var analysisRevision by mutableStateOf(0)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
@@ -154,6 +157,7 @@ internal class AiSuggestionState(
             }
             if (activeSession != sessionGeneration) return@launch
             generating = false
+            analysisRevision += 1
             result.exceptionOrNull()?.let { if (it is CancellationException) throw it }
             result.onSuccess { generated ->
                 if (automatic) lastAnalyzedMessageId = snapshot.last().id

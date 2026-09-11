@@ -132,6 +132,7 @@ fun RockyWindow(
             twitch.phase,
             twitch.totalMessages,
             ai.automaticAnalysis,
+            ai.analysisRevision,
             agent.configuration.interventionsPerTenMinutes,
         ) {
             if (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {

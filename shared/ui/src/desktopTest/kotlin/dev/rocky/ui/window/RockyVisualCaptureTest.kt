@@ -176,9 +176,8 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Pulso").performClick()
         rule.onNodeWithText("1 mensagem recebida").assertExists()
         rule.onNodeWithText("Conversa").performClick()
-        rule.onNodeWithTag("streamer-text-request").performScrollTo()
-            .performTextReplacement("Quais dúvidas responder?")
-        rule.onNodeWithTag("send-streamer-text-request").performScrollTo().performClick()
+        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Quais dúvidas responder?")
+        rule.onNodeWithTag("send-streamer-text-request").performClick()
         rule.waitUntil(timeoutMillis = 5_000) {
             rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty()
         }

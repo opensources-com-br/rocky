@@ -207,6 +207,12 @@ fun RockyWindow(
             }
         }
 
+        LaunchedEffect(twitch.phase, voice.transcriptionReady) {
+            if (twitch.phase == TwitchConnectionPhase.Connected && voice.transcriptionReady) {
+                voice.enableListener(aiScope, handleVoiceRequest)
+            }
+        }
+
         CompositionLocalProvider(LocalRockyLanguage provides language) {
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),

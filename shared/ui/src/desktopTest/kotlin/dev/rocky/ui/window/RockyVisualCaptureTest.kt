@@ -248,14 +248,16 @@ class RockyVisualCaptureTest {
 
     @Test
     fun keepsLatestMessageVisibleInScrollableChat() {
-        val messages = (1..20).map {
+        var messages by mutableStateOf((1..20).map {
             ChatMessage("message-$it", "viewer", "Mensagem $it", StreamPlatform.Twitch)
-        }
+        })
         rule.setContent { Box(Modifier.size(420.dp, 300.dp)) { ConversationContent(messages) } }
 
         rule.onNodeWithText("Mensagem 20").assertIsDisplayed()
         rule.onNodeWithTag("chat-messages").performScrollToIndex(0)
         rule.onNodeWithText("Mensagem 1").assertIsDisplayed()
+        rule.runOnIdle { messages = messages + ChatMessage("message-21", "viewer", "Mensagem 21", StreamPlatform.Twitch) }
+        rule.onNodeWithText("Mensagem 21").assertIsDisplayed()
     }
 
     @Test

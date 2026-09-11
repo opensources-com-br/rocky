@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -17,6 +18,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.live.LiveIdea
@@ -245,6 +247,20 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun keepsLatestMessageVisibleInScrollableChat() {
+        var messages by mutableStateOf((1..20).map {
+            ChatMessage("message-$it", "viewer", "Mensagem $it", StreamPlatform.Twitch)
+        })
+        rule.setContent { Box(Modifier.size(420.dp, 300.dp)) { ConversationContent(messages) } }
+
+        rule.onNodeWithText("Mensagem 20").assertIsDisplayed()
+        rule.onNodeWithTag("chat-messages").performScrollToIndex(0)
+        rule.onNodeWithText("Mensagem 1").assertIsDisplayed()
+        rule.runOnIdle { messages = messages + ChatMessage("message-21", "viewer", "Mensagem 21", StreamPlatform.Twitch) }
+        rule.onNodeWithText("Mensagem 21").assertIsDisplayed()
+    }
+
+    @Test
     fun configuresOpenRouterFromAiSettings() {
         render(settingsOpen = true, settingsSection = SettingsSection.Ai)
 
@@ -436,7 +452,7 @@ class RockyVisualCaptureTest {
             twitchClientId = "client-id",
             aiSuggestionClient = ai,
         )
-        rule.onNodeWithTag("automatic-analysis").performScrollTo().performClick()
+        rule.onNodeWithTag("automatic-analysis").performClick()
         rule.onNodeWithText("Plataformas").performClick()
         rule.onNodeWithText("Conectar Twitch").performClick()
     }

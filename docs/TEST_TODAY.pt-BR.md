@@ -1,4 +1,4 @@
-# Candidato de teste — 1.0.10-alpha.10
+# Candidato de teste — 1.0.10-alpha.11
 
 Escopo: chat da própria conta Twitch, sugestões de IA por texto e notas com fontes. A IA pode usar Ollama, OpenAI ou modelos gratuitos pelo OpenRouter. Voz é opcional e começa desativada em instalações novas. Este candidato ainda precisa de validação em live real e OBS antes de lançamento amplo.
 

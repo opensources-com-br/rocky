@@ -113,6 +113,7 @@ fun RockyWindow(
             VoiceState(voiceService, initialVoiceConfiguration, onVoiceConfigurationChange)
         }
         val aiScope = rememberCoroutineScope()
+        val mainContentScrollState = rememberScrollState()
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
@@ -208,7 +209,10 @@ fun RockyWindow(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .verticalScroll(rememberScrollState()),
+                                .then(
+                                    if (mainSection == MainSection.Conversation) Modifier
+                                    else Modifier.verticalScroll(mainContentScrollState),
+                                ),
                         ) {
                             when (settingsSection) {
                                 SettingsSection.Agent -> AgentSettings(

@@ -452,7 +452,7 @@ class RockyVisualCaptureTest {
             twitchClientId = "client-id",
             aiSuggestionClient = ai,
         )
-        rule.onNodeWithTag("automatic-analysis").performScrollTo().performClick()
+        rule.onNodeWithTag("automatic-analysis").performClick()
         rule.onNodeWithText("Plataformas").performClick()
         rule.onNodeWithText("Conectar Twitch").performClick()
     }

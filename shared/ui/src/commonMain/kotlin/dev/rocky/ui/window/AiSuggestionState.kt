@@ -128,7 +128,6 @@ internal class AiSuggestionState(
             return
         }
         if (automatic) {
-            if (suggestion != null) return
             val lastIndex = lastAnalyzedMessageId?.let { id -> messages.indexOfLast { it.id == id } }
             val newMessageCount = if (lastIndex == null || lastIndex < 0) {
                 messages.size

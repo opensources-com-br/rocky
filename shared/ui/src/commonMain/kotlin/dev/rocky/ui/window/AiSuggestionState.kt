@@ -18,6 +18,8 @@ import kotlin.random.Random
 internal class AiSuggestionState(
     private val client: AiSuggestionClient,
     initialConfiguration: AiProviderConfiguration,
+    initialAutomaticAnalysis: Boolean = false,
+    private val onAutomaticAnalysisChange: (Boolean) -> Unit = {},
     private val onConfigurationChange: (AiProviderConfiguration) -> Unit,
 ) {
     var suggestionSources by mutableStateOf<List<ChatMessage>>(emptyList())
@@ -26,7 +28,7 @@ internal class AiSuggestionState(
     var configuration by mutableStateOf(initialConfiguration)
         private set
 
-    var automaticAnalysis by mutableStateOf(false)
+    var automaticAnalysis by mutableStateOf(initialAutomaticAnalysis)
         private set
 
     var testing by mutableStateOf(false)
@@ -86,6 +88,7 @@ internal class AiSuggestionState(
 
     fun updateAutomaticAnalysis(enabled: Boolean) {
         automaticAnalysis = enabled
+        onAutomaticAnalysisChange(enabled)
     }
 
     fun automaticAnalysisDelay(nowMillis: Long, intervalMillis: Long): Long = lastAutomaticAnalysisAtMillis

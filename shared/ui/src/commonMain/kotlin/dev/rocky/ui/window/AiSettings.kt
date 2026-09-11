@@ -74,7 +74,7 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 visualTransformation = PasswordVisualTransformation(),
             )
             Text(
-                "A chave fica apenas na memória e será apagada ao fechar o Rocky.",
+                "A chave é salva neste dispositivo para reconectar a IA ao abrir o Rocky.",
                 modifier = Modifier.padding(top = 5.dp),
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,

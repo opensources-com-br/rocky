@@ -49,6 +49,8 @@ interface VoiceService : AutoCloseable {
     fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration =
         error("Automatic voice recognition setup is unavailable")
 
+    fun detectedTranscription(): LocalTranscriptionConfiguration? = null
+
     fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String
 
     fun cancelCapture()

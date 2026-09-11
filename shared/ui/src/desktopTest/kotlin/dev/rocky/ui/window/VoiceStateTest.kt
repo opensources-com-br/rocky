@@ -183,6 +183,20 @@ class VoiceStateTest {
     }
 
     @Test
+    fun restoresDetectedManagedTranscription() {
+        val service = FakeVoiceService().apply {
+            detectedTranscription = LocalTranscriptionConfiguration("managed-whisper", "managed-model")
+        }
+        var saved: VoiceConfiguration? = null
+
+        val state = VoiceState(service, VoiceConfiguration()) { saved = it }
+
+        assertTrue(state.transcriptionReady)
+        assertEquals("managed-whisper", saved?.transcription?.executablePath)
+        assertEquals("managed-model", saved?.transcription?.modelPath)
+    }
+
+    @Test
     fun clearsTranscriptForANewSession() = runBlocking {
         val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
 
@@ -244,6 +258,7 @@ class VoiceStateTest {
         var transcriptionGate: CountDownLatch? = null
         var setupSupported = false
         var preparedTranscription = LocalTranscriptionConfiguration("", "")
+        var detectedTranscription: LocalTranscriptionConfiguration? = null
 
         override val automaticTranscriptionSetupSupported: Boolean
             get() = setupSupported
@@ -265,6 +280,7 @@ class VoiceStateTest {
             onProgress("Reconhecimento de voz pronto")
             return preparedTranscription
         }
+        override fun detectedTranscription(): LocalTranscriptionConfiguration? = detectedTranscription
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
             transcriptionGate?.await()
             return "O que o chat achou?"

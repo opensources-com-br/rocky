@@ -91,6 +91,20 @@ internal class VoiceState(
     private var listenerScope: CoroutineScope? = null
     private var listenerTranscript: ((String) -> Unit)? = null
 
+    init {
+        if (!transcriptionReady) {
+            service.detectedTranscription()?.let { detected ->
+                configuration = initialConfiguration.copy(
+                    transcription = detected.copy(
+                        microphoneId = initialConfiguration.transcription.microphoneId,
+                        language = initialConfiguration.transcription.language,
+                    ),
+                )
+                onConfigurationChange(configuration)
+            }
+        }
+    }
+
     fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
         if (listenerEnabled) disableListener() else enableListener(scope, onTranscript)
     }

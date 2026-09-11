@@ -143,6 +143,15 @@ class DesktopVoiceService : VoiceService {
         return LocalTranscriptionConfiguration(whisper.toString(), model.toString())
     }
 
+    override fun detectedTranscription(): LocalTranscriptionConfiguration? {
+        val brew = homebrewExecutable() ?: return null
+        val whisper = brew.parent.resolve("whisper-cli")
+        val model = RockyDesktopPaths.voiceDirectory.resolve(MANAGED_MODEL_NAME)
+        return if (Files.isRegularFile(whisper) && Files.isRegularFile(model) && Files.size(model) >= MINIMUM_MODEL_BYTES) {
+            LocalTranscriptionConfiguration(whisper.toString(), model.toString())
+        } else null
+    }
+
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
         val audio = finishCapture()
         require(audio.size >= MINIMUM_AUDIO_BYTES) { "A gravação ficou curta demais para transcrever" }

@@ -220,6 +220,17 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun acceptsTheFullRecentChatForVoiceCommands() = runBlocking {
+        val client = FakeAiSuggestionClient()
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+
+        state.analyze(this, messages(40), messageLimit = 40)
+        while (state.generating) delay(1)
+
+        assertEquals(40, client.lastMessageCount)
+    }
+
+    @Test
     fun ignoresAResultFromAnEndedSession() = runBlocking {
         val gate = CountDownLatch(1)
         val client = FakeAiSuggestionClient().apply { responseGate = gate }
@@ -246,6 +257,7 @@ class AiSuggestionStateTest {
         var requests = 0
         var failuresRemaining = 0
         var lastStreamerRequest: String? = null
+        var lastMessageCount = 0
         var responseGate: CountDownLatch? = null
 
         override fun testConnection(configuration: AiProviderConfiguration) = AiConnectionResult(true, "ok")
@@ -257,6 +269,7 @@ class AiSuggestionStateTest {
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
             requests += 1
+            lastMessageCount = messages.size
             if (failuresRemaining-- > 0) error("Temporary provider failure")
             lastStreamerRequest = streamerRequest
             started.countDown()

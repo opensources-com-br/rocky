@@ -212,9 +212,9 @@ fun RockyWindow(
             }
         }
         val handleVoiceRequest: (String) -> Unit = { transcript ->
+            val directCommand = extractRockyCommand(transcript)
             when {
-                extractRockyCommand(transcript) != null ->
-                    submitVoiceCommand(requireNotNull(extractRockyCommand(transcript)))
+                directCommand != null -> submitVoiceCommand(directCommand)
                 waitingForVoiceCommand -> submitVoiceCommand(transcript.trim())
                 containsRockyWakeWord(transcript) -> {
                     waitingForVoiceCommand = true

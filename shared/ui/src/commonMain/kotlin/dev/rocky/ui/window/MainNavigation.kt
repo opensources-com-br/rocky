@@ -99,7 +99,7 @@ internal fun AssistantFooter(
                 fontWeight = FontWeight.Medium,
             )
             Text(
-                text = status ?: if (active) "fale sua pergunta · envio automático" else "clique para ativar",
+                text = status ?: if (active) "diga “Rocky” e faça sua pergunta" else "clique para ativar",
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )

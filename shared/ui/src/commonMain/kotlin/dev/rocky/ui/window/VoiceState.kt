@@ -222,7 +222,7 @@ internal class VoiceState(
             captureJob = null
             result.onSuccess {
                 capturing = true
-                status = "Ouvinte ativo · fale sua pergunta"
+                status = "Ouvinte ativo · diga “Rocky” e faça sua pergunta"
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)

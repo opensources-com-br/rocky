@@ -461,7 +461,7 @@ class RockyVisualCaptureTest {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
                 var showingSettings by remember { mutableStateOf(settingsOpen) }
-                Box(Modifier.size(420.dp, if (showingSettings) 520.dp else 720.dp)) {
+                Box(Modifier.size(420.dp, 820.dp)) {
                     RockyWindow(
                         compact = compact,
                         pinned = false,

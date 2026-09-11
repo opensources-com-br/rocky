@@ -111,6 +111,16 @@ class VoiceStateTest {
     }
 
     @Test
+    fun doesNotEnableTheListenerBeforeVoiceSetup() = runBlocking {
+        val state = VoiceState(FakeVoiceService(), VoiceConfiguration()) {}
+
+        state.toggleListener(this) {}
+
+        assertFalse(state.listenerEnabled)
+        assertEquals("Configure o whisper.cpp na aba Voz antes de usar o microfone", state.status)
+    }
+
+    @Test
     fun clearsTranscriptForANewSession() = runBlocking {
         val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
 

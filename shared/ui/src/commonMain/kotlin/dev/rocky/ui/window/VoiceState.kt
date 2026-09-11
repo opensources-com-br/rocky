@@ -33,6 +33,12 @@ internal class VoiceState(
     var loadingDevices by mutableStateOf(false)
         private set
 
+    var preparingTranscription by mutableStateOf(false)
+        private set
+
+    var transcriptionSetupStatus by mutableStateOf<String?>(null)
+        private set
+
     var speaking by mutableStateOf(false)
         private set
 
@@ -69,6 +75,9 @@ internal class VoiceState(
     val transcriptionReady: Boolean
         get() = configuration.transcription.executablePath.isNotBlank() &&
             configuration.transcription.modelPath.isNotBlank()
+
+    val automaticTranscriptionSetupSupported: Boolean
+        get() = service.automaticTranscriptionSetupSupported
 
     private var captureTimeout: Job? = null
     private var captureJob: Job? = null
@@ -158,6 +167,32 @@ internal class VoiceState(
     fun updateMicrophone(id: String?) = update(
         configuration.copy(transcription = configuration.transcription.copy(microphoneId = id)),
     )
+
+    fun prepareTranscription(scope: CoroutineScope) {
+        if (preparingTranscription || !automaticTranscriptionSetupSupported) return
+        preparingTranscription = true
+        transcriptionSetupStatus = "Preparando reconhecimento de voz…"
+        scope.launch {
+            val result = withContext(Dispatchers.Default) {
+                runCatching { service.prepareTranscription { transcriptionSetupStatus = it } }
+            }
+            preparingTranscription = false
+            result.onSuccess { prepared ->
+                update(
+                    configuration.copy(
+                        transcription = prepared.copy(
+                            microphoneId = configuration.transcription.microphoneId,
+                            language = configuration.transcription.language,
+                        ),
+                    ),
+                )
+                transcriptionSetupStatus = "Reconhecimento de voz pronto"
+                status = "Faça o teste de conversa abaixo"
+            }.onFailure {
+                transcriptionSetupStatus = it.message ?: "Não foi possível preparar o reconhecimento de voz"
+            }
+        }
+    }
 
     fun testVoice(scope: CoroutineScope, agentName: String = "Rocky") {
         voiceTested = false

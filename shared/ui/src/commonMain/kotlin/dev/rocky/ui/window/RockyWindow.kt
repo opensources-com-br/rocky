@@ -209,10 +209,7 @@ fun RockyWindow(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .then(
-                                    if (mainSection == MainSection.Conversation) Modifier
-                                    else Modifier.verticalScroll(mainContentScrollState),
-                                ),
+                                .verticalScroll(rememberScrollState()),
                         ) {
                             when (settingsSection) {
                                 SettingsSection.Agent -> AgentSettings(

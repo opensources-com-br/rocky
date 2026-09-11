@@ -97,6 +97,21 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun allowsTheFirstAutomaticBatchImmediatelyAndThenAppliesTheInterval() = runBlocking {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+        state.updateAutomaticAnalysis(true)
+
+        assertEquals(0L, state.automaticAnalysisDelay(1_000L, 2_000L))
+        state.analyze(this, messages(3), automatic = true, automaticTimeMillis = 1_000L)
+        while (state.generating) delay(1)
+        assertEquals(2_000L, state.automaticAnalysisDelay(1_000L, 2_000L))
+
+        assertEquals(0L, state.automaticAnalysisDelay(3_000L, 2_000L))
+        state.resetSession()
+        assertEquals(0L, state.automaticAnalysisDelay(1_000L, 2_000L))
+    }
+
+    @Test
     fun neverPersistsOpenAiApiKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }

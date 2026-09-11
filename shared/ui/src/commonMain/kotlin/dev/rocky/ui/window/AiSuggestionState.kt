@@ -40,6 +40,9 @@ internal class AiSuggestionState(
     var generating by mutableStateOf(false)
         private set
 
+    var analysisRevision by mutableStateOf(0)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
@@ -140,7 +143,7 @@ internal class AiSuggestionState(
             if (!automaticAnalysis || newMessageCount < AUTOMATIC_BATCH_SIZE) return
             lastAutomaticAnalysisAtMillis = automaticTimeMillis
         }
-        lastAnalyzedMessageId = messages.last().id
+        if (!automatic) lastAnalyzedMessageId = messages.last().id
         val snapshot = messages.takeLast(MAX_ANALYSIS_MESSAGES)
         val activeConfiguration = configuration
         val activeSession = sessionGeneration
@@ -154,8 +157,10 @@ internal class AiSuggestionState(
             }
             if (activeSession != sessionGeneration) return@launch
             generating = false
+            analysisRevision += 1
             result.exceptionOrNull()?.let { if (it is CancellationException) throw it }
             result.onSuccess { generated ->
+                if (automatic) lastAnalyzedMessageId = snapshot.last().id
                 suggestionSources = snapshot.filter { it.id in generated?.sourceMessageIds.orEmpty() }
                 suggestion = generated?.let {
                     RockySuggestion("ai-${Random.nextLong()}", it.text, it.sourceMessageIds)

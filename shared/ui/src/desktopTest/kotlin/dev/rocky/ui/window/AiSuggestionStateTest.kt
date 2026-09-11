@@ -141,6 +141,21 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun retriesAFailedAutomaticBatch() = runBlocking {
+        val client = FakeAiSuggestionClient().apply { failuresRemaining = 1 }
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.updateAutomaticAnalysis(true)
+
+        state.analyze(this, messages(3), automatic = true, automaticTimeMillis = 1_000L)
+        while (state.generating) delay(1)
+        state.analyze(this, messages(3), automatic = true, automaticTimeMillis = 3_000L)
+        while (state.generating) delay(1)
+
+        assertEquals(2, client.requests)
+        assertEquals(setOf("m3"), state.suggestion?.sourceMessageIds)
+    }
+
+    @Test
     fun neverPersistsOpenAiApiKey() {
         var saved: AiProviderConfiguration? = null
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) { saved = it }
@@ -216,6 +231,7 @@ class AiSuggestionStateTest {
         val started = CountDownLatch(1)
         val interrupted = AtomicBoolean(false)
         var requests = 0
+        var failuresRemaining = 0
         var lastStreamerRequest: String? = null
         var responseGate: CountDownLatch? = null
 
@@ -228,6 +244,7 @@ class AiSuggestionStateTest {
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
             requests += 1
+            if (failuresRemaining-- > 0) error("Temporary provider failure")
             lastStreamerRequest = streamerRequest
             started.countDown()
             try {

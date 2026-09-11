@@ -127,6 +127,7 @@ internal class AiSuggestionState(
         streamerRequest: String? = null,
         agent: AgentConfiguration = AgentConfiguration(),
         automaticTimeMillis: Long = 0L,
+        onComplete: (RockySuggestion?) -> Unit = {},
     ) {
         if (generating || messages.isEmpty()) return
         if (!isReady) {
@@ -162,12 +163,15 @@ internal class AiSuggestionState(
             result.onSuccess { generated ->
                 if (automatic) lastAnalyzedMessageId = snapshot.last().id
                 suggestionSources = snapshot.filter { it.id in generated?.sourceMessageIds.orEmpty() }
-                suggestion = generated?.let {
+                val completedSuggestion = generated?.let {
                     RockySuggestion("ai-${Random.nextLong()}", it.text, it.sourceMessageIds)
                 }
+                suggestion = completedSuggestion
                 status = if (generated == null) "Nenhuma sugestão relevante agora" else "Sugestão gerada"
+                onComplete(completedSuggestion)
             }.onFailure {
                 status = "Não foi possível gerar a sugestão"
+                onComplete(null)
             }
         }
     }

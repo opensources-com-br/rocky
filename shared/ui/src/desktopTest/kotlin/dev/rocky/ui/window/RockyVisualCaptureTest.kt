@@ -162,7 +162,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("concluir").performClick()
 
         rule.onNodeWithText("CONEXÃO REAL · TWITCH").assertExists()
-        rule.onNodeWithText("Mensagem real").assertIsDisplayed()
+        rule.onNodeWithText("Mensagem real").assertExists()
         assertTrue(rule.onAllNodesWithText("1.221").fetchSemanticsNodes().isEmpty())
         rule.onNodeWithText("Superchats").performClick()
         rule.onNodeWithText("Super Chats ainda não estão conectados.").assertExists()

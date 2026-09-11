@@ -81,6 +81,13 @@ internal class VoiceState(
         }
     }
 
+    fun resumeListener() {
+        if (!listenerEnabled || capturing || transcribing || speaking) return
+        val scope = listenerScope ?: return
+        val onTranscript = listenerTranscript ?: return
+        startCapture(scope, onTranscript)
+    }
+
     fun loadDevices(scope: CoroutineScope) {
         if (loadingDevices || voices.isNotEmpty() || microphones.isNotEmpty()) return
         loadingDevices = true
@@ -211,7 +218,10 @@ internal class VoiceState(
                 transcript = text
                 status = "Você: $text"
                 onTranscript(text)
-            }.onFailure { status = it.message ?: "Não foi possível transcrever a fala" }
+            }.onFailure {
+                status = it.message ?: "Não foi possível transcrever a fala"
+                resumeListener()
+            }
         }
     }
 
@@ -232,6 +242,9 @@ internal class VoiceState(
     }
 
     fun resetSession() {
+        listenerEnabled = false
+        listenerScope = null
+        listenerTranscript = null
         stopSpeaking()
         cancelCapture()
         transcript = null

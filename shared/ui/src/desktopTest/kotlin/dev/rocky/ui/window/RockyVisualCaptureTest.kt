@@ -256,6 +256,14 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun togglesTwitchClientIdVisibility() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms, twitchClientId = "client-id")
+
+        rule.onNodeWithContentDescription("Mostrar valor").performClick()
+        rule.onNodeWithContentDescription("Ocultar valor").assertExists()
+    }
+
+    @Test
     fun showsRealSuggestionInCompactMode() {
         var stopped = false
         rule.setContent {

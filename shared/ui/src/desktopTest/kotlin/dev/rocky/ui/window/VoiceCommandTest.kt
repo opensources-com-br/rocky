@@ -8,6 +8,8 @@ class VoiceCommandTest {
     fun extractsACommandAfterTheWakeWord() {
         assertEquals("o que o chat quer jogar?", extractRockyCommand("Rocky, o que o chat quer jogar?"))
         assertEquals("o pessoal gostou?", extractRockyCommand("Ei Roque: o pessoal gostou?"))
+        assertEquals("o que o chat quer jogar?", extractRockyCommand("Raki, o que o chat quer jogar?"))
+        assertEquals("o pessoal está gostando?", extractRockyCommand("Raqui, o pessoal está gostando?"))
     }
 
     @Test

@@ -17,7 +17,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - autenticação da Twitch pelo Device Code Flow, chat ao vivo pelo EventSub e reconexão automática;
 - sugestões fundamentadas no chat usando modelos locais do Ollama ou a Responses API da OpenAI;
 - leitura local por meio das vozes do macOS e Windows;
-- comandos push-to-talk com transcrição local pelo `whisper.cpp`;
+- comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
 - notas locais em SQLite, com criação, edição, exclusão, recuperação e exportação em Markdown;
 - exportação em Markdown das ideias exibidas na demonstração;
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;
@@ -55,7 +55,7 @@ Execute todas as verificações automatizadas com `./gradlew build` ou `.\gradle
 
 1. Siga o [guia de conexão com a Twitch](docs/TWITCH.pt-BR.md) para registrar um cliente público e conectar o canal do próprio streamer.
 2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API ou OpenRouter.
-3. Opcionalmente, siga o [guia de voz](docs/VOICE.pt-BR.md) para escolher uma voz do sistema e configurar a transcrição local por push-to-talk.
+3. Siga o [guia de voz](docs/VOICE.pt-BR.md) para preparar a transcrição local e testar a conversa por áudio.
 4. Inicie uma live na Twitch, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 
 O conector da Twitch atualmente lê apenas novas mensagens do chat. Contagem de espectadores, inscrições, pontos do canal, Super Chats, mensagens anteriores e outras plataformas ainda não estão integrados.

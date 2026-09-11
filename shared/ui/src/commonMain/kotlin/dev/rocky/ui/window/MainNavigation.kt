@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.rocky.ui.theme.RockyColors
@@ -71,6 +72,8 @@ internal fun MainNavigation(
 internal fun AssistantFooter(
     agentName: String = "Rocky",
     active: Boolean = false,
+    capturing: Boolean = false,
+    inputLevel: Float = 0f,
     busy: Boolean = false,
     status: String? = null,
     realSession: Boolean = false,
@@ -85,12 +88,13 @@ internal fun AssistantFooter(
             .padding(horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        VoicePulse(active)
+        VoicePulse(active = active, capturing = capturing, inputLevel = inputLevel)
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = when {
                     busy -> "Rocky está transcrevendo"
+                    capturing -> "Microfone ouvindo"
                     active -> "Ouvinte ativo"
                     else -> "Ativar ouvinte do $agentName"
                 },
@@ -99,7 +103,10 @@ internal fun AssistantFooter(
                 fontWeight = FontWeight.Medium,
             )
             Text(
-                text = status ?: if (active) "diga “Rocky” e faça sua pergunta" else "clique para ativar",
+                text = when {
+                    capturing -> "Fale agora · nível ${(inputLevel * 100).toInt()}%"
+                    else -> status ?: if (active) "diga “Rocky” e faça sua pergunta" else "clique para ativar"
+                },
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )
@@ -118,9 +125,11 @@ internal fun AssistantFooter(
 }
 
 @Composable
-private fun VoicePulse(active: Boolean) {
+private fun VoicePulse(active: Boolean, capturing: Boolean, inputLevel: Float) {
+    val normalizedLevel = inputLevel.coerceIn(0f, 1f)
+    val scale = if (capturing) 1f + normalizedLevel * 2.5f else 1f
     Row(
-        modifier = Modifier.width(34.dp),
+        modifier = Modifier.width(34.dp).testTag("microphone-level"),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -128,7 +137,7 @@ private fun VoicePulse(active: Boolean) {
             Box(
                 Modifier
                     .width(4.dp)
-                    .height(height.dp)
+                    .height((height * scale).dp)
                     .background(if (active) RockyColors.Accent else RockyColors.TextMuted, CircleShape),
             )
         }

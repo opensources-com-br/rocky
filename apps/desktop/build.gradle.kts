@@ -36,6 +36,7 @@ compose.desktop {
         jvmArgs += "-Drocky.twitch.clientId=${providers.gradleProperty("rockyTwitchClientId").orElse("").get()}"
 
         nativeDistributions {
+            modules("java.sql", "java.net.http")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Rocky"
             packageVersion = providers.gradleProperty("rockyPackageVersion").get()
@@ -45,7 +46,7 @@ compose.desktop {
                 infoPlist {
                     extraKeysRawXml = """
                         <key>NSMicrophoneUsageDescription</key>
-                        <string>Rocky uses the microphone only while you record a command for local transcription.</string>
+                        <string>Rocky listens locally for its wake word and transcribes your voice commands.</string>
                     """.trimIndent()
                 }
             }

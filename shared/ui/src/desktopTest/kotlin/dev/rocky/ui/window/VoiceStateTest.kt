@@ -107,6 +107,22 @@ class VoiceStateTest {
     }
 
     @Test
+    fun testsACompleteMicrophoneConversation() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 5L) {}
+
+        state.testConversation(this)
+        waitUntil { !state.conversationTesting }
+
+        assertEquals("O que o chat achou?", state.conversationTestTranscript)
+        assertEquals(
+            "Eu ouvi você dizer: O que o chat achou?. Meu microfone está funcionando.",
+            state.conversationTestResponse,
+        )
+        assertEquals(listOf(state.conversationTestResponse), service.spoken)
+    }
+
+    @Test
     fun keepsListeningAfterSubmittingAnAutomaticTurn() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration, captureDurationMillis = 5L) {}
@@ -143,6 +159,41 @@ class VoiceStateTest {
 
         assertFalse(state.listenerEnabled)
         assertEquals("Configure o whisper.cpp na aba Voz antes de usar o microfone", state.status)
+    }
+
+    @Test
+    fun preparesAndPersistsAutomaticTranscriptionSetup() = runBlocking {
+        val service = FakeVoiceService().apply {
+            setupSupported = true
+            preparedTranscription = LocalTranscriptionConfiguration("managed-whisper", "managed-model")
+        }
+        var saved: VoiceConfiguration? = null
+        val initial = VoiceConfiguration(
+            transcription = LocalTranscriptionConfiguration("", "", microphoneId = "mic"),
+        )
+        val state = VoiceState(service, initial) { saved = it }
+
+        state.prepareTranscription(this)
+        waitUntil { !state.preparingTranscription }
+
+        assertEquals("managed-whisper", state.configuration.transcription.executablePath)
+        assertEquals("managed-model", state.configuration.transcription.modelPath)
+        assertEquals("mic", state.configuration.transcription.microphoneId)
+        assertEquals(state.configuration, saved)
+    }
+
+    @Test
+    fun restoresDetectedManagedTranscription() {
+        val service = FakeVoiceService().apply {
+            detectedTranscription = LocalTranscriptionConfiguration("managed-whisper", "managed-model")
+        }
+        var saved: VoiceConfiguration? = null
+
+        val state = VoiceState(service, VoiceConfiguration()) { saved = it }
+
+        assertTrue(state.transcriptionReady)
+        assertEquals("managed-whisper", saved?.transcription?.executablePath)
+        assertEquals("managed-model", saved?.transcription?.modelPath)
     }
 
     @Test
@@ -205,6 +256,12 @@ class VoiceStateTest {
         var captureStarts = 0
         var speechGate: CountDownLatch? = null
         var transcriptionGate: CountDownLatch? = null
+        var setupSupported = false
+        var preparedTranscription = LocalTranscriptionConfiguration("", "")
+        var detectedTranscription: LocalTranscriptionConfiguration? = null
+
+        override val automaticTranscriptionSetupSupported: Boolean
+            get() = setupSupported
 
         override fun availableVoices() = listOf(SystemVoice("voice", "Voice", "pt-BR"))
         override fun availableMicrophones() = listOf(AudioInputDevice("mic", "Microphone"))
@@ -219,6 +276,11 @@ class VoiceStateTest {
             captureStarted = true
             captureStarts += 1
         }
+        override fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration {
+            onProgress("Reconhecimento de voz pronto")
+            return preparedTranscription
+        }
+        override fun detectedTranscription(): LocalTranscriptionConfiguration? = detectedTranscription
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
             transcriptionGate?.await()
             return "O que o chat achou?"

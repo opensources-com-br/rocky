@@ -190,7 +190,12 @@ fun RockyWindow(
                 onComplete = { suggestion ->
                     if (voice.listenerEnabled) {
                         if (suggestion == null) {
-                            voice.resumeListener()
+                            voice.speakAcknowledgement(
+                                aiScope,
+                                "Não consegui consultar o chat agora. Vou continuar ouvindo.",
+                                silenced,
+                                voice::resumeListener,
+                            )
                         } else {
                             voice.speakSuggestion(
                                 aiScope,
@@ -242,6 +247,7 @@ fun RockyWindow(
                     pinned = pinned,
                     sessionStatus = sessionStatus,
                     twitchPhase = twitch.phase.takeIf { twitch.isRealSession },
+                    microphoneActive = voice.capturing,
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
                     onOpenSettings = {
@@ -464,6 +470,8 @@ fun RockyWindow(
                         AssistantFooter(
                             agentName = agent.displayName,
                             active = voice.listenerEnabled,
+                            capturing = voice.capturing,
+                            inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
                             realSession = twitch.isRealSession,

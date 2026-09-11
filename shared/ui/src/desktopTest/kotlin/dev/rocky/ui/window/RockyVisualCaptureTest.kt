@@ -59,6 +59,77 @@ class RockyVisualCaptureTest {
     val rule = createComposeRule()
 
     @Test
+    fun showsWhenTheMicrophoneIsCapturing() {
+        rule.setContent {
+            AssistantFooter(
+                active = true,
+                capturing = true,
+                inputLevel = 0.42f,
+                onTalk = {},
+            )
+        }
+
+        rule.onNodeWithTag("microphone-level", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithText("Microphone listening").assertIsDisplayed()
+        rule.onNodeWithText("Speak now · level 42%").assertIsDisplayed()
+    }
+
+    @Test
+    fun distinguishesAnActiveChatFromAnActiveMicrophone() {
+        rule.setContent {
+            RockyHeader(
+                sessionStatus = LiveSessionStatus.Running,
+                twitchPhase = dev.rocky.core.twitch.TwitchConnectionPhase.Connected,
+                microphoneActive = false,
+            )
+        }
+
+        rule.onNodeWithText("CHAT ACTIVE").assertIsDisplayed()
+        assertTrue(rule.onAllNodesWithText("MIC ON").fetchSemanticsNodes().isEmpty())
+    }
+
+    @Test
+    fun testsAConversationFromVoiceSettings() {
+        val voice = FakeVoiceService().apply { transcript = "Rocky, você está me ouvindo?" }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Voice,
+            voiceService = voice,
+            voiceConfiguration = VoiceConfiguration(
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
+            ),
+        )
+
+        rule.onNodeWithTag("test-conversation").performScrollTo().performClick()
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.isNotEmpty() }
+
+        rule.onNodeWithTag("voice-test-transcript").assertIsDisplayed()
+        rule.onNodeWithTag("voice-test-response").assertIsDisplayed()
+        assertEquals(
+            "Eu ouvi você dizer: Rocky, você está me ouvindo?. Meu microfone está funcionando.",
+            voice.spoken.single(),
+        )
+    }
+
+    @Test
+    fun preparesVoiceRecognitionFromSettings() {
+        val voice = FakeVoiceService().apply { automaticSetupSupported = true }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Voice,
+            voiceService = voice,
+        )
+
+        rule.onNodeWithTag("prepare-transcription").performScrollTo().performClick()
+        rule.waitUntil(timeoutMillis = 5_000) {
+            rule.onAllNodesWithText("Reconhecimento de voz pronto").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        rule.onNodeWithTag("test-conversation").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
     fun captureMainInterface() {
         when (System.getenv("ROCKY_CAPTURE_STATE")) {
             "settings-ai" -> {
@@ -238,6 +309,36 @@ class RockyVisualCaptureTest {
 
         assertEquals("o que o chat quer?", ai.lastRequest)
         assertEquals(listOf("Vou verificar o chat.", "O chat quer saber o preço."), voice.spoken.take(2))
+    }
+
+    @Test
+    fun reportsAProviderFailureByVoice() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient().apply { failuresRemaining = 1 }
+        val voice = FakeVoiceService().apply { transcript = "Rocky, o que o chat quer?" }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+            aiSuggestionClient = ai,
+            voiceService = voice,
+            voiceConfiguration = VoiceConfiguration(
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
+            ),
+        )
+
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emit(TwitchConnectionEvent.MessageReceived(ChatMessage("m1", "viewer", "CS", StreamPlatform.Twitch)))
+        }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 1 }
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 2 }
+
+        assertEquals("Vou verificar o chat.", voice.spoken.first())
+        assertEquals("Não consegui consultar o chat agora. Vou continuar ouvindo.", voice.spoken[1])
     }
 
     @Test
@@ -657,13 +758,20 @@ class RockyVisualCaptureTest {
     private class FakeVoiceService : VoiceService {
         var captureStarts = 0
         var transcript = ""
+        var automaticSetupSupported = false
         val transcripts = mutableListOf<String>()
         val spoken = mutableListOf<String>()
+        override val automaticTranscriptionSetupSupported: Boolean
+            get() = automaticSetupSupported
         override fun availableVoices(): List<SystemVoice> = emptyList()
         override fun availableMicrophones(): List<AudioInputDevice> = emptyList()
         override fun speak(text: String, configuration: VoiceOutputConfiguration) { spoken += text }
         override fun stopSpeaking() = Unit
         override fun startCapture(microphoneId: String?) { captureStarts += 1 }
+        override fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration {
+            onProgress("Reconhecimento de voz pronto")
+            return LocalTranscriptionConfiguration("managed-whisper", "managed-model")
+        }
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) =
             if (transcripts.isEmpty()) transcript else transcripts.removeAt(0)
         override fun cancelCapture() = Unit

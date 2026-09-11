@@ -6,6 +6,9 @@ object RockyDesktopPaths {
     val notesDatabase: Path
         get() = dataDirectory.resolve("rocky.db")
 
+    val voiceDirectory: Path
+        get() = dataDirectory.resolve("voice")
+
     private val dataDirectory: Path
         get() {
             val home = Path.of(System.getProperty("user.home"))

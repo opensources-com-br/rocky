@@ -31,6 +31,9 @@ data class VoiceConfiguration(
 )
 
 interface VoiceService : AutoCloseable {
+    val automaticTranscriptionSetupSupported: Boolean
+        get() = false
+
     fun availableVoices(): List<SystemVoice>
 
     fun availableMicrophones(): List<AudioInputDevice>
@@ -40,6 +43,13 @@ interface VoiceService : AutoCloseable {
     fun stopSpeaking()
 
     fun startCapture(microphoneId: String?)
+
+    fun inputLevel(): Float = 0f
+
+    fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration =
+        error("Automatic voice recognition setup is unavailable")
+
+    fun detectedTranscription(): LocalTranscriptionConfiguration? = null
 
     fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String
 

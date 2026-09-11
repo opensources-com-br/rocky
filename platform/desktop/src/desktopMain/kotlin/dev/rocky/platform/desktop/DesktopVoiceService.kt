@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.util.concurrent.TimeUnit
 import java.util.Base64
 import javax.sound.sampled.AudioFileFormat
@@ -34,12 +35,18 @@ class DesktopVoiceService : VoiceService {
     private var captureThread: Thread? = null
 
     @Volatile
+    private var currentInputLevel = 0f
+
+    @Volatile
     private var transcriptionProcess: Process? = null
 
     @Volatile
     private var transcriptionCancelled = false
 
     private var capturedAudio: ByteArrayOutputStream? = null
+
+    override val automaticTranscriptionSetupSupported: Boolean
+        get() = operatingSystem.contains("mac") && homebrewExecutable() != null
 
     override fun availableVoices(): List<SystemVoice> = runCatching {
         when {
@@ -100,6 +107,7 @@ class DesktopVoiceService : VoiceService {
             val output = ByteArrayOutputStream()
             line.open(format)
             line.start()
+            currentInputLevel = 0f
             captureLine = line
             capturedAudio = output
             captureThread = Thread({ capture(line, output) }, "rocky-microphone-capture").apply {
@@ -107,6 +115,41 @@ class DesktopVoiceService : VoiceService {
                 start()
             }
         }
+    }
+
+    override fun inputLevel(): Float = currentInputLevel
+
+    override fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration {
+        check(operatingSystem.contains("mac")) { "A configuração automática ainda está disponível apenas no macOS" }
+        val brew = requireNotNull(homebrewExecutable()) { "Instale o Homebrew para configurar o reconhecimento automaticamente" }
+        onProgress("Instalando o mecanismo de reconhecimento…")
+        runSetupCommand(listOf(brew.toString(), "install", "whisper-cpp"))
+        val whisper = brew.parent.resolve("whisper-cli")
+        check(Files.isRegularFile(whisper)) { "O whisper-cli não foi encontrado após a instalação" }
+
+        val voiceDirectory = RockyDesktopPaths.voiceDirectory
+        Files.createDirectories(voiceDirectory)
+        val model = voiceDirectory.resolve(MANAGED_MODEL_NAME)
+        if (!Files.isRegularFile(model) || Files.size(model) < MINIMUM_MODEL_BYTES) {
+            onProgress("Baixando o modelo de voz…")
+            val partial = voiceDirectory.resolve("$MANAGED_MODEL_NAME.part")
+            MODEL_URL.openStream().use { input ->
+                Files.copy(input, partial, StandardCopyOption.REPLACE_EXISTING)
+            }
+            check(Files.size(partial) >= MINIMUM_MODEL_BYTES) { "O modelo de voz baixado está incompleto" }
+            Files.move(partial, model, StandardCopyOption.REPLACE_EXISTING)
+        }
+        onProgress("Reconhecimento de voz pronto")
+        return LocalTranscriptionConfiguration(whisper.toString(), model.toString())
+    }
+
+    override fun detectedTranscription(): LocalTranscriptionConfiguration? {
+        val brew = homebrewExecutable() ?: return null
+        val whisper = brew.parent.resolve("whisper-cli")
+        val model = RockyDesktopPaths.voiceDirectory.resolve(MANAGED_MODEL_NAME)
+        return if (Files.isRegularFile(whisper) && Files.isRegularFile(model) && Files.size(model) >= MINIMUM_MODEL_BYTES) {
+            LocalTranscriptionConfiguration(whisper.toString(), model.toString())
+        } else null
     }
 
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
@@ -169,6 +212,7 @@ class DesktopVoiceService : VoiceService {
             val count = runCatching { line.read(buffer, 0, buffer.size) }.getOrDefault(-1)
             if (count <= 0) break
             output.write(buffer, 0, count)
+            currentInputLevel = pcmLevel(buffer, count)
         }
     }
 
@@ -179,6 +223,7 @@ class DesktopVoiceService : VoiceService {
         captureThread?.join(CAPTURE_JOIN_TIMEOUT_MILLIS)
         captureLine = null
         captureThread = null
+        currentInputLevel = 0f
         (capturedAudio?.toByteArray() ?: byteArrayOf()).also { capturedAudio = null }
     }
 
@@ -205,6 +250,23 @@ class DesktopVoiceService : VoiceService {
         val output = process.inputStream.bufferedReader().use { it.readText() }
         check(process.waitFor(COMMAND_TIMEOUT_SECONDS, TimeUnit.SECONDS) && process.exitValue() == 0)
         return output
+    }
+
+    private fun homebrewExecutable(): Path? = listOf(
+        Path.of("/opt/homebrew/bin/brew"),
+        Path.of("/usr/local/bin/brew"),
+    ).firstOrNull(Files::isExecutable)
+
+    private fun runSetupCommand(command: List<String>) {
+        val builder = ProcessBuilder(command)
+            .redirectErrorStream(true)
+            .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+        builder.environment()["HOMEBREW_NO_AUTO_UPDATE"] = "1"
+        builder.environment()["HOMEBREW_NO_INSTALL_CLEANUP"] = "1"
+        val process = builder.start()
+        check(waitForProcess(process, SETUP_TIMEOUT_MINUTES, TimeUnit.MINUTES) && process.exitValue() == 0) {
+            "Não foi possível instalar o mecanismo de reconhecimento"
+        }
     }
 
     companion object {
@@ -260,6 +322,21 @@ class DesktopVoiceService : VoiceService {
             return false
         }
 
+        internal fun pcmLevel(bytes: ByteArray, count: Int): Float {
+            if (count < 2) return 0f
+            var sum = 0.0
+            var samples = 0
+            var index = 0
+            while (index + 1 < count) {
+                val sample = ((bytes[index + 1].toInt() shl 8) or (bytes[index].toInt() and 0xff)).toShort().toInt()
+                val normalized = sample / 32768.0
+                sum += normalized * normalized
+                samples += 1
+                index += 2
+            }
+            return kotlin.math.sqrt(sum / samples).toFloat().coerceIn(0f, 1f)
+        }
+
         private fun stopProcess(process: Process) {
             process.destroy()
             if (!process.waitFor(STOP_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) process.destroyForcibly()
@@ -294,5 +371,11 @@ class DesktopVoiceService : VoiceService {
         private const val COMMAND_TIMEOUT_SECONDS = 10L
         private const val SPEECH_TIMEOUT_MINUTES = 5L
         private const val TRANSCRIPTION_TIMEOUT_MINUTES = 2L
+        private const val SETUP_TIMEOUT_MINUTES = 15L
+        private const val MANAGED_MODEL_NAME = "ggml-base.bin"
+        private const val MINIMUM_MODEL_BYTES = 100_000_000L
+        private val MODEL_URL = java.net.URI.create(
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin",
+        ).toURL()
     }
 }

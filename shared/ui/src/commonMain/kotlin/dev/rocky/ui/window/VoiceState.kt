@@ -33,6 +33,12 @@ internal class VoiceState(
     var loadingDevices by mutableStateOf(false)
         private set
 
+    var preparingTranscription by mutableStateOf(false)
+        private set
+
+    var transcriptionSetupStatus by mutableStateOf<String?>(null)
+        private set
+
     var speaking by mutableStateOf(false)
         private set
 
@@ -48,19 +54,35 @@ internal class VoiceState(
     var listenerEnabled by mutableStateOf(false)
         private set
 
+    var inputLevel by mutableStateOf(0f)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
     var transcript by mutableStateOf<String?>(null)
         private set
 
+    var conversationTestTranscript by mutableStateOf<String?>(null)
+        private set
+
+    var conversationTestResponse by mutableStateOf<String?>(null)
+        private set
+
+    var conversationTesting by mutableStateOf(false)
+        private set
+
     val transcriptionReady: Boolean
         get() = configuration.transcription.executablePath.isNotBlank() &&
             configuration.transcription.modelPath.isNotBlank()
 
+    val automaticTranscriptionSetupSupported: Boolean
+        get() = service.automaticTranscriptionSetupSupported
+
     private var captureTimeout: Job? = null
     private var captureJob: Job? = null
     private var transcriptionJob: Job? = null
+    private var levelJob: Job? = null
     private var speechJob: Job? = null
     private var captureGeneration = 0L
     private var speechGeneration = 0L
@@ -68,6 +90,20 @@ internal class VoiceState(
     private var queuedSpeech: String? = null
     private var listenerScope: CoroutineScope? = null
     private var listenerTranscript: ((String) -> Unit)? = null
+
+    init {
+        if (!transcriptionReady) {
+            service.detectedTranscription()?.let { detected ->
+                configuration = initialConfiguration.copy(
+                    transcription = detected.copy(
+                        microphoneId = initialConfiguration.transcription.microphoneId,
+                        language = initialConfiguration.transcription.language,
+                    ),
+                )
+                onConfigurationChange(configuration)
+            }
+        }
+    }
 
     fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
         if (listenerEnabled) disableListener() else enableListener(scope, onTranscript)
@@ -82,7 +118,7 @@ internal class VoiceState(
         listenerEnabled = true
         listenerScope = scope
         listenerTranscript = onTranscript
-        startCapture(scope, onTranscript)
+        startCapture(scope, onTranscript = onTranscript)
     }
 
     fun disableListener() {
@@ -96,7 +132,7 @@ internal class VoiceState(
         if (!listenerEnabled || capturing || transcribing || speaking) return
         val scope = listenerScope ?: return
         val onTranscript = listenerTranscript ?: return
-        startCapture(scope, onTranscript)
+        startCapture(scope, onTranscript = onTranscript)
     }
 
     fun loadDevices(scope: CoroutineScope) {
@@ -146,6 +182,32 @@ internal class VoiceState(
         configuration.copy(transcription = configuration.transcription.copy(microphoneId = id)),
     )
 
+    fun prepareTranscription(scope: CoroutineScope) {
+        if (preparingTranscription || !automaticTranscriptionSetupSupported) return
+        preparingTranscription = true
+        transcriptionSetupStatus = "Preparando reconhecimento de voz…"
+        scope.launch {
+            val result = withContext(Dispatchers.Default) {
+                runCatching { service.prepareTranscription { transcriptionSetupStatus = it } }
+            }
+            preparingTranscription = false
+            result.onSuccess { prepared ->
+                update(
+                    configuration.copy(
+                        transcription = prepared.copy(
+                            microphoneId = configuration.transcription.microphoneId,
+                            language = configuration.transcription.language,
+                        ),
+                    ),
+                )
+                transcriptionSetupStatus = "Reconhecimento de voz pronto"
+                status = "Faça o teste de conversa abaixo"
+            }.onFailure {
+                transcriptionSetupStatus = it.message ?: "Não foi possível preparar o reconhecimento de voz"
+            }
+        }
+    }
+
     fun testVoice(scope: CoroutineScope, agentName: String = "Rocky") {
         voiceTested = false
         speak(
@@ -153,6 +215,31 @@ internal class VoiceState(
             "Olá, eu sou $agentName. A voz do chat, em acordes.",
             force = true,
             onSuccess = { voiceTested = true },
+        )
+    }
+
+    fun testConversation(scope: CoroutineScope, agentName: String = "Rocky") {
+        if (conversationTesting) return
+        if (!transcriptionReady) {
+            status = "Configure o reconhecimento de voz para iniciar o teste"
+            return
+        }
+        cancelCapture()
+        conversationTesting = true
+        conversationTestTranscript = null
+        conversationTestResponse = null
+        startCapture(
+            scope,
+            onTranscript = { text ->
+                conversationTestTranscript = text
+                val response = "Eu ouvi você dizer: $text. Meu microfone está funcionando."
+                conversationTestResponse = response
+                speakAcknowledgement(scope, response, silenced = false) {
+                    conversationTesting = false
+                    resumeListener()
+                }
+            },
+            onFailure = { conversationTesting = false },
         )
     }
 
@@ -201,7 +288,11 @@ internal class VoiceState(
         if (wasSpeaking) status = "Leitura interrompida"
     }
 
-    fun startCapture(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+    fun startCapture(
+        scope: CoroutineScope,
+        onFailure: () -> Unit = {},
+        onTranscript: (String) -> Unit,
+    ) {
         if (capturing || transcribing || captureJob?.isActive == true) return
         if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
@@ -223,21 +314,37 @@ internal class VoiceState(
             result.onSuccess {
                 capturing = true
                 status = "Ouvinte ativo · diga “Rocky” e faça sua pergunta"
+                levelJob?.cancel()
+                levelJob = scope.launch {
+                    while (capturing) {
+                        inputLevel = service.inputLevel()
+                        delay(INPUT_LEVEL_REFRESH_MILLIS)
+                    }
+                    inputLevel = 0f
+                }
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)
-                    if (capturing) stopCapture(scope, onTranscript)
+                    if (capturing) stopCapture(scope, onFailure, onTranscript)
                 }
             }.onFailure {
                 status = "Não foi possível acessar o microfone"
+                onFailure()
             }
         }
     }
 
-    fun stopCapture(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+    fun stopCapture(
+        scope: CoroutineScope,
+        onFailure: () -> Unit = {},
+        onTranscript: (String) -> Unit,
+    ) {
         if (!capturing || transcribing) return
         captureTimeout?.cancel()
         capturing = false
+        levelJob?.cancel()
+        levelJob = null
+        inputLevel = 0f
         transcribing = true
         status = "Transcrevendo localmente…"
         val activeConfiguration: LocalTranscriptionConfiguration = configuration.transcription
@@ -255,6 +362,7 @@ internal class VoiceState(
                 onTranscript(text)
             }.onFailure {
                 status = it.message ?: "Não foi possível transcrever a fala"
+                onFailure()
                 resumeListener()
             }
         }
@@ -266,6 +374,8 @@ internal class VoiceState(
         captureGeneration += 1
         captureTimeout?.cancel()
         captureTimeout = null
+        levelJob?.cancel()
+        levelJob = null
         captureJob?.cancel()
         captureJob = null
         transcriptionJob?.cancel()
@@ -273,6 +383,7 @@ internal class VoiceState(
         if (wasActive) service.cancelCapture()
         capturing = false
         transcribing = false
+        inputLevel = 0f
         if (wasActive) status = "Captura cancelada"
     }
 
@@ -283,6 +394,9 @@ internal class VoiceState(
         stopSpeaking()
         cancelCapture()
         transcript = null
+        conversationTesting = false
+        conversationTestTranscript = null
+        conversationTestResponse = null
         status = null
         lastSpokenSuggestionId = null
     }
@@ -324,6 +438,10 @@ internal class VoiceState(
     private fun update(value: VoiceConfiguration) {
         configuration = value
         onConfigurationChange(value)
+    }
+
+    private companion object {
+        const val INPUT_LEVEL_REFRESH_MILLIS = 75L
     }
 
 }

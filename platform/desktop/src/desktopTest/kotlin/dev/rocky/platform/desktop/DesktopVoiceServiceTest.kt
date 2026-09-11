@@ -53,6 +53,15 @@ class DesktopVoiceServiceTest {
     }
 
     @Test
+    fun measuresCapturedPcmAudioLevel() {
+        val silence = ByteArray(8)
+        val loud = byteArrayOf(0, 64, 0, 64, 0, 64, 0, 64)
+
+        assertEquals(0f, DesktopVoiceService.pcmLevel(silence, silence.size))
+        assertTrue(DesktopVoiceService.pcmLevel(loud, loud.size) > 0.45f)
+    }
+
+    @Test
     fun stopsAProcessAfterItsTimeout() {
         val javaExecutable = Path.of(
             System.getProperty("java.home"),

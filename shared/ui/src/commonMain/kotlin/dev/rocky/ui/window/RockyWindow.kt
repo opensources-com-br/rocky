@@ -558,8 +558,8 @@ private val TwitchLiveState.platforms: List<PlatformStatus>
             colorKey = PlatformColor.Twitch,
             enabled = phase != TwitchConnectionPhase.Failed,
         ),
-        PlatformStatus("Kick", "Em breve", "0", 0, PlatformColor.Kick, enabled = false),
-        PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.YouTube, enabled = false),
+        PlatformStatus("Kick", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
+        PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
     )
 

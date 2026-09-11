@@ -240,9 +240,12 @@ private val previewSourceCounts = mapOf(
     StreamPlatform.Kick to 1,
 )
 
-internal fun PlatformStatus.color(): Color = when (colorKey) {
-    PlatformColor.Twitch -> RockyColors.Twitch
-    PlatformColor.Kick -> RockyColors.Kick
-    PlatformColor.YouTube -> RockyColors.YouTube
-    PlatformColor.Offline -> RockyColors.Offline
+internal fun PlatformStatus.color(): Color {
+    if (!enabled) return RockyColors.Offline
+    return when (colorKey) {
+        PlatformColor.Twitch -> RockyColors.Twitch
+        PlatformColor.Kick -> RockyColors.Kick
+        PlatformColor.YouTube -> RockyColors.YouTube
+        PlatformColor.Offline -> RockyColors.Offline
+    }
 }

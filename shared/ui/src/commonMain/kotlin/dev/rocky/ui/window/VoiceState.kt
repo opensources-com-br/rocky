@@ -70,19 +70,26 @@ internal class VoiceState(
     private var listenerTranscript: ((String) -> Unit)? = null
 
     fun toggleListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
-        if (!listenerEnabled && !transcriptionReady) {
+        if (listenerEnabled) disableListener() else enableListener(scope, onTranscript)
+    }
+
+    fun enableListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
+        if (listenerEnabled) return
+        if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
             return
         }
-        listenerEnabled = !listenerEnabled
-        if (listenerEnabled) {
-            listenerScope = scope
-            listenerTranscript = onTranscript
-            startCapture(scope, onTranscript)
-        } else {
-            cancelCapture()
-            status = "Ouvinte desativado"
-        }
+        listenerEnabled = true
+        listenerScope = scope
+        listenerTranscript = onTranscript
+        startCapture(scope, onTranscript)
+    }
+
+    fun disableListener() {
+        if (!listenerEnabled) return
+        listenerEnabled = false
+        cancelCapture()
+        status = "Ouvinte desativado"
     }
 
     fun resumeListener() {

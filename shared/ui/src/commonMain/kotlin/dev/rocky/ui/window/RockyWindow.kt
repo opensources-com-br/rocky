@@ -367,7 +367,10 @@ fun RockyWindow(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .verticalScroll(rememberScrollState()),
+                                .then(
+                                    if (mainSection == MainSection.Conversation) Modifier
+                                    else Modifier.verticalScroll(mainContentScrollState),
+                                ),
                         ) {
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent(

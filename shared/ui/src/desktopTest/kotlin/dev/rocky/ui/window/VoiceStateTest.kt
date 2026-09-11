@@ -81,6 +81,22 @@ class VoiceStateTest {
     }
 
     @Test
+    fun keepsListeningAfterSubmittingAnAutomaticTurn() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 5L) {}
+        var received: String? = null
+
+        state.toggleListener(this) { received = it }
+        waitUntil { received != null }
+        assertTrue(state.listenerEnabled)
+
+        state.resumeListener()
+        waitUntil { service.captureStarts >= 2 }
+        state.toggleListener(this) {}
+        assertFalse(state.listenerEnabled)
+    }
+
+    @Test
     fun clearsTranscriptForANewSession() = runBlocking {
         val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
 
@@ -137,6 +153,7 @@ class VoiceStateTest {
     private class FakeVoiceService : VoiceService {
         val spoken = mutableListOf<String>()
         var captureStarted = false
+        var captureStarts = 0
         var speechGate: CountDownLatch? = null
         var transcriptionGate: CountDownLatch? = null
 
@@ -151,6 +168,7 @@ class VoiceStateTest {
         }
         override fun startCapture(microphoneId: String?) {
             captureStarted = true
+            captureStarts += 1
         }
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
             transcriptionGate?.await()

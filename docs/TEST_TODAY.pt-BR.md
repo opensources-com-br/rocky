@@ -1,13 +1,14 @@
 # Candidato de teste — 1.0.10-alpha.13
 
-Escopo: chat da própria conta Twitch, sugestões de IA por texto e notas com fontes. A IA pode usar Ollama, OpenAI ou modelos gratuitos pelo OpenRouter. Voz é opcional e começa desativada em instalações novas. Este candidato ainda precisa de validação em live real e OBS antes de lançamento amplo.
+Escopo: chat da própria conta Twitch, comandos de voz iniciados por “Rocky” e notas com fontes. A IA pode usar Ollama, OpenAI ou modelos gratuitos pelo OpenRouter. Este candidato ainda precisa de validação em live real e OBS antes de lançamento amplo.
 
 ## Preparar
 
 1. Instale o pacote **1.0.10-alpha.13**. Não use um pacote de uma execução anterior.
 2. Abra **Configurações → Plataformas**. Este pacote não inclui um Client ID oficial. Registre um aplicativo público na Twitch usando sua conta e copie o Client ID, conforme [configuração Twitch](TWITCH.pt-BR.md). Não é necessário criar outra conta de streamer nem informar Client Secret.
 3. Conecte e autorize a mesma conta em que abrirá a live. O Rocky acompanha novas mensagens desse canal; não lê histórico anterior nem mede espectadores.
-4. Em **IA**, escolha Ollama, OpenAI ou OpenRouter. Para testar sem custo por tokens, mantenha `openrouter/free`. **Testar conexão** faz uma geração curta com mensagens fictícias. Conclua o guia sem configurar microfone.
+4. Em **IA**, escolha Ollama, OpenAI ou OpenRouter. Para testar sem custo por tokens, mantenha `openrouter/free`. **Testar conexão** faz uma geração curta com mensagens fictícias.
+5. Em **Voz**, configure o executável e o modelo do whisper.cpp, selecione o microfone e teste a voz do sistema.
 
 ## Teste rápido antes da live
 

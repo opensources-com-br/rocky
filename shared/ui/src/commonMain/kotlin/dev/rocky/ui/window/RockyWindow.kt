@@ -67,6 +67,8 @@ fun RockyWindow(
         AiSuggestionState.DEFAULT_OLLAMA_MODEL,
     ),
     onAiConfigurationChange: (AiProviderConfiguration) -> Unit = {},
+    initialAutomaticAnalysis: Boolean = false,
+    onAutomaticAnalysisChange: (Boolean) -> Unit = {},
     initialVoiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
     onVoiceConfigurationChange: (VoiceConfiguration) -> Unit = {},
     onChooseWhisperExecutable: () -> String? = { null },
@@ -101,7 +103,10 @@ fun RockyWindow(
         val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
-            AiSuggestionState(aiSuggestionClient, initialAiConfiguration, onAiConfigurationChange)
+            AiSuggestionState(
+                aiSuggestionClient, initialAiConfiguration,
+                initialAutomaticAnalysis, onAutomaticAnalysisChange, onAiConfigurationChange,
+            )
         }
         val agent = remember { AgentState(initialAgentConfiguration, onAgentConfigurationChange) }
         val voice = remember(voiceService) {

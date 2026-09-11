@@ -73,6 +73,8 @@ fun main() = application {
             onAgentConfigurationChange = { AgentDesktopPreferences.configuration = it },
             initialAiConfiguration = AiDesktopPreferences.configuration,
             onAiConfigurationChange = { AiDesktopPreferences.configuration = it },
+            initialAutomaticAnalysis = AiDesktopPreferences.automaticAnalysis,
+            onAutomaticAnalysisChange = { AiDesktopPreferences.automaticAnalysis = it },
             initialVoiceConfiguration = VoiceDesktopPreferences.configuration,
             onVoiceConfigurationChange = { VoiceDesktopPreferences.configuration = it },
             onChooseWhisperExecutable = {

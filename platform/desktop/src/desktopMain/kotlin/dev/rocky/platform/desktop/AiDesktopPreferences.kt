@@ -7,6 +7,10 @@ import java.util.prefs.Preferences
 object AiDesktopPreferences {
     private val preferences = Preferences.userRoot().node("dev/rocky/ai")
 
+    var automaticAnalysis: Boolean
+        get() = preferences.getBoolean(AUTOMATIC_ANALYSIS_KEY, false)
+        set(value) = preferences.putBoolean(AUTOMATIC_ANALYSIS_KEY, value)
+
     var configuration: AiProviderConfiguration
         get() {
             val provider = runCatching {
@@ -39,4 +43,5 @@ object AiDesktopPreferences {
     private const val PROVIDER_KEY = "provider"
     private const val ENDPOINT_KEY = "endpoint"
     private const val MODEL_KEY = "model"
+    private const val AUTOMATIC_ANALYSIS_KEY = "automaticAnalysis"
 }

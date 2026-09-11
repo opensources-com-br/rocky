@@ -97,6 +97,20 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun restoresAndSavesAutomaticAnalysis() {
+        var saved: Boolean? = null
+        val state = AiSuggestionState(
+            FakeAiSuggestionClient(), ollamaConfiguration,
+            initialAutomaticAnalysis = true,
+            onAutomaticAnalysisChange = { saved = it },
+        ) {}
+
+        assertTrue(state.automaticAnalysis)
+        state.updateAutomaticAnalysis(false)
+        assertEquals(false, saved)
+    }
+
+    @Test
     fun allowsTheFirstAutomaticBatchImmediatelyAndThenAppliesTheInterval() = runBlocking {
         val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
         state.updateAutomaticAnalysis(true)

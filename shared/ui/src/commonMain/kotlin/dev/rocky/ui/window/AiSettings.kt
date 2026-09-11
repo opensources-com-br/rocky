@@ -10,12 +10,17 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.ai.AiProviderKind
 import dev.rocky.ui.theme.RockyColors
@@ -23,6 +28,7 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun AiSettings(ai: AiSuggestionState) {
     val scope = rememberCoroutineScope()
+    var apiKeyVisible by remember { mutableStateOf(false) }
     val providerLabel = when (ai.configuration.provider) {
         AiProviderKind.Ollama -> "Ollama local"
         AiProviderKind.OpenAI -> "OpenAI API"
@@ -71,7 +77,10 @@ internal fun AiSettings(ai: AiSuggestionState) {
                     Text(if (ai.configuration.provider == AiProviderKind.OpenRouter) "sk-or-v1-…" else "sk-…")
                 },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (apiKeyVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    CredentialVisibilityButton(apiKeyVisible) { apiKeyVisible = !apiKeyVisible }
+                },
             )
             Text(
                 "A chave é salva neste dispositivo para reconectar a IA ao abrir o Rocky.",

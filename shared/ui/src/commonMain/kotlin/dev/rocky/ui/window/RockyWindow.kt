@@ -407,7 +407,7 @@ fun RockyWindow(
                                     messages = visibleMessages,
                                     streamerSpeech = voice.transcript,
                                 )
-                                MainSection.Support -> SupportContent(demonstration = false)
+                                MainSection.Support -> SupportContent()
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,
                                     notice = localNotes.notice,

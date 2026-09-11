@@ -170,10 +170,11 @@ fun RockyWindow(
             }
         }
 
-        val handleVoiceRequest: (String) -> Unit = { request ->
+        val analyzeVoiceCommand: (String) -> Unit = { request ->
+            val recentMessages = twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
             ai.analyze(
                 scope = aiScope,
-                messages = twitch.messages,
+                messages = recentMessages,
                 streamerRequest = request,
                 agent = agent.configuration,
                 onComplete = { suggestion ->
@@ -193,6 +194,16 @@ fun RockyWindow(
                     }
                 },
             )
+        }
+        val handleVoiceRequest: (String) -> Unit = handle@{ transcript ->
+            val command = extractRockyCommand(transcript)
+            if (command == null) {
+                voice.resumeListener()
+                return@handle
+            }
+            voice.speakAcknowledgement(aiScope, "Vou verificar o chat.", silenced) {
+                if (voice.listenerEnabled) analyzeVoiceCommand(command)
+            }
         }
 
         CompositionLocalProvider(LocalRockyLanguage provides language) {
@@ -544,3 +555,4 @@ private val AgentConfiguration.analysisIntervalMillis: Long
     get() = 600_000L / interventionsPerTenMinutes.coerceIn(1, 9)
 
 private const val METRICS_REFRESH_MILLIS = 5_000L
+private const val VOICE_CHAT_WINDOW_MILLIS = 120_000L

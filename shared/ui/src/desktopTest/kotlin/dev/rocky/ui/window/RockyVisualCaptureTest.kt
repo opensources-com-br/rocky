@@ -496,6 +496,7 @@ class RockyVisualCaptureTest {
     private class FakeAiSuggestionClient : AiSuggestionClient {
         var lastRequest: String? = null
         var requests = 0
+        var failuresRemaining = 0
         override fun testConnection(configuration: AiProviderConfiguration) =
             AiConnectionResult(true, "Conectado")
 
@@ -506,6 +507,7 @@ class RockyVisualCaptureTest {
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
             requests += 1
+            if (failuresRemaining-- > 0) error("Temporary provider failure")
             lastRequest = streamerRequest
             return AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
         }

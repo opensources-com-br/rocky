@@ -216,6 +216,7 @@ class AiSuggestionStateTest {
         val started = CountDownLatch(1)
         val interrupted = AtomicBoolean(false)
         var requests = 0
+        var failuresRemaining = 0
         var lastStreamerRequest: String? = null
         var responseGate: CountDownLatch? = null
 
@@ -228,6 +229,7 @@ class AiSuggestionStateTest {
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
             requests += 1
+            if (failuresRemaining-- > 0) error("Temporary provider failure")
             lastStreamerRequest = streamerRequest
             started.countDown()
             try {

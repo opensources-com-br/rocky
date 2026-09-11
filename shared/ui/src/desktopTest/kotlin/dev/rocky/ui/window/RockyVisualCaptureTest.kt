@@ -371,6 +371,19 @@ class RockyVisualCaptureTest {
         }
     }
 
+    private fun prepareAutomaticSession(twitch: FakeTwitchChatClient, ai: FakeAiSuggestionClient) {
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Ai,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+            aiSuggestionClient = ai,
+        )
+        rule.onNodeWithTag("automatic-analysis").performScrollTo().performClick()
+        rule.onNodeWithText("Plataformas").performClick()
+        rule.onNodeWithText("Conectar Twitch").performClick()
+    }
+
     private fun render(
         compact: Boolean = false,
         mainSection: MainSection = MainSection.Conversation,

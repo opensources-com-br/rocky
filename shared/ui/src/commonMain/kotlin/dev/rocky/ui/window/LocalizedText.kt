@@ -275,6 +275,7 @@ private val liveTranslations = mapOf(
     "Ouvinte ativo" to "Listener active",
     "Ouvinte ativo · fale sua pergunta" to "Listener active · ask your question",
     "Ouvinte ativo · diga “Rocky” e faça sua pergunta" to "Listener active · say “Rocky” and ask your question",
+    "Não encontrei mensagens nos últimos dois minutos." to "I found no messages from the last two minutes.",
     "Ativar ouvinte do Rocky" to "Enable Rocky listener",
     "fale sua pergunta · envio automático" to "ask your question · sent automatically",
     "diga “Rocky” e faça sua pergunta" to "say “Rocky” and ask your question",

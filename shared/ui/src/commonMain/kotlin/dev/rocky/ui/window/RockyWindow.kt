@@ -123,10 +123,21 @@ fun RockyWindow(
         val visibleSuggestion = if (twitch.isRealSession) ai.suggestion else live.suggestion
         val visiblePlatforms = if (twitch.isRealSession) twitch.platforms else samplePlatforms
 
-        LaunchedEffect(twitch.phase, ai.automaticAnalysis, agent.configuration.interventionsPerTenMinutes) {
-            while (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {
-                delay(agent.configuration.analysisIntervalMillis)
-                ai.analyze(aiScope, twitch.messages, automatic = true, agent = agent.configuration)
+        LaunchedEffect(
+            twitch.phase,
+            twitch.totalMessages,
+            ai.automaticAnalysis,
+            agent.configuration.interventionsPerTenMinutes,
+        ) {
+            if (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {
+                delay(ai.automaticAnalysisDelay(currentTimeMillis(), agent.configuration.analysisIntervalMillis))
+                ai.analyze(
+                    aiScope,
+                    twitch.messages,
+                    automatic = true,
+                    agent = agent.configuration,
+                    automaticTimeMillis = currentTimeMillis(),
+                )
             }
         }
 

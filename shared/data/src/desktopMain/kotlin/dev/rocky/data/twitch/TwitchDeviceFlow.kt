@@ -13,7 +13,9 @@ internal class TwitchDeviceFlow(private val api: TwitchApi) {
         isActive: () -> Boolean,
         onAuthorization: (DeviceAuthorization) -> Unit,
     ): TwitchAuthentication? {
-        val authorization = api.startDeviceAuthorization(clientId)
+        val authorization = retryTransientTwitchRequest {
+            api.startDeviceAuthorization(clientId)
+        }
         onAuthorization(authorization)
         val deadline = System.currentTimeMillis() + authorization.expiresInSeconds * 1_000
         var intervalMillis = authorization.intervalSeconds * 1_000
@@ -35,5 +37,22 @@ internal class TwitchDeviceFlow(private val api: TwitchApi) {
             }
         }
         return null
+    }
+}
+
+internal fun <T> retryTransientTwitchRequest(
+    maxAttempts: Int = 3,
+    sleep: (Long) -> Unit = Thread::sleep,
+    request: () -> T,
+): T {
+    var attempt = 1
+    while (true) {
+        try {
+            return request()
+        } catch (error: Throwable) {
+            if (attempt >= maxAttempts || !error.isTransientTwitchFailure()) throw error
+            sleep(twitchReconnectDelaySeconds(attempt) * 1_000)
+            attempt += 1
+        }
     }
 }

@@ -191,6 +191,26 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun startsListeningWhenTwitchConnects() {
+        val twitch = FakeTwitchChatClient()
+        val voice = FakeVoiceService()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch,
+            twitchClientId = "client-id",
+            voiceService = voice,
+            voiceConfiguration = VoiceConfiguration(
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin"),
+            ),
+        )
+
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle { twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live"))) }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 1 }
+    }
+
+    @Test
     fun analyzesAutomaticBatchesWithoutUsingNext() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient()

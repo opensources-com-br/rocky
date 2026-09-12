@@ -13,17 +13,16 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 ## What works today
 
 - movable, resizable, always-on-top, and compact desktop window;
-- clearly separated demonstration and real live sessions;
 - Twitch authentication through Device Code Flow, live chat through EventSub, and automatic reconnection;
-- grounded AI suggestions using local Ollama models or the OpenAI Responses API;
+- live Twitch viewer count and messages-per-minute metrics;
+- grounded AI suggestions using local Ollama models, the OpenAI API, or OpenRouter;
 - on-device speech synthesis through macOS and Windows system voices;
 - wake-word voice commands with local `whisper.cpp` transcription;
 - local SQLite notes with create, edit, delete, restore, and Markdown export;
-- Markdown export for the ideas shown during the demonstration;
 - automated builds and development installers for macOS and Windows;
 - English and Brazilian Portuguese interface, selected from the system language and adjustable in Settings.
 
-Rocky does not require a Rocky account or a remote backend. Twitch access tokens and cloud-provider API keys remain in memory. Notes are stored locally on the user's computer. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
+Rocky does not require a Rocky account or a remote backend. Twitch access and AI provider settings are stored on the user's computer so sessions can reconnect. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
 
 ## Run from source
 
@@ -58,7 +57,7 @@ Run all automated checks with `./gradlew build` or `.\gradlew.bat build`.
 3. Follow the [voice guide](docs/VOICE.md) to prepare local transcription and test an audio conversation.
 4. Start a Twitch live stream, connect Rocky, and send a message from another account. New messages will appear in the Conversation tab.
 
-The Twitch connector currently reads new chat messages only. Viewer counts, subscriptions, channel points, Super Chats, historical messages, and additional streaming platforms are not integrated yet.
+The Twitch connector currently reads new chat messages and the current viewer count. Subscriptions, channel points, Super Chats, historical messages, and additional streaming platforms are not integrated yet.
 
 ## Build installers
 
@@ -86,7 +85,6 @@ Before promoting an alpha, follow the [streamer test protocol](docs/STREAMER_TES
 | [shared/data](shared/data/) | Twitch, AI, and SQLite implementations |
 | [shared/ui](shared/ui/) | Compose UI and presentation state |
 | [platform/desktop](platform/desktop/) | Native files, browser, preferences, audio, and transcription |
-| [fixtures](fixtures/) | Synthetic demonstration and test inputs |
 | [docs/adr](docs/adr/) | Architecture decision records |
 
 The [implementation plan](docs/PLAN.md) describes the product direction, privacy model, architecture, delivery phases, and release criteria.

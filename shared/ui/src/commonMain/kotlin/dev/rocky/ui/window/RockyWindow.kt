@@ -83,6 +83,7 @@ fun RockyWindow(
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
+    onOpenGuide: (String) -> Unit = {},
     onOpenDataDirectory: () -> Unit = {},
     onResetSettings: () -> Unit = {},
     onRemoveManagedVoiceModel: () -> Unit = {},
@@ -109,6 +110,7 @@ fun RockyWindow(
         var settingsSection by remember {
             mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
         }
+        var preflightOpen by remember { mutableStateOf(false) }
         var historyOpen by remember { mutableStateOf(false) }
         var silenced by remember { mutableStateOf(false) }
         var waitingForVoiceCommand by remember { mutableStateOf(false) }
@@ -274,7 +276,13 @@ fun RockyWindow(
 
         LaunchedEffect(shortcutRevision) {
             if (shortcutRevision > 0) when (shortcutAction) {
-                0 -> voice.toggleListener(aiScope, handleVoiceRequest)
+                0 -> {
+                    voice.enableListener(aiScope, handleVoiceRequest)
+                    voice.cancelCapture()
+                    voice.startCapture(aiScope) { transcript ->
+                        submitVoiceCommand(extractRockyCommand(transcript, agent.displayName) ?: transcript.trim())
+                    }
+                }
                 1 -> {
                     silenced = !silenced
                     if (silenced) voice.interruptSpeech()
@@ -289,6 +297,14 @@ fun RockyWindow(
         }
 
         CompositionLocalProvider(LocalRockyLanguage provides language) {
+        if (preflightOpen) PreflightDialog(aiScope, twitch, ai, voice, agent.displayName,
+            onConfigure = { section ->
+                preflightOpen = false; settingsOpen = true; settingsSection = section
+                onSettingsVisibilityChanged(true)
+            },
+            onOpenGuide = onOpenGuide,
+            onDismiss = { preflightOpen = false },
+        )
         if (historyOpen) ConversationHistory(
             ai.history.toList(), onDismiss = { historyOpen = false },
             onRepeat = { request ->
@@ -310,6 +326,7 @@ fun RockyWindow(
                     sessionStatus = sessionStatus,
                     twitchPhase = twitch.phase.takeIf { twitch.isRealSession },
                     microphoneActive = voice.capturing,
+                    onPreflight = { preflightOpen = true },
                     onTogglePinned = onTogglePinned,
                     onToggleCompact = onToggleCompact,
                     onOpenSettings = {
@@ -488,7 +505,7 @@ fun RockyWindow(
                                     onHistory = { historyOpen = true },
                                     streamerSpeech = voice.transcript,
                                     showTextRequest = true,
-                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady ,
+                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && ai.acceptsDirectRequest,
                                     analyzing = ai.generating,
                                     hasCaptureGaps = twitch.hasCaptureGaps,
                                     analysisStatus = ai.status,

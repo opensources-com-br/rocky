@@ -18,7 +18,7 @@ internal fun ShortcutSettings(keys: List<Int>, available: Boolean?, onSave: (Lis
             false -> tr("Shortcut unavailable or already in use. Choose different keys.", "Atalho indisponível ou em uso. Escolha outras teclas.")
             null -> tr("Registering shortcuts…", "Registrando atalhos…")
         }, style = MaterialTheme.typography.caption)
-        val labels = listOf(tr("Microphone on/off", "Microfone liga/desliga"), tr("Mute/unmute", "Silenciar/retomar"), tr("Show/hide", "Mostrar/ocultar"))
+        val labels = listOf(tr("Speak a command", "Falar um comando"), tr("Mute/unmute", "Silenciar/retomar"), tr("Show/hide", "Mostrar/ocultar"))
         labels.forEachIndexed { index, label ->
             OutlinedTextField(value = draft[index], onValueChange = { value ->
                 draft = draft.toMutableList().also { it[index] = value.filter(Char::isDigit).take(2) }

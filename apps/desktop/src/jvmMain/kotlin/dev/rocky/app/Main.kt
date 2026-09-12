@@ -135,6 +135,7 @@ fun main() = application {
             onAgentConfigurationChange = { AgentDesktopPreferences.configuration = it },
             initialAiConfiguration = AiDesktopPreferences.configuration,
             initialStorageNotice = AiDesktopPreferences.storageNotice,
+            onOpenGuide = ::openInBrowser,
             onOpenDataDirectory = { dev.rocky.platform.desktop.openRockyDataDirectory() },
             onResetSettings = { dev.rocky.platform.desktop.resetRockySettings() },
             onRemoveManagedVoiceModel = { dev.rocky.platform.desktop.removeManagedVoiceModel() },

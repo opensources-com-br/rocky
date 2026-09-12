@@ -1,18 +1,27 @@
 import AppKit
+import CoreText
 
-// The three orange dots reuse Rocky's website signal mark.
+// Match apps/web/app/icon.svg: orange rounded square and dark Arial Bold R.
 let output = CommandLine.arguments[1]
 let size = 1024
+let scale = CGFloat(size) / 32
 let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size,
     bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
     colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
 NSGraphicsContext.saveGraphicsState()
 NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: bitmap)
-NSColor(calibratedRed: 17/255, green: 17/255, blue: 19/255, alpha: 1).setFill()
-NSBezierPath(roundedRect: NSRect(x: 32, y: 32, width: 960, height: 960), xRadius: 216, yRadius: 216).fill()
-NSColor(calibratedRed: 229/255, green: 116/255, blue: 54/255, alpha: 1).setFill()
-for x in [212, 442, 672] {
-    NSBezierPath(ovalIn: NSRect(x: x, y: 442, width: 140, height: 140)).fill()
-}
+NSColor(srgbRed: 212/255, green: 112/255, blue: 60/255, alpha: 1).setFill()
+NSBezierPath(roundedRect: NSRect(x: 0, y: 0, width: size, height: size),
+    xRadius: 8 * scale, yRadius: 8 * scale).fill()
+let font = NSFont(name: "Arial-BoldMT", size: 22 * scale)!
+let text = NSAttributedString(string: "R", attributes: [
+    .font: font,
+    .foregroundColor: NSColor(srgbRed: 20/255, green: 10/255, blue: 5/255, alpha: 1),
+])
+let line = CTLineCreateWithAttributedString(text)
+let width = CTLineGetTypographicBounds(line, nil, nil, nil)
+let context = NSGraphicsContext.current!.cgContext
+context.textPosition = CGPoint(x: (CGFloat(size) - width) / 2, y: 9 * scale)
+CTLineDraw(line, context)
 NSGraphicsContext.restoreGraphicsState()
 try bitmap.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: output))

@@ -184,7 +184,7 @@ private val settingsTranslations = mapOf(
     "Configure o Rocky" to "Set up Rocky",
     "Complete os três passos para acompanhar uma live real. Você pode voltar a este guia até concluir." to "Complete all three steps to follow a real stream. You can return to this guide until you finish.",
     "Conecte a Twitch e a IA para acompanhar uma live real. A voz é opcional e pode ser configurada depois." to "Connect Twitch and AI to follow a real stream. Voice is optional and can be configured later.",
-    "Conecte a Twitch ou a Kick e configure a IA para começar por texto. Ative a voz quando quiser." to "Connect Twitch or Kick and configure AI to start with text. Enable voice whenever you want.",
+    "Conecte Twitch, Kick ou YouTube e configure a IA para começar por texto. Ative a voz quando quiser." to "Connect Twitch, Kick or YouTube and configure AI to start with text. Enable voice whenever you want.",
     "Conecte sua Twitch nas configurações para acompanhar uma live." to "Connect your Twitch in settings to follow a stream.",
     "Conecte sua Twitch" to "Connect your Twitch",
     "Conecte sua plataforma" to "Connect your platform",

@@ -11,7 +11,7 @@ const content = {
       "items": [
         {
           "key": "chat",
-          "text": "Novas mensagens da Twitch recebidas enquanto conectado. Não é um arquivo completo da transmissão."
+          "text": "Novas mensagens da Twitch ou Kick recebidas enquanto conectado. Não é um arquivo completo da transmissão."
         },
         {
           "key": "sugestão",
@@ -27,7 +27,7 @@ const content = {
         },
         {
           "key": "pulso",
-          "text": "Métricas e tendências das amostras de espectadores e mensagens da Twitch."
+          "text": "Métricas e tendências das amostras de espectadores e mensagens da plataforma conectada."
         }
       ]
     },

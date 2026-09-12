@@ -41,7 +41,7 @@ internal fun dictatedNote(command: String): DictatedNote? {
 }
 
 internal fun momentCommand(command: String): String? {
-    val match = Regex("""^(?:marca (?:esse|este) momento|marcar momento|mark this moment)(?:\s*[:,-]\s*|\s+)?(.*)$""",
+    val match = Regex("""^(?:marca (?:esse|este) momento|marcar momento|mark this moment)(?:(?:\s*[:,-]\s*|\s+)(.*))?$""",
         setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)).matchEntire(command.trim()) ?: return null
     return match.groupValues[1].trim().take(1000).ifBlank { "Momento marcado" }
 }

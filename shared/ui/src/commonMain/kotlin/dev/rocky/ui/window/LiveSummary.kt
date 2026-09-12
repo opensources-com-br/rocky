@@ -115,7 +115,7 @@ internal fun LiveSummary(
                 text = when {
                     suggestion != null && speaking -> "TOCANDO AGORA"
                     suggestion != null -> "SUGESTÃO DO ${agentName.uppercase()}"
-                    else -> "CHAT REAL DA TWITCH"
+                    else -> "CHAT REAL DA LIVE"
                 },
                 color = RockyColors.Accent,
                 fontSize = 12.sp,
@@ -133,11 +133,11 @@ internal fun LiveSummary(
         Text(
             text = suggestion?.text ?: run {
                 if (!sessionAvailable) {
-                    "Conecte sua Twitch nas configurações para acompanhar uma live."
+                    "Conecte Twitch ou Kick nas configurações para acompanhar uma live."
                 } else if (generatingSuggestion) {
                     "Estou analisando o chat para encontrar uma resposta ou ideia útil."
                 } else if (sessionStatus != LiveSessionStatus.Running) {
-                    "Aguardando a conexão da Twitch. As mensagens anteriores estão preservadas."
+                    "Aguardando a conexão da plataforma. As mensagens anteriores estão preservadas."
                 } else if (!aiConfigured) {
                     "Configure e teste um provedor na aba IA para gerar sugestões."
                 } else if (!canAnalyze) {

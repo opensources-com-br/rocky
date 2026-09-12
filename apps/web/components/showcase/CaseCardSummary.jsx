@@ -17,7 +17,7 @@ export default function CaseCardSummary({ c }) {
 </React.Fragment>)}
 </div>
 <span style={{"marginTop": "6px", "fontSize": "12.5px", "color": "#e08b57"}}>
-{"Ler o depoimento →"}
+{"Explorar cenário →"}
 </span>
 </div>
   </>);

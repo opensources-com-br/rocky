@@ -7,3 +7,5 @@ Windows uses user-scoped DPAPI through `Crypt32Util`; macOS uses generic-passwor
 The managed Whisper model is `ggml-base.bin` from [ggerganov/whisper.cpp, revision 5359861c739e955e79d9a303bcbc70fb988958b1](https://huggingface.co/ggerganov/whisper.cpp/tree/5359861c739e955e79d9a303bcbc70fb988958b1). The recorded LFS SHA-256 is `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`, size 147951465 bytes. It is downloaded during optional setup, not bundled in the installer. Homebrew installs the external whisper.cpp runtime on supported Macs; Windows setup remains manual.
 
 The existing Kotlin, Compose, SQLDelight, SQLite driver and serialization dependencies remain Gradle-managed. Run `./gradlew :apps:desktop:dependencies` to inspect the resolved graph. This note is not a full dependency vulnerability audit or a substitute for the licenses of externally installed models and voices.
+
+Global shortcuts use the existing JNA dependency: Carbon event hotkeys on macOS and RegisterHotKey on Windows. Only the three configured chords are registered; no global keystroke log is collected. No new third-party hotkey library is bundled.

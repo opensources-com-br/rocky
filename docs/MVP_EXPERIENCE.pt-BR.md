@@ -1,7 +1,7 @@
 # Rocky — visão geral e melhorias para o MVP
 
 Revisão em 12/09/2026, baseada no código local até o commit 72c5fda.
-Este documento propõe um backlog; somente o aumento da largura foi implementado nesta revisão.
+Registro original do overview. Em uma etapa posterior, os dez itens escolhidos pelo usuário foram implementados: histórico, continuidade, prioridade, atalhos, fim da fala, ditado livre, desfazer, configuração simplificada, pré-live e persistência da janela. As tabelas abaixo preservam o diagnóstico original; os demais itens continuam como propostas.
 As prioridades são hipóteses de produto baseadas no código e nos problemas relatados pelo usuário, ainda sem pesquisa com streamers.
 
 ## Objetivo do produto

@@ -71,6 +71,8 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
         database.noteQueries.deleteNote(noteId)
     }
 
+    override fun deleteAll() { database.noteQueries.deleteAllNotes() }
+
     override fun close() {
         driver.close()
     }

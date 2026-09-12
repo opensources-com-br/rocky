@@ -12,5 +12,6 @@ class RecoverableNoteRepository(private val path: Path) : NoteRepository, AutoCl
     override fun save(note: LiveNote) = open().save(note)
     override fun update(note: LiveNote) = open().update(note)
     override fun delete(noteId: String) = open().delete(noteId)
+    override fun deleteAll() = open().deleteAll()
     override fun close() { repository?.close(); repository = null }
 }

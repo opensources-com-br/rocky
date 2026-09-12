@@ -236,6 +236,8 @@ internal class AiSuggestionState(
         configuration = value
     }
 
+    fun showNotice(value: String) { status = value }
+
     fun saveConfiguration() {
         runCatching { onConfigurationChange(configuration) }
             .onSuccess { status = "Configuração salva no dispositivo" }

@@ -33,3 +33,6 @@ WHERE text = 'Sete pessoas perguntaram o preço do curso nos últimos dois minut
   AND tag = 'SUGESTÃO'
   AND source_message_ids = '[]'
   AND evidence = '[]';
+
+deleteAllNotes:
+DELETE FROM note;

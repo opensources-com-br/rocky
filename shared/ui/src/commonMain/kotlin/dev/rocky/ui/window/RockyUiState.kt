@@ -13,6 +13,7 @@ internal enum class SettingsSection(val label: String) {
     Ai("IA"),
     Voice("Voz"),
     Platforms("Plataformas"),
+    Data("Dados"),
 }
 
 internal data class PlatformStatus(

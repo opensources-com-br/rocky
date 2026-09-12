@@ -78,6 +78,12 @@ fun RockyWindow(
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
+    onOpenDataDirectory: () -> Unit = {},
+    onResetSettings: () -> Unit = {},
+    onRemoveManagedVoiceModel: () -> Unit = {},
+    dataDirectoryLabel: String = "",
+    buildLabel: String = "development",
+    initialStorageNotice: String? = null,
     initialFirstUseOpen: Boolean = false,
     onFirstUseFinished: () -> Unit = {},
     initialLanguage: RockyLanguage = RockyLanguage.English,
@@ -107,6 +113,7 @@ fun RockyWindow(
                 initialAutomaticAnalysis, onAutomaticAnalysisChange, onAiConfigurationChange,
             )
         }
+        LaunchedEffect(Unit) { initialStorageNotice?.let { ai.showNotice(it) } }
         val agent = remember { AgentState(initialAgentConfiguration, onAgentConfigurationChange) }
         val voice = remember(voiceService) {
             VoiceState(
@@ -289,6 +296,21 @@ fun RockyWindow(
                                     onLanguageChange = {
                                         language = it
                                         onLanguageChange(it)
+                                    },
+                                )
+                                SettingsSection.Data -> DataSettings(
+                                    localNotes, dataDirectoryLabel, buildLabel,
+                                    onOpenDataDirectory = onOpenDataDirectory,
+                                    onExportNotes = { localNotes.export(onExportNotes) },
+                                    onResetSettings = {
+                                        voice.resetSession(); ai.resetSession(); twitch.disconnect()
+                                        onResetSettings()
+                                        ai.updateApiKey("")
+                                    },
+                                    onRemoveModel = {
+                                        voice.disableListener(); voice.cancelTranscriptionSetup(); voice.cancelCapture()
+                                        onRemoveManagedVoiceModel()
+                                        voice.updateWhisperModel("")
                                     },
                                 )
                                 SettingsSection.Ai -> AiSettings(ai)

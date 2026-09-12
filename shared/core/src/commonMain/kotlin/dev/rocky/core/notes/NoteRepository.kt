@@ -10,4 +10,6 @@ interface NoteRepository {
     fun update(note: LiveNote)
 
     fun delete(noteId: String)
+
+    fun deleteAll() { getAll().forEach { delete(it.id) } }
 }

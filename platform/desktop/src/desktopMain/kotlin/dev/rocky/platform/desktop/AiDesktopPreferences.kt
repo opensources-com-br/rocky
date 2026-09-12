@@ -13,6 +13,7 @@ object AiDesktopPreferences {
         get() = delegate.automaticAnalysis
         set(value) { delegate.automaticAnalysis = value }
     val storageNotice: String? get() = delegate.storageNotice
+    fun clear() = delegate.clear()
 }
 
 internal class SecureAiPreferences(private val preferences: Preferences, private val secrets: SecretStore) {
@@ -66,6 +67,15 @@ internal class SecureAiPreferences(private val preferences: Preferences, private
             preferences.remove(API_KEY_KEY)
             preferences.flush()
         }
+
+    fun clear() {
+        secrets.delete()
+        cachedKey = ""
+        loaded = true
+        preferences.clear()
+        preferences.flush()
+        storageNotice = null
+    }
 
     private fun credentialIdentity(
         provider: String = preferences.get(PROVIDER_KEY, AiProviderKind.Ollama.name),

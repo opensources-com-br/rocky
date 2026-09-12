@@ -52,6 +52,12 @@ internal class LocalNotesState(private val repository: NoteRepository) {
         successNotice = "Nota excluída.",
     )
 
+    fun deleteAll(): Boolean = persist(
+        action = { repository.deleteAll() },
+        onSuccess = { notes.clear() },
+        successNotice = "Todas as notas foram apagadas.",
+    )
+
     fun export(exporter: (List<LiveNote>) -> Boolean) {
         runCatching { exporter(notes.toList()) }
             .onSuccess(::setExportResult)

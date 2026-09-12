@@ -24,6 +24,20 @@ class RecordExperienceTest {
         assertFalse(records.notes.single().completed)
     }
 
+    @Test fun searchesIdeasAndMarksThemCompleted() {
+        val records = LocalNotesState(TransientNoteRepository())
+        records.save(LiveNote("i", "Tutorial de áudio", "now", IDEA_TAG))
+        records.save(LiveNote("j", "Live de jogos", "now", IDEA_TAG))
+        rule.setContent { CompositionLocalProvider(LocalRockyLanguage provides RockyLanguage.PortugueseBrazil) {
+            NotesContent(records.notes, null, { records.update(it) }, {}, {}, ideas = true)
+        } }
+        rule.onNodeWithText("Buscar registros").performTextReplacement("Tutorial")
+        rule.onNodeWithText("Live de jogos").assertDoesNotExist()
+        rule.onNodeWithText("Marcar realizada").performClick()
+        rule.onNodeWithText("Realizada · reabrir").assertExists()
+        assertTrue(records.notes.single { it.id == "i" }.completed)
+    }
+
     @Test fun importsOnlyAfterConfirmationAndAllowsCancellation() {
         val records = LocalNotesState(TransientNoteRepository())
         val incoming = listOf(LiveNote("n", "imported", "now", "NOTA"))

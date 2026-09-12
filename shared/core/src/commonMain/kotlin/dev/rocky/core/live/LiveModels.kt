@@ -37,6 +37,11 @@ data class LiveNote(
     val tag: String,
     val sourceMessageIds: Set<String> = emptySet(),
     val evidence: List<String> = emptyList(),
+    val sessionId: String = "",
+    val sessionLabel: String = "",
+    val offsetMillis: Long? = null,
+    val completed: Boolean = false,
+    val messageCount: Int = 0,
 )
 
 data class LiveIdea(

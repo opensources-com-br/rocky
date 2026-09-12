@@ -46,6 +46,12 @@ import dev.rocky.core.twitch.TwitchAccount
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionEvent
 import dev.rocky.core.twitch.TwitchConnectionListener
+import dev.rocky.core.youtube.YouTubeAccount
+import dev.rocky.core.youtube.YouTubeBroadcast
+import dev.rocky.core.youtube.YouTubeChatClient
+import dev.rocky.core.youtube.YouTubeConfiguration
+import dev.rocky.core.youtube.YouTubeConnectionEvent
+import dev.rocky.core.youtube.YouTubeConnectionListener
 import dev.rocky.core.voice.AudioInputDevice
 import dev.rocky.core.voice.LocalTranscriptionConfiguration
 import dev.rocky.core.voice.SystemVoice
@@ -278,6 +284,33 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("platform-kick").performClick()
         rule.onNodeWithText("Desconectar").assertExists()
         rule.onNodeWithText("Mensagem da Kick").assertExists()
+    }
+
+    @Test
+    fun connectsAndDisplaysRealYouTubeChat() {
+        val youtube = FakeYouTubeChatClient()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            youtubeChatClient = youtube,
+            youtubeConfiguration = YouTubeConfiguration("client-id", "client-secret"),
+        )
+
+        rule.onNodeWithText("Conectar YouTube").performScrollTo().performClick()
+        rule.runOnIdle {
+            youtube.emit(YouTubeConnectionEvent.Connected(
+                YouTubeAccount("channel", "Rocky YouTube"),
+                YouTubeBroadcast("video", "chat", "Live Rocky"),
+            ))
+            youtube.emit(YouTubeConnectionEvent.MessageReceived(
+                ChatMessage("youtube-message", "viewer", "Mensagem do YouTube", StreamPlatform.YouTube),
+            ))
+        }
+        rule.onNodeWithText("concluir").performClick()
+
+        rule.onNodeWithTag("platform-youtube").performClick()
+        rule.onNodeWithText("Desconectar").assertExists()
+        rule.onNodeWithText("Mensagem do YouTube").assertExists()
     }
 
     @Test
@@ -776,6 +809,8 @@ class RockyVisualCaptureTest {
         twitchClientId: String = "",
         kickChatClient: KickChatClient? = null,
         kickConfiguration: KickConfiguration = KickConfiguration(),
+        youtubeChatClient: YouTubeChatClient? = null,
+        youtubeConfiguration: YouTubeConfiguration = YouTubeConfiguration(),
         aiSuggestionClient: AiSuggestionClient? = null,
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
@@ -797,12 +832,14 @@ class RockyVisualCaptureTest {
                         noteRepository = noteRepository,
                         twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
                         kickChatClient = kickChatClient ?: FakeKickChatClient(),
+                        youtubeChatClient = youtubeChatClient ?: FakeYouTubeChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         voiceService = voiceService,
                         initialVoiceConfiguration = voiceConfiguration,
                         onAgentConfigurationChange = onAgentConfigurationChange,
                         initialTwitchClientId = twitchClientId,
                         initialKickConfiguration = kickConfiguration,
+                        initialYouTubeConfiguration = youtubeConfiguration,
                         onExportNotes = onExportNotes,
                         onExportIdeas = onExportIdeas,
                         initialMainSectionIndex = mainSection.ordinal,
@@ -859,6 +896,16 @@ class RockyVisualCaptureTest {
         override fun disconnect() = Unit
         override fun close() = Unit
         fun emit(event: KickConnectionEvent) = listener.onEvent(event)
+    }
+
+    private class FakeYouTubeChatClient : YouTubeChatClient {
+        private var listener = YouTubeConnectionListener {}
+        override fun connect(configuration: YouTubeConfiguration, listener: YouTubeConnectionListener) {
+            this.listener = listener
+        }
+        override fun disconnect() = Unit
+        override fun close() = Unit
+        fun emit(event: YouTubeConnectionEvent) = listener.onEvent(event)
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {

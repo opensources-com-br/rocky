@@ -16,6 +16,7 @@ import dev.rocky.data.notes.RecoverableNoteRepository
 import dev.rocky.data.ai.DesktopAiSuggestionClient
 import dev.rocky.data.kick.DesktopKickChatClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
+import dev.rocky.data.youtube.DesktopYouTubeChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
 import dev.rocky.platform.desktop.AgentDesktopPreferences
 import dev.rocky.platform.desktop.AiDesktopPreferences
@@ -25,6 +26,7 @@ import dev.rocky.platform.desktop.FirstUseDesktopPreferences
 import dev.rocky.platform.desktop.LanguageDesktopPreferences
 import dev.rocky.platform.desktop.KickDesktopPreferences
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
+import dev.rocky.platform.desktop.YouTubeDesktopPreferences
 import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
@@ -68,15 +70,17 @@ fun main() = application {
     val noteRepository = remember { RecoverableNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
     val kickClient = remember { DesktopKickChatClient() }
+    val youtubeClient = remember { DesktopYouTubeChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
     val voiceService = remember { DesktopVoiceService() }
 
-    DisposableEffect(noteRepository, twitchClient, kickClient, aiClient, voiceService) {
+    DisposableEffect(noteRepository, twitchClient, kickClient, youtubeClient, aiClient, voiceService) {
         onDispose {
             voiceService.close()
             aiClient.close()
             twitchClient.close()
             kickClient.close()
+            youtubeClient.close()
             noteRepository.close()
         }
     }

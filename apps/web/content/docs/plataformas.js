@@ -1,17 +1,44 @@
 const content = {
-  group: "Configuração",
-  lead: "Conecte um ou mais canais em Configurações → Plataformas. O token de cada serviço fica no Keychain do seu Mac e nenhuma mensagem passa por servidor de terceiros.",
-  blocks: [
-    {"type": "h2", "text": "O que Rocky lê de cada serviço"},
-    {"type": "table", "cols": "minmax(0,1fr) minmax(0,1.7fr) minmax(0,1fr)", "head": ["PLATAFORMA", "O QUE ROCKY LÊ", "AUTENTICAÇÃO"], "rows": [["Twitch", "Chat, bits, raids e subs", "OAuth"], ["Kick", "Chat e presentes", "OAuth"], ["YouTube", "Chat ao vivo e superchats", "OAuth"], ["Facebook", "Chat e estrelas", "Token da página"]]},
-    {"type": "h2", "text": "Ligar e desligar durante a live"},
-    {"type": "para", "text": "Os chips no topo da janela ligam e desligam cada fonte sem desconectar a conta. Desligar uma plataforma remove suas mensagens da fila e tira seus espectadores da contagem, útil quando um canal secundário começa a fazer barulho."},
-    {"type": "h2", "text": "Escrever no chat"},
-    {"type": "para", "text": "Rocky só envia mensagem quando você pede em voz alta — “manda o link no chat”. A permissão de escrita é opcional e pode ser negada por plataforma; sem ela, o app só lê."},
-    {"type": "note", "text": "Contas com autenticação de dois fatores funcionam normalmente. O fluxo de OAuth abre no seu navegador padrão e volta para o app."},
-    {"type": "h2", "text": "Configuração por arquivo"},
-    {"type": "code", "file": "~/.rocky/config.toml", "text": "[[platforms]]\nkind    = \"twitch\"\nchannel = \"seucanal\"\nwrite   = true\n\n[[platforms]]\nkind    = \"youtube\"\nchannel = \"UC...\"\nwrite   = false"},
-  ],
+  "group": "Configuração",
+  "lead": "A única integração ativa é a Twitch: novas mensagens e contagem atual de espectadores do canal da conta autenticada.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Conectar Twitch"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Abra Configurações → Plataformas e use Conectar Twitch.",
+        "Se não houver Client ID configurado, registre um aplicativo público no console de desenvolvedores da Twitch e copie seu Client ID. Rocky não usa Client Secret.",
+        "Abra Twitch pelo botão do app e autorize o código exibido. Aguarde o estado Conectada."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Dados e permissões"
+    },
+    {
+      "type": "para",
+      "text": "O conector usa Device Code Flow, EventSub WebSocket e a permissão user:read:chat. O Client ID fica nas preferências locais; tokens de acesso e renovação ficam somente na memória e são descartados ao desconectar ou fechar."
+    },
+    {
+      "type": "h2",
+      "text": "O que não está integrado"
+    },
+    {
+      "type": "para",
+      "text": "Kick, YouTube e Facebook aparecem como indisponíveis. Os chips são indicadores, não interruptores. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes ou Super Chats como eventos de apoio."
+    },
+    {
+      "type": "h2",
+      "text": "Reconexão"
+    },
+    {
+      "type": "para",
+      "text": "O app tenta reconectar automaticamente após interrupções. Não carrega mensagens históricas e pode perder mensagens durante uma falha de conexão; a conversa sinaliza lacunas na captura."
+    }
+  ]
 };
 
 export default content;

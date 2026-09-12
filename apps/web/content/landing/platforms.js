@@ -4,8 +4,8 @@ export const platforms = [
     "color": "#9146ff"
   },
   {
-    "name": "Kick · em breve",
-    "color": "#4d4d51"
+    "name": "Kick · disponível com webhook",
+    "color": "#53fc18"
   },
   {
     "name": "YouTube · em breve",

@@ -21,6 +21,21 @@ class QuestionQueueTest {
         assertTrue(records.notes.single().completed)
         assertEquals(3, records.notes.single().sourceMessageIds.size)
     }
+    @Test fun preservesLargeGroupCountsAfterFiltersHideAndRestoreMessages() {
+        val records = LocalNotesState(TransientNoteRepository())
+        val queue = QuestionQueue(records)
+        val messages = (1..60).map { msg("$it") }
+        val buffer = messages.map { it.id }.toSet()
+        queue.collect(messages, "live", "Live", "now", 0, buffer)
+        assertEquals(60, records.notes.single().messageCount)
+        assertEquals(50, records.notes.single().sourceMessageIds.size)
+        queue.collect(emptyList(), "live", "Live", "now", 0, buffer)
+        queue.collect(messages, "live", "Live", "now", 0, buffer)
+        assertEquals(60, records.notes.single().messageCount)
+        queue.collect(messages + msg("new"), "live", "Live", "now", 0, buffer + "new")
+        assertEquals(61, records.notes.single().messageCount)
+    }
+
     @Test fun separatesLivesAndBoundsTheQueue() {
         val records = LocalNotesState(TransientNoteRepository())
         val queue = QuestionQueue(records)

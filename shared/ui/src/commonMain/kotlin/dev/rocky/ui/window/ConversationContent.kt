@@ -56,6 +56,10 @@ internal fun ConversationContent(
     onTextRequest: (String) -> Unit = {},
 ) {
     var showDetails by remember { mutableStateOf(false) }
+    val orderedMessages = messages.sortedWith(
+        compareBy<ChatMessage> { it.receivedAtMillis ?: Long.MIN_VALUE }
+            .thenBy { it.sourceTimestamp.orEmpty() },
+    )
     if (showDetails) {
         androidx.compose.material.AlertDialog(
             onDismissRequest = { showDetails = false },
@@ -75,8 +79,8 @@ internal fun ConversationContent(
         )
     }
     val chatScrollState = rememberLazyListState()
-    LaunchedEffect(messages.lastOrNull()?.id) {
-        if (messages.isNotEmpty()) chatScrollState.scrollToItem(messages.lastIndex)
+    LaunchedEffect(orderedMessages.lastOrNull()?.id) {
+        if (orderedMessages.isNotEmpty()) chatScrollState.scrollToItem(orderedMessages.lastIndex)
     }
 
     BoxWithConstraints(Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 6.dp)) {
@@ -144,7 +148,7 @@ internal fun ConversationContent(
         }
 
         }
-        if (messages.isEmpty()) {
+        if (orderedMessages.isEmpty()) {
             Text(
                 text = "Aguardando mensagens do chat…",
                 color = RockyColors.TextSecondary,
@@ -157,7 +161,7 @@ internal fun ConversationContent(
                     state = chatScrollState,
                     verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Bottom),
                 ) {
-                    items(messages, key = { it.id }) { ChatMessageRow(it) }
+                    items(orderedMessages, key = { it.id }) { ChatMessageRow(it) }
                 }
                 ChatScrollbar(
                     state = chatScrollState,

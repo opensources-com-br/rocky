@@ -24,6 +24,7 @@ class DesktopKickChatClient : KickChatClient {
     @Volatile private var authorizationCompleted = false
 
     override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
+        stop(notify = false)
         require(configuration.clientId.isNotBlank()) { "Informe o Client ID da Kick." }
         require(configuration.clientSecret.isNotBlank()) { "Informe o Client Secret da Kick." }
         val run = generation.incrementAndGet()
@@ -78,15 +79,22 @@ class DesktopKickChatClient : KickChatClient {
         }
     }
 
-    override fun disconnect() {
-        active = false
-        generation.incrementAndGet()
-        emit(KickConnectionPhase.Disconnected)
-    }
+    override fun disconnect() = stop(notify = true)
 
     override fun close() {
-        active = false
+        stop(notify = false)
         ioExecutor.shutdownNow()
+    }
+
+    private fun stop(notify: Boolean) {
+        active = false
+        generation.incrementAndGet()
+        receiver?.close()
+        receiver = null
+        tokens = null
+        account = null
+        authorizationCompleted = false
+        if (notify) emit(KickConnectionPhase.Disconnected)
     }
 
     private fun fail(run: Long, message: String) {

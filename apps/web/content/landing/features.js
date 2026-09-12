@@ -22,7 +22,7 @@ export const features = [
   {
     "tag": "PULSO",
     "title": "Acompanhe o ritmo",
-    "text": "Veja espectadores e mensagens por minuto da Twitch, com tendências calculadas das amostras recebidas."
+    "text": "Veja espectadores e mensagens por minuto da Twitch ou Kick, com tendências calculadas das amostras recebidas."
   },
   {
     "tag": "RESUMO",

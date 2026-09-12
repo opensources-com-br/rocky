@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/landing/**"
+      - "apps/web/**"
       - ".github/workflows/site.yml"
   workflow_dispatch:
 
@@ -25,9 +25,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
       - uses: actions/configure-pages@v5
+        id: pages
+      - run: npm ci
+        working-directory: apps/web
+      - run: npm run lint
+        working-directory: apps/web
+      - run: npm run build
+        working-directory: apps/web
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: apps/landing
+          path: apps/web/out
       - id: deployment
         uses: actions/deploy-pages@v5

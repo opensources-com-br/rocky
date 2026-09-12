@@ -2,6 +2,7 @@
 
 Revisão em 12/09/2026, baseada no código local até o commit 72c5fda.
 Registro original do overview. Em uma etapa posterior, os dez itens escolhidos pelo usuário foram implementados: histórico, continuidade, prioridade, atalhos, fim da fala, ditado livre, desfazer, configuração simplificada, pré-live e persistência da janela. As tabelas abaixo preservam o diagnóstico original; os demais itens continuam como propostas.
+Outras entregas posteriores, incluindo Kick, YouTube, fila de perguntas, organização por live, Pulso, backup e diagnóstico, também tornam parte das tabelas histórica. Consulte [Preparação do candidato](RELEASE_PREPARATION.md) para o escopo atual.
 As prioridades são hipóteses de produto baseadas no código e nos problemas relatados pelo usuário, ainda sem pesquisa com streamers.
 
 ## Objetivo do produto

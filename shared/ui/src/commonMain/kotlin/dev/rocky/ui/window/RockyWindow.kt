@@ -254,10 +254,10 @@ fun RockyWindow(
             )
         }
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
-        fun finishLive() {
-            if (workspace.finish(currentTimeLabel())) {
-                voice.resetSession(); ai.resetSession(); twitch.disconnect()
-            }
+        fun finishLive(): Boolean {
+            if (!workspace.finish(currentTimeLabel())) return false
+            voice.resetSession(); ai.resetSession(); twitch.disconnect()
+            return true
         }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
             val note = suggestionNote(entry.answer, entry.sources, currentTimeLabel()).copy(
@@ -457,9 +457,10 @@ fun RockyWindow(
                                     onOpenDataDirectory = onOpenDataDirectory,
                                     onExportNotes = { localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) } },
                                     onResetSettings = {
-                                        finishLive()
-                                        onResetSettings()
-                                        ai.updateApiKey("")
+                                        if (finishLive()) {
+                                            onResetSettings()
+                                            ai.updateApiKey("")
+                                        }
                                     },
                                     onRemoveModel = {
                                         voice.disableListener(); voice.cancelTranscriptionSetup(); voice.cancelCapture()
@@ -480,10 +481,10 @@ fun RockyWindow(
                                     },
                                     twitch = twitch,
                                     onConnect = {
-                                        silenced = false
-                                        voice.resetSession()
-                                        ai.resetSession()
-                                        twitch.connect(twitchClientId)
+                                        if (finishLive()) {
+                                            silenced = false
+                                            twitch.connect(twitchClientId)
+                                        }
                                     },
                                     onDisconnect = {
                                         silenced = false

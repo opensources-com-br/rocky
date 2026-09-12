@@ -79,10 +79,11 @@ internal fun ConversationContent(
     }
 
     BoxWithConstraints(Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 6.dp)) {
+    val controlsMaxHeight = (maxHeight - 83.dp).coerceAtLeast(0.dp)
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(3.dp)) {
         // Keep chat visible even when fonts, status messages or controls need more room.
         Column(
-            Modifier.heightIn(max = (maxHeight - 83.dp).coerceAtLeast(0.dp))
+            Modifier.heightIn(max = controlsMaxHeight)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(3.dp),
         ) {

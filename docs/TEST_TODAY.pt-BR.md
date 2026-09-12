@@ -40,3 +40,7 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 - Pré-live: teste IA, voz/microfone opcionais e confira uma gravação OBS seguindo a orientação exibida.
 - Janela: mova/redimensione, reinicie, teste modo compacto e configurações sem perder o tamanho principal; remova um monitor e confira recuperação.
 - Falhas: interrompa rede/provedor, tente salvar com pasta de dados indisponível e confirme que rascunhos não desaparecem sem salvar.
+
+## Fila, registros e manutenção
+
+Use o [roteiro de organização da live](MVP_CHAT_WORKSPACE.pt-BR.md#validação-manual-desta-etapa) para testar as nove melhorias adicionais, incluindo backup e marcadores de voz.

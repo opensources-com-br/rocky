@@ -43,6 +43,9 @@ internal fun ConversationContent(
     hasCaptureGaps: Boolean = false,
     analysisStatus: String? = null,
     performanceNotice: String? = null,
+    onQueue: () -> Unit = {},
+    pendingQuestions: Int = 0,
+    filteredCount: Int = 0,
     onHistory: () -> Unit = {},
     onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
@@ -57,6 +60,7 @@ internal fun ConversationContent(
                     "A IA usa até 200 mensagens recebidas nos últimos dois minutos; o contexto é uma amostra limitada."))
                 if (hasCaptureGaps) Text(tr("Some messages may be missing after a connection interruption.",
                     "Algumas mensagens podem estar ausentes após uma interrupção de conexão."))
+                Text("$filteredCount " + tr("messages excluded from the last AI request by filters.", "mensagens excluídas da última análise pelos filtros."))
                 analysisStatus?.let { Text(it) }
                 performanceNotice?.let { Text(it) }
                 Text(tr("Reported tokens are partial and exclude unreported usage, tests and some retries. Cancellation does not reverse charges.",
@@ -79,13 +83,9 @@ internal fun ConversationContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             androidx.compose.material.TextButton(onClick = onHistory) { Text(tr("History", "Histórico")) }
-            Text(
-                text = "CHAT AO VIVO",
-                color = RockyColors.TextMuted,
-                fontSize = 10.sp,
-                letterSpacing = 1.2.sp,
-                fontWeight = FontWeight.Medium,
-            )
+            androidx.compose.material.TextButton(onClick = onQueue) {
+                Text(tr("Questions", "Perguntas") + " ($pendingQuestions)", style = MaterialTheme.typography.caption)
+            }
             Spacer(Modifier.weight(1f))
             androidx.compose.material.TextButton(onClick = { showDetails = true }) {
                 Text(if (hasCaptureGaps) tr("Chat incomplete", "Chat incompleto") else tr("Sample · details", "Amostra · detalhes"),

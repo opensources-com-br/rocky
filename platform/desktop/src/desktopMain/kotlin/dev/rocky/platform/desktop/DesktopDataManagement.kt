@@ -12,7 +12,7 @@ fun openRockyDataDirectory() {
 
 fun resetRockySettings() {
     AiDesktopPreferences.clear()
-    for (name in listOf("agent", "voice", "twitch", "interface", "onboarding")) {
+    for (name in listOf("agent", "voice", "twitch", "interface", "onboarding", "window", "shortcuts")) {
         Preferences.userRoot().node("dev/rocky/$name").apply { clear(); flush() }
     }
 }

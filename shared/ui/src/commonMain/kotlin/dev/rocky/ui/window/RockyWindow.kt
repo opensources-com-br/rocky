@@ -536,6 +536,9 @@ fun RockyWindow(
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent(
                                     messages = visibleMessages,
+                                    onQueue = { queueOpen = true },
+                                    pendingQuestions = localNotes.notes.count { it.tag == dev.rocky.core.live.QUESTION_TAG && it.sessionId == workspace.sessionId && !it.completed },
+                                    filteredCount = ai.filteredCount,
                                     onHistory = { historyOpen = true },
                                     streamerSpeech = voice.transcript,
                                     showTextRequest = true,

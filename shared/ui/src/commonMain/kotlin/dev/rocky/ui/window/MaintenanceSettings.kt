@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 @Composable
 internal fun MaintenanceSettings(updates: UpdateState, report: () -> String, onExport: (String) -> Boolean,
     onOpen: (String) -> Unit) {
+    val savedLabel = tr("Diagnostics saved.", "Diagnóstico salvo.")
+    val failedLabel = tr("Could not export diagnostics.", "Não foi possível exportar o diagnóstico.")
     val scope = rememberCoroutineScope()
     var preview by remember { mutableStateOf<String?>(null) }
     var notice by remember { mutableStateOf<String?>(null) }
@@ -26,8 +28,8 @@ internal fun MaintenanceSettings(updates: UpdateState, report: () -> String, onE
         AlertDialog(onDismissRequest = { preview = null }, title = { Text(tr("Local diagnostics", "Diagnóstico local")) },
             text = { Text(text, modifier = Modifier.verticalScroll(rememberScrollState())) },
             confirmButton = { TextButton(onClick = {
-                runCatching { onExport(text) }.onSuccess { if (it) { preview = null; notice = tr("Diagnostics saved.", "Diagnóstico salvo.") } }
-                    .onFailure { notice = tr("Could not export diagnostics.", "Não foi possível exportar o diagnóstico."); preview = null }
+                runCatching { onExport(text) }.onSuccess { if (it) { preview = null; notice = savedLabel } }
+                    .onFailure { notice = failedLabel; preview = null }
             }) { Text(tr("Export", "Exportar")) } },
             dismissButton = { TextButton(onClick = { preview = null }) { Text(tr("Close", "Fechar")) } })
     }

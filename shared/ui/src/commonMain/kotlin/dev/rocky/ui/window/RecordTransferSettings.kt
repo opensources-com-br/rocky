@@ -8,16 +8,19 @@ import dev.rocky.core.live.LiveNote
 @Composable
 internal fun RecordTransferSettings(records: LocalNotesState, onBackup: (List<LiveNote>) -> Boolean,
     onChooseImport: () -> List<LiveNote>?) {
+    val backupSaved = tr("Backup saved.", "Backup salvo.")
+    val backupFailed = tr("Could not export backup.", "Não foi possível exportar o backup.")
+    val importFailed = tr("Invalid or unsupported backup.", "Backup inválido ou incompatível.")
     var pending by remember { mutableStateOf<List<LiveNote>?>(null) }
     var notice by remember { mutableStateOf<String?>(null) }
     Column {
         Text(tr("Backup includes saved records and their sources, not credentials.", "O backup inclui registros salvos e suas fontes, sem credenciais."))
         OutlinedButton(onClick = {
-            runCatching { onBackup(records.notes.toList()) }.onSuccess { if (it) notice = tr("Backup saved.", "Backup salvo.") }
-                .onFailure { notice = tr("Could not export backup.", "Não foi possível exportar o backup.") }
+            runCatching { onBackup(records.notes.toList()) }.onSuccess { if (it) notice = backupSaved }
+                .onFailure { notice = backupFailed }
         }) { Text(tr("Export backup", "Exportar backup")) }
         OutlinedButton(onClick = {
-            runCatching(onChooseImport).onSuccess { pending = it }.onFailure { notice = tr("Invalid or unsupported backup.", "Backup inválido ou incompatível.") }
+            runCatching(onChooseImport).onSuccess { pending = it }.onFailure { notice = importFailed }
         }) { Text(tr("Import backup", "Importar backup")) }
         notice?.let { Text(it) }
     }

@@ -44,6 +44,7 @@ internal class LocalNotesState(private val repository: NoteRepository) {
 
     fun save(note: LiveNote): Boolean {
         if (notes.any { it.id == note.id }) {
+            undoSaveId = null
             notice = "Este item já foi salvo."
             return true
         }

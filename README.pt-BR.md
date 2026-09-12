@@ -22,7 +22,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;
 - interface em inglês e português brasileiro, selecionada pelo idioma do sistema e ajustável nas Configurações.
 
-Rocky não exige uma conta própria nem um backend remoto. O acesso à Twitch e as configurações do provedor de IA são armazenados no computador para reconectar as sessões. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
+Rocky não exige uma conta própria nem um backend remoto. O Client ID da Twitch e as configurações do provedor de IA são armazenados no computador. Os tokens de acesso da Twitch ficam na memória e são apagados quando o Rocky fecha. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
 
 ## Executar pelo código-fonte
 

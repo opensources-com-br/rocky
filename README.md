@@ -22,7 +22,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - automated builds and development installers for macOS and Windows;
 - English and Brazilian Portuguese interface, selected from the system language and adjustable in Settings.
 
-Rocky does not require a Rocky account or a remote backend. Twitch access and AI provider settings are stored on the user's computer so sessions can reconnect. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
+Rocky does not require a Rocky account or a remote backend. The Twitch Client ID and AI provider settings are stored on the user's computer. Twitch access tokens remain in memory and are cleared when Rocky closes. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
 
 ## Run from source
 

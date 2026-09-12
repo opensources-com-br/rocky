@@ -23,6 +23,25 @@ class ChatContextFilterTest {
         assertEquals(commands, filterChat(commands, ChatFilterConfiguration(false, false, emptySet())).messages)
     }
 
+    @Test fun keepsNewQuestionsAfterOldActivityAndExpiresRepeatedText() {
+        val input = (1..11).map { msg("$it", "viewer", "Pergunta $it?")
+            .copy(receivedAtMillis = it * 180_000L) }
+        assertEquals(input, filterChat(input, ChatFilterConfiguration()).messages)
+        val repeated = listOf(0L, 29_999L, 60_000L).mapIndexed { index, time ->
+            msg("$index", "viewer", "Qual jogo?").copy(receivedAtMillis = time)
+        }
+        assertEquals(listOf("0", "2"), filterChat(repeated, ChatFilterConfiguration()).messages.map { it.id })
+    }
+
+    @Test fun limitsTimedBurstsAndReleasesTheBoundary() {
+        val burst = (0..10).map { msg("$it", "viewer", "Pergunta $it?").copy(receivedAtMillis = 0) }
+        val next = msg("new", "viewer", "Outra pergunta?").copy(receivedAtMillis = 30_000)
+        val kept = filterChat(burst + next, ChatFilterConfiguration()).messages
+        assertEquals(11, kept.size)
+        assertEquals("new", kept.last().id)
+        assertFalse(kept.any { it.id == "10" })
+    }
+
     @Test fun groupsRewordedQuestionsConservatively() {
         assertTrue(isChatQuestion("Qual o próximo jogo"))
         assertFalse(isChatQuestion("gostei da live"))

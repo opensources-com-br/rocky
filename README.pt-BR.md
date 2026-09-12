@@ -81,7 +81,6 @@ Antes de promover uma alpha, siga o [protocolo de teste com streamers](docs/STRE
 | --- | --- |
 | [apps/desktop](apps/desktop/) | Ponto de entrada, empacotamento e ciclo de vida do aplicativo desktop |
 | [apps/web](apps/web/) | Landing page do Rocky em Next.js (template padrão por enquanto) |
-| [apps/landing](apps/landing/) | Landing estática anterior, preservada como referência |
 | [shared/core](shared/core/) | Modelos de domínio, contratos e regras de exportação |
 | [shared/data](shared/data/) | Implementações da Twitch, IA e SQLite |
 | [shared/ui](shared/ui/) | Interface Compose e estado de apresentação |

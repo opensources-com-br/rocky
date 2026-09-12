@@ -569,20 +569,17 @@ fun RockyWindow(
                         }
                     }
                     else -> {
-                        if (twitch.isRealSession) {
-                            TwitchSessionControls(twitch) {
+                        PlatformStrip(visiblePlatforms) { platform ->
+                            val active = when (platform) {
+                                PlatformColor.Twitch -> twitch.isRealSession
+                                PlatformColor.Kick -> kick.isActive
+                                else -> false
+                            }
+                            if (active) {
                                 silenced = false
                                 finishLive()
                             }
                         }
-                        if (kick.isActive) {
-                            KickSessionControls(kick) {
-                                silenced = false
-                                finishLive()
-                            }
-                        }
-                        Divider(color = RockyColors.Divider)
-                        PlatformStrip(visiblePlatforms)
                         Divider(color = RockyColors.Divider)
                         LiveSummary(
                             agentName = agent.displayName,
@@ -786,6 +783,7 @@ private fun platformStatuses(twitch: TwitchLiveState, kick: KickLiveState): List
             messagesPerMinute = twitch.messagesPerMinute,
             colorKey = PlatformColor.Twitch,
             enabled = twitch.phase != TwitchConnectionPhase.Failed,
+            connected = twitch.isRealSession,
         ),
         PlatformStatus(
             name = "Kick",
@@ -794,6 +792,7 @@ private fun platformStatuses(twitch: TwitchLiveState, kick: KickLiveState): List
             messagesPerMinute = kick.messagesPerMinute,
             colorKey = PlatformColor.Kick,
             enabled = kick.phase != KickConnectionPhase.Failed,
+            connected = kick.isActive,
         ),
         PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),

@@ -1,13 +1,13 @@
-# Candidato de teste — 1.0.10-alpha.13
+# Candidato de teste — 1.0.10-alpha.17
 
 Escopo: chat da própria conta Twitch, comandos de voz iniciados por “Rocky” e notas com fontes. A IA pode usar Ollama, OpenAI ou modelos gratuitos pelo OpenRouter. Este candidato ainda precisa de validação em live real e OBS antes de lançamento amplo.
 
 ## Preparar
 
-1. Instale o pacote **1.0.10-alpha.13**. Não use um pacote de uma execução anterior.
+1. Instale o pacote **1.0.10-alpha.17**. Não use um pacote de uma execução anterior.
 2. Abra **Configurações → Plataformas**. Este pacote não inclui um Client ID oficial. Registre um aplicativo público na Twitch usando sua conta e copie o Client ID, conforme [configuração Twitch](TWITCH.pt-BR.md). Não é necessário criar outra conta de streamer nem informar Client Secret.
-3. Conecte e autorize a mesma conta em que abrirá a live. O Rocky acompanha novas mensagens desse canal; não lê histórico anterior nem mede espectadores.
-4. Em **IA**, escolha Ollama, OpenAI ou OpenRouter. Para testar sem custo por tokens, mantenha `openrouter/free`. **Testar conexão** faz uma geração curta com mensagens fictícias.
+3. Conecte e autorize a mesma conta em que abrirá a live. O Rocky acompanha novas mensagens e a audiência atual desse canal; não lê o histórico anterior.
+4. Em **IA**, escolha Ollama, OpenAI ou OpenRouter. O modelo `openrouter/free` depende da disponibilidade e dos limites vigentes na conta. **Testar conexão** faz uma geração curta para validar o fluxo completo.
 5. Em **Voz**, configure o executável e o modelo do whisper.cpp, selecione o microfone e teste a voz do sistema.
 
 ## Teste rápido antes da live
@@ -16,6 +16,7 @@ Escopo: chat da própria conta Twitch, comandos de voz iniciados por “Rocky”
 - [ ] Dizer **“Rocky, o que o chat quer?”**, ouvir a confirmação, receber a resposta falada e abrir **Ver fontes**. Comparar as fontes com o chat dos últimos dois minutos.
 - [ ] Cancelar uma análise em andamento e enviar outra pergunta.
 - [ ] Salvar a sugestão, editar a nota, reiniciar o app e conferir texto, data com fuso e fontes. Exportar Markdown.
+- [ ] Confirmar que notas antigas do modo de demonstração não aparecem após abrir esta versão.
 - [ ] Testar uma resposta longa, alternar para o modo compacto e abrir configurações a partir dele.
 - [ ] Conferir mensagens/minuto durante uma rajada e após um minuto sem mensagens.
 - [ ] Desligar a rede por 15 e 60 segundos; restaurar e confirmar que novas mensagens chegam. A sugestão já recebida deve permanecer durante a recuperação. Mensagens enviadas durante a queda podem não ser recuperadas pela Twitch.

@@ -18,6 +18,7 @@ internal class KickLiveState(
     private val currentTimeMillis: () -> Long,
 ) {
     val messages = mutableStateListOf<ChatMessage>()
+    val pulse = mutableStateListOf<dev.rocky.core.live.PulseSample>()
     private val receivedAtByMessageId = mutableStateMapOf<String, Long>()
     private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
     var phase by mutableStateOf(KickConnectionPhase.Disconnected); private set
@@ -87,6 +88,12 @@ internal class KickLiveState(
         val cutoff = currentTimeMillis() / 1_000 - 59
         receivedMessageTimes.keys.filter { it < cutoff }.forEach(receivedMessageTimes::remove)
         messagesPerMinute = receivedMessageTimes.values.sum()
+        if (startedAtMillis != null && isActive) {
+            val time = currentTimeMillis() / 5_000 * 5_000
+            val sample = dev.rocky.core.live.PulseSample(time, messagesPerMinute, viewerCount, isConnected)
+            if (pulse.lastOrNull()?.timeMillis == time) pulse[pulse.lastIndex] = sample else pulse.add(sample)
+            while (pulse.size > 120) pulse.removeAt(0)
+        }
     }
 
     private fun clearConnection() {

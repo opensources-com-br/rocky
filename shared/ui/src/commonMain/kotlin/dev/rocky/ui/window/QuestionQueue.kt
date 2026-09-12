@@ -13,6 +13,10 @@ internal class QuestionQueue(private val records: LocalNotesState) {
                 it.tag == QUESTION_TAG && it.sessionId == sessionId && similarQuestion(it.text, message.text)
             }
             if (existing == null && records.notes.count { it.tag == QUESTION_TAG && it.sessionId == sessionId } >= 100) return@forEach
+            if (existing != null && message.id in existing.sourceMessageIds) {
+                seen.add(message.id)
+                return@forEach
+            }
             val record = existing?.copy(
                 sourceMessageIds = (existing.sourceMessageIds + message.id).takeLastSet(50),
                 evidence = (existing.evidence + messageEvidence(message)).takeLast(20),

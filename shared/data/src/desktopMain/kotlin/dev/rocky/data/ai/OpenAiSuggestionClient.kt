@@ -69,7 +69,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         return AiSuggestionPayloads.suggestion(
             AiSuggestionPayloads.openAiText(response.body()),
             prompt.messageIds,
-        )
+        )?.copy(reportedTokens = reportedTokenCount(response.body(), "input_tokens", "output_tokens", nested = true))
     }
 
     fun generateOpenRouter(
@@ -117,6 +117,9 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
                 return AiSuggestionPayloads.suggestion(
                     AiSuggestionPayloads.openRouterText(response.body()),
                     prompt.messageIds,
+                )?.copy(
+                    reportedTokens = reportedTokenCount(response.body(), "prompt_tokens", "completion_tokens", nested = true),
+                    attempts = it + 1,
                 )
             } catch (error: IllegalArgumentException) {
                 lastInvalidResponse = error

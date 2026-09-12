@@ -53,7 +53,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
     ): AiGeneratedSuggestion? {
         configuration.validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
         require(messages.isNotEmpty()) { "At least one chat message is required" }
-        return when (configuration.provider) {
+        return try { when (configuration.provider) {
             AiProviderKind.Ollama -> ollama.generate(
                 configuration.endpoint,
                 configuration.model,
@@ -77,6 +77,10 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 streamerRequest,
                 agent,
             )
+        } } catch (error: InterruptedException) {
+            throw error
+        } catch (error: Exception) {
+            throw dev.rocky.core.ai.AiRequestException(error.userMessage("Não foi possível gerar a sugestão"))
         }
     }
 

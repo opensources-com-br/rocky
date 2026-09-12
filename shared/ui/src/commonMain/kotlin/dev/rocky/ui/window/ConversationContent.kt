@@ -37,6 +37,8 @@ internal fun ConversationContent(
     showTextRequest: Boolean = textRequestEnabled,
     analyzing: Boolean = false,
     hasCaptureGaps: Boolean = false,
+    analysisStatus: String? = null,
+    performanceNotice: String? = null,
     onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
 ) {
@@ -88,6 +90,8 @@ internal fun ConversationContent(
             }
         }
 
+        analysisStatus?.let { Text(it, style = MaterialTheme.typography.caption, color = RockyColors.TextSecondary) }
+        performanceNotice?.let { Text(it, style = MaterialTheme.typography.caption, color = RockyColors.TextMuted) }
         streamerSpeech?.let { speech ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(

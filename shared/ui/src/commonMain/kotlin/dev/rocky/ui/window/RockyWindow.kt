@@ -410,6 +410,10 @@ fun RockyWindow(
                                     textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && !ai.generating,
                                     analyzing = ai.generating,
                                     hasCaptureGaps = twitch.hasCaptureGaps,
+                                    analysisStatus = ai.status,
+                                    performanceNotice = ai.lastDurationMillis?.let {
+                                        "${it} ms · ${ai.completedRequests} análises · ${ai.reportedTokens} tokens informados (parcial)"
+                                    },
                                     onCancelAnalysis = { ai.cancelAnalysis(); voice.resumeListener() },
                                     onTextRequest = { request ->
                                         ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request, agent = agent.configuration)

@@ -43,6 +43,15 @@ internal class AiSuggestionState(
     var analysisRevision by mutableStateOf(0)
         private set
 
+    var lastDurationMillis by mutableStateOf<Long?>(null)
+        private set
+    var reportedTokens by mutableStateOf(0L)
+        private set
+    var completedRequests by mutableStateOf(0)
+        private set
+    var lastAttempts by mutableStateOf(1)
+        private set
+
     var status by mutableStateOf<String?>(null)
         private set
 
@@ -165,6 +174,7 @@ internal class AiSuggestionState(
         generating = true
         status = "Analisando ${snapshot.size} mensagens…"
         analysisJob = scope.launch {
+            val started = kotlin.time.TimeSource.Monotonic.markNow()
             val result = runCatching {
                 interruptibleWork {
                     client.generateSuggestion(activeConfiguration, snapshot, streamerRequest, agent)
@@ -172,9 +182,13 @@ internal class AiSuggestionState(
             }
             if (activeSession != sessionGeneration) return@launch
             generating = false
+            lastDurationMillis = started.elapsedNow().inWholeMilliseconds
+            completedRequests += 1
             analysisRevision += 1
             result.exceptionOrNull()?.let { if (it is CancellationException) throw it }
             result.onSuccess { generated ->
+                reportedTokens += generated?.reportedTokens ?: 0L
+                lastAttempts = generated?.attempts ?: 1
                 if (automatic) lastAnalyzedMessageId = snapshot.last().id
                 suggestionSources = snapshot.filter { it.id in generated?.sourceMessageIds.orEmpty() }
                 val completedSuggestion = generated?.let {
@@ -184,7 +198,7 @@ internal class AiSuggestionState(
                 status = if (generated == null) "Nenhuma sugestão relevante agora" else "Sugestão gerada"
                 onComplete(completedSuggestion)
             }.onFailure {
-                status = "Não foi possível gerar a sugestão"
+                status = (it as? dev.rocky.core.ai.AiRequestException)?.message ?: "Não foi possível gerar a sugestão"
                 onComplete(null)
             }
         }
@@ -194,6 +208,9 @@ internal class AiSuggestionState(
         sessionGeneration += 1
         analysisJob?.cancel()
         analysisJob = null
+        lastDurationMillis = null
+        reportedTokens = 0
+        completedRequests = 0
         lastAnalyzedMessageId = null
         lastAutomaticAnalysisAtMillis = null
         generating = false

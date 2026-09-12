@@ -24,7 +24,11 @@ data class AiConnectionResult(
 data class AiGeneratedSuggestion(
     val text: String,
     val sourceMessageIds: Set<String>,
+    val reportedTokens: Long? = null,
+    val attempts: Int = 1,
 )
+
+class AiRequestException(message: String) : Exception(message)
 
 interface AiSuggestionClient : AutoCloseable {
     fun testConnection(configuration: AiProviderConfiguration): AiConnectionResult

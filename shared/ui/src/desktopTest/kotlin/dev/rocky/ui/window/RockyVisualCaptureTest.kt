@@ -14,6 +14,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -175,7 +176,7 @@ class RockyVisualCaptureTest {
             MainSection.Support to "Super Chats ainda não estão conectados.",
             MainSection.Notes to "Notas locais",
             MainSection.Ideas to "Ideias da live",
-            MainSection.Pulse to "audiência indisponível · 0 msg/min",
+            MainSection.Pulse to "Até 10 minutos, amostras a cada 5 segundos. Lacunas indicam medições ausentes.",
         )
         mainSections.forEach { (section, visibleText) ->
             render(mainSection = section)
@@ -298,7 +299,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Você pode continuar por texto sem microfone.").assertExists()
         rule.onNodeWithText("Testar IA").performClick()
         rule.waitUntil(3_000) { rule.onAllNodesWithText("Conexão com IA verificada").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText("Twitch desconectada").assertExists()
+        rule.onNodeWithText("Plataforma de streaming desconectada").assertExists()
         rule.onNodeWithText("Fechar").performClick()
         rule.onNodeWithTag("streamer-text-request").assertExists()
     }
@@ -547,7 +548,7 @@ class RockyVisualCaptureTest {
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms, twitchClientId = "client-id")
 
         rule.onNodeWithText("Avançado · aplicativo Twitch").performClick()
-        rule.onNodeWithContentDescription("Mostrar valor").performClick()
+        rule.onAllNodesWithContentDescription("Mostrar valor")[0].performClick()
         rule.onNodeWithContentDescription("Ocultar valor").assertExists()
     }
 
@@ -662,7 +663,7 @@ class RockyVisualCaptureTest {
         )
 
         rule.onNodeWithText("Configure o Rocky").assertExists()
-        rule.onNodeWithText("Configurar Twitch").performClick()
+        rule.onNodeWithText("Configurar plataforma").performClick()
         rule.onNodeWithText("Conexão com plataformas").assertExists()
         rule.onNodeWithText("concluir").performClick()
         rule.onNodeWithText("Configure o Rocky").assertExists()
@@ -693,7 +694,7 @@ class RockyVisualCaptureTest {
         render(firstUseOpen = true, language = RockyLanguage.English)
 
         rule.onNodeWithText("Set up Rocky").assertExists()
-        rule.onNodeWithText("1. Connect your Twitch").assertExists()
+        rule.onNodeWithText("1. Connect your platform").assertExists()
         rule.onNodeWithText("2. Configure AI").assertExists()
         rule.onNodeWithText("3. Test voice (optional)").assertExists()
     }

@@ -13,6 +13,7 @@ import dev.rocky.core.twitch.TwitchConnectionPhase
 internal fun PreflightDialog(
     scope: kotlinx.coroutines.CoroutineScope,
     twitch: TwitchLiveState,
+    kick: KickLiveState,
     ai: AiSuggestionState,
     voice: VoiceState,
     agentName: String,
@@ -23,7 +24,12 @@ internal fun PreflightDialog(
     var useVoice by remember { mutableStateOf(false) }
     var heardVoice by remember(voice.configuration.output) { mutableStateOf(false) }
     var obsChecked by remember(voice.configuration.output) { mutableStateOf(false) }
-    val connected = twitch.phase == TwitchConnectionPhase.Connected
+    val connectedPlatform = when {
+        twitch.phase == TwitchConnectionPhase.Connected -> "Twitch"
+        kick.isConnected -> "Kick"
+        else -> null
+    }
+    val connected = connectedPlatform != null
     val ready = connected && ai.connectionVerified && (!useVoice ||
         (voice.voiceTested && voice.conversationTestTranscript != null && heardVoice && obsChecked))
     AlertDialog(
@@ -34,8 +40,11 @@ internal fun PreflightDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(if (ready) tr("Checks completed", "Verificações concluídas") else tr("Review the items below", "Revise os itens abaixo"),
                     style = MaterialTheme.typography.subtitle1)
-                Text(if (connected) tr("Twitch connected", "Twitch conectada") else tr("Twitch disconnected", "Twitch desconectada"))
-                TextButton(onClick = { onConfigure(SettingsSection.Platforms) }) { Text(tr("Configure Twitch", "Configurar Twitch")) }
+                Text(connectedPlatform?.let { tr("$it connected", "$it conectada") }
+                    ?: tr("Streaming platform disconnected", "Plataforma de streaming desconectada"))
+                TextButton(onClick = { onConfigure(SettingsSection.Platforms) }) {
+                    Text(tr("Configure platform", "Configurar plataforma"))
+                }
                 Text(if (ai.connectionVerified) tr("AI connection verified", "Conexão com IA verificada") else tr("AI not verified", "IA não verificada"))
                 ai.status?.let { Text(it, style = MaterialTheme.typography.caption) }
                 Row {

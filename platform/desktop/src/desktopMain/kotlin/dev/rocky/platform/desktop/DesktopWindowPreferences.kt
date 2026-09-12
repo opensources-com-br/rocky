@@ -8,8 +8,11 @@ object DesktopWindowPreferences {
     private val prefs = Preferences.userRoot().node("dev/rocky/window")
 
     fun restore(): Rectangle {
+        val storedHeight = prefs.getInt("height", 900)
+        val restoredHeight = if (!prefs.getBoolean("height900Migrated", false) && storedHeight == 820) 900 else storedHeight
+        prefs.putBoolean("height900Migrated", true)
         val saved = Rectangle(prefs.getInt("x", Int.MIN_VALUE), prefs.getInt("y", Int.MIN_VALUE),
-            prefs.getInt("width", 462), prefs.getInt("height", 900))
+            prefs.getInt("width", 462), restoredHeight)
         val screens = GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.map {
             val configuration = it.defaultConfiguration
             val insets = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(configuration)

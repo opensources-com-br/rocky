@@ -265,7 +265,9 @@ class AiSuggestionStateTest {
         val client = FakeAiSuggestionClient()
         val state = AiSuggestionState(client, ollamaConfiguration) {}
 
-        state.analyze(this, messages(40), messageLimit = 40)
+        state.analyze(this, messages(40).mapIndexed { index, message ->
+            message.copy(author = "viewer-$index", authorId = "viewer-$index")
+        }, messageLimit = 40)
         while (state.generating) delay(1)
 
         assertEquals(40, client.lastMessageCount)

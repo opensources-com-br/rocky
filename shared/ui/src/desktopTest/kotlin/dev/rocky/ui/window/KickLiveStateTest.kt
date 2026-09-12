@@ -20,9 +20,11 @@ class KickLiveStateTest {
         assertEquals("kick-42-1000", state.messages.single().sessionId)
         assertEquals(listOf("m1"), state.messagesReceivedWithin(500).map { it.id })
         assertEquals(1, state.messagesPerMinute)
+        assertEquals(1, state.pulse.single().messagesPerMinute)
         now = 63_000L
         state.refreshMetrics()
         assertEquals(0, state.messagesPerMinute)
+        assertEquals(0, state.pulse.last().messagesPerMinute)
     }
 
     private class FakeKickClient : KickChatClient {

@@ -37,6 +37,13 @@ internal fun NotesContent(
     loadFailed: Boolean = false,
     onReload: () -> Unit = {},
 ) {
+    var search by remember { mutableStateOf("") }
+    var session by remember { mutableStateOf<String?>(null) }
+    var sessionsOpen by remember { mutableStateOf(false) }
+    val visibleNotes = notes.filter {
+        (session == null || it.sessionId == session) &&
+            (it.text.contains(search, true) || it.tag.contains(search, true))
+    }
     var creating by remember { mutableStateOf(false) }
     var draft by remember { mutableStateOf("") }
     if (creating) androidx.compose.material.AlertDialog(
@@ -106,7 +113,22 @@ internal fun NotesContent(
         if (loadFailed) {
             OutlinedButton(onClick = onReload) { Text("Tentar carregar novamente") }
         }
-        if (notes.isEmpty()) {
+        androidx.compose.material.OutlinedTextField(value = search, onValueChange = { search = it.take(200) },
+            label = { Text(tr("Search records", "Buscar registros")) }, modifier = Modifier.fillMaxWidth())
+        androidx.compose.foundation.layout.Box {
+            androidx.compose.material.TextButton(onClick = { sessionsOpen = true }) {
+                Text(session?.let { id -> notes.firstOrNull { it.sessionId == id }?.sessionLabel?.ifBlank { "Sem live" } } ?: tr("All lives", "Todas as lives"))
+            }
+            androidx.compose.material.DropdownMenu(sessionsOpen, { sessionsOpen = false }) {
+                androidx.compose.material.DropdownMenuItem(onClick = { session = null; sessionsOpen = false }) { Text(tr("All lives", "Todas as lives")) }
+                notes.distinctBy { it.sessionId }.forEach { note ->
+                    androidx.compose.material.DropdownMenuItem(onClick = { session = note.sessionId; sessionsOpen = false }) {
+                        Text(note.sessionLabel.ifBlank { tr("Without a live", "Sem live") })
+                    }
+                }
+            }
+        }
+        if (visibleNotes.isEmpty()) {
             Text(
                 text = "As sugestões salvas durante a live aparecerão aqui.",
                 modifier = Modifier.padding(vertical = 28.dp),
@@ -114,13 +136,13 @@ internal fun NotesContent(
                 style = MaterialTheme.typography.body2,
             )
         } else {
-            notes.forEachIndexed { index, note ->
+            visibleNotes.forEachIndexed { index, note ->
                 NoteRow(
                     note = note,
                     onEdit = { editingNote = note },
                     onDelete = { deletingNote = note },
                 )
-                if (index < notes.lastIndex) Divider(color = RockyColors.Divider)
+                if (index < visibleNotes.lastIndex) Divider(color = RockyColors.Divider)
             }
         }
     }

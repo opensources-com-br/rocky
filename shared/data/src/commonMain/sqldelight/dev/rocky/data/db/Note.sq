@@ -25,3 +25,11 @@ WHERE id = ?;
 deleteNote:
 DELETE FROM note
 WHERE id = ?;
+
+deleteLegacyDemoNotes:
+DELETE FROM note
+WHERE text = 'Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.'
+  AND timestamp = 'agora'
+  AND tag = 'SUGESTÃO'
+  AND source_message_ids = '[]'
+  AND evidence = '[]';

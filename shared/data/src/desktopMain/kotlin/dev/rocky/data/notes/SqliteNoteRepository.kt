@@ -23,6 +23,7 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
         addColumnIfMissing("source_message_ids", "TEXT NOT NULL DEFAULT '[]'")
         addColumnIfMissing("evidence", "TEXT NOT NULL DEFAULT '[]'")
         database = RockyDatabase(driver)
+        database.noteQueries.deleteLegacyDemoNotes()
     }
 
     override fun getAll(): List<LiveNote> = database.noteQueries

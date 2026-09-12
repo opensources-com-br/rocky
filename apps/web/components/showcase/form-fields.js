@@ -21,6 +21,7 @@ export function formFields(f, setField, setUrl, togglePlatform) {
     const PLATS = [
       { name: "Twitch", dot: TW },
       { name: "Kick", dot: KI },
+      { name: "YouTube", dot: YT },
     ];
 
 
@@ -28,7 +29,7 @@ return [
         text("Nome ou canal", "Como você quer aparecer na página.", "name", "ex. ju.lia"),
         choice("Categoria", "Onde o seu caso entra nos filtros.", "category", ["Programação", "Games", "Educação", "Podcast", "Esportes", "Arte"]),
         {
-          label: "Plataformas conectadas", hint: "A versão atual conecta Twitch ou Kick por sessão.", isPlatforms: true,
+          label: "Plataformas conectadas", hint: "A versão atual conecta Twitch, Kick ou YouTube por sessão.", isPlatforms: true,
           options: PLATS.map((p) => Object.assign({ name: p.name, dot: f.platforms.indexOf(p.name) === -1 ? "rgba(255,255,255,.22)" : p.dot, pick: () => togglePlatform(p.name) }, pill(f.platforms.indexOf(p.name) !== -1))),
         },
         {

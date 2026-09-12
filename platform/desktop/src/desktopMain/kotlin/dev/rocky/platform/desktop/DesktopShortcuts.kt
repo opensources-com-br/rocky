@@ -71,4 +71,18 @@ class DesktopShortcuts(
         worker?.join(500)
     }
 
+    @Structure.FieldOrder("signature", "id")
+    open class HotKeyId : Structure() { @JvmField var signature = 0; @JvmField var id = 0 }
+    class HotKeyValue : HotKeyId(), Structure.ByValue
+    @Structure.FieldOrder("eventClass", "kind")
+    class EventSpec : Structure() { @JvmField var eventClass = 0; @JvmField var kind = 0 }
+    interface Carbon : Library {
+        fun interface Handler : Callback { fun invoke(next: Pointer?, event: Pointer?, user: Pointer?): Int }
+        fun GetEventDispatcherTarget(): Pointer
+        fun InstallEventHandler(target: Pointer, handler: Handler, count: Int, types: EventSpec, user: Pointer?, ref: PointerByReference): Int
+        fun RegisterEventHotKey(key: Int, modifiers: Int, id: HotKeyValue, target: Pointer, options: Int, ref: PointerByReference): Int
+        fun UnregisterEventHotKey(ref: Pointer): Int
+        fun RemoveEventHandler(ref: Pointer): Int
+        fun GetEventParameter(event: Pointer?, name: Int, type: Int, actualType: Pointer?, size: Int, actualSize: Pointer?, data: HotKeyId): Int
+    }
 }

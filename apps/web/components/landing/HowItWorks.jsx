@@ -11,10 +11,10 @@ export default function HowItWorks({ steps }) {
 {"COMO FUNCIONA "}
 </div>
 <h2 style={{"margin": "16px 0 10px", "fontSize": "38px", "lineHeight": "1.1", "letterSpacing": "-.035em", "fontWeight": "500"}}>
-{"Três coisas, o tempo todo"}
+{"Três formas de acompanhar a live"}
 </h2>
 <p style={{"margin": "0 0 44px", "maxWidth": "480px", "fontSize": "15.5px", "lineHeight": "1.6", "color": "rgba(255,255,255,.45)"}}>
-{"Uma janela flutuante por cima do seu estúdio. Nunca aparece na transmissão."}
+{"Uma janela que você pode fixar no topo. A visibilidade na transmissão depende das fontes de captura configuradas no OBS."}
 </p>
 <StepsGrid steps={steps} />
 </div>

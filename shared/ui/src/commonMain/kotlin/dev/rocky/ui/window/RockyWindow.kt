@@ -50,6 +50,11 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun RockyWindow(
+    shortcutKeys: List<Int> = listOf(8, 9, 10),
+    shortcutStatus: Boolean? = null,
+    onShortcutKeysChange: (List<Int>) -> Unit = {},
+    shortcutAction: Int = -1,
+    shortcutRevision: Int = 0,
     compact: Boolean,
     pinned: Boolean,
     onTogglePinned: () -> Unit,
@@ -267,6 +272,16 @@ fun RockyWindow(
             }
         }
 
+        LaunchedEffect(shortcutRevision) {
+            if (shortcutRevision > 0) when (shortcutAction) {
+                0 -> voice.toggleListener(aiScope, handleVoiceRequest)
+                1 -> {
+                    silenced = !silenced
+                    if (silenced) voice.interruptSpeech()
+                }
+            }
+        }
+
         LaunchedEffect(twitch.phase, voice.transcriptionReady) {
             if (twitch.phase == TwitchConnectionPhase.Connected && voice.transcriptionReady) {
                 voice.enableListener(aiScope, handleVoiceRequest)
@@ -361,12 +376,10 @@ fun RockyWindow(
                                     },
                                 )
                                 SettingsSection.Ai -> AiSettings(ai)
-                                SettingsSection.Voice -> VoiceSettings(
-                                    voice,
-                                    agent.displayName,
-                                    onChooseWhisperExecutable,
-                                    onChooseWhisperModel,
-                                )
+                                SettingsSection.Voice -> Column {
+                                    ShortcutSettings(shortcutKeys, shortcutStatus, onShortcutKeysChange)
+                                    VoiceSettings(voice, agent.displayName, onChooseWhisperExecutable, onChooseWhisperModel)
+                                }
                                 SettingsSection.Platforms -> PlatformSettings(
                                     clientId = twitchClientId,
                                     onClientIdChange = { value ->

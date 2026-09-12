@@ -137,6 +137,11 @@ internal fun NotesContent(
             )
         } else {
             visibleNotes.forEachIndexed { index, note ->
+                if (ideas) androidx.compose.material.TextButton(onClick = { onUpdate(note.copy(completed = !note.completed)) }) {
+                    Text(if (note.completed) tr("Done · reopen", "Realizada · reabrir") else tr("Mark as done", "Marcar realizada"))
+                }
+                Text(note.sessionLabel, style = MaterialTheme.typography.caption)
+                note.offsetMillis?.let { Text(dev.rocky.core.live.momentLabel(it), style = MaterialTheme.typography.caption) }
                 NoteRow(
                     note = note,
                     onEdit = { editingNote = note },

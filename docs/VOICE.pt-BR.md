@@ -4,7 +4,7 @@ Rocky usa a voz instalada no computador para responder. O macOS usa `say`, e o W
 
 ## Reconhecimento do streamer
 
-A voz é opcional. Depois de configurada, o ouvinte inicia ao conectar a Twitch; o rodapé permite ligar e desligar. Rocky processa o áudio localmente em trechos curtos e só executa um comando quando reconhece seu nome. Diga, por exemplo, **“Rocky, o que o chat quer jogar?”**. O texto reconhecido aparece na aba Conversa, Rocky consulta até 200 mensagens recebidas nos últimos dois minutos e responde em áudio.
+A voz é opcional. Depois de configurada, o ouvinte inicia ao conectar Twitch ou Kick; o rodapé permite ligar e desligar. Rocky processa o áudio localmente em trechos curtos e só executa um comando quando reconhece seu nome. Diga, por exemplo, **“Rocky, o que o chat quer jogar?”**. O texto reconhecido aparece na aba Conversa, Rocky consulta até 200 mensagens recebidas nos últimos dois minutos e responde em áudio.
 
 No macOS com Homebrew, clique em **Configurar reconhecimento de voz**. Rocky instala o `whisper.cpp`, baixa o modelo multilíngue e salva os caminhos no dispositivo. No Windows, selecione manualmente o executável `whisper-cli`, o modelo GGML e o microfone.
 
@@ -32,4 +32,4 @@ Com a palavra de ativação normal, diga:
 
 Salvar mantém a aba atual e mostra confirmação com Desfazer. Notas/Ideias também têm o botão Nova para digitação. O Histórico guarda até 30 respostas da sessão para consultar, repetir, copiar e salvar; as quatro últimas interações entram como contexto limitado de continuidade. Desconectar limpa esse histórico temporário, preservando notas/ideias salvas.
 
-O botão Antes da live reúne conexão Twitch, teste de IA, teste de voz/microfone e orientação para conferir uma gravação no OBS. O áudio é opcional; a interface indica quais verificações foram feitas, sem presumir que a saída está isolada da transmissão.
+O botão Antes da live reúne a conexão da plataforma, teste de IA, teste de voz/microfone e orientação para conferir uma gravação no OBS. O áudio é opcional; a interface indica quais verificações foram feitas, sem presumir que a saída está isolada da transmissão.

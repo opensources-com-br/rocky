@@ -1,7 +1,7 @@
 
 export default function ShowcaseFooter() {
   return (<>
-<div style={{"maxWidth": "1120px", "boxSizing": "border-box", "margin": "0 auto", "padding": "24px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "display": "flex", "flexWrap": "wrap", "gap": "16px", "alignItems": "center", "fontSize": "12.5px", "color": "rgba(255,255,255,.3)"}}>
+<div style={{"maxWidth": "1120px", "width": "100%", "boxSizing": "border-box", "margin": "0 auto", "padding": "24px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "display": "flex", "flexWrap": "wrap", "gap": "16px", "alignItems": "center", "fontSize": "12.5px", "color": "rgba(255,255,255,.3)"}}>
 <span style={{"fontFamily": "var(--font-geist-mono), monospace"}}>
 {"Rocky © 2026"}
 </span>

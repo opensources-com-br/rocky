@@ -1,16 +1,45 @@
 const content = {
-  group: "Recursos",
-  lead: "Enquanto você transmite, o Rocky registra o que precisa de volta depois: promessas, dúvidas sem resposta, problemas técnicos e pautas que o chat pediu.",
-  blocks: [
-    {"type": "h2", "text": "Notas"},
-    {"type": "para", "text": "Uma nota tem minuto exato, texto e etiqueta. Elas nascem de três lugares: do próprio Rocky quando ele percebe algo, de você pressionando ⌥ N durante uma fala, ou de um pedido por voz."},
-    {"type": "table", "cols": "minmax(0,1fr) minmax(0,2fr)", "head": ["ETIQUETA", "QUANDO APARECE"], "rows": [["pendência", "Você prometeu algo e ainda não voltou ao assunto"], ["dúvida", "Pergunta repetida que segue sem resposta"], ["clipe", "Reação coletiva forte — candidato a corte"], ["técnico", "Queda de áudio, travamento, aviso do chat"]]},
-    {"type": "h2", "text": "Ideias"},
-    {"type": "para", "text": "Ideias são pautas para depois, não coisas para resolver agora: uma série a partir das dúvidas repetidas, uma enquete que o chat pediu, um convidado que apareceu respondendo todo mundo."},
-    {"type": "h2", "text": "Onde ficam"},
-    {"type": "code", "file": "Terminal", "text": "~/.rocky/sessions/2026-09-11-2137/\n  notes.md\n  ideas.md\n  conversation.md\n  summary.md"},
-    {"type": "para", "text": "Arquivos Markdown simples, um diretório por sessão. Você pode versionar, sincronizar ou apagar como qualquer outro arquivo seu."},
-  ],
+  "group": "Recursos",
+  "lead": "Notas e ideias são registros locais que você cria, edita, pesquisa e organiza por live. Ideias não são geradas e salvas automaticamente.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Salvar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use Salvar como nota na sugestão atual ou salve uma resposta pelo Histórico como nota ou ideia.",
+        "Diga “Rocky, salva isso como nota” ou “Rocky, salva isso como ideias” para salvar a resposta atual.",
+        "Para ditado livre: “Rocky, anota: preparar uma live sobre Kotlin” ou “Rocky, ideia: entrevistar um convidado”.",
+        "O salvamento mantém a aba atual e oferece Desfazer. Também é possível criar e editar registros pela interface."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Organizar"
+    },
+    {
+      "type": "para",
+      "text": "Busque texto, filtre registros por live e marque ideias realizadas. Perguntas detectadas pela fila são salvas automaticamente; isso não significa que Rocky registra todas as promessas ou problemas da transmissão."
+    },
+    {
+      "type": "h2",
+      "text": "Momentos"
+    },
+    {
+      "type": "para",
+      "text": "Diga “Rocky, marca esse momento: demonstração do projeto”. O registro guarda o deslocamento desde o início da sessão conectada. Não detecta clipes automaticamente, não corta vídeo e o tempo pode diferir do VOD se Rocky conectar depois do início da live."
+    },
+    {
+      "type": "h2",
+      "text": "Persistência"
+    },
+    {
+      "type": "para",
+      "text": "Registros ficam em SQLite local, não em uma árvore automática de arquivos Markdown por sessão. Há exportação Markdown de notas e ideias, além de backup JSON em Dados. O histórico de respostas é temporário; salve o que deseja manter."
+    }
+  ]
 };
 
 export default content;

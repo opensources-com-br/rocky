@@ -1,8 +1,8 @@
 export const steps = [
   {
     "n": "01",
-    "title": "Acompanha sua Twitch",
-    "text": "Recebe novas mensagens do seu canal e agrupa perguntas. Os filtros de bots, comandos e repetições limitam o contexto enviado à IA."
+    "title": "Acompanha sua live",
+    "text": "Recebe novas mensagens da Twitch ou Kick e agrupa perguntas. A Kick exige um webhook HTTPS público."
   },
   {
     "n": "02",

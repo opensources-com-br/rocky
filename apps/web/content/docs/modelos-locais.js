@@ -1,18 +1,40 @@
 const content = {
-  group: "Avançado",
-  lead: "Rodar o modelo na sua máquina deixa a live inteira offline: nenhuma mensagem do seu chat sai do computador, e não há custo por token.",
-  blocks: [
-    {"type": "h2", "text": "Ollama"},
-    {"type": "code", "file": "Terminal", "text": "$ brew install ollama\n$ ollama pull llama3.1:8b\n$ ollama serve"},
-    {"type": "para", "text": "Com o servidor rodando, escolha ollama em Configurações → IA. O app detecta os modelos disponíveis automaticamente."},
-    {"type": "h2", "text": "LM Studio e servidores compatíveis"},
-    {"type": "para", "text": "Qualquer servidor que exponha a API no formato OpenAI funciona com provider openai-compat. Basta apontar a base_url e deixar a chave em branco."},
-    {"type": "h2", "text": "Qual modelo escolher"},
-    {"type": "table", "cols": "minmax(0,1fr) minmax(0,1fr) minmax(0,1.4fr)", "head": ["TAMANHO", "MEMÓRIA", "COMPORTAMENTO"], "rows": [["3B", "~4 GB", "Rápido; bom para contar e agrupar, fraco em nuance"], ["8B", "~8 GB", "Recomendado; equilibra qualidade e folga para o encoder"], ["14B+", "16 GB+", "Melhor redação; exige máquina dedicada ao lado da live"]]},
-    {"type": "note", "text": "Transmitir e inferir na mesma máquina disputa CPU com o encoder. Se a queda de quadros subir, baixe o tamanho do modelo antes de mexer no bitrate."},
-    {"type": "h2", "text": "Sem internet nenhuma"},
-    {"type": "para", "text": "Com provider local e engine de voz local, o Rocky funciona sem conexão — exceto, claro, pela própria ingestão do chat, que vem das plataformas."},
-  ],
+  "group": "Avançado",
+  "lead": "Ollama é a integração local implementada. Rocky conecta a um servidor existente; não inclui um modelo de IA.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Preparar"
+    },
+    {
+      "type": "para",
+      "text": "Instale e inicie Ollama seguindo sua documentação. Baixe um modelo de texto, por exemplo com ollama pull llama3.2. Em IA, selecione Ollama local, informe http://localhost:11434 e o nome do modelo; depois teste a conexão."
+    },
+    {
+      "type": "h2",
+      "text": "Compatibilidade"
+    },
+    {
+      "type": "para",
+      "text": "O app usa a API do Ollama. LM Studio, llama.cpp e servidores com apenas API OpenAI-compatible não são provedores suportados pela interface atual."
+    },
+    {
+      "type": "h2",
+      "text": "Recursos da máquina"
+    },
+    {
+      "type": "para",
+      "text": "Consumo de memória e tempo de resposta dependem do modelo e do hardware. Teste junto do jogo e encoder antes da live. A documentação não garante desempenho de um tamanho de modelo em uma quantidade específica de RAM."
+    },
+    {
+      "type": "h2",
+      "text": "O que fica local"
+    },
+    {
+      "type": "para",
+      "text": "Ollama em loopback mantém o processamento da amostra de chat no computador. Transcrição e vozes do sistema também podem ser locais após preparação. A conexão Twitch e os downloads de instalação continuam exigindo internet."
+    }
+  ]
 };
 
 export default content;

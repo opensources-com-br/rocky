@@ -87,6 +87,12 @@ fun RockyWindow(
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
+    onBackup: (List<LiveNote>) -> Boolean = { false },
+    onChooseImport: () -> List<LiveNote>? = { null },
+    onCheckUpdate: () -> dev.rocky.core.updates.AvailableUpdate? = { null },
+    onExportDiagnostic: (String) -> Boolean = { false },
+    initialCheckUpdatesOnStart: Boolean = false,
+    onCheckUpdatesOnStartChange: (Boolean) -> Unit = {},
     onRegisterSessionEnd: ((() -> Boolean) -> Unit) = {},
     onOpenGuide: (String) -> Unit = {},
     onOpenDataDirectory: () -> Unit = {},
@@ -138,6 +144,9 @@ fun RockyWindow(
             )
         }
         val aiScope = rememberCoroutineScope()
+        val updates = remember { UpdateState(onCheckUpdate) }
+        var checkUpdatesOnStart by remember { mutableStateOf(initialCheckUpdatesOnStart) }
+        LaunchedEffect(Unit) { if (checkUpdatesOnStart) updates.check(aiScope) }
         val mainContentScrollState = rememberScrollState()
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         val transientNotes = remember { TransientNoteRepository() }
@@ -425,6 +434,18 @@ fun RockyWindow(
                                 )
                                 SettingsSection.Data -> DataSettings(
                                     localNotes, dataDirectoryLabel, buildLabel,
+                                    onBackup = onBackup, onChooseImport = onChooseImport,
+                                    updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
+                                    checkUpdatesOnStart = checkUpdatesOnStart,
+                                    onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
+                                    diagnosticReport = {
+                                        listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "AI: ${ai.configuration.provider}",
+                                            "AI configured: ${ai.isReady}", "Completed requests: ${ai.completedRequests}",
+                                            "Last request ms: ${ai.lastDurationMillis}", "Filtered messages: ${ai.filteredCount}",
+                                            "Voice ready: ${voice.transcriptionReady}", "Microphone active: ${voice.capturing}",
+                                            "Saved records: ${localNotes.notes.size}", "Database load failed: ${localNotes.loadFailed}",
+                                            "No keys, channel names, paths or message contents included.").joinToString("\n")
+                                    },
                                     onOpenDataDirectory = onOpenDataDirectory,
                                     onExportNotes = { localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) } },
                                     onResetSettings = {

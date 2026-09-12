@@ -82,6 +82,14 @@ internal class LocalNotesState(private val repository: NoteRepository) {
         successNotice = "Todas as notas foram apagadas.",
     )
 
+    fun importRecords(incoming: List<LiveNote>): Boolean = runCatching {
+        val count = repository.importNotes(incoming)
+        reload()
+        check(!loadFailed)
+        undoSaveId = null
+        notice = "$count registros importados."
+    }.fold({ true }, { notice = it.message ?: "Não foi possível importar os registros."; false })
+
     fun export(exporter: (List<LiveNote>) -> Boolean) {
         runCatching { exporter(notes.toList()) }
             .onSuccess(::setExportResult)
@@ -113,6 +121,11 @@ internal class TransientNoteRepository : NoteRepository {
     private val notes = mutableListOf<LiveNote>()
 
     override fun getAll(): List<LiveNote> = notes.toList()
+    override fun importNotes(notes: List<LiveNote>): Int {
+        val fresh = dev.rocky.core.notes.recordsToImport(this.notes, notes)
+        this.notes.addAll(0, fresh)
+        return fresh.size
+    }
 
     override fun save(note: LiveNote) {
         notes.add(0, note)

@@ -1,6 +1,6 @@
 # Candidato de validação — 1.0.11-alpha.1
 
-Escopo: Twitch, IA, perguntas por texto, voz opcional e notas com fontes. Gere o candidato conforme [preparação de lançamento](RELEASE_PREPARATION.md); este documento não afirma que a versão já foi publicada ou homologada.
+Escopo: Twitch, Kick, IA, perguntas por texto, voz opcional e notas com fontes. Gere o candidato conforme [preparação de lançamento](RELEASE_PREPARATION.md); este documento não afirma que a versão já foi publicada ou homologada.
 
 1. Instale em máquina limpa. Em **Dados**, registre versão, commit e arquitetura; compare com `BUILDINFO` e checksums do pacote.
 2. Em **Plataformas**, use o Client ID incluído quando disponível. Só registre um cliente público próprio se o campo estiver vazio. Autorize a conta do canal da live.
@@ -36,7 +36,7 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 - Atalhos: teste Ctrl+Shift+F8/F9/F10 com Rocky em segundo plano e durante OBS/jogo. Reconfigure, confira conflitos e teste de novo.
 - Fim da fala: compare um comando curto, uma pausa no meio da frase e silêncio total. Ajuste o limiar com ruído ambiente; confirme o limite de oito segundos.
 - Registro livre: dite uma nota sem chat/IA, crie uma ideia por texto, confirme que a aba não mudou, desfaça e verifique SQLite ao reabrir.
-- Primeiro uso: no build oficial, conecte Twitch sem editar Client ID; busque modelos, selecione um, salve e teste a IA. Endereço customizado continua em Avançado.
+- Primeiro uso: conecte Twitch ou Kick; para Kick, valide credenciais próprias e o webhook HTTPS público. Busque modelos, selecione um, salve e teste a IA.
 - Pré-live: teste IA, voz/microfone opcionais e confira uma gravação OBS seguindo a orientação exibida.
 - Janela: mova/redimensione, reinicie, teste modo compacto e configurações sem perder o tamanho principal; remova um monitor e confira recuperação.
 - Falhas: interrompa rede/provedor, tente salvar com pasta de dados indisponível e confirme que rascunhos não desaparecem sem salvar.

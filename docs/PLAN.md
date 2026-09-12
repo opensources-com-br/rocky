@@ -1,6 +1,6 @@
 # Rocky — product and implementation plan
 
-> Original reference plan. The current candidate scope is defined in [release preparation](RELEASE_PREPARATION.md): Twitch, AI, optional voice and notes. YouTube, Super Chats and post-stream summaries are not promised in this candidate.
+> Original reference plan. The current candidate scope is defined in [release preparation](RELEASE_PREPARATION.md); delivery details below are historical and may differ from the implemented order.
 Status: proposal to begin implementation. Date: September 8, 2026.
 
 Read in [Português (Brasil)](PLAN.pt-BR.md).

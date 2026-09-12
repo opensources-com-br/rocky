@@ -1,15 +1,40 @@
 const content = {
-  group: "Avançado",
-  lead: "Toda a configuração do app vive em um arquivo de texto. A tela de configurações escreve nele; você também pode editar à mão e o app recarrega sozinho.",
-  blocks: [
-    {"type": "h2", "text": "Arquivo completo"},
-    {"type": "code", "file": "~/.rocky/config.toml", "text": "[ai]\nprovider = \"ollama\"\nmodel    = \"llama3.1:8b\"\nbase_url = \"http://localhost:11434\"\ncontext_window = \"10min\"\n\n[voice]\nengine = \"piper\"\nvoice  = \"pt_BR-faber\"\nrate   = 1.0\nmonitor_volume = 0.7\nducking = true\n\n[agent]\ntone      = \"direto\"\ninterrupt = false\ninterventions_per_10min = 3\n\n[superchats]\nauto_read = true\nmin_value = 10.0\n\n[priorities]\nmoney      = 1.0\nunanswered = 0.9\nrepetition = 0.7\n\n[window]\nposition = \"top-right\"\ncollapsed_on_start = false\nalways_on_top = true"},
-    {"type": "h2", "text": "Perfis"},
-    {"type": "para", "text": "Vários arquivos de perfil permitem trocar a configuração inteira entre tipos de live — uma aula pede tom analítico e sem interrupção; uma watch party pede o contrário."},
-    {"type": "code", "file": "Terminal", "text": "$ open -a Rocky --args --profile aula\n$ open -a Rocky --args --profile watchparty"},
-    {"type": "h2", "text": "Variáveis de ambiente"},
-    {"type": "table", "cols": "minmax(0,1.2fr) minmax(0,1.8fr)", "head": ["VARIÁVEL", "EFEITO"], "rows": [["ROCKY_CONFIG", "Caminho alternativo do arquivo de configuração"], ["ROCKY_DATA_DIR", "Onde salvar sessões, notas e resumos"], ["ROCKY_LOG", "Nível de log: error, warn, info, debug"]]},
-  ],
+  "group": "Avançado",
+  "lead": "A versão atual usa as telas de Configurações, preferências do sistema e armazenamento local. Não lê config.toml.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Configurações"
+    },
+    {
+      "type": "para",
+      "text": "Use Plataformas, IA, Voz, Agente e Dados na interface. Não existem perfis via --profile, recarga automática de TOML ou variáveis ROCKY_CONFIG, ROCKY_DATA_DIR e ROCKY_LOG implementadas para esse fluxo."
+    },
+    {
+      "type": "h2",
+      "text": "Armazenamento"
+    },
+    {
+      "type": "para",
+      "text": "No macOS, os dados ficam em ~/Library/Application Support/Rocky; no Windows, em %APPDATA%/Rocky. Preferências não secretas usam o namespace dev/rocky. Chaves de IA salvas usam o cofre do sistema; tokens Twitch ficam na memória. SQLite não é criptografado pelo Rocky."
+    },
+    {
+      "type": "h2",
+      "text": "Backup e importação"
+    },
+    {
+      "type": "para",
+      "text": "Em Dados, exporte um backup JSON dos registros e fontes, sem credenciais. A importação pede confirmação, ignora cópias idênticas e cancela diante de IDs conflitantes; não substitui registros existentes. Para copiar o banco diretamente, feche Rocky primeiro."
+    },
+    {
+      "type": "h2",
+      "text": "Diagnóstico e atualização"
+    },
+    {
+      "type": "para",
+      "text": "Dados permite visualizar e exportar diagnóstico sem mensagens ou chaves. A consulta opcional de atualização acessa a API do GitHub e oferece o link da release; não instala automaticamente. Redefinir configurações remove a chave salva e encerra a sessão; reabra o app para aplicar todos os padrões."
+    }
+  ]
 };
 
 export default content;

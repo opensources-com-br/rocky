@@ -626,7 +626,7 @@ fun RockyWindow(
                                     filteredCount = ai.filteredCount,
                                     onHistory = { historyOpen = true },
                                     streamerSpeech = voice.transcript,
-                                    showTextRequest = true,
+                                    showTextRequest = false,
                                     textRequestEnabled = liveConnected && ai.isReady && ai.acceptsDirectRequest,
                                     analyzing = ai.generating,
                                     hasCaptureGaps = twitch.hasCaptureGaps,

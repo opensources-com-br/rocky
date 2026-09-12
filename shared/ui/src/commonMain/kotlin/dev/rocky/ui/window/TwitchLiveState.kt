@@ -22,7 +22,10 @@ internal class TwitchLiveState(
     private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
     internal val metricBucketCount: Int get() = receivedMessageTimes.size
     private var sessionGeneration = 0L
-    private var sessionId = ""
+    var sessionId by mutableStateOf("")
+        private set
+    var startedAtMillis by mutableStateOf<Long?>(null)
+        private set
 
     var phase by mutableStateOf(TwitchConnectionPhase.Disconnected)
         private set
@@ -60,6 +63,7 @@ internal class TwitchLiveState(
             detail = "Informe o Client ID da Twitch."
             return
         }
+        startedAtMillis = null
         hasCaptureGaps = false
         audienceUpdatedAt = null
         messages.clear()
@@ -113,6 +117,7 @@ internal class TwitchLiveState(
                     verificationUri = event.verificationUri
                 }
                 is TwitchConnectionEvent.Connected -> {
+                    if (startedAtMillis == null) startedAtMillis = currentTimeMillis()
                     phase = TwitchConnectionPhase.Connected
                     detail = "Recebendo o chat de @${event.account.login}"
                     account = event.account

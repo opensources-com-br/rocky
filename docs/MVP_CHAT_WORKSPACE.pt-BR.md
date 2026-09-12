@@ -2,7 +2,7 @@
 
 - **Perguntas:** a conversa abre a fila de pendentes/respondidas, com fontes e contagem. Perguntas de texto semelhante são agrupadas por palavras, sem chamada de IA. Marque respostas manualmente ou reabra. O seletor permite consultar lives anteriores. Limite de 100 grupos por conexão/live; não é uma transcrição completa.
 - **Ações rápidas:** “Dúvidas principais”, “O que perdi?” e “Ideias do chat” consultam a amostra recente recebida. Não recuperam mensagens de antes da conexão ou lacunas da Twitch.
-- **Filtros em IA:** bots por nome, comandos iniciados em `!`/`/`, repetições por autor e rajadas acima de dez mensagens por autor na amostra. Podem ser ajustados. Afetam o contexto da IA e a fila, preservando o chat exibido. Não são moderação na Twitch.
+- **Filtros em IA:** bots por nome, comandos iniciados em `!`/`/`, repetições por autor e rajadas acima de dez mensagens por autor em 30 segundos; repetições também expiram após 30 segundos. Podem ser ajustados. Afetam o contexto da IA e a fila, preservando o chat exibido. Não são moderação na Twitch.
 - **Perfis:** sob demanda desliga análises automáticas; discreto aguarda cinco minutos entre análises; proativo, dois minutos. A primeira análise pode ocorrer assim que houver contexto. Pedidos diretos continuam prioritários.
 - **Notas e ideias:** busca por texto/tag, filtro por live e marcação de ideias realizadas. Registros antigos aparecem em “Sem live”. Exportar Markdown exporta a categoria inteira, mesmo com busca ativa.
 - **Encerramento:** desconectar ou fechar salva um resumo local com notas, ideias, momentos e perguntas pendentes. Ele reaparece em Notas. Não é um resumo de toda a transmissão. Uma falha de salvamento impede o encerramento normal para permitir nova tentativa.

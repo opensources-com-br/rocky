@@ -482,6 +482,10 @@ internal class VoiceState(
     }
 
     private fun update(value: VoiceConfiguration) {
+        if (configuration.transcription != value.transcription) {
+            conversationTestTranscript = null
+            conversationTestResponse = null
+        }
         configuration = value
         onConfigurationChange(value)
     }

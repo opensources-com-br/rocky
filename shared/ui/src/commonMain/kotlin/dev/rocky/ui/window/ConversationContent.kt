@@ -1,6 +1,10 @@
 package dev.rocky.ui.window
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,10 +78,14 @@ internal fun ConversationContent(
         if (messages.isNotEmpty()) chatScrollState.scrollToItem(messages.lastIndex)
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp),
-    ) {
+    BoxWithConstraints(Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 6.dp)) {
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        // Keep chat visible even when fonts, status messages or controls need more room.
+        Column(
+            Modifier.heightIn(max = (maxHeight - 83.dp).coerceAtLeast(0.dp))
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -133,6 +141,7 @@ internal fun ConversationContent(
             }
         }
 
+        }
         if (messages.isEmpty()) {
             Text(
                 text = "Aguardando mensagens do chat…",
@@ -148,6 +157,7 @@ internal fun ConversationContent(
                 items(messages, key = { it.id }) { ChatMessageRow(it) }
             }
         }
+    }
     }
 }
 

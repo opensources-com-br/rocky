@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 import { Button } from "@/components/ui/button";
 
-const instrument = localFont({ src: "../../../../../shared/ui/src/commonMain/composeResources/font/instrument_serif_regular.ttf" });
+const instrument = localFont({ src: "../../app/fonts/instrument-serif.ttf" });
 
 export default function AppAnswer({ chord }) {
   return <section className="rocky-answer">

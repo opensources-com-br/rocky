@@ -1,8 +1,32 @@
 export const features = [
-  {"tag": "VOZ", "title": "Fala e escuta", "text": "Conversa natural nos dois sentidos, com timbre e velocidade que você escolhe."},
-  {"tag": "NOTAS", "title": "Anota sozinho", "text": "Promessas, dúvidas sem resposta e problemas técnicos ficam registrados com o minuto exato."},
-  {"tag": "IDEIAS", "title": "Sugere pautas", "text": "Ele percebe o que o chat quer ver e transforma em ideias para a próxima live."},
-  {"tag": "CLIPES", "title": "Marca os momentos", "text": "Quando o chat reage forte, Rocky marca o trecho como candidato a corte."},
-  {"tag": "PULSO", "title": "Mostra o ritmo", "text": "Mensagens por minuto e espectadores de cada plataforma, sempre à vista."},
-  {"tag": "RESUMO", "title": "Fecha a live por você", "text": "Ao encerrar, entrega notas, dúvidas não respondidas e clipes sugeridos num só lugar."},
+  {
+    "tag": "VOZ",
+    "title": "Pergunte por voz ou texto",
+    "text": "Use transcrição local com whisper.cpp e respostas pelas vozes do sistema, ou comece somente com texto."
+  },
+  {
+    "tag": "NOTAS",
+    "title": "Guarde o que importa",
+    "text": "Salve respostas e ditados como notas, com edição, busca e exportação Markdown."
+  },
+  {
+    "tag": "IDEIAS",
+    "title": "Organize suas pautas",
+    "text": "Peça ideias à IA, salve as que escolher e marque as realizadas. Filtre os registros por live."
+  },
+  {
+    "tag": "MOMENTOS",
+    "title": "Marque um momento",
+    "text": "Diga “Rocky, marca esse momento” para guardar uma referência de tempo da sessão, sem gravar ou cortar vídeo."
+  },
+  {
+    "tag": "PULSO",
+    "title": "Acompanhe o ritmo",
+    "text": "Veja espectadores e mensagens por minuto da Twitch, com tendências calculadas das amostras recebidas."
+  },
+  {
+    "tag": "RESUMO",
+    "title": "Revise os registros",
+    "text": "Ao desconectar ou fechar, consulte o resumo local das notas, ideias, momentos e perguntas pendentes salvas."
+  }
 ];

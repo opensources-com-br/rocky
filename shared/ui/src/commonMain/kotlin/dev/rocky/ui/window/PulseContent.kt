@@ -19,8 +19,12 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun PulseContent(
     platforms: List<PlatformStatus>,
+    samples: List<dev.rocky.core.live.PulseSample> = emptyList(),
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 3.dp)) {
+        PulseTrend(samples, audience = false)
+        PulseTrend(samples, audience = true)
+        Text(tr("Up to 10 minutes, sampled every 5 seconds. Gaps indicate missing measurements.", "Até 10 minutos, amostras a cada 5 segundos. Lacunas indicam medições ausentes."), style = MaterialTheme.typography.caption)
         platforms.forEach { platform ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -43,22 +47,6 @@ internal fun PulseContent(
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.Medium,
                 )
-            }
-            Spacer(Modifier.height(7.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(7.dp)
-                    .background(RockyColors.SurfaceElevated, RoundedCornerShape(6.dp)),
-            ) {
-                if (platform.enabled && platform.audience != "—") {
-                    Spacer(
-                        Modifier
-                            .fillMaxWidth((platform.audience.toFloatOrNull() ?: 0f) / 820f)
-                            .height(7.dp)
-                            .background(platform.color(), RoundedCornerShape(6.dp)),
-                    )
-                }
             }
             Spacer(Modifier.height(17.dp))
         }

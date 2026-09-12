@@ -491,7 +491,8 @@ fun RockyWindow(
                                     checkUpdatesOnStart = checkUpdatesOnStart,
                                     onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
                                     diagnosticReport = {
-                                        listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "Kick: ${kick.phase}", "AI: ${ai.configuration.provider}",
+                                        listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "Kick: ${kick.phase}",
+                                            "YouTube: ${youtube.phase}", "AI: ${ai.configuration.provider}",
                                             "AI configured: ${ai.isReady}", "Completed requests: ${ai.completedRequests}",
                                             "Last request ms: ${ai.lastDurationMillis}", "Filtered messages: ${ai.filteredCount}",
                                             "Voice ready: ${voice.transcriptionReady}", "Microphone active: ${voice.capturing}",

@@ -417,6 +417,8 @@ fun RockyWindow(
                                 MainSection.Support -> SupportContent()
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,
+                                    loadFailed = localNotes.loadFailed,
+                                    onReload = localNotes::reload,
                                     notice = localNotes.notice,
                                     onUpdate = localNotes::update,
                                     onDelete = localNotes::delete,

@@ -20,10 +20,15 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
             url = "jdbc:sqlite:${databasePath.toAbsolutePath()}",
             schema = RockyDatabase.Schema,
         )
+        try {
         addColumnIfMissing("source_message_ids", "TEXT NOT NULL DEFAULT '[]'")
         addColumnIfMissing("evidence", "TEXT NOT NULL DEFAULT '[]'")
         database = RockyDatabase(driver)
         database.noteQueries.deleteLegacyDemoNotes()
+        } catch (error: Exception) {
+            driver.close()
+            throw error
+        }
     }
 
     override fun getAll(): List<LiveNote> = database.noteQueries

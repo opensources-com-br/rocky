@@ -12,7 +12,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import dev.rocky.data.notes.SqliteNoteRepository
+import dev.rocky.data.notes.RecoverableNoteRepository
 import dev.rocky.data.ai.DesktopAiSuggestionClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
@@ -38,7 +38,7 @@ fun main() = application {
     var pinned by remember { mutableStateOf(false) }
     var previousSize by remember { mutableStateOf(ExpandedSize) }
     var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
-    val noteRepository = remember { SqliteNoteRepository(RockyDesktopPaths.notesDatabase) }
+    val noteRepository = remember { RecoverableNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
     val voiceService = remember { DesktopVoiceService() }

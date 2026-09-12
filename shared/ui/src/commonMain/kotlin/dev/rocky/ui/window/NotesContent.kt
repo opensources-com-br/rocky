@@ -31,6 +31,8 @@ internal fun NotesContent(
     onUpdate: (LiveNote) -> Unit,
     onDelete: (String) -> Unit,
     onExport: () -> Unit,
+    loadFailed: Boolean = false,
+    onReload: () -> Unit = {},
 ) {
     var editingNote by remember { mutableStateOf<LiveNote?>(null) }
     var deletingNote by remember { mutableStateOf<LiveNote?>(null) }
@@ -85,6 +87,9 @@ internal fun NotesContent(
                 color = RockyColors.Accent,
                 style = MaterialTheme.typography.caption,
             )
+        }
+        if (loadFailed) {
+            OutlinedButton(onClick = onReload) { Text("Tentar carregar novamente") }
         }
         if (notes.isEmpty()) {
             Text(

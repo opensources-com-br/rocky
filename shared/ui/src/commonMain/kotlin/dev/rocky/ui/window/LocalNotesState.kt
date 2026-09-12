@@ -13,10 +13,22 @@ internal class LocalNotesState(private val repository: NoteRepository) {
     var notice by mutableStateOf<String?>(null)
         private set
 
-    init {
+    var loadFailed by mutableStateOf(false)
+        private set
+
+    init { reload() }
+
+    fun reload() {
         runCatching(repository::getAll)
-            .onSuccess(notes::addAll)
-            .onFailure { notice = "Não foi possível carregar as notas locais." }
+            .onSuccess { loaded ->
+                notes.clear(); notes.addAll(loaded)
+                loadFailed = false
+                notice = null
+            }
+            .onFailure {
+                loadFailed = true
+                notice = "Não foi possível abrir o banco de notas. Verifique a pasta de dados e tente carregar novamente. O arquivo original foi preservado."
+            }
     }
 
     fun save(note: LiveNote): Boolean = persist(

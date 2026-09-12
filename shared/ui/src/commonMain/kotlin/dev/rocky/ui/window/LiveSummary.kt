@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +64,7 @@ internal fun PlatformStrip(
                 modifier = Modifier
                     .border(1.dp, RockyColors.Border, RoundedCornerShape(18.dp))
                     .background(RockyColors.SurfaceElevated, RoundedCornerShape(18.dp))
+                    .testTag("platform-${platform.name.lowercase()}")
                     .clickable(enabled = platform.connected) {
                         selectedPlatform = platform.colorKey.takeUnless { it == selectedPlatform }
                     }

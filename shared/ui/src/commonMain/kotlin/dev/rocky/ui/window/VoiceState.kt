@@ -175,6 +175,10 @@ internal class VoiceState(
         update(configuration.copy(output = configuration.output.copy(volumePercent = percent.coerceIn(0, 100))))
     }
 
+    fun updateEndDetection(enabled: Boolean) = update(configuration.copy(detectEndOfSpeech = enabled))
+    fun updateSilence(millis: Long) = update(configuration.copy(silenceMillis = millis.coerceIn(450, 1500)))
+    fun updateSpeechThreshold(value: Float) = update(configuration.copy(speechThreshold = value.coerceIn(0.01f, 0.15f)))
+
     fun updateReadSuggestions(enabled: Boolean) {
         if (!enabled) interruptSpeech()
         update(configuration.copy(readSuggestions = enabled))
@@ -344,17 +348,29 @@ internal class VoiceState(
                 capturing = true
                 status = "Microfone capturando · fale agora"
                 levelJob?.cancel()
+                val endpoint = dev.rocky.core.voice.SpeechEndpointDetector(configuration.silenceMillis, configuration.speechThreshold)
+                val detectEnd = service.supportsInputLevel && configuration.detectEndOfSpeech
                 levelJob = scope.launch {
                     while (capturing) {
-                        inputLevel = service.inputLevel()
                         delay(INPUT_LEVEL_REFRESH_MILLIS)
+                        inputLevel = service.inputLevel()
+                        if (detectEnd && endpoint.sample(inputLevel, INPUT_LEVEL_REFRESH_MILLIS)) {
+                            stopCapture(scope, onFailure, onTranscript)
+                            break
+                        }
                     }
                     inputLevel = 0f
                 }
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)
-                    if (capturing) stopCapture(scope, onFailure, onTranscript)
+                    if (capturing) {
+                        if (detectEnd && !endpoint.heardSpeech) {
+                            cancelCapture()
+                            onFailure()
+                            resumeListener()
+                        } else stopCapture(scope, onFailure, onTranscript)
+                    }
                 }
             }.onFailure {
                 listenerEnabled = false

@@ -1,20 +1,20 @@
 const content = {
   "id": "oficina",
-  "name": "Oficina Aberta",
+  "name": "Ensinando na bancada",
   "category": "Educação",
   "filter": "Educação",
-  "quote": "As dúvidas repetidas viram a pauta da aula seguinte, sem eu anotar nada.",
-  "desc": "Aulas ao vivo de marcenaria. Resumo pós-live vai direto para a newsletter.",
-  "stack": ["Anthropic", "Voz do macOS"],
-  "dots": ["#ff0033", "#1877f2"],
-  "tint": "rgba(24,119,242,.06)",
-  "links": [{"label": "youtube.com/@oficinaaberta", "url": "https://youtube.com/@oficinaaberta", "dot": "#ff0033"}],
-  "stats": [{"label": "PLATAFORMAS", "value": "2"}, {"label": "PICO DE CHAT", "value": "480"}, {"label": "AULAS / MÊS", "value": "8"}, {"label": "MODELO", "value": "Remoto"}],
-  "story": ["Dou aula de marcenaria ao vivo, com as mãos na madeira. Não existe a possibilidade de eu digitar ou ler chat: estou com serra na mão e serragem no óculos.", "Para mim o Rocky é uma pessoa na oficina que lê o chat e me conta em voz alta. Respondo falando, ele confirma. Em nenhum momento eu toco no computador durante a aula.", "O que mudou minha produção foi o resumo. Ele lista as dúvidas que ficaram sem resposta e quantas pessoas perguntaram cada uma. Essa lista é literalmente a pauta da aula seguinte, e o texto vai quase sem edição para a newsletter da semana."],
-  "changes": ["A pauta da próxima aula sai pronta do resumo da anterior.", "Aluno com dúvida repetida recebe resposta na mesma aula, não na próxima.", "A newsletter semanal deixou de ser uma hora de trabalho."],
-  "setup": [{"label": "IA", "value": "anthropic"}, {"label": "Voz", "value": "system · Luciana"}, {"label": "Tom", "value": "direto"}, {"label": "Contexto", "value": "live inteira"}, {"label": "Resumo", "value": "ligado"}],
-  "config": "[ai]\nprovider = \"anthropic\"\ncontext_window = \"full\"\n\n[agent]\ntone = \"direto\"\ninterventions_per_10min = 4",
-  "sample": "Quatro pessoas perguntaram qual grão de lixa usar nesta etapa.",
+  "quote": "Anotar sem usar o teclado",
+  "desc": "Cenário ilustrativo. Com o ouvinte ativo, dite uma nota sobre algo que deseja retomar depois da demonstração.",
+  "stack": ["Ollama", "Voz do sistema"],
+  "dots": ["#9146ff"],
+  "tint": "rgba(212,112,60,.06)",
+  "links": [],
+  "stats": [{"label": "INTEGRAÇÃO", "value": "Twitch"}, {"label": "PERFIL", "value": "Sob demanda"}, {"label": "DADOS", "value": "Exemplo"}, {"label": "IA", "value": "Ollama"}],
+  "story": ["Com o ouvinte ativo, dite uma nota sobre algo que deseja retomar depois da demonstração.", "Este cenário não é um depoimento de usuário nem um resultado medido. Configure e teste o provedor no seu computador; consultas de chat usam até 200 mensagens recebidas nos últimos dois minutos.", "Se usar IA remota, o pedido e a amostra de chat vão ao provedor. Para voz, prepare whisper.cpp e uma voz do sistema. Verifique a captura de tela e áudio no OBS antes da transmissão."],
+  "changes": ["Consultar perguntas recentes da Twitch.", "Salvar notas ou ideias escolhidas por você.", "Revisar registros e perguntas pendentes da sessão."],
+  "setup": [{"label": "Plataforma", "value": "Twitch"}, {"label": "IA", "value": "Ollama"}, {"label": "Modelo", "value": "llama3.2"}, {"label": "Voz", "value": "Sistema + whisper.cpp opcional"}, {"label": "Perfil", "value": "Sob demanda"}, {"label": "Tom", "value": "Direto"}],
+  "config": "Preencha nas Configurações do Rocky:\n\nPlataforma: Twitch\nIA: Ollama\nModelo: llama3.2\nVoz: Sistema + whisper.cpp opcional\nPerfil: Sob demanda\nTom: Direto\n\nExemplo descritivo, não importável.",
+  "sample": "Rocky, anota: explicar as ferramentas na próxima live."
 };
 
 export default content;

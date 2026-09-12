@@ -1,4 +1,22 @@
 export const localCards = [
-  {"tag": "SUA IA", "title": "Sua chave ou seu modelo", "text": "Cole a chave da API que você já usa, ou aponte para um modelo rodando na sua máquina. Rocky não intermedeia nada — você paga direto ao provedor, ou nada.", "chips": ["Anthropic", "OpenAI", "Ollama", "LM Studio", "llama.cpp"]},
-  {"tag": "SUA VOZ", "title": "A voz do chat, do seu jeito", "text": "Escolha o timbre, a velocidade e o volume no monitor. Voz do sistema, offline, ou um provedor externo se você quiser algo mais natural.", "chips": ["Voz do macOS", "Piper (offline)", "ElevenLabs"]},
+  {
+    "tag": "SUA IA",
+    "title": "Escolha onde processar",
+    "text": "Use Ollama no computador ou sua chave de OpenAI/OpenRouter. Provedores remotos recebem o pedido e a amostra de chat; custos e limites dependem da sua conta.",
+    "chips": [
+      "Ollama",
+      "OpenAI API",
+      "OpenRouter"
+    ]
+  },
+  {
+    "tag": "SUA VOZ",
+    "title": "Vozes do sistema",
+    "text": "Escolha uma voz instalada e a velocidade. A transcrição usa whisper.cpp local, com preparação automática no Mac com Homebrew ou manual no Windows.",
+    "chips": [
+      "Voz do macOS",
+      "Voz do Windows",
+      "whisper.cpp"
+    ]
+  }
 ];

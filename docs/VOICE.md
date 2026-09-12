@@ -4,7 +4,7 @@ Rocky uses a voice installed on the computer to answer. macOS uses `say`, and Wi
 
 ## Streamer recognition
 
-Voice is optional. After it is configured, listening starts when Twitch or Kick connects; the footer turns listening on or off. Rocky processes audio locally in short segments and only runs a command after recognizing its name. Say, for example, **“Rocky, what does chat want to play?”**. The recognized text appears in Conversation, Rocky checks up to 200 received messages from the last two minutes, and answers aloud.
+Voice is optional. After it is configured, listening starts when Twitch, Kick, or YouTube connects; the footer turns listening on or off. Rocky processes audio locally in short segments and only runs a command after recognizing its name. Say, for example, **“Rocky, what does chat want to play?”**. The recognized text appears in Conversation, Rocky checks up to 200 received messages from the last two minutes, and answers aloud.
 
 On macOS with Homebrew, click **Set up voice recognition**. Rocky installs `whisper.cpp`, downloads the multilingual model, and saves both paths on the device. On Windows, manually select the `whisper-cli` executable, GGML model, and microphone.
 

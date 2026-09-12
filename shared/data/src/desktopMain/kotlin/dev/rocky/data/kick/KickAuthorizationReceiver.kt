@@ -2,11 +2,10 @@ package dev.rocky.data.kick
 
 import dev.rocky.core.kick.KickConfiguration
 import dev.rocky.core.live.ChatMessage
-import java.net.URI
 
 internal data class KickAuthorizationReceiver(
     val receiver: KickLocalReceiver,
-    val authorizationUri: URI,
+    val authorizationUri: String,
 )
 
 internal fun createKickAuthorizationReceiver(

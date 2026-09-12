@@ -26,6 +26,11 @@ def main():
     for extension in ('dmg', 'msi', 'exe'):
         for source in (binary_root / extension).glob('*.' + extension):
             target = source.with_name(f'Rocky-{version}-{system}-{arch}.{extension}')
+            expected_native = f"Rocky-{props['rockyPackageVersion']}.{extension}"
+            if source.name not in (expected_native, target.name):
+                continue
+            if target != source and target.exists():
+                raise SystemExit('A named candidate already exists; archive it before rebuilding.')
             if target != source:
                 source.rename(target)
             files.append({'file': target.name, 'sha256': hashlib.sha256(target.read_bytes()).hexdigest()})

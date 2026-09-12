@@ -4,7 +4,7 @@ Rocky uses a voice installed on the computer to answer. macOS uses `say`, and Wi
 
 ## Streamer recognition
 
-Voice is optional. After it is configured, listening starts when Twitch connects; the footer turns listening on or off. Rocky processes audio locally in short segments and only runs a command after recognizing its name. Say, for example, **“Rocky, what does chat want to play?”**. The recognized text appears in Conversation, Rocky checks up to 200 received messages from the last two minutes, and answers aloud.
+Voice is optional. After it is configured, listening starts when Twitch or Kick connects; the footer turns listening on or off. Rocky processes audio locally in short segments and only runs a command after recognizing its name. Say, for example, **“Rocky, what does chat want to play?”**. The recognized text appears in Conversation, Rocky checks up to 200 received messages from the last two minutes, and answers aloud.
 
 On macOS with Homebrew, click **Set up voice recognition**. Rocky installs `whisper.cpp`, downloads the multilingual model, and saves both paths on the device. On Windows, manually select the `whisper-cli` executable, GGML model, and microphone.
 
@@ -27,4 +27,4 @@ Capture now ends after detected speech followed by configurable silence (450–1
 
 The session History keeps up to 30 answers and offers copy, repeat, save note and save idea actions. The last four interactions provide bounded conversational context; disconnecting clears history. Saved notes and ideas remain in SQLite.
 
-Free dictation supports “Rocky, anota: …”, “Rocky, ideia: …”, “Rocky, save a note: …” and “Rocky, save an idea: …”. Saving stays on the current tab and offers Undo. The Before going live dialog checks Twitch, AI and optional audio, including a user-reviewed OBS recording.
+Free dictation supports “Rocky, anota: …”, “Rocky, ideia: …”, “Rocky, save a note: …” and “Rocky, save an idea: …”. Saving stays on the current tab and offers Undo. The Before going live dialog checks the connected platform, AI and optional audio, including a user-reviewed OBS recording.

@@ -46,6 +46,13 @@ internal fun VoiceSettings(
     LaunchedEffect(voice) { voice.loadDevices(scope) }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        SettingSwitch(tr("Detect end of speech", "Detectar fim da fala"), voice.configuration.detectEndOfSpeech, voice::updateEndDetection)
+        if (voice.configuration.detectEndOfSpeech) {
+            SettingTitle(tr("Trailing silence", "Silêncio após a fala"), "${voice.configuration.silenceMillis} ms")
+            RockySlider((voice.configuration.silenceMillis - 450) / 1050f) { voice.updateSilence(450 + (it * 1050).toLong()) }
+            SettingTitle(tr("Noise threshold", "Limiar de ruído"), tr("Raise in noisy rooms; lower if quiet speech is missed.", "Aumente em ambientes ruidosos; diminua se falas baixas forem ignoradas."))
+            RockySlider((voice.configuration.speechThreshold - 0.01f) / 0.14f) { voice.updateSpeechThreshold(0.01f + it * 0.14f) }
+        }
         SettingTitle(
             "Leitura das sugestões",
             "Usa uma voz instalada no sistema e a saída de áudio padrão.",

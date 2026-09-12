@@ -36,7 +36,7 @@ internal fun StreamerTextRequest(enabled: Boolean, onSend: (String) -> Unit) {
             modifier = Modifier.testTag("send-streamer-text-request"),
             onClick = {
                 onSend(value.trim())
-                value = ""
+                // Keep the request available for correction or retry after a provider failure.
             },
             enabled = enabled && value.isNotBlank(),
             colors = ButtonDefaults.buttonColors(

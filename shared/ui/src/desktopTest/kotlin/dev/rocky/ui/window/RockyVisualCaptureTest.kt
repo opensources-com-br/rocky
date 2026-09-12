@@ -240,7 +240,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Pulso").performClick()
         rule.onNodeWithText("321 assistindo · 1 msg/min").assertExists()
         rule.onNodeWithText("Conversa").performClick()
-        assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithTag("streamer-text-request").assertExists()
         rule.runOnIdle {
             twitch.emit(TwitchConnectionEvent.PhaseChanged(dev.rocky.core.twitch.TwitchConnectionPhase.Reconnecting))
         }
@@ -398,6 +398,30 @@ class RockyVisualCaptureTest {
         rule.mainClock.advanceTimeBy(200_100)
         rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 2 }
 
+        rule.onNodeWithText("O chat quer saber o preço.").assertExists()
+    }
+
+    @Test
+    fun sendsCancelsAndRetriesFromTheRealWindow() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient().apply { responseGate = java.util.concurrent.CountDownLatch(1) }
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch, twitchClientId = "client", aiSuggestionClient = ai)
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(1)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Primeiro pedido")
+        rule.onNodeWithTag("send-streamer-text-request").performClick()
+        rule.waitUntil(3_000) { ai.lastRequest == "Primeiro pedido" }
+        rule.onNodeWithText("Cancelar análise").performClick()
+        rule.waitUntil(3_000) { ai.interrupted }
+        ai.responseGate = null
+        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Segundo pedido")
+        rule.onNodeWithTag("send-streamer-text-request").performClick()
+        rule.waitUntil(3_000) { ai.lastRequest == "Segundo pedido" }
         rule.onNodeWithText("O chat quer saber o preço.").assertExists()
     }
 
@@ -705,7 +729,9 @@ class RockyVisualCaptureTest {
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
-        var lastRequest: String? = null
+        @Volatile var lastRequest: String? = null
+        @Volatile var responseGate: java.util.concurrent.CountDownLatch? = null
+        @Volatile var interrupted = false
         var requests = 0
         var failuresRemaining = 0
         override fun testConnection(configuration: AiProviderConfiguration) =
@@ -720,6 +746,7 @@ class RockyVisualCaptureTest {
             requests += 1
             if (failuresRemaining-- > 0) error("Temporary provider failure")
             lastRequest = streamerRequest
+            try { responseGate?.await() } catch (error: InterruptedException) { interrupted = true; throw error }
             return AiGeneratedSuggestion("O chat quer saber o preço.", setOf(messages.last().id))
         }
 

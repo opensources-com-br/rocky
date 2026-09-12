@@ -73,6 +73,7 @@ internal class AiSuggestionState(
     private var sessionGeneration = 0L
     private var analysisJob: Job? = null
     private var activeAutomatic = false
+    val acceptsDirectRequest: Boolean get() = !generating || activeAutomatic
     val history = androidx.compose.runtime.mutableStateListOf<ConversationEntry>()
 
     fun updateProvider(provider: AiProviderKind) {

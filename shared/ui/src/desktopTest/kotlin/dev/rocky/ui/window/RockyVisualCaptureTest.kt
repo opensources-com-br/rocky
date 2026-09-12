@@ -180,7 +180,7 @@ class RockyVisualCaptureTest {
         }
 
         render()
-        rule.onNodeWithText("Conecte Twitch ou Kick nas configurações para acompanhar uma live.").assertExists()
+        rule.onNodeWithText("Conecte Twitch, Kick ou YouTube nas configurações para acompanhar uma live.").assertExists()
         capture("implementation-main.png")
 
         val mainSections = mapOf(

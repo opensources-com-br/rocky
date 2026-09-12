@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -150,12 +151,18 @@ internal fun ConversationContent(
                 style = MaterialTheme.typography.body1,
             )
         } else {
-            LazyColumn(
-                modifier = Modifier.weight(1f).testTag("chat-messages"),
-                state = chatScrollState,
-                verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Bottom),
-            ) {
-                items(messages, key = { it.id }) { ChatMessageRow(it) }
+            Box(Modifier.weight(1f)) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(end = 10.dp).testTag("chat-messages"),
+                    state = chatScrollState,
+                    verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Bottom),
+                ) {
+                    items(messages, key = { it.id }) { ChatMessageRow(it) }
+                }
+                ChatScrollbar(
+                    state = chatScrollState,
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                )
             }
         }
     }

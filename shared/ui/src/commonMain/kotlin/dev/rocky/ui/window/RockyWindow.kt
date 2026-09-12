@@ -37,6 +37,7 @@ import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.kick.KickChatClient
 import dev.rocky.core.kick.KickConfiguration
 import dev.rocky.core.kick.KickConnectionListener
+import dev.rocky.core.kick.KickConnectionPhase
 import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionListener
@@ -167,33 +168,47 @@ fun RockyWindow(
             onRegisterSessionEnd { workspace.finish(currentTimeLabel()) }
             onDispose { onRegisterSessionEnd { true } }
         }
-        LaunchedEffect(twitch.phase, twitch.sessionId) {
-            if (twitch.phase == TwitchConnectionPhase.Connected) workspace.start(
-                twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}", twitch.startedAtMillis ?: currentTimeMillis())
-            if (twitch.phase == TwitchConnectionPhase.Disconnected) workspace.finish(currentTimeLabel())
+        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected
+        val liveActive = twitch.isRealSession || kick.isActive
+        val visibleMessages = (twitch.messages + kick.messages).sortedBy(ChatMessage::receivedAtMillis)
+        val visibleMessageCount = twitch.totalMessages + kick.totalMessages
+        fun recentMessages() = (
+            twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
+                kick.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
+            ).sortedBy(ChatMessage::receivedAtMillis)
+        LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId) {
+            when {
+                twitch.phase == TwitchConnectionPhase.Connected -> workspace.start(
+                    twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}",
+                    twitch.startedAtMillis ?: currentTimeMillis())
+                kick.isConnected -> workspace.start(
+                    kick.sessionId, "@${kick.account?.username} · ${currentTimeLabel()}",
+                    kick.startedAtMillis ?: currentTimeMillis())
+                !liveActive -> workspace.finish(currentTimeLabel())
+            }
         }
         val sessionStatus = when {
-            twitch.phase == TwitchConnectionPhase.Connected -> LiveSessionStatus.Running
-            twitch.phase == TwitchConnectionPhase.Failed -> LiveSessionStatus.Ended
+            liveConnected -> LiveSessionStatus.Running
+            twitch.phase == TwitchConnectionPhase.Failed || kick.phase == KickConnectionPhase.Failed -> LiveSessionStatus.Ended
             else -> LiveSessionStatus.Stopped
         }
-        val visibleMessages = twitch.messages
-        val visibleMessageCount = twitch.totalMessages
         val visibleSuggestion = ai.suggestion
         val visiblePlatforms = twitch.platforms
 
         LaunchedEffect(
             twitch.phase,
             twitch.totalMessages,
+            kick.phase,
+            kick.totalMessages,
             ai.automaticAnalysis,
             ai.analysisRevision,
             ai.profile,
         ) {
-            if (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {
+            if (liveConnected && ai.automaticAnalysis) {
                 delay(ai.automaticAnalysisDelay(currentTimeMillis(), ai.profile.intervalMillis))
                 ai.analyze(
                     aiScope,
-                    twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS),
+                    recentMessages(),
                     automatic = true,
                     agent = agent.configuration.copy(language = language),
                     automaticTimeMillis = currentTimeMillis(),
@@ -201,18 +216,19 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase) {
-            while (twitch.isRealSession) {
+        LaunchedEffect(twitch.phase, kick.phase) {
+            while (liveActive) {
                 delay(METRICS_REFRESH_MILLIS)
                 twitch.refreshMetrics()
+                kick.refreshMetrics()
             }
         }
 
-        LaunchedEffect(twitch.totalMessages, ai.filters, workspace.sessionId) {
+        LaunchedEffect(twitch.totalMessages, kick.totalMessages, ai.filters, workspace.sessionId) {
             if (workspace.sessionId.isNotBlank()) {
-                workspace.questions.collect(dev.rocky.core.live.filterChat(twitch.messages.toList(), ai.filters).messages,
+                workspace.questions.collect(dev.rocky.core.live.filterChat(visibleMessages, ai.filters).messages,
                     workspace.sessionId, workspace.label, currentTimeLabel(), workspace.offset(currentTimeMillis()),
-                    twitch.messages.map { it.id }.toSet())
+                    visibleMessages.map { it.id }.toSet())
             }
         }
         LaunchedEffect(visibleSuggestion?.id, silenced) {
@@ -223,7 +239,7 @@ fun RockyWindow(
             if (sessionStatus != LiveSessionStatus.Running) {
                 waitingForVoiceCommand = false
                 voice.resetSession()
-                if (twitch.isRealSession && ai.generating) ai.cancelAnalysis()
+                if (liveActive && ai.generating) ai.cancelAnalysis()
             }
         }
 
@@ -233,7 +249,7 @@ fun RockyWindow(
             if (language == RockyLanguage.English) english else portuguese
 
         val analyzeVoiceCommand: (String) -> Unit = { request ->
-            val recentMessages = twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
+            val recentMessages = recentMessages()
             ai.analyze(
                 scope = aiScope,
                 messages = recentMessages,
@@ -266,7 +282,7 @@ fun RockyWindow(
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
         fun finishLive(): Boolean {
             if (!workspace.finish(currentTimeLabel())) return false
-            voice.resetSession(); ai.resetSession(); twitch.disconnect()
+            voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect()
             return true
         }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
@@ -347,8 +363,8 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, voice.transcriptionReady) {
-            if (twitch.phase == TwitchConnectionPhase.Connected && voice.transcriptionReady) {
+        LaunchedEffect(twitch.phase, kick.phase, voice.transcriptionReady) {
+            if (liveConnected && voice.transcriptionReady) {
                 voice.enableListener(aiScope, handleVoiceRequest)
             }
         }
@@ -374,7 +390,7 @@ fun RockyWindow(
             onUndo = localNotes::undoSave, onDismiss = { historyOpen = false },
             onRepeat = { request ->
                 voice.stopSpeaking()
-                ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request,
+                ai.analyze(aiScope, recentMessages(), streamerRequest = request,
                     agent = agent.configuration.copy(language = language))
             },
             onSave = { entry, target -> saveAnswer(entry, target) },
@@ -504,11 +520,17 @@ fun RockyWindow(
                                     kickConfiguration = kickConfiguration,
                                     kick = kick,
                                     onConnectKick = { configuration ->
-                                        kickConfiguration = configuration
-                                        onKickConfigurationChange(configuration)
-                                        kick.connect(configuration)
+                                        if (finishLive()) {
+                                            silenced = false
+                                            kickConfiguration = configuration
+                                            onKickConfigurationChange(configuration)
+                                            kick.connect(configuration)
+                                        }
                                     },
-                                    onDisconnectKick = kick::disconnect,
+                                    onDisconnectKick = {
+                                        silenced = false
+                                        finishLive()
+                                    },
                                     onOpenKickBrowser = onOpenKickAuthorization,
                                 )
                             }
@@ -521,7 +543,7 @@ fun RockyWindow(
                                 .verticalScroll(rememberScrollState()),
                         ) {
                             FirstUseContent(
-                                twitchConnected = twitch.phase == TwitchConnectionPhase.Connected,
+                                twitchConnected = liveConnected,
                                 aiVerified = ai.connectionVerified,
                                 voiceVerified = voice.voiceTested && voice.transcriptionReady,
                                 onConfigureTwitch = {
@@ -561,17 +583,17 @@ fun RockyWindow(
                             suggestion = visibleSuggestion,
                             sourceCounts = mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0)),
                             sessionStatus = sessionStatus,
-                            sessionAvailable = twitch.isRealSession,
+                            sessionAvailable = liveActive,
                             suggestionSaved = false,
                             silenced = silenced,
                             speaking = voice.speaking,
                             generatingSuggestion = ai.generating,
                             aiConfigured = ai.isReady,
-                            canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS).isNotEmpty() && ai.isReady,
+                            canAnalyze = liveConnected && recentMessages().isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
                             evidence = ai.suggestionSources.map(::messageEvidence),
                             onSaveNote = { saveCurrentSuggestion(VoiceSaveTarget.Note) },
-                            onAnalyze = { ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), agent = agent.configuration.copy(language = language)) },
+                            onAnalyze = { ai.analyze(aiScope, recentMessages(), agent = agent.configuration.copy(language = language)) },
                             onNext = {
                                 voice.interruptSpeech()
                                 ai.dismissSuggestion()
@@ -599,7 +621,7 @@ fun RockyWindow(
                                     onHistory = { historyOpen = true },
                                     streamerSpeech = voice.transcript,
                                     showTextRequest = true,
-                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && ai.acceptsDirectRequest,
+                                    textRequestEnabled = liveConnected && ai.isReady && ai.acceptsDirectRequest,
                                     analyzing = ai.generating,
                                     hasCaptureGaps = twitch.hasCaptureGaps,
                                     analysisStatus = ai.status,
@@ -609,7 +631,7 @@ fun RockyWindow(
                                     onCancelAnalysis = { ai.cancelAnalysis(); voice.resumeListener() },
                                     onTextRequest = { request ->
                                         voice.stopSpeaking()
-                                        ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request, agent = agent.configuration.copy(language = language))
+                                        ai.analyze(aiScope, recentMessages(), streamerRequest = request, agent = agent.configuration.copy(language = language))
                                     },
                                 )
                                 MainSection.Support -> SupportContent()

@@ -9,7 +9,7 @@ class RecordBackupTest {
         "session", "Live de teste", 42000, true, 3)
 
     @Test fun preservesAllMetadataAcrossBackupAndDatabaseReopen() {
-        assertEquals(listOf(note), decodeRecordBackup(encodeRecordBackup(listOf(note))))
+        assertEquals(listOf(note), RecordBackup.decode(RecordBackup.encode(listOf(note))))
         val directory = Files.createTempDirectory("rocky-backup-test")
         try {
             val path = directory.resolve("notes.db")
@@ -31,10 +31,10 @@ class RecordBackupTest {
     }
 
     @Test fun rejectsUnsupportedOrInvalidBackups() {
-        val encoded = encodeRecordBackup(listOf(note))
-        assertFails { decodeRecordBackup(encoded.replace("\"version\":1", "\"version\":999")) }
-        assertFails { decodeRecordBackup("{}") }
-        assertFails { encodeRecordBackup(listOf(note, note)) }
-        assertFails { encodeRecordBackup(listOf(note.copy(offsetMillis = -1))) }
+        val encoded = RecordBackup.encode(listOf(note))
+        assertFails { RecordBackup.decode(encoded.replace("\"version\":1", "\"version\":999")) }
+        assertFails { RecordBackup.decode("{}") }
+        assertFails { RecordBackup.encode(listOf(note, note)) }
+        assertFails { RecordBackup.encode(listOf(note.copy(offsetMillis = -1))) }
     }
 }

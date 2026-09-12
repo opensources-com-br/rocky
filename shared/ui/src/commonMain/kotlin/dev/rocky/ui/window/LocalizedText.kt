@@ -329,6 +329,13 @@ private val liveTranslations = mapOf(
 )
 
 private val releaseTranslations = mapOf(
+    "Salvamento desfeito." to "Save undone.",
+    "Este item já foi salvo." to "This item has already been saved.",
+    "Ideia salva localmente." to "Idea saved locally.",
+    "Modelos carregados" to "Models loaded",
+    "Nenhum modelo disponível. Verifique o provedor." to "No models available. Check the provider.",
+    "Não foi possível listar modelos. Verifique a conexão e a chave." to "Could not list models. Check the connection and key.",
+
     "Aguardando a conexão da Twitch. As mensagens anteriores estão preservadas." to "Waiting for Twitch to connect. Previous messages are preserved.",
     "Aguardando mensagens do chat nos últimos dois minutos." to "Waiting for chat messages from the last two minutes.",
     "Dados" to "Data",

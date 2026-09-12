@@ -1,6 +1,6 @@
 # Preparação do candidato / Release preparation
 
-Candidato: **1.0.11-alpha.1**, versão nativa **1.0.11**. Escopo inicial: Twitch, IA, voz opcional, notas e exportação. YouTube, Super Chats, ideias automáticas e resumo pós-live ficam fora deste candidato. Não promover a estável antes do protocolo real.
+Candidato: **1.0.11-alpha.1**, versão nativa **1.0.11**. Escopo inicial: Twitch, IA, voz opcional, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Esse resumo inclui pendências salvas, sem cobrir toda a transmissão. YouTube, Super Chats e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
 
 ## Build e identidade
 
@@ -34,7 +34,7 @@ Execute [o roteiro do candidato](TEST_TODAY.pt-BR.md) e [o protocolo com streame
 
 ## English
 
-This candidate targets Twitch, AI, optional voice and notes. Build with JDK 17; run `scripts/release_metadata.py` after packaging/signing to record version, commit and architecture. The release tag must match `rockyVersion`. The public workflow intentionally creates prereleases only.
+This candidate targets Twitch, AI, optional voice, grouped questions, notes, ideas, moments and a local records summary on disconnect or app close. The summary includes saved pending questions, not the entire stream. Build with JDK 17; run `scripts/release_metadata.py` after packaging/signing to record version, commit and architecture. The release tag must match `rockyVersion`. The public workflow intentionally creates prereleases only.
 
 macOS signing uses an installed Developer ID identity via `ROCKY_MAC_SIGN=true` and `ROCKY_MAC_SIGN_IDENTITY`; notarization uses a `notarytool` profile through `scripts/notarize-macos.sh`. Windows installer signing uses an installed certificate selected by `ROCKY_WINDOWS_CERT_THUMBPRINT` through `scripts/sign-windows.ps1`. These require publisher-owned credentials and validation on the target OS. Hosted CI does not automatically import certificates.
 

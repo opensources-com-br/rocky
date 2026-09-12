@@ -265,9 +265,17 @@ fun RockyWindow(
 
         val submitVoiceCommand: (String) -> Unit = { command ->
             waitingForVoiceCommand = false
+            val marker = momentCommand(command)
             val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
-            if (dictated != null) {
+            if (marker != null) {
+                val saved = workspace.sessionId.isNotBlank() && saveRecord(LiveNote(
+                    "moment-${kotlin.random.Random.nextLong()}", marker, currentTimeLabel(), dev.rocky.core.live.MARKER_TAG))
+                voice.speakAcknowledgement(aiScope,
+                    if (saved) spokenText("Moment saved.", "Momento salvo.")
+                    else spokenText("Connect a live first, or check the records folder.", "Conecte uma live primeiro ou verifique a pasta de registros."),
+                    silenced, voice::resumeListener)
+            } else if (dictated != null) {
                 val saved = saveRecord(LiveNote(
                     "manual-${kotlin.random.Random.nextLong()}", dictated.text, currentTimeLabel(),
                     if (dictated.target == VoiceSaveTarget.Idea) IDEA_TAG else "MANUAL",

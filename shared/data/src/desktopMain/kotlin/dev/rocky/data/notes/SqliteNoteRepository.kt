@@ -74,6 +74,12 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
         database.noteQueries.deleteNote(noteId)
     }
 
+    override fun importNotes(notes: List<LiveNote>): Int = database.transactionWithResult {
+        val fresh = dev.rocky.core.notes.recordsToImport(getAll(), notes)
+        fresh.forEach(::save)
+        fresh.size
+    }
+
     override fun deleteAll() { database.noteQueries.deleteAllNotes() }
 
     override fun close() {

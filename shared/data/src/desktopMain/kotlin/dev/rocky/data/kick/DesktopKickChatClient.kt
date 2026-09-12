@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 class DesktopKickChatClient : KickChatClient {
     private val api = KickApi()
+    private val subscriptions = KickEventSubscriptions()
     private val generation = AtomicLong()
     private val ioExecutor = Executors.newSingleThreadExecutor { task ->
         Thread(task, "rocky-kick-io").apply { isDaemon = true }
@@ -21,6 +22,7 @@ class DesktopKickChatClient : KickChatClient {
     @Volatile private var tokens: KickTokens? = null
     @Volatile private var account: KickAccount? = null
     @Volatile private var receiver: KickLocalReceiver? = null
+    @Volatile private var subscriptionIds = emptyList<String>()
     @Volatile private var authorizationCompleted = false
 
     override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
@@ -68,11 +70,14 @@ class DesktopKickChatClient : KickChatClient {
                 val current = configuration
                 val newTokens = api.exchangeCode(current.clientId, current.clientSecret,
                     current.redirectUri, verifier, code)
-                newTokens to api.account(newTokens.accessToken)
-            }.onSuccess { (newTokens, newAccount) ->
+                val newAccount = api.account(newTokens.accessToken)
+                val newSubscriptionIds = subscriptions.subscribeToChat(newTokens.accessToken)
+                Triple(newTokens, newAccount, newSubscriptionIds)
+            }.onSuccess { (newTokens, newAccount, newSubscriptionIds) ->
                 if (isCurrent(run)) {
                     tokens = newTokens
                     account = newAccount
+                    subscriptionIds = newSubscriptionIds
                     listener.onEvent(KickConnectionEvent.Connected(newAccount))
                 }
             }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
@@ -87,13 +92,19 @@ class DesktopKickChatClient : KickChatClient {
     }
 
     private fun stop(notify: Boolean) {
+        val oldTokens = tokens
+        val oldSubscriptions = subscriptionIds
         active = false
         generation.incrementAndGet()
         receiver?.close()
         receiver = null
         tokens = null
         account = null
+        subscriptionIds = emptyList()
         authorizationCompleted = false
+        if (oldTokens != null && oldSubscriptions.isNotEmpty() && !ioExecutor.isShutdown) {
+            ioExecutor.execute { runCatching { subscriptions.unsubscribe(oldTokens.accessToken, oldSubscriptions) } }
+        }
         if (notify) emit(KickConnectionPhase.Disconnected)
     }
 

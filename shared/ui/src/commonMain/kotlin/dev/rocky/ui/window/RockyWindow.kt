@@ -815,7 +815,7 @@ internal fun CompactContent(
 }
 
 internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): String = suggestion ?: when (status) {
-    LiveSessionStatus.Stopped -> "Conecte Twitch ou Kick"
+    LiveSessionStatus.Stopped -> "Conecte Twitch, Kick ou YouTube"
     LiveSessionStatus.Running -> "Chat da live conectado"
     LiveSessionStatus.Ended -> "Conexão da live encerrada"
 }

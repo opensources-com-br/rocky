@@ -343,7 +343,7 @@ private val releaseTranslations = mapOf(
     "Não foi possível listar modelos. Verifique a conexão e a chave." to "Could not list models. Check the connection and key.",
 
     "Aguardando a conexão da Twitch. As mensagens anteriores estão preservadas." to "Waiting for Twitch to connect. Previous messages are preserved.",
-    "Conecte Twitch ou Kick nas configurações para acompanhar uma live." to "Connect Twitch or Kick in settings to follow a stream.",
+    "Conecte Twitch, Kick ou YouTube nas configurações para acompanhar uma live." to "Connect Twitch, Kick or YouTube in settings to follow a stream.",
     "Aguardando a conexão da plataforma. As mensagens anteriores estão preservadas." to "Waiting for the platform to connect. Previous messages are preserved.",
     "Aguardando mensagens do chat nos últimos dois minutos." to "Waiting for chat messages from the last two minutes.",
     "Dados" to "Data",

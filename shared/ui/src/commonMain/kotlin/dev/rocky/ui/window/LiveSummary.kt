@@ -161,7 +161,7 @@ internal fun LiveSummary(
         Text(
             text = suggestion?.text ?: run {
                 if (!sessionAvailable) {
-                    "Conecte Twitch ou Kick nas configurações para acompanhar uma live."
+                    "Conecte Twitch, Kick ou YouTube nas configurações para acompanhar uma live."
                 } else if (generatingSuggestion) {
                     "Estou analisando o chat para encontrar uma resposta ou ideia útil."
                 } else if (sessionStatus != LiveSessionStatus.Running) {

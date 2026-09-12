@@ -1,10 +1,18 @@
 const content = {
   "group": "Configuração",
-  "lead": "Twitch e Kick recebem novas mensagens e a contagem atual de espectadores do canal autenticado.",
+  "lead": "Twitch, Kick e YouTube recebem novas mensagens e a contagem atual de espectadores do canal autenticado.",
   "blocks": [
     {
       "type": "h2",
       "text": "Conectar Twitch"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Abra Configurações → Plataformas e use Conectar Twitch.",
+        "Se não houver Client ID configurado, registre um aplicativo público no console de desenvolvedores da Twitch e copie seu Client ID. Rocky não usa Client Secret.",
+        "Abra Twitch pelo botão do app e autorize o código exibido. Aguarde o estado Conectada."
+      ]
     },
     {
       "type": "h2",
@@ -19,11 +27,15 @@ const content = {
       ]
     },
     {
+      "type": "h2",
+      "text": "Conectar YouTube"
+    },
+    {
       "type": "list",
       "items": [
-        "Abra Configurações → Plataformas e use Conectar Twitch.",
-        "Se não houver Client ID configurado, registre um aplicativo público no console de desenvolvedores da Twitch e copie seu Client ID. Rocky não usa Client Secret.",
-        "Abra Twitch pelo botão do app e autorize o código exibido. Aguarde o estado Conectada."
+        "Ative a YouTube Data API v3 e crie credenciais OAuth do tipo aplicativo para computador.",
+        "Informe Client ID e Client Secret, conecte e autorize a conta no navegador.",
+        "Mantenha uma live ativa com chat habilitado para o Rocky localizar a transmissão."
       ]
     },
     {
@@ -32,7 +44,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1, permissões user:read, channel:read e events:subscribe, e webhooks assinados. O Client Secret da Kick usa o cofre do sistema; tokens ficam somente na memória."
+      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1 e webhooks assinados. O YouTube usa OAuth para desktop com acesso somente de leitura e consulta respeitando o intervalo da API. Client Secrets usam o cofre do sistema; tokens ficam somente na memória."
     },
     {
       "type": "h2",
@@ -40,7 +52,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "YouTube e Facebook aparecem como indisponíveis. Os chips são indicadores, não interruptores. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes ou Super Chats como eventos de apoio."
+      "text": "Facebook aparece como indisponível. Os chips mostram o estado e abrem a ação de desconectar. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes ou Super Chats como eventos de apoio."
     },
     {
       "type": "h2",
@@ -48,7 +60,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A Twitch tenta reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. Nenhum conector carrega histórico; mensagens podem ser perdidas durante indisponibilidade."
+      "text": "A Twitch tenta reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. O YouTube continua consultando enquanto a live estiver disponível. Nenhum conector carrega o histórico completo; mensagens podem ser perdidas durante indisponibilidade."
     }
   ]
 };

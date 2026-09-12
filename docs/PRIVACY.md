@@ -1,6 +1,6 @@
 # Dados e privacidade / Data handling
 
-Rocky não exige conta própria nem coleta telemetria. Chat e transcrição permanecem na memória durante o uso; notas escolhidas e trechos de evidência persistem no SQLite. Uma reconexão não recupera necessariamente mensagens perdidas. O app não grava a live inteira.
+Rocky não exige conta própria nem coleta telemetria. Chat e transcrição ficam na memória durante o uso. A fila salva automaticamente perguntas detectadas, autores e trechos de evidência no SQLite; notas, ideias, momentos e resumos também persistem. Uma reconexão não recupera necessariamente mensagens perdidas. O app não grava a live inteira.
 
 Chaves de IA são salvas explicitamente no Keychain do macOS ou protegidas pelo DPAPI do usuário no Windows. O arquivo `ai-credential.dpapi` contém somente o conteúdo criptografado. Configurações não secretas usam preferências do sistema. Tokens Twitch ficam na memória. Edições de chave não salvas são descartadas ao fechar. Se o cofre falhar, o app mostra um aviso e não grava a chave em texto simples. Chaves legadas são migradas e removidas das preferências.
 
@@ -14,7 +14,7 @@ Localizações: macOS `~/Library/Application Support/Rocky`; Windows `%APPDATA%/
 
 ## English
 
-Rocky has no account system or telemetry. Chat/transcripts are temporary in-memory data; selected notes and evidence persist in local SQLite. Saved AI keys use macOS Keychain or user-scoped Windows DPAPI, never plaintext preferences. Unsaved key edits and Twitch tokens are discarded when the app closes. A failed secure-storage operation is reported instead of silently storing plaintext.
+Rocky has no account system or telemetry. Chat/transcripts are temporary in-memory data. Detected questions and author evidence are automatically saved in local SQLite, alongside notes, ideas, moments and session summaries. Saved AI keys use macOS Keychain or user-scoped Windows DPAPI, never plaintext preferences. Unsaved key edits and Twitch tokens are discarded when the app closes. A failed secure-storage operation is reported instead of silently storing plaintext.
 
 Cloud providers receive selected chat and the request; their account policies apply. Local loopback Ollama can process suggestions on the computer. Model downloads and Homebrew setup require network access. Temporary transcription files are deleted after normal/error completion; an abrupt crash can leave OS temporary files. SQLite itself is not encrypted by Rocky.
 

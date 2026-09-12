@@ -601,6 +601,7 @@ fun RockyWindow(
                                     },
                                 )
                                 MainSection.Pulse -> PulseContent(
+                                    samples = twitch.pulse.toList(),
                                     platforms = visiblePlatforms,
                                 )
                             }

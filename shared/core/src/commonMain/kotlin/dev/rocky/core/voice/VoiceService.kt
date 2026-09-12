@@ -27,10 +27,14 @@ data class LocalTranscriptionConfiguration(
 data class VoiceConfiguration(
     val output: VoiceOutputConfiguration = VoiceOutputConfiguration(),
     val transcription: LocalTranscriptionConfiguration = LocalTranscriptionConfiguration("", ""),
+    val detectEndOfSpeech: Boolean = true,
+    val silenceMillis: Long = 750,
+    val speechThreshold: Float = 0.025f,
     val readSuggestions: Boolean = false,
 )
 
 interface VoiceService : AutoCloseable {
+    val supportsInputLevel: Boolean get() = false
     val outputVolumeSupported: Boolean get() = true
     val automaticTranscriptionSetupSupported: Boolean
         get() = false

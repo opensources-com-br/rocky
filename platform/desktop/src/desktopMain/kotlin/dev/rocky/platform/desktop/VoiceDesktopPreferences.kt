@@ -20,9 +20,15 @@ object VoiceDesktopPreferences {
                 modelPath = preferences.get(WHISPER_MODEL_KEY, ""),
                 microphoneId = preferences.get(MICROPHONE_KEY, "").ifBlank { null },
             ),
+            detectEndOfSpeech = preferences.getBoolean("detectEndOfSpeech", true),
+            silenceMillis = preferences.getLong("silenceMillis", 750).coerceIn(450, 1500),
+            speechThreshold = preferences.getFloat("speechThreshold", 0.025f).coerceIn(0.01f, 0.15f),
             readSuggestions = preferences.getBoolean(READ_SUGGESTIONS_KEY, false),
         )
         set(value) {
+            preferences.putBoolean("detectEndOfSpeech", value.detectEndOfSpeech)
+            preferences.putLong("silenceMillis", value.silenceMillis)
+            preferences.putFloat("speechThreshold", value.speechThreshold)
             preferences.put(VOICE_KEY, value.output.voiceId.orEmpty())
             preferences.putInt(SPEED_KEY, value.output.speedPercent)
             preferences.putInt(VOLUME_KEY, value.output.volumePercent)

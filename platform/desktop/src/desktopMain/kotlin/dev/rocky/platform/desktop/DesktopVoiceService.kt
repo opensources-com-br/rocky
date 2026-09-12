@@ -45,6 +45,7 @@ class DesktopVoiceService : VoiceService {
 
     private var capturedAudio: ByteArrayOutputStream? = null
 
+    override val supportsInputLevel: Boolean get() = true
     override val outputVolumeSupported: Boolean get() = operatingSystem.contains("win")
 
     override val automaticTranscriptionSetupSupported: Boolean

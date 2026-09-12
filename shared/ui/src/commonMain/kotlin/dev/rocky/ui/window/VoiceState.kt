@@ -273,13 +273,13 @@ internal class VoiceState(
         text: String,
         silenced: Boolean,
         force: Boolean = false,
-        onFinished: () -> Unit = {},
+        onFinished: () -> Unit = ::resumeListener,
     ) {
         if (silenced || suggestionId == lastSpokenSuggestionId) {
             onFinished()
             return
         }
-        if (!force && !configuration.readSuggestions) return
+        if (!force && !configuration.readSuggestions) { onFinished(); return }
         lastSpokenSuggestionId = suggestionId
         if (speaking) {
             queuedSpeech = QueuedSpeech(text, force, onFinished)
@@ -456,9 +456,10 @@ internal class VoiceState(
                 },
                 onFailure = { "Não foi possível usar a voz do sistema" },
             )
+            val nextSpeech = queuedSpeech
+            queuedSpeech = null
             onFinished()
-            queuedSpeech?.let { next ->
-                queuedSpeech = null
+            nextSpeech?.let { next ->
                 speak(scope, next.text, force = next.force, onFinished = next.onFinished)
             }
         }

@@ -15,6 +15,18 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun completedAnswerResumesWithoutNextButton() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) {}
+        state.enableListener(this) {}
+        waitUntil { state.capturing }
+        state.speakSuggestion(this, "first", "Resposta", false)
+        waitUntil { service.captureStarts == 2 && state.capturing }
+        state.speakSuggestion(this, "second", "Outra resposta", false)
+        waitUntil { service.captureStarts == 3 && state.capturing }
+        state.resetSession()
+    }
+
     @Test fun interruptedAnswerResumesListenerButResetDoesNot() = runBlocking {
         val service = FakeVoiceService().apply { speechGate = CountDownLatch(1) }
         val state = VoiceState(service, readyConfiguration) {}

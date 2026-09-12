@@ -25,9 +25,10 @@ internal class QuestionQueue(private val records: LocalNotesState) {
                 QUESTION_TAG, setOf(message.id), listOf(messageEvidence(message)), sessionId, label, offset,
                 messageCount = 1)
             if (records.putRecord(record)) seen.add(message.id)
+            while (seen.size > 1000) seen.remove(seen.first())
         }
-        // Keep a bounded deduplication window matching the in-memory chat buffer.
-        seen.retainAll(messages.map { it.id }.toSet())
+        // Filters may temporarily hide messages; retain processed IDs independently
+        // of the visible sources, bounded to the maximum chat buffer size.
     }
 }
 private fun Set<String>.takeLastSet(size: Int) = toList().takeLast(size).toSet()

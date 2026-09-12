@@ -31,6 +31,7 @@ class LiveWorkspaceTest {
         assertEquals("Momento marcado", momentCommand("marca esse momento"))
         assertEquals("vitória", momentCommand("marca esse momento: vitória"))
         assertNull(momentCommand("qual foi o melhor momento?"))
+        assertNull(momentCommand("marca esse momentoseguinte"))
         assertEquals("1:02:03", momentLabel(3723000))
     }
 }

@@ -19,7 +19,7 @@ fun exportNotesAsMarkdown(owner: Frame, notes: List<LiveNote>): Boolean {
     } else {
         "$selectedFile.md"
     }
-    writeMarkdownAtomically(Path.of(directory, fileName), notesAsMarkdown(notes))
+    writeMarkdownAtomically(Path.of(directory, fileName), notesAsMarkdown(notes, "${System.getProperty("rocky.version", "development")} · ${System.getProperty("rocky.commit", "unknown")}"))
     return true
 }
 

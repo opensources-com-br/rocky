@@ -77,6 +77,7 @@ fun main() = application {
             onResetSettings = { dev.rocky.platform.desktop.resetRockySettings() },
             onRemoveManagedVoiceModel = { dev.rocky.platform.desktop.removeManagedVoiceModel() },
             dataDirectoryLabel = RockyDesktopPaths.notesDatabase.parent.toString(),
+            buildLabel = "${System.getProperty("rocky.version", "development")} · ${System.getProperty("rocky.commit", "unknown").take(12)} · ${System.getProperty("os.name")} ${System.getProperty("os.arch")}",
             onAiConfigurationChange = { AiDesktopPreferences.configuration = it },
             initialAutomaticAnalysis = AiDesktopPreferences.automaticAnalysis,
             onAutomaticAnalysisChange = { AiDesktopPreferences.automaticAnalysis = it },

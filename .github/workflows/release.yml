@@ -27,16 +27,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python scripts/release_metadata.py --check-tag
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew build ${{ matrix.task }} -ProckyTwitchClientId="${{ vars.ROCKY_TWITCH_CLIENT_ID }}"
+      - run: python scripts/release_metadata.py
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}
-          path: ${{ matrix.path }}
+          path: |
+            ${{ matrix.path }}
+            apps/desktop/build/compose/binaries/main/BUILDINFO-*.json
           if-no-files-found: error
           retention-days: 30
 

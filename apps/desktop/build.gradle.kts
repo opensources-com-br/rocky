@@ -33,6 +33,11 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "dev.rocky.app.MainKt"
+        val buildCommit = providers.environmentVariable("GITHUB_SHA").orElse(
+            providers.exec { commandLine("git", "rev-parse", "HEAD") }.standardOutput.asText.map { it.trim() },
+        )
+        jvmArgs += "-Drocky.version=${providers.gradleProperty("rockyVersion").get()}"
+        jvmArgs += "-Drocky.commit=${buildCommit.get()}"
         jvmArgs += "-Drocky.twitch.clientId=${providers.gradleProperty("rockyTwitchClientId").orElse("").get()}"
 
         nativeDistributions {

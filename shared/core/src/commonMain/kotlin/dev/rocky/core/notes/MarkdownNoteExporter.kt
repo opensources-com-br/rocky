@@ -2,8 +2,9 @@ package dev.rocky.core.notes
 
 import dev.rocky.core.live.LiveNote
 
-fun notesAsMarkdown(notes: List<LiveNote>): String = buildString {
+fun notesAsMarkdown(notes: List<LiveNote>, buildLabel: String? = null): String = buildString {
     appendLine("# Rocky Notes")
+    buildLabel?.let { appendLine(); appendLine("Build: $it") }
     appendLine()
     if (notes.isEmpty()) {
         appendLine("No notes saved.")

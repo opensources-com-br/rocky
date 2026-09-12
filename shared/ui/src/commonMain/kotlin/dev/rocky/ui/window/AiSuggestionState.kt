@@ -26,15 +26,32 @@ internal class AiSuggestionState(
     initialConfiguration: AiProviderConfiguration,
     initialAutomaticAnalysis: Boolean = false,
     private val onAutomaticAnalysisChange: (Boolean) -> Unit = {},
+    initialProfile: dev.rocky.core.agent.InterventionProfile? = null,
+    private val onProfileChange: (dev.rocky.core.agent.InterventionProfile) -> Unit = {},
+    initialFilters: dev.rocky.core.live.ChatFilterConfiguration = dev.rocky.core.live.ChatFilterConfiguration(),
+    private val onFiltersChange: (dev.rocky.core.live.ChatFilterConfiguration) -> Unit = {},
     private val onConfigurationChange: (AiProviderConfiguration) -> Unit,
 ) {
+    var filters by mutableStateOf(initialFilters); private set
+    var filteredCount by mutableStateOf(0); private set
+    var profile by mutableStateOf(initialProfile ?: if (initialAutomaticAnalysis)
+        dev.rocky.core.agent.InterventionProfile.Discreet else dev.rocky.core.agent.InterventionProfile.OnDemand)
+        private set
+    fun updateFilters(value: dev.rocky.core.live.ChatFilterConfiguration) { filters = value; onFiltersChange(value) }
+    fun updateProfile(value: dev.rocky.core.agent.InterventionProfile) {
+        if (generating && activeAutomatic) cancelAnalysis()
+        profile = value
+        automaticAnalysis = value != dev.rocky.core.agent.InterventionProfile.OnDemand
+        onAutomaticAnalysisChange(automaticAnalysis); onProfileChange(value)
+    }
+
     var suggestionSources by mutableStateOf<List<ChatMessage>>(emptyList())
         private set
 
     var configuration by mutableStateOf(initialConfiguration)
         private set
 
-    var automaticAnalysis by mutableStateOf(initialAutomaticAnalysis)
+    var automaticAnalysis by mutableStateOf(profile != dev.rocky.core.agent.InterventionProfile.OnDemand)
         private set
 
     var models by mutableStateOf<List<String>>(emptyList())
@@ -142,8 +159,7 @@ internal class AiSuggestionState(
     }
 
     fun updateAutomaticAnalysis(enabled: Boolean) {
-        automaticAnalysis = enabled
-        onAutomaticAnalysisChange(enabled)
+        updateProfile(if (enabled) dev.rocky.core.agent.InterventionProfile.Discreet else dev.rocky.core.agent.InterventionProfile.OnDemand)
     }
 
     fun automaticAnalysisDelay(nowMillis: Long, intervalMillis: Long): Long = lastAutomaticAnalysisAtMillis

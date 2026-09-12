@@ -1,6 +1,6 @@
 import AppPreview from "./AppPreview";
 
-export default function HeroContent({ chord, heroChips, heroConvo, heroTabs, mic }) {
+export default function HeroContent() {
   return (<>
 <div style={{"position": "relative", "maxWidth": "1120px", "margin": "0 auto", "padding": "88px 28px 0", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "20px", "textAlign": "center"}}>
 <a href={"#recursos"} style={{"display": "inline-flex", "alignItems": "center", "gap": "8px", "padding": "5px 12px 5px 8px", "borderRadius": "999px", "border": "1px solid rgba(255,255,255,.1)", "background": "rgba(255,255,255,.03)", "fontSize": "12.5px", "color": "rgba(255,255,255,.62)"}}>
@@ -31,7 +31,7 @@ export default function HeroContent({ chord, heroChips, heroConvo, heroTabs, mic
 <span style={{"fontSize": "12px", "color": "rgba(255,255,255,.3)", "fontFamily": "var(--font-geist-mono), monospace"}}>
 {"macOS e Windows · alpha · instaladores não assinados"}
 </span>
-<AppPreview chord={chord} heroChips={heroChips} heroConvo={heroConvo} heroTabs={heroTabs} mic={mic} />
+<AppPreview />
 <div style={{"height": "88px"}}>
 
 </div>

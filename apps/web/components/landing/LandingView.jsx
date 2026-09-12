@@ -7,11 +7,11 @@ import PrivacySection from "./PrivacySection";
 import DownloadSection from "./DownloadSection";
 import LandingFooter from "./LandingFooter";
 
-export default function LandingView({ chord, features, guarantees, heroChips, heroConvo, heroTabs, localCards, mic, platforms, steps }) {
+export default function LandingView({ features, guarantees, localCards, platforms, steps }) {
   return (<>
 <div style={{"background": "#080706", "color": "#f2efec", "fontFamily": "var(--font-geist-sans), sans-serif", "overflowX": "hidden", "letterSpacing": "-.011em"}}>
 <LandingNav  />
-<HeroSection chord={chord} heroChips={heroChips} heroConvo={heroConvo} heroTabs={heroTabs} mic={mic} />
+<HeroSection />
 <PlatformsStrip platforms={platforms} />
 <HowItWorks steps={steps} />
 <FeaturesSection features={features} />

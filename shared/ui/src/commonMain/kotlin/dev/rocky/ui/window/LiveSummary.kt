@@ -151,7 +151,7 @@ internal fun LiveSummary(
             style = if (suggestion == null) MaterialTheme.typography.subtitle1 else MaterialTheme.typography.h1,
             modifier = Modifier.heightIn(max = if (suggestion == null) 56.dp else 64.dp).verticalScroll(rememberScrollState()),
         )
-        Spacer(Modifier.height(13.dp))
+        Spacer(Modifier.height(7.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             SourceCount(sourceCounts[StreamPlatform.Twitch] ?: 0, "Twitch", RockyColors.Twitch)
             EvidenceButton(evidence)

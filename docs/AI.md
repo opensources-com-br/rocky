@@ -18,7 +18,7 @@ Messages stay on the computer when the Ollama endpoint is local. Rocky does not 
 3. Keep `https://api.openai.com` as the endpoint, enter a model available to the project, and paste the API key.
 4. Select **Test connection**.
 
-The API key remains in memory and is discarded when Rocky closes. It is never saved to preferences. Requests use the [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) with `store: false`.
+Use **Save configuration and key** to save the key in macOS Keychain or with user-scoped Windows DPAPI. Unsaved edits stay in memory. **Delete key** removes the saved credential. Legacy plaintext preferences are migrated and removed. Requests use the [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) with `store: false`.
 
 ## OpenRouter
 
@@ -27,16 +27,20 @@ The API key remains in memory and is discarded when Rocky closes. It is never sa
 3. Keep `https://openrouter.ai/api` as the endpoint and `openrouter/free` as the model.
 4. Paste the API key and select **Test connection**.
 
-`openrouter/free` automatically selects a compatible free model. Availability, the selected model, and limits may vary. Selected messages are processed by OpenRouter and the chosen model provider. The key remains only in Rocky's memory.
+`openrouter/free` automatically selects a compatible free model. Availability, the selected model, and limits may vary. Selected messages are processed by OpenRouter and the chosen model provider. The same secure storage controls apply to OpenRouter.
 
 ## Suggestion behavior
 
 - **Analyze now** works after at least one real Twitch message arrives.
-- Automatic analysis starts disabled. Once enabled, it follows the agent's configured frequency and requires three additional messages; a pending suggestion prevents another automatic analysis.
-- A request contains at most the latest 30 messages and 300 characters from each message.
+- Automatic analysis starts disabled. Once enabled, it follows the agent's configured frequency and requires three additional messages.
+- All chat requests use up to 200 received messages from the last two minutes, with up to 300 characters per message. This is a limited sample, not a complete stream history. Connection gaps are shown in Conversation.
 - Chat is labeled as untrusted content. A generated suggestion must cite message IDs present in the request or Rocky rejects it.
 - Only one analysis runs at a time. Rocky never falls back from Ollama to OpenAI automatically.
 - Typed requests require no microphone. In-progress analysis can be cancelled. Testing a connection also generates a short response using synthetic messages; API providers may charge for this request.
 - Saving a generated suggestion uses the existing local SQLite notes and Markdown export.
 
 API providers receive the selected chat content. Review the provider's data controls before enabling automatic analysis.
+
+Remote API endpoints require HTTPS. HTTP is accepted only for loopback Ollama. Changing provider or endpoint clears the current key; enter the correct key and save again.
+
+Conversation shows the last request duration and reported token totals. Totals are partial: failed/cancelled requests, connection tests, and unsuccessful retry attempts may not include usage. OpenRouter can try up to three responses when the format is invalid. These counters are not a billing estimate; cancellation does not reverse provider charges.

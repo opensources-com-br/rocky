@@ -6,6 +6,10 @@ The official build can include Rocky's public client ID with `-ProckyTwitchClien
 
 ## Setup
 
+If a Client ID is already configured, connect and authorize your account. Register your own public client only when the field is empty or you prefer your own client.
+
+
+
 1. Register a Twitch application in the [Developer Console](https://dev.twitch.tv/console/apps).
 2. Configure it as a public client and copy its Client ID. Rocky never needs the Client Secret.
 3. Run Rocky and open **Settings → Platforms**.

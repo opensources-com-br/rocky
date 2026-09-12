@@ -42,6 +42,10 @@ import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionListener
 import dev.rocky.core.twitch.TwitchConnectionPhase
+import dev.rocky.core.youtube.YouTubeChatClient
+import dev.rocky.core.youtube.YouTubeConfiguration
+import dev.rocky.core.youtube.YouTubeConnectionListener
+import dev.rocky.core.youtube.YouTubeConnectionPhase
 import dev.rocky.core.voice.AudioInputDevice
 import dev.rocky.core.voice.LocalTranscriptionConfiguration
 import dev.rocky.core.voice.SystemVoice
@@ -92,6 +96,10 @@ fun RockyWindow(
     initialKickConfiguration: KickConfiguration = KickConfiguration(),
     onKickConfigurationChange: (KickConfiguration) -> Unit = {},
     onOpenKickAuthorization: (String) -> Unit = {},
+    youtubeChatClient: YouTubeChatClient = InactiveYouTubeChatClient,
+    initialYouTubeConfiguration: YouTubeConfiguration = YouTubeConfiguration(),
+    onYouTubeConfigurationChange: (YouTubeConfiguration) -> Unit = {},
+    onOpenYouTubeAuthorization: (String) -> Unit = {},
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
@@ -135,6 +143,7 @@ fun RockyWindow(
         var waitingForVoiceCommand by remember { mutableStateOf(false) }
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val kick = remember(kickChatClient) { KickLiveState(kickChatClient, currentTimeMillis) }
+        val youtube = remember(youtubeChatClient) { YouTubeLiveState(youtubeChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
                 aiSuggestionClient, initialAiConfiguration,
@@ -159,6 +168,7 @@ fun RockyWindow(
         val mainContentScrollState = rememberScrollState()
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         var kickConfiguration by remember { mutableStateOf(initialKickConfiguration) }
+        var youtubeConfiguration by remember { mutableStateOf(initialYouTubeConfiguration) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
@@ -721,6 +731,12 @@ private object InactiveTwitchChatClient : TwitchChatClient {
 
 private object InactiveKickChatClient : KickChatClient {
     override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) = Unit
+    override fun disconnect() = Unit
+    override fun close() = Unit
+}
+
+private object InactiveYouTubeChatClient : YouTubeChatClient {
+    override fun connect(configuration: YouTubeConfiguration, listener: YouTubeConnectionListener) = Unit
     override fun disconnect() = Unit
     override fun close() = Unit
 }

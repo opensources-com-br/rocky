@@ -1,30 +1,29 @@
-# Design QA
+# Design QA — web frame alignment
 
-## Source truth
+- Source visual truth: `/var/folders/15/bsnxdb1n0r9446hfq1kl71t80000gn/T/codex-clipboard-593e8b08-c862-4c13-af6c-74b039e8d032.png` and `/var/folders/15/bsnxdb1n0r9446hfq1kl71t80000gn/T/codex-clipboard-fe3fabec-62ee-4946-b13d-36149dd19ea5.png`
+- Implementation screenshots: `design-qa-showcase.png` and `design-qa-docs.png`
+- Combined comparison: `design-qa-comparison.png`
+- Viewport: 1920 × 1000 CSS px, desktop, dark theme
+- Source pixels: 3837 × 2006 and 3836 × 2009, approximately 2× density
+- Implementation pixels: 1920 × 1000 and 1905 × 992; comparison normalized to half-width panels
+- State: Showcase empty state and Docs introduction
 
-- The nine Rocky mockups attached to the implementation task are the visual source of truth.
-- They cover the main conversation, Superchats, notes, ideas, pulse, and the four settings panels.
-- The implementation was rendered at `420 × 720` for the main window and `420 × 520` for settings.
-- Local comparison artifact: `/tmp/rocky-design-qa/comparison-final.png`.
+## Findings
 
-## Pass 1
+No actionable P0, P1 or P2 differences remain for the requested adjustments.
 
-- **P2 · Typography:** the assistant prompt was too large and wrapped earlier than the reference. Reduced the display style from 31/38 to 28/34.
-- **P2 · Content density:** the main window did not leave enough room for the conversation. Increased its height to 720 and matched the prompt wrapping.
-- **P2 · Copy:** the support tab used “Apoios” while the mockups use “Superchats”. Updated the label.
-- **P2 · Settings frame:** settings left excess empty space and did not match the shorter reference frame. Added a 520-height settings mode that restores the previous window size on exit.
-- **P2 · Settings rhythm:** fields, sliders, toggles, and vertical gaps exceeded the source density. Tightened their sizes and spacing.
+- Fonts and typography: Rocky, Showcase and Docs now render at 13 px in the navigation. Family, weight and hierarchy remain consistent with the reference.
+- Spacing and layout: navigation, page sections and footer all measure 1120 px at the desktop breakpoint. Docs reaches at least the viewport bottom. Showcase uses the remaining height and places its footer at the bottom without moving the callout away from its original top spacing.
+- Colors and tokens: existing dark background, low-opacity borders and orange accent are unchanged.
+- Image quality: these screens contain no raster product imagery; the supplied captures remain the visual source.
+- Copy and content: all existing labels and page content are unchanged.
 
-## Pass 2
+## Comparison history
 
-- **Layout and spacing:** header, platform strip, assistant prompt, actions, tabs, scrolling content, and footer preserve the source order and grouping. No overlap was found at either target size.
-- **Typography:** Instrument Serif is bundled for the main prompt; system sans is used for compact desktop UI text. Weight, wrapping, and hierarchy match the source intent.
-- **Color and surfaces:** the dark neutral palette, brown prompt gradient, orange accent, platform colors, borders, selected states, and disabled states are represented by shared tokens.
-- **Icons and assets:** visible symbols use the Compose Material icon library. No placeholder imagery, custom vector art, or text glyph substitutes are present.
-- **States and interactions:** all five main tabs and all four settings tabs render; prompt actions, voice state, support read state, settings selections, text input, sliders, toggles, pin, minimize, close, and compact mode are wired.
-- **Accessibility:** interactive icons have descriptions, colored states retain text labels, controls remain keyboard reachable, and scrollable regions prevent content loss.
-- **Verification:** the desktop UI test rendered and asserted all nine target states. The complete Gradle build also passed.
+1. The first implementation pinned the Showcase footer but allowed its flex item to shrink and vertically centered the callout.
+2. Added `width: 100%` to the footer and restored the callout's original top alignment.
+3. Post-fix browser measurements show four aligned Showcase regions at 1120 px, a footer bottom of 1000 px, Docs aligned to the same 1120 px frame, working Docs/Showcase navigation and no console errors.
 
-No P0, P1, or P2 findings remain.
+Focused comparison used the navigation labels, the vertical frame edges and the Showcase footer because those are the reported mismatches. Other regions were checked in the full-view comparison.
 
 final result: passed

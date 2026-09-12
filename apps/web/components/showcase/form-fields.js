@@ -19,8 +19,7 @@ export function formFields(f, setField, setUrl, togglePlatform) {
     });
 
     const PLATS = [
-      { name: "Twitch", dot: TW }, { name: "Kick", dot: KI },
-      { name: "YouTube", dot: YT }, { name: "Facebook", dot: FB },
+      { name: "Twitch", dot: TW },
     ];
 
 
@@ -28,7 +27,7 @@ return [
         text("Nome ou canal", "Como você quer aparecer na página.", "name", "ex. ju.lia"),
         choice("Categoria", "Onde o seu caso entra nos filtros.", "category", ["Programação", "Games", "Educação", "Podcast", "Esportes", "Arte"]),
         {
-          label: "Plataformas conectadas", hint: "As que você mantém ligadas durante a live.", isPlatforms: true,
+          label: "Plataformas conectadas", hint: "A versão atual conecta somente a Twitch.", isPlatforms: true,
           options: PLATS.map((p) => Object.assign({ name: p.name, dot: f.platforms.indexOf(p.name) === -1 ? "rgba(255,255,255,.22)" : p.dot, pick: () => togglePlatform(p.name) }, pill(f.platforms.indexOf(p.name) !== -1))),
         },
         {
@@ -41,11 +40,11 @@ return [
             onInput: (e) => setUrl(name, e.target.value),
           })),
         },
-        choice("Provedor de IA", "O que você configurou em Configurações → IA.", "provider", ["ollama", "openai-compat", "anthropic", "openai"]),
+        choice("Provedor de IA", "O que você configurou em Configurações → IA.", "provider", ["ollama", "openai", "openrouter"]),
         text("Modelo", "Opcional. Nome exato do modelo.", "model", "ex. llama3.1:8b"),
-        choice("Voz", "Motor de síntese que você usa.", "voice", ["piper", "system", "elevenlabs"]),
+        choice("Voz", "Voz do sistema ou uso somente por texto.", "voice", ["system", "sem voz"]),
         text("Uma frase", "A citação que aparece no card. Curta.", "quote", "ex. Parei de perder pergunta boa no meio do chat."),
-        area("Resumo da sua live", "Duas linhas sobre o que você transmite.", "desc", "ex. Lives de 4h sobre backend, quatro plataformas somadas.", 2),
+        area("Resumo da sua live", "Duas linhas sobre o que você transmite.", "desc", "ex. Lives de programação no meu canal da Twitch.", 2),
         area("Depoimento", "O texto completo. Separe parágrafos com uma linha em branco.", "story", "Conte como era antes, o que você configurou e o que mudou.", 9),
         area("O que mudou", "Uma mudança por linha.", "changes", "Dúvida repetida sem resposta praticamente desapareceu.", 4),
       ];

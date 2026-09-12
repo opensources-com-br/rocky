@@ -35,17 +35,17 @@ internal fun FirstUseContent(
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 16.dp)) {
         Text("Configure o Rocky", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold)
         Text(
-            text = "Conecte a Twitch e a IA para começar por texto. Ative a voz quando quiser.",
+            text = "Conecte a Twitch ou a Kick e configure a IA para começar por texto. Ative a voz quando quiser.",
             modifier = Modifier.padding(top = 5.dp, bottom = 14.dp),
             color = RockyColors.TextSecondary,
             style = MaterialTheme.typography.body2,
         )
         SetupStep(
             number = 1,
-            title = "Conecte sua Twitch",
-            description = tr("Connect and authorize your channel in the browser. Official builds include the application ID.", "Conecte e autorize seu canal no navegador. Builds oficiais incluem o identificador do aplicativo."),
+            title = "Conecte sua plataforma",
+            description = tr("Connect Twitch or Kick and authorize your channel in the browser.", "Conecte Twitch ou Kick e autorize seu canal no navegador."),
             complete = twitchConnected,
-            action = if (twitchConnected) "Revisar Twitch" else "Configurar Twitch",
+            action = if (twitchConnected) "Revisar plataforma" else "Configurar plataforma",
             onAction = onConfigureTwitch,
         )
         SetupStep(
@@ -66,7 +66,7 @@ internal fun FirstUseContent(
             onAction = onConfigureVoice,
         )
         Text(
-            text = "Rocky não exige uma conta própria. As notas ficam no computador. Chaves de IA salvas usam o cofre do sistema; tokens Twitch ficam na memória.",
+            text = "Rocky não exige uma conta própria. As notas ficam no computador. Segredos salvos usam o cofre do sistema; tokens das plataformas ficam na memória.",
             modifier = Modifier.padding(vertical = 12.dp),
             color = RockyColors.TextMuted,
             style = MaterialTheme.typography.caption,

@@ -38,6 +38,7 @@ internal fun AiSettings(ai: AiSuggestionState) {
     }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        ContextSettings(ai)
         SettingTitle(
             "Provedor de IA",
             "Escolha processamento local ou uma API configurada por você.",

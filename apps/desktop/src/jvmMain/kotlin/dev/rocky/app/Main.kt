@@ -14,6 +14,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.rocky.data.notes.RecoverableNoteRepository
 import dev.rocky.data.ai.DesktopAiSuggestionClient
+import dev.rocky.data.kick.DesktopKickChatClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
 import dev.rocky.platform.desktop.AgentDesktopPreferences
@@ -22,6 +23,7 @@ import dev.rocky.platform.desktop.TwitchDesktopPreferences
 import dev.rocky.platform.desktop.DesktopVoiceService
 import dev.rocky.platform.desktop.FirstUseDesktopPreferences
 import dev.rocky.platform.desktop.LanguageDesktopPreferences
+import dev.rocky.platform.desktop.KickDesktopPreferences
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
@@ -65,14 +67,16 @@ fun main() = application {
     var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
     val noteRepository = remember { RecoverableNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
+    val kickClient = remember { DesktopKickChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
     val voiceService = remember { DesktopVoiceService() }
 
-    DisposableEffect(noteRepository, twitchClient, aiClient, voiceService) {
+    DisposableEffect(noteRepository, twitchClient, kickClient, aiClient, voiceService) {
         onDispose {
             voiceService.close()
             aiClient.close()
             twitchClient.close()
+            kickClient.close()
             noteRepository.close()
         }
     }
@@ -130,6 +134,7 @@ fun main() = application {
             pinned = pinned,
             noteRepository = noteRepository,
             twitchChatClient = twitchClient,
+            kickChatClient = kickClient,
             aiSuggestionClient = aiClient,
             voiceService = voiceService,
             initialAgentConfiguration = AgentDesktopPreferences.configuration,
@@ -170,6 +175,9 @@ fun main() = application {
             },
             onTwitchClientIdChange = { TwitchDesktopPreferences.clientId = it },
             onOpenTwitchAuthorization = { openInBrowser(it) },
+            initialKickConfiguration = KickDesktopPreferences.configuration,
+            onKickConfigurationChange = { KickDesktopPreferences.configuration = it },
+            onOpenKickAuthorization = { openInBrowser(it) },
             onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },
             onExportIdeas = { ideas -> exportIdeasAsMarkdown(window, ideas) },
             initialFirstUseOpen = !FirstUseDesktopPreferences.completed,

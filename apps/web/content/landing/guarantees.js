@@ -1,6 +1,18 @@
 export const guarantees = [
-  {"title": "Sem conta", "text": "Não existe login Rocky. Só as suas contas de streaming, conectadas direto."},
-  {"title": "Sem servidor", "text": "O chat vai da plataforma para o seu PC. Nenhuma mensagem passa por nós."},
-  {"title": "MIT", "text": "Código aberto, auditável e livre para modificar ou empacotar do seu jeito."},
-  {"title": "Seus dados ficam", "text": "Notas, ideias e resumos são arquivos locais. Você apaga quando quiser."},
+  {
+    "title": "Sem conta Rocky",
+    "text": "Você autoriza sua Twitch e configura a IA. Não existe cadastro ou assinatura do Rocky."
+  },
+  {
+    "title": "Sem backend próprio",
+    "text": "O app conecta diretamente à Twitch e ao provedor escolhido. IA remota recebe o contexto selecionado."
+  },
+  {
+    "title": "MIT",
+    "text": "Código aberto, auditável e livre para modificar e redistribuir sob a licença MIT."
+  },
+  {
+    "title": "Registros locais",
+    "text": "Notas, ideias, perguntas e resumos ficam em SQLite no computador, com backup e exportação. O banco não é criptografado pelo Rocky."
+  }
 ];

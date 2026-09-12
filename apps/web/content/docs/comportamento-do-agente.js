@@ -1,17 +1,45 @@
 const content = {
-  group: "Configuração",
-  lead: "Quanto, quando e como o Rocky fala. Essas opções mudam mais a sensação de usar o app do que qualquer outra configuração.",
-  blocks: [
-    {"type": "h2", "text": "Frequência"},
-    {"type": "para", "text": "O limite de intervenções por dez minutos é um teto, não uma meta: se nada relevante acontecer, ele fica calado. Chat pequeno funciona bem com duas; acima de mil pessoas, cinco ainda soa natural."},
-    {"type": "h2", "text": "Interrupção"},
-    {"type": "para", "text": "Com interrupção desligada, o Rocky espera uma pausa de três segundos na sua fala antes de dizer qualquer coisa. Ligada, ele fala assim que tem algo urgente. Streamers que fazem aula costumam deixar desligada; watch parties preferem ligada."},
-    {"type": "h2", "text": "Tom"},
-    {"type": "table", "cols": "minmax(0,1fr) minmax(0,2fr)", "head": ["TOM", "COMO SOA"], "rows": [["direto", "Fato e número. “Sete pedidos de preço nos últimos dois minutos.”"], ["animado", "Acompanha a energia da live, frases mais curtas."], ["analítico", "Contextualiza antes de concluir, fala um pouco mais."], ["irônico", "Comentário seco. Funciona em chat que já tem esse humor."]]},
-    {"type": "h2", "text": "Prioridades"},
-    {"type": "para", "text": "Você pode mudar o peso de cada critério de relevância. Quem monetiza por superchat costuma subir dinheiro ao topo; quem dá aula sobe dúvidas sem resposta."},
-    {"type": "code", "file": "~/.rocky/config.toml", "text": "[priorities]\nmoney      = 1.0\nunanswered = 0.9\nrepetition = 0.7\nintensity  = 0.5\ntechnical  = 0.8"},
-  ],
+  "group": "Configuração",
+  "lead": "O nome, o idioma e o tom ficam em Agente. Os perfis e filtros de análise ficam em IA.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Perfis"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sob demanda: análise automática desligada; use perguntas diretas ou Analisar agora.",
+        "Discreto: intervalo mínimo de cinco minutos para análise automática.",
+        "Proativo: intervalo mínimo de dois minutos para análise automática.",
+        "Análises automáticas exigem novas mensagens. Perguntas diretas têm prioridade sobre trabalho automático."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Tom e nome"
+    },
+    {
+      "type": "para",
+      "text": "Os tons disponíveis são Direto, Animado, Analítico e Irônico. Eles orientam a redação da IA. O nome do agente também é usado como palavra de ativação da voz; o idioma da interface orienta resposta e transcrição."
+    },
+    {
+      "type": "h2",
+      "text": "Limites"
+    },
+    {
+      "type": "para",
+      "text": "Não há pesos configuráveis para dinheiro, relevância ou urgência. O app não implementa uma pausa garantida de três segundos antes de falar nem um modo de interrupção inteligente do streamer."
+    },
+    {
+      "type": "h2",
+      "text": "Histórico"
+    },
+    {
+      "type": "para",
+      "text": "Histórico guarda até 30 respostas da sessão, com copiar, repetir, salvar nota e salvar ideia. Os últimos quatro pares ajudam a entender pedidos como “resume isso”. Desconectar limpa o histórico; os registros salvos permanecem."
+    }
+  ]
 };
 
 export default content;

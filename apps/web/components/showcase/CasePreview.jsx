@@ -6,7 +6,7 @@ export default function CasePreview({ chord, d }) {
 <CasePreviewTitle  />
 <div style={{"padding": "15px", "background": "linear-gradient(180deg, rgba(212,112,60,.1), rgba(212,112,60,0))"}}>
 <div style={{"display": "flex", "alignItems": "center", "fontFamily": "var(--font-geist-mono), monospace", "fontSize": "9.5px", "letterSpacing": ".14em", "color": "#e08b57"}}>
-{" ♪ TOCANDO AGORA "}
+{" EXEMPLO DE PEDIDO "}
 <span style={{"marginLeft": "auto"}}>
 {chord}
 </span>

@@ -72,6 +72,7 @@ internal class AiSuggestionState(
     private var lastAutomaticAnalysisAtMillis: Long? = null
     private var sessionGeneration = 0L
     private var analysisJob: Job? = null
+    private var activeAutomatic = false
     val history = androidx.compose.runtime.mutableStateListOf<ConversationEntry>()
 
     fun updateProvider(provider: AiProviderKind) {
@@ -154,7 +155,10 @@ internal class AiSuggestionState(
         messageLimit: Int = MAX_ANALYSIS_MESSAGES,
         onComplete: (RockySuggestion?) -> Unit = {},
     ) {
-        if (generating) { onComplete(null); return }
+        if (generating) {
+            if (!automatic && activeAutomatic) cancelAnalysis()
+            else { onComplete(null); return }
+        }
         if (messages.isEmpty() && streamerRequest.isNullOrBlank()) {
             status = "Nenhuma mensagem recebida nos últimos dois minutos"
             onComplete(null)
@@ -181,6 +185,7 @@ internal class AiSuggestionState(
             dev.rocky.core.agent.ConversationTurn(it.question, it.answer.text)
         })
         val activeConfiguration = configuration
+        activeAutomatic = automatic
         val activeSession = sessionGeneration
         suggestion = null
         suggestionSources = emptyList()

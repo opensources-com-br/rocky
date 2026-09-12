@@ -1,6 +1,6 @@
 const content = {
   "group": "Começando",
-  "lead": "Rocky é um assistente desktop para macOS e Windows. A versão atual acompanha novas mensagens do seu próprio canal da Twitch e ajuda a consultar o chat, organizar perguntas e salvar registros.",
+  "lead": "Rocky é um assistente desktop para macOS e Windows. A versão atual acompanha novas mensagens do seu canal na Twitch ou Kick e ajuda a consultar o chat, organizar perguntas e salvar registros.",
   "blocks": [
     {
       "type": "h2",
@@ -21,7 +21,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "É uma versão alpha com instaladores de desenvolvimento não assinados. Kick, YouTube, Facebook, Super Chats, envio de mensagens e plugins não estão integrados. O app não modera o chat nem grava a transmissão."
+      "text": "É uma versão alpha com instaladores de desenvolvimento não assinados. YouTube, Facebook, Super Chats, envio de mensagens e plugins não estão integrados. A Kick exige um webhook HTTPS público. O app não modera o chat nem grava a transmissão."
     },
     {
       "type": "h2",
@@ -29,7 +29,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "O app não exige conta Rocky nem backend próprio. A Twitch precisa de internet; provedores de IA remotos recebem o pedido e a amostra de chat. A captura de tela ou áudio do OBS pode incluir Rocky: confira suas fontes e faça uma gravação de teste."
+      "text": "O app não exige conta Rocky nem inclui backend próprio. Twitch e Kick precisam de internet; a Kick também precisa de encaminhamento HTTPS. Provedores de IA remotos recebem o pedido e a amostra de chat. Confira as fontes do OBS com uma gravação de teste."
     },
     {
       "type": "h2",

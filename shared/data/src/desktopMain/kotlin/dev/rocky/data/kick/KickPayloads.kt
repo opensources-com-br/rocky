@@ -50,6 +50,9 @@ internal object KickPayloads {
     fun subscriptionIds(body: String): List<String> = body.objectValue()["data"]!!.jsonArray
         .mapNotNull { it.jsonObject["subscription_id"]?.jsonPrimitive?.content }
 
+    fun subscriptionError(body: String): String? = body.objectValue()["data"]!!.jsonArray
+        .firstNotNullOfOrNull { it.jsonObject["error"]?.jsonPrimitive?.content }
+
     private fun String.objectValue() = json.parseToJsonElement(this).jsonObject
     private fun String.firstDataObject() = objectValue()["data"]!!.jsonArray.first().jsonObject
     private fun JsonObject.string(name: String) = requireNotNull(this[name]) {

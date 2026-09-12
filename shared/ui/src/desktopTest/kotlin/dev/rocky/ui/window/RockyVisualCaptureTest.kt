@@ -303,7 +303,7 @@ class RockyVisualCaptureTest {
         val ai = FakeAiSuggestionClient()
         val repository = TransientNoteRepository()
         val voice = FakeVoiceService().apply {
-            transcripts.addAll(listOf("Rocky, o que o chat quer?", "Rocky, salva isso como nota", "Rocky, salva isso como ideias"))
+            transcripts.addAll(listOf("Rocky, o que o chat quer?", "Rocky, salva isso como nota", "Rocky, salva isso como ideias", "Rocky, o que o chat quer?"))
         }
         render(
             settingsOpen = true, settingsSection = SettingsSection.Platforms,
@@ -316,13 +316,13 @@ class RockyVisualCaptureTest {
             twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
             twitch.emitMessages(1)
         }
-        for (turn in 1..3) {
+        for (turn in 1..4) {
             rule.waitUntil(5_000) { voice.captureStarts >= turn }
             rule.mainClock.advanceTimeBy(8_100L)
             rule.waitUntil(5_000) { voice.captureStarts >= turn + 1 }
         }
         rule.runOnIdle {
-            assertEquals(1, ai.requests)
+            assertEquals(2, ai.requests)
             assertEquals(2, repository.getAll().size)
             assertEquals(1, repository.getAll().count { it.tag == IDEA_TAG })
             assertTrue(voice.spoken.contains("Nota salva."))

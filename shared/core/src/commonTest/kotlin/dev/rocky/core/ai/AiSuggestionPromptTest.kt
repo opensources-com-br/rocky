@@ -10,6 +10,13 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AiSuggestionPromptTest {
+    @Test fun acceptsAnExplicitQuestionWithoutRecentMessages() {
+        val prompt = buildAiSuggestionPrompt(emptyList(), "O que o chat achou?")
+        assertTrue(prompt.messageIds.isEmpty())
+        assertTrue(prompt.input.contains("Nenhuma mensagem recente disponível"))
+        assertTrue(prompt.input.contains("O que o chat achou?"))
+    }
+
     @kotlin.test.Test fun usesTheSelectedResponseLanguage() {
         val prompt = buildAiSuggestionPrompt(listOf(dev.rocky.core.live.ChatMessage("m", "a", "hello", dev.rocky.core.live.StreamPlatform.Twitch)),
             agent = dev.rocky.core.agent.AgentConfiguration(language = dev.rocky.core.locale.RockyLanguage.English))

@@ -16,3 +16,13 @@ Escopo: Twitch, IA, perguntas por texto, voz opcional e notas com fontes. Gere o
 Execute depois o [protocolo de streamers](STREAMER_TEST.pt-BR.md): duas pessoas, três sessões, uma de duas horas, OBS em macOS e Windows. Registre memória, latência, interrupções e qualidade das fontes. Os tokens exibidos são parciais, não o faturamento do provedor.
 
 Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, upgrade ou ausência de áudio no OBS. Registre os resultados humanos antes de promover o candidato.
+
+## Regressão de perguntas e comandos de salvar
+
+- Faça uma pergunta por voz; depois da resposta, confirme que o microfone volta a capturar sem clicar em Próxima.
+- Repita a pergunta sem enviar novas mensagens no chat, por voz e por texto. Uma nova resposta deve ser gerada.
+- Aguarde mais de dois minutos sem mensagens e pergunte novamente. Rocky deve responder explicando a falta de contexto recente, sem inventar mensagens.
+- Com uma resposta na tela, diga “Rocky, salva isso como nota” e depois “Rocky, salva isso como ideias”. Os comandos salvam a resposta atual, sem consultar a IA novamente.
+- Confira as abas Notas e Ideias, reinicie o aplicativo e confirme a persistência. Teste edição, exclusão e exportação de cada categoria.
+- Sem resposta disponível, o comando de salvar deve explicar que ainda não há uma resposta para salvar.
+- Confira o ícone com os três pontos laranja na janela, no Dock do macOS e no instalador. No Windows, confira também a barra de tarefas e o atalho instalado.

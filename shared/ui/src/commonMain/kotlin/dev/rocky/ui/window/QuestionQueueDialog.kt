@@ -12,10 +12,26 @@ import dev.rocky.core.live.*
 @Composable
 internal fun QuestionQueueDialog(records: LocalNotesState, sessionId: String, onDismiss: () -> Unit) {
     var answered by remember { mutableStateOf(false) }
-    val questions = records.notes.filter { it.tag == QUESTION_TAG && it.sessionId == sessionId }
+    var selectedSession by remember { mutableStateOf(sessionId.takeIf(String::isNotBlank)) }
+    var sessionsOpen by remember { mutableStateOf(false) }
+    val allQuestions = records.notes.filter { it.tag == QUESTION_TAG }
+    val questions = allQuestions.filter { selectedSession == null || it.sessionId == selectedSession }
     AlertDialog(onDismissRequest = onDismiss, title = { Text(tr("Grouped questions", "Perguntas agrupadas")) },
         text = { Column {
             Text(tr("Similar wording; review the sources. Up to 100 groups per live.", "Texto semelhante; confira as fontes. Até 100 grupos por live."))
+            Box {
+                TextButton(onClick = { sessionsOpen = true }) {
+                    Text(selectedSession?.let { id -> allQuestions.firstOrNull { it.sessionId == id }?.sessionLabel }
+                        ?: tr("All lives", "Todas as lives"))
+                }
+                DropdownMenu(sessionsOpen, { sessionsOpen = false }) {
+                    DropdownMenuItem(onClick = { selectedSession = null; sessionsOpen = false }) { Text(tr("All lives", "Todas as lives")) }
+                    allQuestions.distinctBy { it.sessionId }.forEach { question ->
+                        DropdownMenuItem(onClick = { selectedSession = question.sessionId; sessionsOpen = false }) { Text(question.sessionLabel) }
+                    }
+                }
+            }
+            if (questions.none { it.completed == answered }) Text(tr("No questions in this queue.", "Nenhuma pergunta nesta fila."))
             Row {
                 TextButton(onClick = { answered = false }) { Text(tr("Pending", "Pendentes") + " (${questions.count { !it.completed }})") }
                 TextButton(onClick = { answered = true }) { Text(tr("Answered", "Respondidas") + " (${questions.count { it.completed }})") }

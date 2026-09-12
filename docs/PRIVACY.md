@@ -19,3 +19,13 @@ Rocky has no account system or telemetry. Chat/transcripts are temporary in-memo
 Cloud providers receive selected chat and the request; their account policies apply. Local loopback Ollama can process suggestions on the computer. Model downloads and Homebrew setup require network access. Temporary transcription files are deleted after normal/error completion; an abrupt crash can leave OS temporary files. SQLite itself is not encrypted by Rocky.
 
 **Settings → Data** provides export, note deletion, configuration/key reset, managed-model removal and folder access. Deletion is logical; exports, external models, backups and provider-held data are not erased. Close Rocky before copying the data folder for backup. Never attach keys, credential files, notes databases or transcripts to public issues.
+
+## Backup, diagnóstico e atualização
+
+O backup JSON em **Dados** inclui registros, fontes, identificação da live e estado de conclusão, sem credenciais. Pode ser criado com o app aberto. A importação exige confirmação, ignora cópias idênticas e cancela diante de um ID conflitante; não substitui registros existentes. Limites: 50 MB e 10.000 registros por arquivo.
+
+O diagnóstico tem prévia e exportação local: versão, estados de conexão/áudio/IA e contagens. Não contém mensagens, chaves, nomes de canal ou caminhos; não é enviado automaticamente.
+
+A consulta de atualização, desativável em **Dados**, acessa a API pública do GitHub na inicialização. O GitHub recebe os dados normais da conexão de rede. O Rocky compara versões das releases oficiais e oferece um link; não instala atualizações. Não envia registros nem credenciais nessa consulta.
+
+Backups contain saved records and evidence, but no credentials. Import is confirmed and preserves existing records. Diagnostics are previewed/exported locally without message contents or secrets. The optional startup update check contacts GitHub's public API; updates are opened through an official release link, never installed automatically.

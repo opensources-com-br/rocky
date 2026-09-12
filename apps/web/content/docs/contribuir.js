@@ -28,7 +28,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "O formulário do Showcase gera um rascunho Markdown local para copiar e anexar a uma contribuição. Não envia nada nem publica automaticamente. Relatos reais devem ter autorização do autor e informações verificáveis; nunca inclua chaves, tokens ou dados privados."
+      "text": "A seção Enviar o seu do Showcase está temporariamente desativada. O formulário e a geração de rascunhos ainda não estão disponíveis. Relatos reais devem ter autorização do autor e informações verificáveis; nunca inclua chaves, tokens ou dados privados."
     },
     {
       "type": "h2",

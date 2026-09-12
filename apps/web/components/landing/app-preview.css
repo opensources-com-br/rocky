@@ -44,3 +44,16 @@
 .rocky-voice-footer strong { font-size: 13px; }
 .rocky-message-metric { border-left: 1px solid var(--rp-border); padding-left: 8px; }
 @media (max-width: 400px) { .rocky-voice-footer { gap: 8px; padding: 12px; } .rocky-voice-label { font-size: 13px; } }
+.rocky-session { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; background: #202023; }
+.rocky-session strong { color: #9347ff; font-size: 10px; letter-spacing: 1.2px; }
+.rocky-session > span { padding: 10px 14px; border: 1px solid var(--rp-border); border-radius: 10px; font-size: 14px; }
+.rocky-platforms { display: flex; gap: 7px; padding: 11px 18px; border-block: 1px solid #29292d; flex-wrap: wrap; }
+.rocky-platforms > span { display: flex; gap: 6px; align-items: center; padding: 6px 10px; border-radius: 18px; border: 1px solid var(--rp-border); background: #202023; color: var(--rp-muted); font-size: 13px; }
+.rocky-platforms i { width: 8px; height: 8px; border-radius: 50%; background: #4d4d51; }
+.rocky-platforms .connected { color: #f6f4f2; }
+.rocky-platforms .connected i { background: #9347ff; }
+.rocky-tabs { display: flex; margin: 12px 14px; padding: 4px; border-radius: 13px; background: #202023; }
+.rocky-tabs > span { flex: .85; padding: 9px 0; text-align: center; border-radius: 9px; font-size: 12px; color: var(--rp-secondary); }
+.rocky-tabs > span:first-child { flex: 1.25; }
+.rocky-tabs > span:nth-child(2) { flex: 1.15; }
+.rocky-tabs .selected { background: #3a3a3e; color: #f6f4f2; font-weight: bold; }

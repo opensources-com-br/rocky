@@ -36,7 +36,7 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 - Atalhos: teste Ctrl+Shift+F8/F9/F10 com Rocky em segundo plano e durante OBS/jogo. Reconfigure, confira conflitos e teste de novo.
 - Fim da fala: compare um comando curto, uma pausa no meio da frase e silêncio total. Ajuste o limiar com ruído ambiente; confirme o limite de oito segundos.
 - Registro livre: dite uma nota sem chat/IA, crie uma ideia por texto, confirme que a aba não mudou, desfaça e verifique SQLite ao reabrir.
-- Primeiro uso: conecte Twitch ou Kick; para Kick, valide credenciais próprias e o webhook HTTPS público. Busque modelos, selecione um, salve e teste a IA.
+- Primeiro uso: conecte Twitch, Kick ou YouTube; valide credenciais próprias e, na Kick, o webhook HTTPS público. Busque modelos, selecione um, salve e teste a IA.
 - Pré-live: teste IA, voz/microfone opcionais e confira uma gravação OBS seguindo a orientação exibida.
 - Janela: mova/redimensione, reinicie, teste modo compacto e configurações sem perder o tamanho principal; remova um monitor e confira recuperação.
 - Falhas: interrompa rede/provedor, tente salvar com pasta de dados indisponível e confirme que rascunhos não desaparecem sem salvar.

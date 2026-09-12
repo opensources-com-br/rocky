@@ -17,7 +17,7 @@ export default function CasePreviewTitle() {
 {"Rocky"}
 </span>
 <span style={{"marginLeft": "auto", "fontFamily": "var(--font-geist-mono), monospace", "fontSize": "9.5px", "letterSpacing": ".1em", "padding": "3px 8px", "borderRadius": "999px", "color": "#e08b57", "border": "1px solid rgba(212,112,60,.3)", "background": "rgba(212,112,60,.1)"}}>
-{"OUVINDO"}
+{"EXEMPLO"}
 </span>
 </div>
   </>);

@@ -185,7 +185,14 @@ internal fun LiveSummary(
         )
         Spacer(Modifier.height(7.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            SourceCount(sourceCounts[StreamPlatform.Twitch] ?: 0, "Twitch", RockyColors.Twitch)
+            listOf(
+                Triple(StreamPlatform.Twitch, "Twitch", RockyColors.Twitch),
+                Triple(StreamPlatform.Kick, "Kick", RockyColors.Kick),
+                Triple(StreamPlatform.YouTube, "YouTube", RockyColors.YouTube),
+            ).forEach { (platform, label, color) ->
+                val count = sourceCounts[platform] ?: 0
+                if (count > 0) SourceCount(count, label, color)
+            }
             EvidenceButton(evidence)
         }
         Spacer(Modifier.height(8.dp))

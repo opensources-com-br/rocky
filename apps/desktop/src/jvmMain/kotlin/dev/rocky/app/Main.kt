@@ -30,6 +30,11 @@ import dev.rocky.platform.desktop.chooseDesktopFile
 import dev.rocky.ui.window.RockyWindow
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import dev.rocky.platform.desktop.DesktopWindowPreferences
+import dev.rocky.platform.desktop.DesktopShortcuts
+import dev.rocky.platform.desktop.ShortcutPreferences
+import dev.rocky.platform.desktop.ShortcutConfiguration
+import androidx.compose.runtime.rememberUpdatedState
 import java.awt.Taskbar
 import javax.imageio.ImageIO
 import java.awt.Dimension
@@ -48,7 +53,13 @@ fun main() = application {
     }
     val windowState = rememberWindowState(size = ExpandedSize)
     var compact by remember { mutableStateOf(false) }
-    var pinned by remember { mutableStateOf(false) }
+    var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
+    var settingsVisible by remember { mutableStateOf(false) }
+    var windowVisible by remember { mutableStateOf(true) }
+    var shortcutConfiguration by remember { mutableStateOf(ShortcutPreferences.configuration) }
+    var shortcutStatus by remember { mutableStateOf<Boolean?>(null) }
+    var shortcutAction by remember { mutableStateOf(-1) }
+    var shortcutRevision by remember { mutableStateOf(0) }
     var previousSize by remember { mutableStateOf(ExpandedSize) }
     var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
     val noteRepository = remember { RecoverableNoteRepository(RockyDesktopPaths.notesDatabase) }
@@ -68,6 +79,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         state = windowState,
+        visible = windowVisible,
         title = "Rocky",
         icon = BitmapPainter(appIcon.toComposeImageBitmap()),
         resizable = true,
@@ -76,7 +88,43 @@ fun main() = application {
         LaunchedEffect(window) {
             window.minimumSize = Dimension(340, 180)
         }
+        val persistBounds by rememberUpdatedState(!compact && !settingsVisible)
+        DisposableEffect(window) {
+            window.bounds = DesktopWindowPreferences.restore()
+            val timer = javax.swing.Timer(350) {
+                if (persistBounds && windowState.placement == WindowPlacement.Floating) DesktopWindowPreferences.save(window.bounds)
+            }.apply { isRepeats = false }
+            val listener = object : java.awt.event.ComponentAdapter() {
+                override fun componentMoved(event: java.awt.event.ComponentEvent) { timer.restart() }
+                override fun componentResized(event: java.awt.event.ComponentEvent) { timer.restart() }
+            }
+            window.addComponentListener(listener)
+            onDispose {
+                timer.stop()
+                if (persistBounds && windowState.placement == WindowPlacement.Floating) DesktopWindowPreferences.save(window.bounds)
+                window.removeComponentListener(listener)
+            }
+        }
+        DisposableEffect(shortcutConfiguration) {
+            shortcutStatus = null
+            val shortcuts = DesktopShortcuts(shortcutConfiguration, onAction = { action ->
+                if (action == 2) {
+                    windowVisible = !windowVisible
+                    if (windowVisible) { windowState.isMinimized = false; window.toFront() }
+                } else { shortcutAction = action; shortcutRevision += 1 }
+            }, onStatus = { shortcutStatus = it })
+            shortcuts.start()
+            onDispose { shortcuts.close() }
+        }
         RockyWindow(
+            shortcutKeys = shortcutConfiguration.keys,
+            shortcutStatus = shortcutStatus,
+            onShortcutKeysChange = { keys ->
+                val config = ShortcutConfiguration(keys[0], keys[1], keys[2])
+                if (config.valid) { ShortcutPreferences.configuration = config; shortcutConfiguration = config }
+            },
+            shortcutAction = shortcutAction,
+            shortcutRevision = shortcutRevision,
             compact = compact,
             pinned = pinned,
             noteRepository = noteRepository,
@@ -116,7 +164,7 @@ fun main() = application {
             onLanguageChange = { LanguageDesktopPreferences.language = it },
             currentTimeLabel = { OffsetDateTime.now().format(TimeFormatter) },
             currentTimeMillis = System::currentTimeMillis,
-            onTogglePinned = { pinned = !pinned },
+            onTogglePinned = { pinned = !pinned; DesktopWindowPreferences.pinned = pinned },
             onToggleCompact = {
                 if (compact) {
                     windowState.size = previousSize
@@ -128,6 +176,7 @@ fun main() = application {
                 compact = !compact
             },
             onSettingsVisibilityChanged = { open ->
+                settingsVisible = open
                 if (open && compact) {
                     compact = false
                     windowState.size = previousSize

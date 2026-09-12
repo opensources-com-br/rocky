@@ -11,5 +11,7 @@ interface NoteRepository {
 
     fun delete(noteId: String)
 
+    fun importNotes(notes: List<LiveNote>): Int = error("Importação não disponível neste repositório")
+
     fun deleteAll() { getAll().forEach { delete(it.id) } }
 }

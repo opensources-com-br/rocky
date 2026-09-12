@@ -10,7 +10,7 @@ data class ReleaseVersion(val major: Int, val minor: Int, val patch: Int, val al
             val match = Regex("""^v?(\d+)\.(\d+)\.(\d+)(?:-alpha\.(\d+))?$""").matchEntire(value) ?: return null
             val groups = match.groupValues
             return ReleaseVersion(groups[1].toIntOrNull() ?: return null, groups[2].toIntOrNull() ?: return null,
-                groups[3].toIntOrNull() ?: return null, groups[4].takeIf { it.isNotEmpty() }?.toIntOrNull())
+                groups[3].toIntOrNull() ?: return null, if (groups[4].isEmpty()) null else groups[4].toIntOrNull() ?: return null)
         }
     }
 }

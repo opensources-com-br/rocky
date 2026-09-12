@@ -83,6 +83,7 @@ fun RockyWindow(
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
+    onRegisterSessionEnd: ((() -> Boolean) -> Unit) = {},
     onOpenGuide: (String) -> Unit = {},
     onOpenDataDirectory: () -> Unit = {},
     onResetSettings: () -> Unit = {},
@@ -136,6 +137,17 @@ fun RockyWindow(
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
+        val workspace = remember(localNotes) { LiveWorkspace(localNotes) }
+        var queueOpen by remember { mutableStateOf(false) }
+        androidx.compose.runtime.DisposableEffect(workspace) {
+            onRegisterSessionEnd { workspace.finish(currentTimeLabel()) }
+            onDispose { onRegisterSessionEnd { true } }
+        }
+        LaunchedEffect(twitch.phase, twitch.sessionId) {
+            if (twitch.phase == TwitchConnectionPhase.Connected) workspace.start(
+                twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}", twitch.startedAtMillis ?: currentTimeMillis())
+            if (twitch.phase == TwitchConnectionPhase.Disconnected) workspace.finish(currentTimeLabel())
+        }
         val sessionStatus = when {
             twitch.phase == TwitchConnectionPhase.Connected -> LiveSessionStatus.Running
             twitch.phase == TwitchConnectionPhase.Failed -> LiveSessionStatus.Ended
@@ -220,12 +232,18 @@ fun RockyWindow(
                 },
             )
         }
+        fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
+        fun finishLive() {
+            if (workspace.finish(currentTimeLabel())) {
+                voice.resetSession(); ai.resetSession(); twitch.disconnect()
+            }
+        }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
             val note = suggestionNote(entry.answer, entry.sources, currentTimeLabel()).copy(
                 id = "${entry.answer.id}-${target.name}",
                 tag = if (target == VoiceSaveTarget.Idea) IDEA_TAG else "SUGESTÃO IA",
             )
-            if (!localNotes.save(note)) return false
+            if (!saveRecord(note)) return false
             return true
         }
         fun saveCurrentSuggestion(target: VoiceSaveTarget): Boolean {
@@ -238,7 +256,7 @@ fun RockyWindow(
             val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
             if (dictated != null) {
-                val saved = localNotes.save(LiveNote(
+                val saved = saveRecord(LiveNote(
                     "manual-${kotlin.random.Random.nextLong()}", dictated.text, currentTimeLabel(),
                     if (dictated.target == VoiceSaveTarget.Idea) IDEA_TAG else "MANUAL",
                 ))
@@ -526,7 +544,7 @@ fun RockyWindow(
                                     onReload = localNotes::reload,
                                     notice = localNotes.notice,
                                     onCreate = { text ->
-                                        localNotes.save(LiveNote("manual-${kotlin.random.Random.nextLong()}", text, currentTimeLabel(),
+                                        saveRecord(LiveNote("manual-${kotlin.random.Random.nextLong()}", text, currentTimeLabel(),
                                             if (mainSection == MainSection.Ideas) IDEA_TAG else "MANUAL"))
                                     },
                                     onUpdate = localNotes::update,
@@ -543,7 +561,7 @@ fun RockyWindow(
                                     loadFailed = localNotes.loadFailed,
                                     onReload = localNotes::reload,
                                     onCreate = { text ->
-                                        localNotes.save(LiveNote("manual-${kotlin.random.Random.nextLong()}", text, currentTimeLabel(),
+                                        saveRecord(LiveNote("manual-${kotlin.random.Random.nextLong()}", text, currentTimeLabel(),
                                             if (mainSection == MainSection.Ideas) IDEA_TAG else "MANUAL"))
                                     },
                                     onUpdate = localNotes::update,

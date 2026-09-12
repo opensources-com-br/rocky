@@ -28,6 +28,7 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun AiSettings(ai: AiSuggestionState) {
     val scope = rememberCoroutineScope()
+    var advanced by remember { mutableStateOf(false) }
     var apiKeyVisible by remember { mutableStateOf(false) }
     val providerLabel = when (ai.configuration.provider) {
         AiProviderKind.Ollama -> "Ollama local"
@@ -51,13 +52,20 @@ internal fun AiSettings(ai: AiSuggestionState) {
             )
         }
         Spacer(Modifier.height(14.dp))
-        AiTextField(
+        androidx.compose.material.TextButton(onClick = { advanced = !advanced }) {
+            Text(tr("Advanced connection settings", "Configuração avançada da conexão"))
+        }
+        if (advanced) AiTextField(
             value = ai.configuration.endpoint,
             label = "Endereço do provedor",
             placeholder = "http://localhost:11434",
             tag = "ai-endpoint",
             onValueChange = ai::updateEndpoint,
         )
+        Text(if (ai.configuration.provider == AiProviderKind.Ollama)
+            tr("Use the name of a model installed in Ollama. No API key required.", "Use o nome de um modelo instalado no Ollama. Não exige chave de API.")
+            else tr("Use a model available in your provider account. API usage may be billed separately.", "Use um modelo disponível na sua conta do provedor. O uso da API pode ser cobrado separadamente."),
+            style = MaterialTheme.typography.caption)
         Spacer(Modifier.height(10.dp))
         AiTextField(
             value = ai.configuration.model,

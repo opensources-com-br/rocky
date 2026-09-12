@@ -28,11 +28,24 @@ import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.platform.desktop.chooseDesktopFile
 import dev.rocky.ui.window.RockyWindow
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import java.awt.Taskbar
+import javax.imageio.ImageIO
 import java.awt.Dimension
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 fun main() = application {
+    val appIcon = remember {
+        ImageIO.read(requireNotNull(Thread.currentThread().contextClassLoader.getResource("rocky.png")))
+    }
+    LaunchedEffect(Unit) {
+        if (Taskbar.isTaskbarSupported()) {
+            val taskbar = Taskbar.getTaskbar()
+            if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) taskbar.iconImage = appIcon
+        }
+    }
     val windowState = rememberWindowState(size = ExpandedSize)
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(false) }
@@ -56,6 +69,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         state = windowState,
         title = "Rocky",
+        icon = BitmapPainter(appIcon.toComposeImageBitmap()),
         resizable = true,
         alwaysOnTop = pinned,
     ) {

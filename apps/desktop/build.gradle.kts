@@ -47,6 +47,7 @@ compose.desktop {
             packageVersion = providers.gradleProperty("rockyPackageVersion").get()
 
             macOS {
+                iconFile.set(project.file("icons/rocky.icns"))
                 bundleID = "dev.rocky.app"
                 signing {
                     sign.set(providers.environmentVariable("ROCKY_MAC_SIGN").map { it == "true" }.orElse(false))
@@ -62,6 +63,7 @@ compose.desktop {
             }
 
             windows {
+                iconFile.set(project.file("icons/rocky.ico"))
                 menuGroup = "Rocky"
                 shortcut = true
                 upgradeUuid = "CD761319-DDDF-439F-BEAF-9616ED84E4AF"

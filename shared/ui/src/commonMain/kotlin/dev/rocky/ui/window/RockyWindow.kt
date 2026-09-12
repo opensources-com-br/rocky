@@ -193,7 +193,7 @@ fun RockyWindow(
             else -> LiveSessionStatus.Stopped
         }
         val visibleSuggestion = ai.suggestion
-        val visiblePlatforms = twitch.platforms
+        val visiblePlatforms = platformStatuses(twitch, kick)
 
         LaunchedEffect(
             twitch.phase,
@@ -473,7 +473,7 @@ fun RockyWindow(
                                     checkUpdatesOnStart = checkUpdatesOnStart,
                                     onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
                                     diagnosticReport = {
-                                        listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "AI: ${ai.configuration.provider}",
+                                        listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "Kick: ${kick.phase}", "AI: ${ai.configuration.provider}",
                                             "AI configured: ${ai.isReady}", "Completed requests: ${ai.completedRequests}",
                                             "Last request ms: ${ai.lastDurationMillis}", "Filtered messages: ${ai.filteredCount}",
                                             "Voice ready: ${voice.transcriptionReady}", "Microphone active: ${voice.capturing}",
@@ -575,13 +575,19 @@ fun RockyWindow(
                                 finishLive()
                             }
                         }
+                        if (kick.isActive) {
+                            KickSessionControls(kick) {
+                                silenced = false
+                                finishLive()
+                            }
+                        }
                         Divider(color = RockyColors.Divider)
                         PlatformStrip(visiblePlatforms)
                         Divider(color = RockyColors.Divider)
                         LiveSummary(
                             agentName = agent.displayName,
                             suggestion = visibleSuggestion,
-                            sourceCounts = mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0)),
+                            sourceCounts = ai.suggestionSources.groupingBy(ChatMessage::platform).eachCount(),
                             sessionStatus = sessionStatus,
                             sessionAvailable = liveActive,
                             suggestionSaved = false,
@@ -672,7 +678,7 @@ fun RockyWindow(
                                     },
                                 )
                                 MainSection.Pulse -> PulseContent(
-                                    samples = twitch.pulse.toList(),
+                                    samples = if (kick.isActive) kick.pulse.toList() else twitch.pulse.toList(),
                                     platforms = visiblePlatforms,
                                 )
                             }
@@ -685,8 +691,8 @@ fun RockyWindow(
                             inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
-                            viewerCount = twitch.viewerCount,
-                            messagesPerMinute = twitch.messagesPerMinute,
+                            viewerCount = listOfNotNull(twitch.viewerCount, kick.viewerCount).takeIf { it.isNotEmpty() }?.sum(),
+                            messagesPerMinute = twitch.messagesPerMinute + kick.messagesPerMinute,
                             onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }
@@ -766,22 +772,29 @@ internal fun CompactContent(
 }
 
 internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): String = suggestion ?: when (status) {
-    LiveSessionStatus.Stopped -> "Conecte sua Twitch"
-    LiveSessionStatus.Running -> "Chat real da Twitch"
-    LiveSessionStatus.Ended -> "Conexão da Twitch encerrada"
+    LiveSessionStatus.Stopped -> "Conecte Twitch ou Kick"
+    LiveSessionStatus.Running -> "Chat da live conectado"
+    LiveSessionStatus.Ended -> "Conexão da live encerrada"
 }
 
-private val TwitchLiveState.platforms: List<PlatformStatus>
-    get() = listOf(
+private fun platformStatuses(twitch: TwitchLiveState, kick: KickLiveState): List<PlatformStatus> =
+    listOf(
         PlatformStatus(
             name = "Twitch",
-            account = account?.let { "@${it.login}" } ?: "Conectando",
-            audience = viewerCount?.toString() ?: "—",
-            messagesPerMinute = messagesPerMinute,
+            account = twitch.account?.let { "@${it.login}" } ?: "Não conectada",
+            audience = twitch.viewerCount?.toString() ?: "—",
+            messagesPerMinute = twitch.messagesPerMinute,
             colorKey = PlatformColor.Twitch,
-            enabled = phase != TwitchConnectionPhase.Failed,
+            enabled = twitch.phase != TwitchConnectionPhase.Failed,
         ),
-        PlatformStatus("Kick", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
+        PlatformStatus(
+            name = "Kick",
+            account = kick.account?.let { "@${it.username}" } ?: "Não conectada",
+            audience = kick.viewerCount?.toString() ?: "—",
+            messagesPerMinute = kick.messagesPerMinute,
+            colorKey = PlatformColor.Kick,
+            enabled = kick.phase != KickConnectionPhase.Failed,
+        ),
         PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
     )

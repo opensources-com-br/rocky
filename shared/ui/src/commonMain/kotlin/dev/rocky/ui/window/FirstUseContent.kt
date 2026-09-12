@@ -43,7 +43,7 @@ internal fun FirstUseContent(
         SetupStep(
             number = 1,
             title = "Conecte sua plataforma",
-            description = tr("Connect Twitch or Kick and authorize your channel in the browser.", "Conecte Twitch ou Kick e autorize seu canal no navegador."),
+            description = tr("Connect Twitch, Kick or YouTube and authorize your channel in the browser.", "Conecte Twitch, Kick ou YouTube e autorize seu canal no navegador."),
             complete = twitchConnected,
             action = if (twitchConnected) "Revisar plataforma" else "Configurar plataforma",
             onAction = onConfigureTwitch,

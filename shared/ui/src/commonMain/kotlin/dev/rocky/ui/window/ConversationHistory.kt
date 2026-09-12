@@ -13,6 +13,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun ConversationHistory(
     entries: List<ConversationEntry>,
+    notice: String? = null,
+    canUndo: Boolean = false,
+    onUndo: () -> Unit = {},
     onDismiss: () -> Unit,
     onRepeat: (String) -> Unit,
     onSave: (ConversationEntry, VoiceSaveTarget) -> Unit,
@@ -24,6 +27,10 @@ internal fun ConversationHistory(
         text = {
             LazyColumn(Modifier.heightIn(max = 450.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item { Text(tr("Last 30 answers in this session. Cleared when disconnected.", "Últimas 30 respostas desta sessão. Limpo ao desconectar.")) }
+                if (notice != null) item {
+                    Text(notice)
+                    if (canUndo) TextButton(onClick = onUndo) { Text(tr("Undo", "Desfazer")) }
+                }
                 items(entries.asReversed(), key = { it.answer.id }) { entry ->
                     Column {
                         Text(entry.question, style = MaterialTheme.typography.subtitle2)

@@ -306,7 +306,8 @@ fun RockyWindow(
             onDismiss = { preflightOpen = false },
         )
         if (historyOpen) ConversationHistory(
-            ai.history.toList(), onDismiss = { historyOpen = false },
+            ai.history.toList(), notice = localNotes.notice, canUndo = localNotes.undoSaveId != null,
+            onUndo = localNotes::undoSave, onDismiss = { historyOpen = false },
             onRepeat = { request ->
                 voice.stopSpeaking()
                 ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request,

@@ -27,3 +27,15 @@ internal fun voiceSaveTarget(command: String): VoiceSaveTarget? {
 }
 
 internal const val IDEA_TAG = "IDEIA"
+
+internal data class DictatedNote(val target: VoiceSaveTarget, val text: String)
+
+internal fun dictatedNote(command: String): DictatedNote? {
+    val match = Regex(
+        """^(anota|anote|nota|ideia|salva (?:uma )?ideia|save (?:a )?note|save (?:an )?idea)\s*[:,-]?\s+(.+)$""",
+        setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL),
+    ).matchEntire(command.trim()) ?: return null
+    val text = match.groupValues[2].trim().take(2000).takeIf { it.isNotBlank() } ?: return null
+    val idea = match.groupValues[1].contains("ide", ignoreCase = true)
+    return DictatedNote(if (idea) VoiceSaveTarget.Idea else VoiceSaveTarget.Note, text)
+}

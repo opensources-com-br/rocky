@@ -18,7 +18,7 @@ export default function HeroContent() {
 {"E ela fala com você."}
 </h1>
 <p style={{"margin": "0", "maxWidth": "540px", "fontSize": "16.5px", "lineHeight": "1.6", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
-{"Rocky acompanha sua Twitch, agrupa perguntas e ajuda você a consultar o chat por texto ou voz. Salve notas e ideias usando Ollama local ou sua chave de OpenAI/OpenRouter."}
+{"Rocky acompanha Twitch ou Kick, agrupa perguntas e ajuda você a consultar o chat por texto ou voz. Salve notas e ideias usando Ollama local ou sua chave de OpenAI/OpenRouter."}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px", "marginTop": "4px"}}>
 <a href={"https://github.com/opensources-com-br/rocky/releases"} style={{"padding": "11px 20px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}}>

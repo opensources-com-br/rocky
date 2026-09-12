@@ -178,15 +178,16 @@ fun RockyWindow(
             onRegisterSessionEnd { workspace.finish(currentTimeLabel()) }
             onDispose { onRegisterSessionEnd { true } }
         }
-        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected
-        val liveActive = twitch.isRealSession || kick.isActive
-        val visibleMessages = (twitch.messages + kick.messages).sortedBy(ChatMessage::receivedAtMillis)
-        val visibleMessageCount = twitch.totalMessages + kick.totalMessages
+        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected
+        val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive
+        val visibleMessages = (twitch.messages + kick.messages + youtube.messages).sortedBy(ChatMessage::receivedAtMillis)
+        val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages
         fun recentMessages() = (
             twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
-                kick.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
+                kick.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
+                youtube.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
             ).sortedBy(ChatMessage::receivedAtMillis)
-        LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId) {
+        LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId) {
             when {
                 twitch.phase == TwitchConnectionPhase.Connected -> workspace.start(
                     twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}",
@@ -194,22 +195,28 @@ fun RockyWindow(
                 kick.isConnected -> workspace.start(
                     kick.sessionId, "@${kick.account?.username} · ${currentTimeLabel()}",
                     kick.startedAtMillis ?: currentTimeMillis())
+                youtube.isConnected -> workspace.start(
+                    youtube.sessionId, "${youtube.account?.displayName} · ${currentTimeLabel()}",
+                    youtube.startedAtMillis ?: currentTimeMillis())
                 !liveActive -> workspace.finish(currentTimeLabel())
             }
         }
         val sessionStatus = when {
             liveConnected -> LiveSessionStatus.Running
-            twitch.phase == TwitchConnectionPhase.Failed || kick.phase == KickConnectionPhase.Failed -> LiveSessionStatus.Ended
+            twitch.phase == TwitchConnectionPhase.Failed || kick.phase == KickConnectionPhase.Failed ||
+                youtube.phase == YouTubeConnectionPhase.Failed -> LiveSessionStatus.Ended
             else -> LiveSessionStatus.Stopped
         }
         val visibleSuggestion = ai.suggestion
-        val visiblePlatforms = platformStatuses(twitch, kick)
+        val visiblePlatforms = platformStatuses(twitch, kick, youtube)
 
         LaunchedEffect(
             twitch.phase,
             twitch.totalMessages,
             kick.phase,
             kick.totalMessages,
+            youtube.phase,
+            youtube.totalMessages,
             ai.automaticAnalysis,
             ai.analysisRevision,
             ai.profile,
@@ -226,15 +233,16 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, kick.phase) {
+        LaunchedEffect(twitch.phase, kick.phase, youtube.phase) {
             while (liveActive) {
                 delay(METRICS_REFRESH_MILLIS)
                 twitch.refreshMetrics()
                 kick.refreshMetrics()
+                youtube.refreshMetrics()
             }
         }
 
-        LaunchedEffect(twitch.totalMessages, kick.totalMessages, ai.filters, workspace.sessionId) {
+        LaunchedEffect(twitch.totalMessages, kick.totalMessages, youtube.totalMessages, ai.filters, workspace.sessionId) {
             if (workspace.sessionId.isNotBlank()) {
                 workspace.questions.collect(dev.rocky.core.live.filterChat(visibleMessages, ai.filters).messages,
                     workspace.sessionId, workspace.label, currentTimeLabel(), workspace.offset(currentTimeMillis()),
@@ -292,7 +300,7 @@ fun RockyWindow(
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
         fun finishLive(): Boolean {
             if (!workspace.finish(currentTimeLabel())) return false
-            voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect()
+            voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect()
             return true
         }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
@@ -790,7 +798,11 @@ internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): St
     LiveSessionStatus.Ended -> "Conexão da live encerrada"
 }
 
-private fun platformStatuses(twitch: TwitchLiveState, kick: KickLiveState): List<PlatformStatus> =
+private fun platformStatuses(
+    twitch: TwitchLiveState,
+    kick: KickLiveState,
+    youtube: YouTubeLiveState,
+): List<PlatformStatus> =
     listOf(
         PlatformStatus(
             name = "Twitch",
@@ -810,7 +822,15 @@ private fun platformStatuses(twitch: TwitchLiveState, kick: KickLiveState): List
             enabled = kick.phase != KickConnectionPhase.Failed,
             connected = kick.isActive,
         ),
-        PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
+        PlatformStatus(
+            name = "YouTube",
+            account = youtube.account?.displayName ?: "Não conectada",
+            audience = youtube.viewerCount?.toString() ?: "—",
+            messagesPerMinute = youtube.messagesPerMinute,
+            colorKey = PlatformColor.YouTube,
+            enabled = youtube.phase != YouTubeConnectionPhase.Failed,
+            connected = youtube.isActive,
+        ),
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
     )
 

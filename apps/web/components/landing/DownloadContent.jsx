@@ -6,7 +6,7 @@ export default function DownloadContent() {
 {"Dê mais atenção às perguntas do chat."}
 </h2>
 <p style={{"margin": "0", "maxWidth": "460px", "fontSize": "15px", "lineHeight": "1.6", "color": "rgba(255,255,255,.45)"}}>
-{"Experimente a versão alpha para macOS ou Windows. Conecte sua Twitch e teste a IA antes da live. Instaladores de desenvolvimento não assinados."}
+{"Experimente a versão alpha para macOS ou Windows. Conecte Twitch ou Kick e teste a IA antes da live. Instaladores de desenvolvimento não assinados."}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px"}}>
 <a href={"https://github.com/opensources-com-br/rocky/releases"} style={{"padding": "12px 24px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}}>

@@ -2,7 +2,7 @@ export const steps = [
   {
     "n": "01",
     "title": "Acompanha sua live",
-    "text": "Recebe novas mensagens da Twitch ou Kick e agrupa perguntas. A Kick exige um webhook HTTPS público."
+    "text": "Recebe novas mensagens da Twitch, Kick ou YouTube e agrupa perguntas. A Kick exige um webhook HTTPS público."
   },
   {
     "n": "02",

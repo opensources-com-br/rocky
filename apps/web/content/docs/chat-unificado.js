@@ -1,15 +1,45 @@
 const content = {
-  group: "Recursos",
-  lead: "Todas as plataformas conectadas viram uma fila só, em ordem de chegada, com a origem de cada mensagem preservada.",
-  blocks: [
-    {"type": "h2", "text": "Como a fila funciona"},
-    {"type": "para", "text": "Cada mensagem entra com sua plataforma, autor e horário. O Rocky agrupa o que é a mesma pergunta feita por pessoas diferentes e ignora repetição do mesmo autor, emote solto e conversa paralela."},
-    {"type": "h2", "text": "Filtros aplicados por padrão"},
-    {"type": "list", "items": ["Mensagens idênticas do mesmo autor em menos de trinta segundos.", "Mensagens compostas apenas de emotes ou pontuação.", "Comandos de bot e links de moderação.", "Usuários que você silenciou na plataforma de origem."]},
-    {"type": "h2", "text": "Pulso"},
-    {"type": "para", "text": "A aba Pulso mostra mensagens por minuto e espectadores de cada plataforma. Serve para perceber quando um canal esquentou sem você notar, ou quando a transmissão caiu em um deles."},
-    {"type": "note", "text": "A contagem de espectadores no rodapé da janela soma apenas as plataformas com o chip ligado."},
-  ],
+  "group": "Recursos",
+  "lead": "A aba Conversa exibe o chat recebido da Twitch. A fila de perguntas organiza uma parte desse conteúdo; não existe chat unificado de várias plataformas nesta versão.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Perguntas agrupadas"
+    },
+    {
+      "type": "para",
+      "text": "Perguntas detectadas por regras de texto são agrupadas por semelhança e salvas por live. Use a fila para consultar fontes e marcar pendentes ou respondidas. A detecção pode deixar perguntas de fora; não garante equivalência semântica nem identifica automaticamente tudo que foi respondido em voz alta."
+    },
+    {
+      "type": "h2",
+      "text": "Filtros do contexto"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Comandos iniciados por ! ou / são ignorados por padrão.",
+        "Nightbot, StreamElements, Streamlabs e Moobot estão na lista inicial de bots; a lista é editável.",
+        "Repetições do mesmo autor e rajadas acima de dez mensagens em trinta segundos podem ser excluídas do contexto, além de longas repetições de caracteres.",
+        "Filtros afetam a IA e a fila de perguntas. O chat exibido permanece intacto. Não importam a lista de usuários silenciados da plataforma."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Atalhos de pergunta"
+    },
+    {
+      "type": "para",
+      "text": "Dúvidas principais, O que perdi? e Ideias do chat enviam pedidos prontos à IA. O resultado usa a mesma amostra recente; não reconstrói períodos ausentes nem a live inteira."
+    },
+    {
+      "type": "h2",
+      "text": "Pulso"
+    },
+    {
+      "type": "para",
+      "text": "A aba Pulso mostra tendências calculadas das amostras recebidas. As métricas ativas são da Twitch: mensagens por minuto e espectadores. Quedas de conexão ou ausência de dados limitam a leitura."
+    }
+  ]
 };
 
 export default content;

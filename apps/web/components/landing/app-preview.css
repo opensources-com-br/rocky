@@ -15,3 +15,14 @@
 .rocky-header-icons svg { width: 17px; height: 17px; }
 .rocky-preview figcaption { margin-top: 12px; text-align: center; font-size: 11px; color: #777479; }
 @media (max-width: 520px) { .rocky-app-header { gap: 8px; padding: 14px 12px; flex-wrap: wrap; } .rocky-header-icons { gap: 10px; } }
+.rocky-answer { padding: 8px 20px; background: linear-gradient(#2a1b17, #171315); }
+.rocky-answer-label { display: flex; justify-content: space-between; align-items: center; color: #e57436; font-size: 12px; letter-spacing: 2px; }
+.rocky-answer-label svg { width: 42px; height: 26px; }
+.rocky-answer p { font-size: 28px; line-height: 34px; margin: 8px 0 7px; }
+.rocky-sources { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--rp-secondary); }
+.rocky-sources > span:first-child { color: #9347ff; }
+.rocky-evidence { margin-left: 10px; color: #e57436; }
+.rocky-answer-actions { display: flex; gap: 8px; margin-top: 8px; }
+.rocky-app [data-slot="button"] { height: 42px; border-radius: 11px; border: 1px solid var(--rp-border); background: transparent; color: #f6f4f2; font: inherit; font-size: 14px; padding: 0 12px; box-shadow: none; }
+.rocky-answer-actions [data-slot="button"]:first-child { flex: 1; background: #e57436; color: #000; border-color: #e57436; font-weight: bold; }
+@media (max-width: 400px) { .rocky-answer { padding: 8px 12px; } .rocky-app [data-slot="button"] { font-size: 12px; padding: 0 8px; } }

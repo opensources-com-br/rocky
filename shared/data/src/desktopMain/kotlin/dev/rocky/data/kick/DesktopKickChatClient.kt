@@ -7,6 +7,8 @@ import dev.rocky.core.kick.KickConnectionEvent
 import dev.rocky.core.kick.KickConnectionListener
 import dev.rocky.core.kick.KickConnectionPhase
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 class DesktopKickChatClient : KickChatClient {
@@ -16,6 +18,9 @@ class DesktopKickChatClient : KickChatClient {
     private val ioExecutor = Executors.newSingleThreadExecutor { task ->
         Thread(task, "rocky-kick-io").apply { isDaemon = true }
     }
+    private val scheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { task ->
+        Thread(task, "rocky-kick-metrics").apply { isDaemon = true }
+    }
     @Volatile private var active = false
     @Volatile private var listener = KickConnectionListener {}
     @Volatile private var configuration = KickConfiguration()
@@ -24,6 +29,8 @@ class DesktopKickChatClient : KickChatClient {
     @Volatile private var receiver: KickLocalReceiver? = null
     @Volatile private var subscriptionIds = emptyList<String>()
     @Volatile private var authorizationCompleted = false
+
+    init { scheduler.scheduleAtFixedRate(::refreshAudience, 30, 30, TimeUnit.SECONDS) }
 
     override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
         stop(notify = false)
@@ -79,8 +86,28 @@ class DesktopKickChatClient : KickChatClient {
                     account = newAccount
                     subscriptionIds = newSubscriptionIds
                     listener.onEvent(KickConnectionEvent.Connected(newAccount))
+                    refreshAudience()
                 }
             }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+        }
+    }
+
+    @Synchronized
+    private fun refreshAudience() {
+        val run = generation.get()
+        val currentTokens = tokens ?: return
+        if (!isCurrent(run) || account == null) return
+        ioExecutor.execute {
+            runCatching { api.viewerCount(currentTokens.accessToken) }
+                .recoverCatching { error ->
+                    if (error !is KickApiException || error.statusCode != 401) throw error
+                    val current = configuration
+                    val refreshed = api.refresh(current.clientId, current.clientSecret, currentTokens.refreshToken)
+                    if (isCurrent(run)) tokens = refreshed
+                    api.viewerCount(refreshed.accessToken)
+                }
+                .onSuccess { if (isCurrent(run)) listener.onEvent(KickConnectionEvent.AudienceUpdated(it)) }
+                .onFailure { if (isCurrent(run)) listener.onEvent(KickConnectionEvent.AudienceUpdated(null)) }
         }
     }
 
@@ -89,6 +116,7 @@ class DesktopKickChatClient : KickChatClient {
     override fun close() {
         stop(notify = false)
         ioExecutor.shutdownNow()
+        scheduler.shutdownNow()
     }
 
     private fun stop(notify: Boolean) {

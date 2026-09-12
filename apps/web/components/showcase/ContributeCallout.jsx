@@ -9,7 +9,7 @@ export default function ContributeCallout({ openSubmit }) {
 {"Roda o Rocky na sua live?"}
 </h2>
 <p style={{"margin": "0", "maxWidth": "440px", "fontSize": "15px", "lineHeight": "1.6", "color": "rgba(255,255,255,.45)"}}>
-{"Abra um PR com a sua configuração e ela entra nesta página."}
+{"Prepare um relato real e proponha uma contribuição no GitHub. A publicação depende de revisão."}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px"}}>
 <Button variant="ghost" className="reference-button" type="button" style={{"padding": "11px 22px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500", "cursor": "pointer"}} onClick={openSubmit}>

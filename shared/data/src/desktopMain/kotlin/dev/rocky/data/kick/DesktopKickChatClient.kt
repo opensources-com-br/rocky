@@ -115,8 +115,9 @@ class DesktopKickChatClient : KickChatClient {
 
     override fun close() {
         stop(notify = false)
-        ioExecutor.shutdownNow()
         scheduler.shutdownNow()
+        ioExecutor.shutdown()
+        if (!ioExecutor.awaitTermination(3, TimeUnit.SECONDS)) ioExecutor.shutdownNow()
     }
 
     private fun stop(notify: Boolean) {

@@ -33,6 +33,10 @@ class DesktopShortcuts(
 ) : AutoCloseable {
     @Volatile private var running = true
     private var worker: Thread? = null
+    private var carbon: Carbon? = null
+    private var handlerRef: Pointer? = null
+    private val refs = mutableListOf<Pointer>()
+    private var handler: Carbon.Handler? = null
 
     fun start() {
         require(configuration.valid)
@@ -59,6 +63,30 @@ class DesktopShortcuts(
                     registered.forEach { api.UnregisterHotKey(null, it) }
                 }
             }, "rocky-shortcuts").apply { isDaemon = true; start() }
+        } else if (Platform.isMac()) {
+            try {
+                val api = Native.load("Carbon", Carbon::class.java)
+                carbon = api
+                handler = Carbon.Handler { _, event, _ ->
+                    val id = HotKeyId()
+                    val result = api.GetEventParameter(event, 0x2d2d2d2d, 0x686b6964, null, id.size(), null, id)
+                    if (result == 0) { id.read(); dispatch(id.id - 1) }
+                    0
+                }
+                val spec = EventSpec().apply { eventClass = 0x6b657962; kind = 5; write() }
+                val reference = PointerByReference()
+                check(api.InstallEventHandler(api.GetEventDispatcherTarget(), handler!!, 1, spec, null, reference) == 0)
+                handlerRef = reference.value
+                val codes = listOf(122, 120, 99, 118, 96, 97, 98, 100, 101, 109, 103, 111)
+                configuration.keys.forEachIndexed { index, key ->
+                    val id = HotKeyValue().apply { signature = 0x726f636b; this.id = index + 1; write() }
+                    val ref = PointerByReference()
+                    check(api.RegisterEventHotKey(codes[key - 1], 4096 or 512, id, api.GetEventDispatcherTarget(), 0, ref) == 0)
+                    refs.add(ref.value)
+                }
+                onStatus(true)
+            } catch (_: Exception) { releaseMac(); onStatus(false) }
+            catch (_: LinkageError) { releaseMac(); onStatus(false) }
         } else onStatus(false)
     }
 
@@ -66,9 +94,18 @@ class DesktopShortcuts(
         EventQueue.invokeLater { if (running && action in 0..2) onAction(action) }
     }
 
+    private fun releaseMac() {
+        carbon?.let { api ->
+            refs.forEach { api.UnregisterEventHotKey(it) }; refs.clear()
+            handlerRef?.let { api.RemoveEventHandler(it) }; handlerRef = null
+        }
+        handler = null
+    }
+
     override fun close() {
         running = false
         worker?.join(500)
+        releaseMac()
     }
 
     @Structure.FieldOrder("signature", "id")

@@ -315,6 +315,13 @@ fun RockyWindow(
         }
 
         CompositionLocalProvider(LocalRockyLanguage provides language) {
+        if (queueOpen) QuestionQueueDialog(localNotes, workspace.sessionId, { queueOpen = false })
+        workspace.summary?.let { text ->
+            androidx.compose.material.AlertDialog(onDismissRequest = { workspace.summary = null },
+                title = { Text(tr("Saved live summary", "Resumo da live salvo")) },
+                text = { Text(text, modifier = Modifier.verticalScroll(rememberScrollState())) },
+                confirmButton = { androidx.compose.material.TextButton(onClick = { workspace.summary = null }) { Text("OK") } })
+        }
         if (preflightOpen) PreflightDialog(aiScope, twitch, ai, voice, agent.displayName,
             onConfigure = { section ->
                 preflightOpen = false; settingsOpen = true; settingsSection = section
@@ -401,7 +408,7 @@ fun RockyWindow(
                                     onOpenDataDirectory = onOpenDataDirectory,
                                     onExportNotes = { localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) } },
                                     onResetSettings = {
-                                        voice.resetSession(); ai.resetSession(); twitch.disconnect()
+                                        finishLive()
                                         onResetSettings()
                                         ai.updateApiKey("")
                                     },
@@ -431,9 +438,7 @@ fun RockyWindow(
                                     },
                                     onDisconnect = {
                                         silenced = false
-                                        voice.resetSession()
-                                        ai.resetSession()
-                                        twitch.disconnect()
+                                        finishLive()
                                     },
                                     onOpenBrowser = onOpenTwitchAuthorization,
                                 )
@@ -476,9 +481,7 @@ fun RockyWindow(
                         if (twitch.isRealSession) {
                             TwitchSessionControls(twitch) {
                                 silenced = false
-                                voice.resetSession()
-                                ai.resetSession()
-                                twitch.disconnect()
+                                finishLive()
                             }
                         }
                         Divider(color = RockyColors.Divider)
@@ -539,7 +542,7 @@ fun RockyWindow(
                                 )
                                 MainSection.Support -> SupportContent()
                                 MainSection.Notes -> NotesContent(
-                                    notes = localNotes.notes.filter { it.tag != IDEA_TAG },
+                                    notes = localNotes.notes.filter { it.tag != IDEA_TAG && it.tag != dev.rocky.core.live.QUESTION_TAG },
                                     loadFailed = localNotes.loadFailed,
                                     onReload = localNotes::reload,
                                     notice = localNotes.notice,

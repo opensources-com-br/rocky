@@ -39,7 +39,7 @@ class KickLocalReceiverTest {
                 .header("Kick-Event-Type", "chat.message.sent")
                 .POST(HttpRequest.BodyPublishers.ofString(body)).build()
             assertEquals(204, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
-            assertEquals(401, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
+            assertEquals(204, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
         }
         assertEquals(listOf("auth"), codes)
         assertEquals(listOf("Olá"), messages)

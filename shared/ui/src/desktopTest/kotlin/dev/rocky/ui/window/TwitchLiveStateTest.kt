@@ -62,6 +62,18 @@ class TwitchLiveStateTest {
     }
 
     @Test
+    fun clearsAudienceWhenTheConnectionFails() {
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client)
+        state.connect("client-id")
+        client.emit(TwitchConnectionEvent.AudienceUpdated(321))
+
+        client.emit(TwitchConnectionEvent.PhaseChanged(TwitchConnectionPhase.Failed, "offline"))
+
+        assertEquals(null, state.viewerCount)
+    }
+
+    @Test
     fun keepsOnlyTheMostRecentChatMessages() {
         val client = FakeTwitchChatClient()
         val state = TwitchLiveState(client)

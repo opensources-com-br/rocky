@@ -90,6 +90,7 @@ internal class TwitchLiveState(
                 is TwitchConnectionEvent.PhaseChanged -> {
                     phase = event.phase
                     detail = event.detail
+                    if (event.phase == TwitchConnectionPhase.Failed) viewerCount = null
                     if (event.phase == TwitchConnectionPhase.Disconnected) {
                         account = null
                         viewerCount = null

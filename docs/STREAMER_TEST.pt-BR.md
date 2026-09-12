@@ -73,7 +73,7 @@ Faça uma gravação local curta antes da transmissão pública.
 3. Capture apenas o microfone do streamer. Acione **Testar voz** e confirme que o streamer ouve o Rocky, mas a gravação não.
 4. Adicione intencionalmente a captura de áudio do desktop. Confirme que o Rocky passa a ser ouvido na gravação e documente essa escolha.
 5. Reproduza uma sugestão enquanto o streamer fala. Confirme que isso não cria eco, microfonia ou transcrição repetida.
-6. Inicie e encerre o push-to-talk durante a gravação do OBS. Confirme que o Rocky captura apenas o microfone escolhido.
+6. Ligue e desligue o ouvinte durante a gravação do OBS; interrompa uma resposta e faça outro comando. Confirme que o Rocky captura apenas o microfone escolhido.
 7. Revise a gravação procurando áudio estourado, duplicado, microfone ausente e exposição acidental das configurações ou API keys.
 
 Use fones de ouvido nos testes de voz. Não mostre a tela de configurações de IA em uma cena pública enquanto houver uma API key nela.

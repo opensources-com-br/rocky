@@ -92,3 +92,5 @@ The [implementation plan](docs/PLAN.md) describes the product direction, privacy
 ## License
 
 Rocky is open-source software available under the [MIT License](LICENSE).
+
+The launch candidate is scoped to Twitch, AI, optional voice and notes. YouTube, Super Chats, automatic ideas and post-stream summaries remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md). Saved AI keys use system credential storage; text-only first use is supported.

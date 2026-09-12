@@ -73,7 +73,7 @@ Create a short local recording before the public stream.
 3. Capture only the streamer's microphone. Trigger **Test voice** and confirm Rocky is audible to the streamer but absent from the recording.
 4. Add desktop audio capture intentionally. Confirm Rocky becomes audible in the recording and document that choice.
 5. Play a Rocky suggestion while the streamer speaks. Confirm it does not create echo, feedback, or repeated transcription.
-6. Start and stop push-to-talk while OBS records. Confirm only the requested microphone is captured by Rocky.
+6. Enable and disable the listener while OBS records; interrupt an answer and issue another command. Confirm only the requested microphone is captured by Rocky.
 7. Review the recording for clipping, doubled audio, missing microphone audio, and accidental exposure of settings or API keys.
 
 Use headphones during voice tests. Do not display the AI settings screen on a public scene while an API key is present.

@@ -46,7 +46,7 @@ Execute esta lista no macOS e em uma instalação ou emulador Windows real. Test
 - [ ] Fixar a janela, colocar outro aplicativo sobre ela e confirmar que o Rocky continua visível; desafixar e confirmar que o empilhamento normal retorna.
 - [ ] Ativar o modo compacto e confirmar que a janela passa para 340 × 180.
 - [ ] Voltar ao modo expandido e confirmar que o tamanho anterior é restaurado.
-- [ ] Abrir as configurações e confirmar que a janela passa para 420 × 520; fechar e confirmar que o tamanho anterior retorna.
+- [ ] Abrir as configurações e confirmar que a janela passa para 420 × 820; fechar e confirmar que o tamanho anterior retorna.
 - [ ] Fechar o Rocky pelo controle vermelho.
 
 ## Teste com streamers
@@ -71,3 +71,5 @@ Problemas encontrados:
 ```
 
 Checkpoint automatizado atual (10/09/2026): o build completo, os testes de interface, o teste de sessão prolongada e o empacotamento nativo passam nos runners macOS e Windows do GitHub. O protocolo com streamers continua sendo uma etapa manual e exige resultados registrados de lives reais.
+
+Para identidade do candidato, assinatura e verificações manuais pendentes, consulte [preparação de lançamento](RELEASE_PREPARATION.md).

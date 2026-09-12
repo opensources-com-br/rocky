@@ -1,29 +1,18 @@
-# Candidato de teste — 1.0.10-alpha.17
+# Candidato de validação — 1.0.11-alpha.1
 
-Escopo: chat da própria conta Twitch, comandos de voz iniciados por “Rocky” e notas com fontes. A IA pode usar Ollama, OpenAI ou modelos gratuitos pelo OpenRouter. Este candidato ainda precisa de validação em live real e OBS antes de lançamento amplo.
+Escopo: Twitch, IA, perguntas por texto, voz opcional e notas com fontes. Gere o candidato conforme [preparação de lançamento](RELEASE_PREPARATION.md); este documento não afirma que a versão já foi publicada ou homologada.
 
-## Preparar
+1. Instale em máquina limpa. Em **Dados**, registre versão, commit e arquitetura; compare com `BUILDINFO` e checksums do pacote.
+2. Em **Plataformas**, use o Client ID incluído quando disponível. Só registre um cliente público próprio se o campo estiver vazio. Autorize a conta do canal da live.
+3. Configure a IA, teste uma geração e salve explicitamente a configuração/chave. Feche e reabra: confira recuperação pelo cofre. Remova a chave e confira que não volta. Troque provedor/endereço: a chave anterior não deve acompanhar a troca.
+4. Conclua o onboarding sem configurar voz. Envie uma pergunta textual, cancele uma análise e envie outra; teste falha de rede/cota e a mensagem de recuperação.
+5. Abra fontes, salve uma nota, edite, reinicie e exporte. Confira data, mensagem, autor, canal e sessão. Teste exportação para um destino indisponível: deve haver erro recuperável.
+6. Opcionalmente prepare voz. No Mac, teste cancelamento do download e nova tentativa; no Windows, selecione whisper-cli/modelo. Use o teste de conversa para validar microfone, idioma e TTS.
+7. Durante a live diga “Rocky” (ou o nome configurado) e um pedido. Interrompa a resposta com Silenciar/Próxima e faça outro pedido. Teste PT-BR e EN, nome personalizado e ausência de reação a palavras apenas parecidas.
+8. Use o modo compacto, abra configurações e volte. No Mac o volume próprio está desabilitado; confira a saída do sistema. Fale apenas durante os oito segundos de captura; registre comandos cortados ou perdidos nas transições.
+9. Desligue a rede por 15/60 s, restaure e confira novas mensagens, aviso de lacuna e audiência indisponível quando desatualizada. Desconectar deve cancelar a recuperação.
+10. Exporte um backup e teste exclusão de notas: cancelar preserva; confirmar apaga. Redefinir configurações preserva notas/exportações; remover modelo preserva modelos externos.
 
-1. Instale o pacote **1.0.10-alpha.17**. Não use um pacote de uma execução anterior.
-2. Abra **Configurações → Plataformas**. Este pacote não inclui um Client ID oficial. Registre um aplicativo público na Twitch usando sua conta e copie o Client ID, conforme [configuração Twitch](TWITCH.pt-BR.md). Não é necessário criar outra conta de streamer nem informar Client Secret.
-3. Conecte e autorize a mesma conta em que abrirá a live. O Rocky acompanha novas mensagens e a audiência atual desse canal; não lê o histórico anterior.
-4. Em **IA**, escolha Ollama, OpenAI ou OpenRouter. O modelo `openrouter/free` depende da disponibilidade e dos limites vigentes na conta. **Testar conexão** faz uma geração curta para validar o fluxo completo.
-5. Em **Voz**, configure o executável e o modelo do whisper.cpp, selecione o microfone e teste a voz do sistema.
+Execute depois o [protocolo de streamers](STREAMER_TEST.pt-BR.md): duas pessoas, três sessões, uma de duas horas, OBS em macOS e Windows. Registre memória, latência, interrupções e qualidade das fontes. Os tokens exibidos são parciais, não o faturamento do provedor.
 
-## Teste rápido antes da live
-
-- [ ] Enviar uma mensagem no chat e vê-la no Rocky.
-- [ ] Dizer **“Rocky, o que o chat quer?”**, ouvir a confirmação, receber a resposta falada e abrir **Ver fontes**. Comparar as fontes com o chat dos últimos dois minutos.
-- [ ] Cancelar uma análise em andamento e enviar outra pergunta.
-- [ ] Salvar a sugestão, editar a nota, reiniciar o app e conferir texto, data com fuso e fontes. Exportar Markdown.
-- [ ] Confirmar que notas antigas do modo de demonstração não aparecem após abrir esta versão.
-- [ ] Testar uma resposta longa, alternar para o modo compacto e abrir configurações a partir dele.
-- [ ] Conferir mensagens/minuto durante uma rajada e após um minuto sem mensagens.
-- [ ] Desligar a rede por 15 e 60 segundos; restaurar e confirmar que novas mensagens chegam. A sugestão já recebida deve permanecer durante a recuperação. Mensagens enviadas durante a queda podem não ser recuperadas pela Twitch.
-- [ ] Confirmar que o ouvinte inicia ao conectar a Twitch. Falar sem dizer “Rocky” e verificar que não há resposta; depois fazer duas perguntas iniciadas por “Rocky” e confirmar que cada resposta é falada sem novo clique.
-
-## Sessão e registro
-
-Reserve duas horas para a sessão com OBS e siga o [protocolo completo](STREAMER_TEST.pt-BR.md), incluindo instalação limpa no macOS e Windows. Use uma gravação local para conferir captura da janela e roteamento de áudio antes da transmissão.
-
-Registre versão, commit, sistema, instalador, resultado e evidência de cada cenário. Build, testes com serviços simulados e empacotamento não comprovam OAuth real, qualidade do modelo, recuperação na rede do streamer ou áudio no OBS. Esses resultados continuam pendentes até a execução humana.
+Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, upgrade ou ausência de áudio no OBS. Registre os resultados humanos antes de promover o candidato.

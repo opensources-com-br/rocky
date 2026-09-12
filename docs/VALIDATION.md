@@ -46,7 +46,7 @@ Run this checklist on macOS and on a real Windows installation or emulator. Test
 - [ ] Pin the window, place another application over it, and confirm Rocky remains visible; unpin it and confirm normal stacking returns.
 - [ ] Switch to compact mode and confirm the window becomes 340 × 180.
 - [ ] Return to expanded mode and confirm the previous size is restored.
-- [ ] Open settings and confirm the window becomes 420 × 520; close settings and confirm the previous size returns.
+- [ ] Open settings and confirm the window becomes 420 × 820; close settings and confirm the previous size returns.
 - [ ] Close Rocky using its red control.
 
 ## Streamer test
@@ -71,3 +71,5 @@ Problems found:
 ```
 
 Current automated checkpoint (2026-09-10): the complete build, UI tests, prolonged-session soak test, and native packaging pass on GitHub runners for macOS and Windows. The streamer protocol remains a manual release gate and requires recorded results from real streams.
+
+For the current candidate, build identity, signing and remaining manual checks, see [release preparation](RELEASE_PREPARATION.md).

@@ -31,6 +31,7 @@ data class VoiceConfiguration(
 )
 
 interface VoiceService : AutoCloseable {
+    val outputVolumeSupported: Boolean get() = true
     val automaticTranscriptionSetupSupported: Boolean
         get() = false
 

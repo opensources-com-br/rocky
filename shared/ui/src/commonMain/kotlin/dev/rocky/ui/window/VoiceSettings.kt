@@ -64,7 +64,7 @@ internal fun VoiceSettings(
             "Aplicado pelo Windows; no macOS, ajuste a saída padrão do sistema.",
             "${voice.configuration.output.volumePercent}%",
         )
-        RockySlider(voice.configuration.output.volumePercent / 100f) {
+        RockySlider(voice.configuration.output.volumePercent / 100f, enabled = voice.outputVolumeSupported) {
             voice.updateVolume((it * 100).toInt())
         }
         Button(

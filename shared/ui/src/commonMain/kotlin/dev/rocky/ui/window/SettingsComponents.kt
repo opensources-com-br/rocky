@@ -149,10 +149,11 @@ internal fun ChoiceRow(
 }
 
 @Composable
-internal fun RockySlider(value: Float, onValueChange: (Float) -> Unit) {
+internal fun RockySlider(value: Float, enabled: Boolean = true, onValueChange: (Float) -> Unit) {
     Slider(
         modifier = Modifier.height(36.dp),
         value = value,
+        enabled = enabled,
         onValueChange = onValueChange,
         colors = SliderDefaults.colors(
             thumbColor = RockyColors.Accent,

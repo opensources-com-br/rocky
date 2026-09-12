@@ -51,6 +51,7 @@ fun main() = application {
             if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) taskbar.iconImage = appIcon
         }
     }
+    var finishSession by remember { mutableStateOf<() -> Boolean>({ true }) }
     val windowState = rememberWindowState(size = ExpandedSize)
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
@@ -77,7 +78,7 @@ fun main() = application {
     }
 
     Window(
-        onCloseRequest = ::exitApplication,
+        onCloseRequest = { if (finishSession()) exitApplication() },
         state = windowState,
         visible = windowVisible,
         title = "Rocky",
@@ -135,6 +136,7 @@ fun main() = application {
             onAgentConfigurationChange = { AgentDesktopPreferences.configuration = it },
             initialAiConfiguration = AiDesktopPreferences.configuration,
             initialStorageNotice = AiDesktopPreferences.storageNotice,
+            onRegisterSessionEnd = { finishSession = it },
             onOpenGuide = ::openInBrowser,
             onOpenDataDirectory = { dev.rocky.platform.desktop.openRockyDataDirectory() },
             onResetSettings = { dev.rocky.platform.desktop.resetRockySettings() },

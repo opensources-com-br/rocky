@@ -71,6 +71,10 @@ fun RockyWindow(
         AiSuggestionState.DEFAULT_OLLAMA_MODEL,
     ),
     onAiConfigurationChange: (AiProviderConfiguration) -> Unit = {},
+    initialProfile: dev.rocky.core.agent.InterventionProfile? = null,
+    onProfileChange: (dev.rocky.core.agent.InterventionProfile) -> Unit = {},
+    initialFilters: dev.rocky.core.live.ChatFilterConfiguration = dev.rocky.core.live.ChatFilterConfiguration(),
+    onFiltersChange: (dev.rocky.core.live.ChatFilterConfiguration) -> Unit = {},
     initialAutomaticAnalysis: Boolean = false,
     onAutomaticAnalysisChange: (Boolean) -> Unit = {},
     initialVoiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
@@ -119,7 +123,9 @@ fun RockyWindow(
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
                 aiSuggestionClient, initialAiConfiguration,
-                initialAutomaticAnalysis, onAutomaticAnalysisChange, onAiConfigurationChange,
+                initialAutomaticAnalysis, onAutomaticAnalysisChange,
+                initialProfile, onProfileChange, initialFilters, onFiltersChange,
+                onConfigurationChange = onAiConfigurationChange,
             )
         }
         LaunchedEffect(Unit) { initialStorageNotice?.let { ai.showNotice(it) } }
@@ -163,10 +169,10 @@ fun RockyWindow(
             twitch.totalMessages,
             ai.automaticAnalysis,
             ai.analysisRevision,
-            agent.configuration.interventionsPerTenMinutes,
+            ai.profile,
         ) {
             if (twitch.phase == TwitchConnectionPhase.Connected && ai.automaticAnalysis) {
-                delay(ai.automaticAnalysisDelay(currentTimeMillis(), agent.configuration.analysisIntervalMillis))
+                delay(ai.automaticAnalysisDelay(currentTimeMillis(), ai.profile.intervalMillis))
                 ai.analyze(
                     aiScope,
                     twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS),
@@ -184,6 +190,12 @@ fun RockyWindow(
             }
         }
 
+        LaunchedEffect(twitch.totalMessages, ai.filters, workspace.sessionId) {
+            if (workspace.sessionId.isNotBlank()) {
+                workspace.questions.collect(dev.rocky.core.live.filterChat(twitch.messages.toList(), ai.filters).messages,
+                    workspace.sessionId, workspace.label, currentTimeLabel(), workspace.offset(currentTimeMillis()))
+            }
+        }
         LaunchedEffect(visibleSuggestion?.id, silenced) {
             visibleSuggestion?.let { voice.speakSuggestion(aiScope, it.id, it.text, silenced) }
         }

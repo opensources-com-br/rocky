@@ -381,7 +381,7 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, kick.phase, voice.transcriptionReady) {
+        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, voice.transcriptionReady) {
             if (liveConnected && voice.transcriptionReady) {
                 voice.enableListener(aiScope, handleVoiceRequest)
             }

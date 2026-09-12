@@ -1,7 +1,8 @@
 package dev.rocky.ui.window
 
 import dev.rocky.core.live.*
-import kotlin.test.*
+import org.junit.Test
+import org.junit.Assert.*
 
 class QuestionQueueTest {
     private fun msg(id: String, text: String = "Qual próximo jogo?") =

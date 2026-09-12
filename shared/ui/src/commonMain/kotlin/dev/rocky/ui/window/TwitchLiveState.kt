@@ -17,6 +17,7 @@ internal class TwitchLiveState(
     private val currentTimeMillis: () -> Long = { 0L },
 ) {
     val messages = mutableStateListOf<ChatMessage>()
+    val pulse = mutableStateListOf<dev.rocky.core.live.PulseSample>()
     private val receivedAtByMessageId = mutableMapOf<String, Long>()
     // One bucket per second, independent of the chat rate.
     private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
@@ -67,6 +68,7 @@ internal class TwitchLiveState(
         hasCaptureGaps = false
         audienceUpdatedAt = null
         messages.clear()
+        pulse.clear()
         receivedAtByMessageId.clear()
         receivedMessageTimes.clear()
         totalMessages = 0
@@ -152,6 +154,13 @@ internal class TwitchLiveState(
         val cutoff = currentTimeMillis() / 1_000 - 59
         receivedMessageTimes.keys.filter { it < cutoff }.forEach(receivedMessageTimes::remove)
         messagesPerMinute = receivedMessageTimes.values.sum()
+        if (startedAtMillis != null && phase != TwitchConnectionPhase.Disconnected) {
+            val time = currentTimeMillis() / 5000 * 5000
+            val sample = dev.rocky.core.live.PulseSample(time, messagesPerMinute, viewerCount,
+                phase == TwitchConnectionPhase.Connected)
+            if (pulse.lastOrNull()?.timeMillis == time) pulse[pulse.lastIndex] = sample else pulse.add(sample)
+            while (pulse.size > 120) pulse.removeAt(0)
+        }
     }
 
     fun messagesReceivedWithin(durationMillis: Long): List<ChatMessage> {

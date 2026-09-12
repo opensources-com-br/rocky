@@ -2,9 +2,11 @@
 
 Data: 12/09/2026. Commit: `7ba03c4c0298881f50ed5c903b923a6c7b6d0089`.
 
+> Avaliação histórica do commit acima. O estado atual, incluindo o conector do YouTube e as verificações ainda pendentes, está em [Preparação do candidato](RELEASE_PREPARATION.md).
+
 **Parecer: base funcional para testes acompanhados; lançamento público amplo ainda não recomendado.** O principal trabalho restante é fechar o fluxo real, proteger credenciais e comprovar estabilidade com Twitch, voz e OBS. Não encontrei motivo para reescrever a arquitetura ou acrescentar backend/conta Rocky para entregar esse recorte.
 
-Esta avaliação descreve o código atual e complementa a avaliação histórica de 10/09. Recomendo um primeiro lançamento focado em Twitch, IA, voz e notas. Isso é uma recomendação de escopo: o plano original também exige YouTube, Super Chats e resumo pós-live, ainda ausentes.
+Esta avaliação descreve o código no commit indicado e complementa a avaliação histórica de 10/09. As conclusões abaixo não devem ser usadas como inventário da versão atual.
 
 ## Evidência verificada
 

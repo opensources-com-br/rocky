@@ -1,10 +1,22 @@
 const content = {
   "group": "Configuração",
-  "lead": "A única integração ativa é a Twitch: novas mensagens e contagem atual de espectadores do canal da conta autenticada.",
+  "lead": "Twitch e Kick recebem novas mensagens e a contagem atual de espectadores do canal autenticado.",
   "blocks": [
     {
       "type": "h2",
       "text": "Conectar Twitch"
+    },
+    {
+      "type": "h2",
+      "text": "Conectar Kick"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Crie um aplicativo em dev.kick.com e cadastre o callback http://localhost:18181/oauth/kick/callback.",
+        "Cadastre também uma URL pública HTTPS que encaminhe corpo e cabeçalhos do webhook para http://localhost:18181/webhooks/kick.",
+        "Informe Client ID e Client Secret, use Conectar Kick, abra a autorização e mantenha o encaminhamento ativo durante a live."
+      ]
     },
     {
       "type": "list",
@@ -20,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "O conector usa Device Code Flow, EventSub WebSocket e a permissão user:read:chat. O Client ID fica nas preferências locais; tokens de acesso e renovação ficam somente na memória e são descartados ao desconectar ou fechar."
+      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1, permissões user:read, channel:read e events:subscribe, e webhooks assinados. O Client Secret da Kick usa o cofre do sistema; tokens ficam somente na memória."
     },
     {
       "type": "h2",
@@ -28,7 +40,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Kick, YouTube e Facebook aparecem como indisponíveis. Os chips são indicadores, não interruptores. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes ou Super Chats como eventos de apoio."
+      "text": "YouTube e Facebook aparecem como indisponíveis. Os chips são indicadores, não interruptores. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes ou Super Chats como eventos de apoio."
     },
     {
       "type": "h2",
@@ -36,7 +48,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "O app tenta reconectar automaticamente após interrupções. Não carrega mensagens históricas e pode perder mensagens durante uma falha de conexão; a conversa sinaliza lacunas na captura."
+      "text": "A Twitch tenta reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. Nenhum conector carrega histórico; mensagens podem ser perdidas durante indisponibilidade."
     }
   ]
 };

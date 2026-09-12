@@ -471,6 +471,7 @@ fun RockyWindow(
                                 MainSection.Ideas -> NotesContent(
                                     notes = localNotes.notes.filter { it.tag == IDEA_TAG },
                                     title = "Ideias da live",
+                                    ideas = true,
                                     notice = localNotes.notice,
                                     loadFailed = localNotes.loadFailed,
                                     onReload = localNotes::reload,

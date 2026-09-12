@@ -32,6 +32,7 @@ internal fun NotesContent(
     onDelete: (String) -> Unit,
     onExport: () -> Unit,
     title: String = "Notas locais",
+    ideas: Boolean = false,
     loadFailed: Boolean = false,
     onReload: () -> Unit = {},
 ) {
@@ -66,7 +67,7 @@ internal fun NotesContent(
             Column(modifier = Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.subtitle1)
                 Text(
-                    text = "${notes.size} ${if (notes.size == 1) "nota salva" else "notas salvas"}",
+                    text = "${notes.size} ${if (ideas) { if (notes.size == 1) "ideia salva" else "ideias salvas" } else { if (notes.size == 1) "nota salva" else "notas salvas" }}",
                     color = RockyColors.TextSecondary,
                     style = MaterialTheme.typography.caption,
                 )

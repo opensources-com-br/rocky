@@ -67,6 +67,8 @@ private fun dynamicEnglish(text: String): String = when {
         "${text[0]}. ${allTranslations[text.substring(3)] ?: text.substring(3)}"
     text.endsWith(" mensagens recebidas") -> text.removeSuffix(" mensagens recebidas") + " messages received"
     text.endsWith(" mensagem recebida") -> text.removeSuffix(" mensagem recebida") + " message received"
+    text.endsWith(" ideias salvas") -> text.removeSuffix(" ideias salvas") + " saved ideas"
+    text.endsWith(" ideia salva") -> text.removeSuffix(" ideia salva") + " saved idea"
     text.endsWith(" notas salvas") -> text.removeSuffix(" notas salvas") + " saved notes"
     text.endsWith(" nota salva") -> text.removeSuffix(" nota salva") + " saved note"
     text.endsWith(" mensagens") -> text.removeSuffix(" mensagens") + " messages"

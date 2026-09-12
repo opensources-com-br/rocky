@@ -14,6 +14,9 @@ fun notesAsMarkdown(notes: List<LiveNote>, buildLabel: String? = null): String =
     notes.forEachIndexed { index, note ->
         appendLine("## ${note.timestamp} · ${note.tag}")
         appendLine()
+        if (note.sessionLabel.isNotBlank()) appendLine("Live: ${note.sessionLabel}")
+        note.offsetMillis?.let { appendLine("Moment: ${dev.rocky.core.live.momentLabel(it)}") }
+        if (note.completed) appendLine("Status: completed")
         appendLine(note.text)
         if (note.evidence.isNotEmpty()) {
             appendLine()

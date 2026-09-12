@@ -31,11 +31,23 @@ internal fun NotesContent(
     onUpdate: (LiveNote) -> Unit,
     onDelete: (String) -> Unit,
     onExport: () -> Unit,
+    onCreate: (String) -> Unit = {},
     title: String = "Notas locais",
     ideas: Boolean = false,
     loadFailed: Boolean = false,
     onReload: () -> Unit = {},
 ) {
+    var creating by remember { mutableStateOf(false) }
+    var draft by remember { mutableStateOf("") }
+    if (creating) androidx.compose.material.AlertDialog(
+        onDismissRequest = { creating = false },
+        title = { Text(if (ideas) tr("New idea", "Nova ideia") else tr("New note", "Nova nota")) },
+        text = { androidx.compose.material.OutlinedTextField(value = draft, onValueChange = { draft = it.take(2000) },
+            label = { Text(tr("Text", "Texto")) }) },
+        confirmButton = { androidx.compose.material.TextButton(enabled = draft.isNotBlank(),
+            onClick = { onCreate(draft.trim()); creating = false; draft = "" }) { Text(tr("Save", "Salvar")) } },
+        dismissButton = { androidx.compose.material.TextButton(onClick = { creating = false }) { Text(tr("Cancel", "Cancelar")) } },
+    )
     var editingNote by remember { mutableStateOf<LiveNote?>(null) }
     var deletingNote by remember { mutableStateOf<LiveNote?>(null) }
 
@@ -72,6 +84,7 @@ internal fun NotesContent(
                     style = MaterialTheme.typography.caption,
                 )
             }
+            androidx.compose.material.TextButton(onClick = { creating = true }) { Text(tr("New", "Nova")) }
             OutlinedButton(
                 onClick = onExport,
                 enabled = notes.isNotEmpty(),

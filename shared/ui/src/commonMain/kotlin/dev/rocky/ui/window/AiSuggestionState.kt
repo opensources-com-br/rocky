@@ -37,6 +37,30 @@ internal class AiSuggestionState(
     var automaticAnalysis by mutableStateOf(initialAutomaticAnalysis)
         private set
 
+    var models by mutableStateOf<List<String>>(emptyList())
+        private set
+    var loadingModels by mutableStateOf(false)
+        private set
+
+    fun loadModels(scope: CoroutineScope) {
+        if (loadingModels) return
+        val requested = configuration
+        loadingModels = true
+        scope.launch {
+            try {
+                val result = runCatching { interruptibleWork { client.availableModels(requested) } }
+                if (configuration != requested) return@launch
+                result.onSuccess {
+                    models = it
+                    status = if (it.isEmpty()) "Nenhum modelo disponível. Verifique o provedor." else "Modelos carregados"
+                }.onFailure {
+                    if (it is CancellationException) throw it
+                    status = "Não foi possível listar modelos. Verifique a conexão e a chave."
+                }
+            } finally { loadingModels = false }
+        }
+    }
+
     var testing by mutableStateOf(false)
         private set
 
@@ -79,6 +103,7 @@ internal class AiSuggestionState(
     fun updateProvider(provider: AiProviderKind) {
         if (provider == configuration.provider) return
         cancelAnalysis()
+        models = emptyList()
         connectionVerified = false
         configuration = configuration.copy(apiKey = "")
         configuration = when (provider) {
@@ -99,6 +124,7 @@ internal class AiSuggestionState(
         connectionVerified = false
         if (endpoint.trim().trimEnd('/') != configuration.endpoint.trim().trimEnd('/')) {
             cancelAnalysis()
+            models = emptyList()
             configuration = configuration.copy(endpoint = endpoint, apiKey = "")
             saveConfiguration()
         } else update(configuration.copy(endpoint = endpoint))

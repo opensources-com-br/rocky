@@ -28,6 +28,7 @@ import dev.rocky.ui.theme.RockyColors
 @Composable
 internal fun AiSettings(ai: AiSuggestionState) {
     val scope = rememberCoroutineScope()
+    var modelsOpen by remember { mutableStateOf(false) }
     var advanced by remember { mutableStateOf(false) }
     var apiKeyVisible by remember { mutableStateOf(false) }
     val providerLabel = when (ai.configuration.provider) {
@@ -74,6 +75,19 @@ internal fun AiSettings(ai: AiSuggestionState) {
             tag = "ai-model",
             onValueChange = ai::updateModel,
         )
+        androidx.compose.foundation.layout.Row {
+            androidx.compose.material.TextButton(enabled = !ai.loadingModels, onClick = { ai.loadModels(scope) }) {
+                Text(if (ai.loadingModels) tr("Loading…", "Carregando…") else tr("Find models", "Buscar modelos"))
+            }
+            if (ai.models.isNotEmpty()) androidx.compose.foundation.layout.Box {
+                androidx.compose.material.TextButton(onClick = { modelsOpen = true }) { Text(tr("Choose model", "Escolher modelo")) }
+                androidx.compose.material.DropdownMenu(expanded = modelsOpen, onDismissRequest = { modelsOpen = false }) {
+                    ai.models.forEach { model ->
+                        androidx.compose.material.DropdownMenuItem(onClick = { ai.updateModel(model); modelsOpen = false }) { Text(model) }
+                    }
+                }
+            }
+        }
         if (ai.configuration.provider != AiProviderKind.Ollama) {
             Spacer(Modifier.height(10.dp))
             OutlinedTextField(

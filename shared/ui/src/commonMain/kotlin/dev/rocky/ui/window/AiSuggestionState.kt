@@ -15,6 +15,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
+internal data class ConversationEntry(
+    val question: String,
+    val answer: RockySuggestion,
+    val sources: List<ChatMessage>,
+)
+
 internal class AiSuggestionState(
     private val client: AiSuggestionClient,
     initialConfiguration: AiProviderConfiguration,
@@ -66,6 +72,7 @@ internal class AiSuggestionState(
     private var lastAutomaticAnalysisAtMillis: Long? = null
     private var sessionGeneration = 0L
     private var analysisJob: Job? = null
+    val history = androidx.compose.runtime.mutableStateListOf<ConversationEntry>()
 
     fun updateProvider(provider: AiProviderKind) {
         if (provider == configuration.provider) return
@@ -170,6 +177,9 @@ internal class AiSuggestionState(
         }
         if (!automatic) lastAnalyzedMessageId = messages.lastOrNull()?.id
         val snapshot = messages.takeLast(messageLimit.coerceIn(1, MAX_ANALYSIS_MESSAGES))
+        val conversationAgent = agent.copy(conversation = if (automatic) emptyList() else history.takeLast(4).map {
+            dev.rocky.core.agent.ConversationTurn(it.question, it.answer.text)
+        })
         val activeConfiguration = configuration
         val activeSession = sessionGeneration
         suggestion = null
@@ -180,7 +190,7 @@ internal class AiSuggestionState(
             val started = kotlin.time.TimeSource.Monotonic.markNow()
             val result = runCatching {
                 interruptibleWork {
-                    client.generateSuggestion(activeConfiguration, snapshot, streamerRequest, agent)
+                    client.generateSuggestion(activeConfiguration, snapshot, streamerRequest, conversationAgent)
                 }
             }
             if (activeSession != sessionGeneration) return@launch
@@ -197,6 +207,10 @@ internal class AiSuggestionState(
                 val completedSuggestion = generated?.let {
                     RockySuggestion("ai-${Random.nextLong()}", it.text, it.sourceMessageIds)
                 }
+                if (completedSuggestion != null) {
+                    history.add(ConversationEntry(streamerRequest ?: "Análise do chat", completedSuggestion, suggestionSources.toList()))
+                    if (history.size > 30) history.removeAt(0)
+                }
                 suggestion = completedSuggestion
                 status = if (generated == null) "Nenhuma sugestão relevante agora" else "Sugestão gerada"
                 onComplete(completedSuggestion)
@@ -208,6 +222,7 @@ internal class AiSuggestionState(
     }
 
     fun resetSession() {
+        history.clear()
         sessionGeneration += 1
         analysisJob?.cancel()
         analysisJob = null

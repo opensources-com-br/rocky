@@ -550,6 +550,21 @@ fun RockyWindow(
                                         finishLive()
                                     },
                                     onOpenKickBrowser = onOpenKickAuthorization,
+                                    youtubeConfiguration = youtubeConfiguration,
+                                    youtube = youtube,
+                                    onConnectYouTube = { configuration ->
+                                        if (finishLive()) {
+                                            silenced = false
+                                            youtubeConfiguration = configuration
+                                            onYouTubeConfigurationChange(configuration)
+                                            youtube.connect(configuration)
+                                        }
+                                    },
+                                    onDisconnectYouTube = {
+                                        silenced = false
+                                        finishLive()
+                                    },
+                                    onOpenYouTubeBrowser = onOpenYouTubeAuthorization,
                                 )
                             }
                         }

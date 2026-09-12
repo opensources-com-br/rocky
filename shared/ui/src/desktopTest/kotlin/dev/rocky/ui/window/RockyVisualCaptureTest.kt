@@ -566,6 +566,19 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun dataDeletionRequiresConfirmationAndPreservesNotesOnCancel() {
+        val repository = TransientNoteRepository()
+        repository.save(LiveNote("note", "Keep me", "now", "test"))
+        render(settingsOpen = true, settingsSection = SettingsSection.Data, noteRepository = repository)
+        rule.onNodeWithText("Apagar notas").performClick()
+        rule.onNodeWithText("Cancelar").performClick()
+        assertEquals(1, repository.getAll().size)
+        rule.onNodeWithText("Apagar notas").performClick()
+        rule.onNodeWithText("Confirmar").performClick()
+        assertTrue(repository.getAll().isEmpty())
+    }
+
+    @Test
     fun guidesFirstUseThroughSettings() {
         render(
             firstUseOpen = true,

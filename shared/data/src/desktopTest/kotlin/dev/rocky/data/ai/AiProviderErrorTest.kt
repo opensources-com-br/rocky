@@ -4,6 +4,11 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun reportsOnlyUsagePresentInProviderResponse() {
+        assertEquals(15L, reportedTokenCount("""{"usage":{"input_tokens":10,"output_tokens":5}}""", "input_tokens", "output_tokens", nested = true))
+        assertEquals(null, reportedTokenCount("{}", "input_tokens", "output_tokens", nested = true))
+    }
+
     @Test
     fun showsActionsWithoutEchoingProviderPayloads() {
         assertEquals(

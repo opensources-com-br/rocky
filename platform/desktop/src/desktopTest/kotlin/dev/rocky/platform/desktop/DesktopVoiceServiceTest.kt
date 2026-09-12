@@ -11,6 +11,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopVoiceServiceTest {
+    @kotlin.test.Test fun rejectsCorruptManagedModelEvenWithExpectedSize() {
+        val file = java.nio.file.Files.createTempFile("rocky-model-test", ".bin")
+        try {
+            java.io.RandomAccessFile(file.toFile(), "rw").use { it.setLength(147_951_465) }
+            kotlin.test.assertFalse(DesktopVoiceService.validManagedModel(file))
+        } finally { java.nio.file.Files.deleteIfExists(file) }
+    }
+
     @Test
     fun parsesMacSystemVoices() {
         val voice = DesktopVoiceService.parseMacVoice("Luciana              pt_BR    # Olá! Eu sou Luciana.")

@@ -7,6 +7,20 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SqliteNoteRepositoryTest {
+    @Test fun clearsNotesWithoutTouchingAnExport() {
+        val directory = Files.createTempDirectory("rocky-delete-notes")
+        val path = directory.resolve("notes.db")
+        val exported = directory.resolve("export.md")
+        Files.writeString(exported, "preserved export")
+        SqliteNoteRepository(path).use { repository ->
+            repository.save(LiveNote("n1", "note", "now", "test"))
+            repository.deleteAll()
+        }
+        SqliteNoteRepository(path).use { assertTrue(it.getAll().isEmpty()) }
+        assertEquals("preserved export", Files.readString(exported))
+        directory.toFile().deleteRecursively()
+    }
+
     @Test
     fun savesUpdatesDeletesAndReopensNotes() {
         val databasePath = Files.createTempDirectory("rocky-notes-test").resolve("notes.db")

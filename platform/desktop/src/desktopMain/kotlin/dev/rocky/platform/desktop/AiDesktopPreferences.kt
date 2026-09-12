@@ -30,12 +30,14 @@ internal class SecureAiPreferences(private val preferences: Preferences, private
             if (legacy.isNotBlank()) secrets.write(credentialIdentity() + "\n" + legacy)
             val saved = secrets.read().orEmpty()
             cachedKey = if (saved.substringBefore('\n') == credentialIdentity()) saved.substringAfter('\n', "") else ""
-        } catch (_: Exception) {
+        } catch (error: Throwable) {
+            if (error !is Exception && error !is LinkageError) throw error
             cachedKey = legacy
             storageNotice = "Cofre indisponível. A chave está apenas na memória; salve novamente quando o cofre estiver disponível."
         } finally {
-            preferences.remove(API_KEY_KEY)
-            preferences.flush()
+            runCatching { preferences.remove(API_KEY_KEY); preferences.flush() }.onFailure {
+                storageNotice = "Não foi possível remover a chave antiga das preferências. Verifique as permissões da conta do sistema."
+            }
         }
         return cachedKey
     }

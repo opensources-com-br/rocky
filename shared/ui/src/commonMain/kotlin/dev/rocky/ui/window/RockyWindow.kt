@@ -104,6 +104,7 @@ fun RockyWindow(
         var settingsSection by remember {
             mutableStateOf(SettingsSection.entries[initialSettingsSectionIndex])
         }
+        var historyOpen by remember { mutableStateOf(false) }
         var silenced by remember { mutableStateOf(false) }
         var waitingForVoiceCommand by remember { mutableStateOf(false) }
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
@@ -212,15 +213,17 @@ fun RockyWindow(
                 },
             )
         }
-        fun saveCurrentSuggestion(target: VoiceSaveTarget): Boolean {
-            val suggestion = ai.suggestion ?: return false
-            val note = suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel()).copy(
-                id = "saved-${kotlin.random.Random.nextLong()}",
+        fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
+            val note = suggestionNote(entry.answer, entry.sources, currentTimeLabel()).copy(
+                id = "${entry.answer.id}-${target.name}",
                 tag = if (target == VoiceSaveTarget.Idea) IDEA_TAG else "SUGESTÃO IA",
             )
             if (!localNotes.save(note)) return false
-            mainSection = if (target == VoiceSaveTarget.Idea) MainSection.Ideas else MainSection.Notes
             return true
+        }
+        fun saveCurrentSuggestion(target: VoiceSaveTarget): Boolean {
+            val answer = ai.suggestion ?: return false
+            return saveAnswer(ConversationEntry("", answer, ai.suggestionSources), target)
         }
 
         val submitVoiceCommand: (String) -> Unit = { command ->
@@ -262,6 +265,15 @@ fun RockyWindow(
         }
 
         CompositionLocalProvider(LocalRockyLanguage provides language) {
+        if (historyOpen) ConversationHistory(
+            ai.history.toList(), onDismiss = { historyOpen = false },
+            onRepeat = { request ->
+                voice.stopSpeaking()
+                ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request,
+                    agent = agent.configuration.copy(language = language))
+            },
+            onSave = { entry, target -> saveAnswer(entry, target) },
+        )
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
             color = RockyColors.Background,
@@ -442,9 +454,10 @@ fun RockyWindow(
                             when (mainSection) {
                                 MainSection.Conversation -> ConversationContent(
                                     messages = visibleMessages,
+                                    onHistory = { historyOpen = true },
                                     streamerSpeech = voice.transcript,
                                     showTextRequest = true,
-                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && !ai.generating,
+                                    textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady ,
                                     analyzing = ai.generating,
                                     hasCaptureGaps = twitch.hasCaptureGaps,
                                     analysisStatus = ai.status,
@@ -453,6 +466,7 @@ fun RockyWindow(
                                     },
                                     onCancelAnalysis = { ai.cancelAnalysis(); voice.resumeListener() },
                                     onTextRequest = { request ->
+                                        voice.stopSpeaking()
                                         ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request, agent = agent.configuration.copy(language = language))
                                     },
                                 )

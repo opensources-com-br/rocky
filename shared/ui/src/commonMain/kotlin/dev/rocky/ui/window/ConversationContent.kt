@@ -43,6 +43,7 @@ internal fun ConversationContent(
     hasCaptureGaps: Boolean = false,
     analysisStatus: String? = null,
     performanceNotice: String? = null,
+    onHistory: () -> Unit = {},
     onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
 ) {
@@ -77,6 +78,7 @@ internal fun ConversationContent(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            androidx.compose.material.TextButton(onClick = onHistory) { Text(tr("History", "Histórico")) }
             Text(
                 text = "CHAT AO VIVO",
                 color = RockyColors.TextMuted,
@@ -98,7 +100,7 @@ internal fun ConversationContent(
         }
 
         if (showTextRequest) {
-            StreamerTextRequest(enabled = textRequestEnabled && messages.isNotEmpty(), onSend = onTextRequest)
+            StreamerTextRequest(enabled = textRequestEnabled, onSend = onTextRequest)
             if (analyzing) {
                 androidx.compose.material.TextButton(onClick = onCancelAnalysis) {
                     Text(tr("Cancel analysis", "Cancelar análise"))

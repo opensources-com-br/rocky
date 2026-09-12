@@ -144,7 +144,7 @@ fun RockyWindow(
                     aiScope,
                     twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS),
                     automatic = true,
-                    agent = agent.configuration,
+                    agent = agent.configuration.copy(language = language),
                     automaticTimeMillis = currentTimeMillis(),
                 )
             }
@@ -169,12 +169,17 @@ fun RockyWindow(
             }
         }
 
+        LaunchedEffect(language) { voice.updateLanguage(language) }
+
+        fun spokenText(english: String, portuguese: String) =
+            if (language == RockyLanguage.English) english else portuguese
+
         val analyzeVoiceCommand: (String) -> Unit = { request ->
             val recentMessages = twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
             if (recentMessages.isEmpty()) {
                 voice.speakAcknowledgement(
                     aiScope,
-                    "Não encontrei mensagens nos últimos dois minutos.",
+                    spokenText("I found no messages from the last two minutes.", "Não encontrei mensagens nos últimos dois minutos."),
                     silenced,
                     voice::resumeListener,
                 )
@@ -182,14 +187,14 @@ fun RockyWindow(
                 scope = aiScope,
                 messages = recentMessages,
                 streamerRequest = request,
-                agent = agent.configuration,
+                agent = agent.configuration.copy(language = language),
                 messageLimit = recentMessages.size,
                 onComplete = { suggestion ->
                     if (voice.listenerEnabled) {
                         if (suggestion == null) {
                             voice.speakAcknowledgement(
                                 aiScope,
-                                "Não consegui consultar o chat agora. Vou continuar ouvindo.",
+                                spokenText("I could not check the chat. I will keep listening.", "Não consegui consultar o chat agora. Vou continuar ouvindo."),
                                 silenced,
                                 voice::resumeListener,
                             )
@@ -209,18 +214,18 @@ fun RockyWindow(
         }
         val submitVoiceCommand: (String) -> Unit = { command ->
             waitingForVoiceCommand = false
-            voice.speakAcknowledgement(aiScope, "Vou verificar o chat.", silenced) {
+            voice.speakAcknowledgement(aiScope, spokenText("I will check the chat.", "Vou verificar o chat."), silenced) {
                 if (voice.listenerEnabled) analyzeVoiceCommand(command)
             }
         }
         val handleVoiceRequest: (String) -> Unit = { transcript ->
-            val directCommand = extractRockyCommand(transcript)
+            val directCommand = extractRockyCommand(transcript, agent.displayName)
             when {
                 directCommand != null -> submitVoiceCommand(directCommand)
                 waitingForVoiceCommand -> submitVoiceCommand(transcript.trim())
-                containsRockyWakeWord(transcript) -> {
+                containsRockyWakeWord(transcript, agent.displayName) -> {
                     waitingForVoiceCommand = true
-                    voice.speakAcknowledgement(aiScope, "Estou ouvindo.", silenced, voice::resumeListener)
+                    voice.speakAcknowledgement(aiScope, spokenText("I am listening.", "Estou ouvindo."), silenced, voice::resumeListener)
                 }
                 else -> voice.resumeListener()
             }
@@ -383,7 +388,7 @@ fun RockyWindow(
                                     mainSection = MainSection.Notes
                                 }
                             },
-                            onAnalyze = { ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), agent = agent.configuration) },
+                            onAnalyze = { ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), agent = agent.configuration.copy(language = language)) },
                             onNext = {
                                 voice.interruptSpeech()
                                 ai.dismissSuggestion()
@@ -416,7 +421,7 @@ fun RockyWindow(
                                     },
                                     onCancelAnalysis = { ai.cancelAnalysis(); voice.resumeListener() },
                                     onTextRequest = { request ->
-                                        ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request, agent = agent.configuration)
+                                        ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request, agent = agent.configuration.copy(language = language))
                                     },
                                 )
                                 MainSection.Support -> SupportContent()

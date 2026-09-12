@@ -10,6 +10,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AiSuggestionPromptTest {
+    @kotlin.test.Test fun usesTheSelectedResponseLanguage() {
+        val prompt = buildAiSuggestionPrompt(listOf(dev.rocky.core.live.ChatMessage("m", "a", "hello", dev.rocky.core.live.StreamPlatform.Twitch)),
+            agent = dev.rocky.core.agent.AgentConfiguration(language = dev.rocky.core.locale.RockyLanguage.English))
+        kotlin.test.assertTrue(prompt.instructions.contains("em inglês"))
+    }
+
     @Test
     fun boundsAndLabelsUntrustedChatContext() {
         val messages = (1..205).map { index ->

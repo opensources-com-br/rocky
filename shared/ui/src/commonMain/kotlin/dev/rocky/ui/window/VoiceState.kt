@@ -151,6 +151,12 @@ internal class VoiceState(
         }
     }
 
+    fun updateLanguage(language: dev.rocky.core.locale.RockyLanguage) {
+        val tag = if (language == dev.rocky.core.locale.RockyLanguage.English) "en" else "pt"
+        if (configuration.transcription.language == tag) return
+        update(configuration.copy(transcription = configuration.transcription.copy(language = tag)))
+    }
+
     fun updateVoice(voiceId: String?) {
         voiceTested = false
         update(configuration.copy(output = configuration.output.copy(voiceId = voiceId)))
@@ -213,7 +219,8 @@ internal class VoiceState(
         voiceTested = false
         speak(
             scope,
-            "Olá, eu sou $agentName. A voz do chat, em acordes.",
+            if (configuration.transcription.language == "en") "Hello, I am $agentName. Your live chat assistant."
+            else "Olá, eu sou $agentName. A voz do chat, em acordes.",
             force = true,
             onSuccess = { voiceTested = true },
         )
@@ -233,7 +240,8 @@ internal class VoiceState(
             scope,
             onTranscript = { text ->
                 conversationTestTranscript = text
-                val response = "Eu ouvi você dizer: $text. Meu microfone está funcionando."
+                val response = if (configuration.transcription.language == "en") "I heard you say: $text. My microphone is working."
+                else "Eu ouvi você dizer: $text. Meu microfone está funcionando."
                 conversationTestResponse = response
                 speakAcknowledgement(scope, response, silenced = false) {
                     conversationTesting = false

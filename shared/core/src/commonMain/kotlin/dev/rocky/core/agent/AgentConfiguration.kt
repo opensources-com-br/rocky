@@ -11,4 +11,5 @@ data class AgentConfiguration(
     val name: String = "Rocky",
     val tone: AgentTone = AgentTone.Direct,
     val interventionsPerTenMinutes: Int = 3,
+    val language: dev.rocky.core.locale.RockyLanguage = dev.rocky.core.locale.RockyLanguage.PortugueseBrazil,
 )

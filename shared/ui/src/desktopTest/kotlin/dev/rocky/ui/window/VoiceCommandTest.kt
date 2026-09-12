@@ -4,6 +4,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class VoiceCommandTest {
+    @org.junit.Test fun recognizesConfiguredNameWithoutPartialWordMatches() {
+        org.junit.Assert.assertEquals("resuma", extractRockyCommand("Aurora, resuma", "Aurora"))
+        org.junit.Assert.assertEquals(null, extractRockyCommand("Auroral resuma", "Aurora"))
+        org.junit.Assert.assertEquals("hello", extractRockyCommand("A+B, hello", "A+B"))
+    }
+
     @Test
     fun extractsACommandAfterTheWakeWord() {
         assertEquals("o que o chat quer jogar?", extractRockyCommand("Rocky, o que o chat quer jogar?"))

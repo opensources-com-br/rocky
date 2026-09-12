@@ -23,6 +23,6 @@ The connector requests only `user:read:chat`. The Client ID is saved in the oper
 - A new subscription is created after an unexpected reconnect, and repeated message IDs are ignored.
 - Rocky validates the OAuth token before opening the chat and refreshes an expired token when subscription authorization fails.
 
-This first connector listens to the authenticated user's own channel. It does not load earlier messages, viewer counts, channel points, subscriptions, or paid support events yet.
+This first connector listens to the authenticated user's own channel and reads its current viewer count. It does not load earlier messages, channel points, subscriptions, or paid support events yet.
 
 References: [Twitch OAuth](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/), [token validation](https://dev.twitch.tv/docs/authentication/validate-tokens/), and [EventSub WebSockets](https://dev.twitch.tv/docs/eventsub/handling-websocket-events/).

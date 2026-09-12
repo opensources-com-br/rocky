@@ -23,6 +23,6 @@ O conector solicita apenas `user:read:chat`. O Client ID é salvo nas preferênc
 - Uma nova assinatura é criada após uma reconexão inesperada, e IDs de mensagens repetidas são ignorados.
 - O Rocky valida o token OAuth antes de abrir o chat e renova um token expirado quando a autorização da assinatura falha.
 
-Este primeiro conector acompanha o canal da própria pessoa autenticada. Ele ainda não recupera mensagens anteriores, contagem de espectadores, pontos do canal, inscrições ou eventos de apoio pago.
+Este primeiro conector acompanha o canal da própria pessoa autenticada e consulta a contagem atual de espectadores. Ele ainda não recupera mensagens anteriores, pontos do canal, inscrições ou eventos de apoio pago.
 
 Referências: [OAuth da Twitch](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/), [validação de tokens](https://dev.twitch.tv/docs/authentication/validate-tokens/) e [EventSub WebSockets](https://dev.twitch.tv/docs/eventsub/handling-websocket-events/).

@@ -13,17 +13,16 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 ## O que funciona hoje
 
 - janela desktop móvel, redimensionável, fixável sobre outros apps e com modo compacto;
-- sessões de demonstração e de live real claramente separadas;
 - autenticação da Twitch pelo Device Code Flow, chat ao vivo pelo EventSub e reconexão automática;
-- sugestões fundamentadas no chat usando modelos locais do Ollama ou a Responses API da OpenAI;
+- contagem de espectadores e mensagens por minuto da live atual da Twitch;
+- sugestões fundamentadas no chat usando modelos locais do Ollama, a API da OpenAI ou OpenRouter;
 - leitura local por meio das vozes do macOS e Windows;
 - comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
 - notas locais em SQLite, com criação, edição, exclusão, recuperação e exportação em Markdown;
-- exportação em Markdown das ideias exibidas na demonstração;
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;
 - interface em inglês e português brasileiro, selecionada pelo idioma do sistema e ajustável nas Configurações.
 
-Rocky não exige uma conta própria nem um backend remoto. Tokens de acesso da Twitch e chaves de provedores em nuvem permanecem em memória. As notas ficam armazenadas localmente no computador. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
+Rocky não exige uma conta própria nem um backend remoto. O Client ID da Twitch e as configurações do provedor de IA são armazenados no computador. Os tokens de acesso da Twitch ficam na memória e são apagados quando o Rocky fecha. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
 
 ## Executar pelo código-fonte
 
@@ -58,7 +57,7 @@ Execute todas as verificações automatizadas com `./gradlew build` ou `.\gradle
 3. Siga o [guia de voz](docs/VOICE.pt-BR.md) para preparar a transcrição local e testar a conversa por áudio.
 4. Inicie uma live na Twitch, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 
-O conector da Twitch atualmente lê apenas novas mensagens do chat. Contagem de espectadores, inscrições, pontos do canal, Super Chats, mensagens anteriores e outras plataformas ainda não estão integrados.
+O conector da Twitch atualmente lê novas mensagens e a contagem atual de espectadores. Inscrições, pontos do canal, Super Chats, mensagens anteriores e outras plataformas ainda não estão integrados.
 
 ## Gerar instaladores
 
@@ -86,7 +85,6 @@ Antes de promover uma alpha, siga o [protocolo de teste com streamers](docs/STRE
 | [shared/data](shared/data/) | Implementações da Twitch, IA e SQLite |
 | [shared/ui](shared/ui/) | Interface Compose e estado de apresentação |
 | [platform/desktop](platform/desktop/) | Arquivos, navegador, preferências, áudio e transcrição nativos |
-| [fixtures](fixtures/) | Dados sintéticos de demonstração e testes |
 | [docs/adr](docs/adr/) | Registros de decisões de arquitetura |
 
 O [plano de implementação](docs/PLAN.pt-BR.md) descreve a direção do produto, o modelo de privacidade, a arquitetura, as etapas de entrega e os critérios de lançamento.

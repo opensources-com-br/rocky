@@ -315,7 +315,6 @@ private val liveTranslations = mapOf(
     "CONTEÚDO" to "CONTENT",
     "INTERAÇÃO" to "INTERACTION",
     "CONVITE" to "INVITATION",
-    "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora." to "Seven people asked about the course price in the last two minutes. This is a good time to answer.",
     "Prometeu mostrar o raio-x do repositório antes de encerrar." to "You promised to show the repository overview before ending.",
     "Chat reagiu forte à parte de deploy — bom material para um corte." to "Chat reacted strongly to the deployment section — good material for a clip.",
     "Três pedidos de compatibilidade com Next.js. Ninguém respondeu ainda." to "Three requests for Next.js compatibility. No one has answered yet.",

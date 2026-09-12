@@ -75,10 +75,10 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
 @Composable
 internal fun LiveSummary(
     agentName: String = "Rocky",
-    suggestion: RockySuggestion? = previewSuggestion,
-    sourceCounts: Map<StreamPlatform, Int> = previewSourceCounts,
-    sessionStatus: LiveSessionStatus = LiveSessionStatus.Running,
-    sessionAvailable: Boolean = true,
+    suggestion: RockySuggestion? = null,
+    sourceCounts: Map<StreamPlatform, Int> = emptyMap(),
+    sessionStatus: LiveSessionStatus = LiveSessionStatus.Stopped,
+    sessionAvailable: Boolean = false,
     suggestionSaved: Boolean = false,
     silenced: Boolean = false,
     speaking: Boolean = false,
@@ -217,16 +217,6 @@ private fun PromptAction(label: String, onClick: () -> Unit, enabled: Boolean = 
         Text(label, fontWeight = FontWeight.Normal)
     }
 }
-
-private val previewSuggestion = RockySuggestion(
-    id = "preview",
-    text = "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
-    sourceMessageIds = emptySet(),
-)
-
-private val previewSourceCounts = mapOf(
-    StreamPlatform.Twitch to 4,
-)
 
 internal fun PlatformStatus.color(): Color {
     if (!enabled) return RockyColors.Offline

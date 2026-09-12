@@ -65,4 +65,31 @@ class SqliteNoteRepositoryTest {
         }
     }
 
+    @Test
+    fun removesLegacyDemoNotesWithoutRemovingRealNotes() {
+        val databasePath = Files.createTempDirectory("rocky-notes-cleanup-test").resolve("notes.db")
+        val legacyDemoNote = LiveNote(
+            "legacy-demo",
+            "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
+            "agora",
+            "SUGESTÃO",
+        )
+        val realNote = legacyDemoNote.copy(
+            id = "real-note",
+            timestamp = "2026-09-11 21:00:00 -03:00",
+            tag = "SUGESTÃO IA",
+            sourceMessageIds = setOf("message-1"),
+            evidence = listOf("viewer: Qual é o preço?"),
+        )
+
+        SqliteNoteRepository(databasePath).use { repository ->
+            repository.save(legacyDemoNote)
+            repository.save(realNote)
+        }
+
+        SqliteNoteRepository(databasePath).use { repository ->
+            assertEquals(listOf(realNote), repository.getAll())
+        }
+    }
+
 }

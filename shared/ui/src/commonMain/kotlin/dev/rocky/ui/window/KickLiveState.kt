@@ -39,6 +39,13 @@ internal class KickLiveState(
             detail = "Informe Client ID e Client Secret da Kick."
             return
         }
+        messages.clear()
+        pulse.clear()
+        receivedAtByMessageId.clear()
+        receivedMessageTimes.clear()
+        totalMessages = 0
+        messagesPerMinute = 0
+        clearConnection()
         client.connect(configuration, ::receive)
     }
 

@@ -395,7 +395,7 @@ fun RockyWindow(
                 text = { Text(text, modifier = Modifier.verticalScroll(rememberScrollState())) },
                 confirmButton = { androidx.compose.material.TextButton(onClick = { workspace.summary = null }) { Text("OK") } })
         }
-        if (preflightOpen) PreflightDialog(aiScope, twitch, kick, ai, voice, agent.displayName,
+        if (preflightOpen) PreflightDialog(aiScope, twitch, kick, youtube, ai, voice, agent.displayName,
             onConfigure = { section ->
                 preflightOpen = false; settingsOpen = true; settingsSection = section
                 onSettingsVisibilityChanged(true)

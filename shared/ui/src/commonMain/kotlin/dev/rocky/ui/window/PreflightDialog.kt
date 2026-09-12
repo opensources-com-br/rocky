@@ -14,6 +14,7 @@ internal fun PreflightDialog(
     scope: kotlinx.coroutines.CoroutineScope,
     twitch: TwitchLiveState,
     kick: KickLiveState,
+    youtube: YouTubeLiveState,
     ai: AiSuggestionState,
     voice: VoiceState,
     agentName: String,
@@ -27,6 +28,7 @@ internal fun PreflightDialog(
     val connectedPlatform = when {
         twitch.phase == TwitchConnectionPhase.Connected -> "Twitch"
         kick.isConnected -> "Kick"
+        youtube.isConnected -> "YouTube"
         else -> null
     }
     val connected = connectedPlatform != null

@@ -1,7 +1,7 @@
 export const guarantees = [
   {
     "title": "Sem conta Rocky",
-    "text": "Você autoriza Twitch ou Kick e configura a IA. Não existe cadastro ou assinatura do Rocky."
+    "text": "Você autoriza Twitch, Kick ou YouTube e configura a IA. Não existe cadastro ou assinatura do Rocky."
   },
   {
     "title": "Sem backend próprio",

@@ -33,7 +33,7 @@ internal class YouTubeLiveState(
     var messagesPerMinute by mutableStateOf(0); private set
     var startedAtMillis by mutableStateOf<Long?>(null); private set
     val isConnected get() = phase == YouTubeConnectionPhase.Connected
-    val isActive get() = phase != YouTubeConnectionPhase.Disconnected
+    val isActive get() = phase !in setOf(YouTubeConnectionPhase.Disconnected, YouTubeConnectionPhase.Failed)
     val sessionId get() = broadcast?.let { "youtube-${it.id}-${startedAtMillis ?: 0}" }.orEmpty()
 
     fun connect(configuration: YouTubeConfiguration) {

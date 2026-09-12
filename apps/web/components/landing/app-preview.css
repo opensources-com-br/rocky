@@ -1,4 +1,4 @@
-.rocky-preview { --rp-muted: #777479; --rp-secondary: #a5a1a5; --rp-border: #303034; width: 500px; max-width: 100%; margin: 60px 0 0; text-align: left; }
+.rocky-preview { --rp-muted: #777479; --rp-secondary: #a5a1a5; --rp-border: #303034; width: 460px; max-width: 100%; margin: 60px 0 0; text-align: left; }
 .rocky-app { overflow: hidden; border: 1px solid var(--rp-border); border-radius: 10px; background: #171719; color: #f6f4f2; font-family: Arial, sans-serif; box-shadow: 0 24px 80px #0009; }
 .rocky-mac-titlebar { position: relative; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; background: #29292d; }
 .rocky-mac-titlebar span { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }

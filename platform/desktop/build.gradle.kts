@@ -16,6 +16,10 @@ kotlin {
             implementation(project(":shared:core"))
         }
 
+        val desktopMain by getting {
+            dependencies { implementation(libs.jna.platform) }
+        }
+
         commonTest.dependencies {
             implementation(kotlin("test"))
         }

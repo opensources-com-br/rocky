@@ -83,11 +83,15 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 },
             )
             Text(
-                "A chave é salva neste dispositivo para reconectar a IA ao abrir o Rocky.",
+                "Use Salvar chave para guardá-la no cofre do sistema. A edição permanece na memória até salvar.",
                 modifier = Modifier.padding(top = 5.dp),
                 color = RockyColors.TextMuted,
                 style = MaterialTheme.typography.caption,
             )
+        }
+        Button(onClick = ai::saveConfiguration) { Text("Salvar configuração e chave") }
+        if (ai.configuration.provider != AiProviderKind.Ollama) {
+            Button(onClick = { ai.updateApiKey(""); ai.saveConfiguration() }) { Text("Apagar chave") }
         }
         if (ai.configuration.provider == AiProviderKind.OpenRouter) {
             Text(

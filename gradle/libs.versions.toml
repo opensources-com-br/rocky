@@ -6,6 +6,7 @@ sqldelight = "2.3.2"
 serialization = "1.11.0"
 
 [libraries]
+jna-platform = { module = "net.java.dev.jna:jna-platform", version = "5.19.1" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 compose-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-icons" }
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }

@@ -65,7 +65,7 @@ internal fun FirstUseContent(
             onAction = onConfigureVoice,
         )
         Text(
-            text = "Rocky não exige uma conta própria. As notas ficam no computador e as credenciais sensíveis não são salvas.",
+            text = "Rocky não exige uma conta própria. As notas ficam no computador. Chaves de IA salvas usam o cofre do sistema; tokens Twitch ficam na memória.",
             modifier = Modifier.padding(vertical = 12.dp),
             color = RockyColors.TextMuted,
             style = MaterialTheme.typography.caption,

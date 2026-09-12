@@ -5,7 +5,39 @@ import dev.rocky.core.ai.AiProviderKind
 import java.util.prefs.Preferences
 
 object AiDesktopPreferences {
-    private val preferences = Preferences.userRoot().node("dev/rocky/ai")
+    private val delegate by lazy { SecureAiPreferences(Preferences.userRoot().node("dev/rocky/ai"), desktopSecretStore()) }
+    var configuration: AiProviderConfiguration
+        get() = delegate.configuration
+        set(value) { delegate.configuration = value }
+    var automaticAnalysis: Boolean
+        get() = delegate.automaticAnalysis
+        set(value) { delegate.automaticAnalysis = value }
+    val storageNotice: String? get() = delegate.storageNotice
+}
+
+internal class SecureAiPreferences(private val preferences: Preferences, private val secrets: SecretStore) {
+    var storageNotice: String? = null
+        private set
+    private var loaded = false
+    private var cachedKey = ""
+
+    private fun loadKey(): String {
+        if (loaded) return cachedKey
+        loaded = true
+        val legacy = preferences.get(API_KEY_KEY, "")
+        try {
+            if (legacy.isNotBlank()) secrets.write(credentialIdentity() + "\n" + legacy)
+            val saved = secrets.read().orEmpty()
+            cachedKey = if (saved.substringBefore('\n') == credentialIdentity()) saved.substringAfter('\n', "") else ""
+        } catch (_: Exception) {
+            cachedKey = legacy
+            storageNotice = "Cofre indisponível. A chave está apenas na memória; salve novamente quando o cofre estiver disponível."
+        } finally {
+            preferences.remove(API_KEY_KEY)
+            preferences.flush()
+        }
+        return cachedKey
+    }
 
     var automaticAnalysis: Boolean
         get() = preferences.getBoolean(AUTOMATIC_ANALYSIS_KEY, false)
@@ -20,15 +52,26 @@ object AiDesktopPreferences {
                 provider = provider,
                 endpoint = preferences.get(ENDPOINT_KEY, defaultEndpoint(provider)),
                 model = preferences.get(MODEL_KEY, defaultModel(provider)),
-                apiKey = preferences.get(API_KEY_KEY, ""),
+                apiKey = loadKey(),
             )
         }
         set(value) {
+            if (value.apiKey.isBlank()) secrets.delete() else secrets.write(credentialIdentity(value.provider.name, value.endpoint.trim()) + "\n" + value.apiKey.trim())
             preferences.put(PROVIDER_KEY, value.provider.name)
             preferences.put(ENDPOINT_KEY, value.endpoint.trim())
             preferences.put(MODEL_KEY, value.model.trim())
-            preferences.put(API_KEY_KEY, value.apiKey.trim())
+            cachedKey = value.apiKey.trim()
+            loaded = true
+            storageNotice = null
+            preferences.remove(API_KEY_KEY)
+            preferences.flush()
         }
+
+    private fun credentialIdentity(
+        provider: String = preferences.get(PROVIDER_KEY, AiProviderKind.Ollama.name),
+        endpoint: String = preferences.get(ENDPOINT_KEY, defaultEndpoint(AiProviderKind.valueOf(provider))),
+    ): String = java.security.MessageDigest.getInstance("SHA-256")
+        .digest("$provider|${endpoint.trim().trimEnd('/')}".toByteArray()).joinToString("") { "%02x".format(it) }
 
     private fun defaultEndpoint(provider: AiProviderKind): String = when (provider) {
         AiProviderKind.Ollama -> "http://localhost:11434"
@@ -42,9 +85,9 @@ object AiDesktopPreferences {
         AiProviderKind.OpenRouter -> "openrouter/free"
     }
 
-    private const val PROVIDER_KEY = "provider"
-    private const val ENDPOINT_KEY = "endpoint"
-    private const val MODEL_KEY = "model"
-    private const val API_KEY_KEY = "apiKey"
-    private const val AUTOMATIC_ANALYSIS_KEY = "automaticAnalysis"
+    private val PROVIDER_KEY = "provider"
+    private val ENDPOINT_KEY = "endpoint"
+    private val MODEL_KEY = "model"
+    private val API_KEY_KEY = "apiKey"
+    private val AUTOMATIC_ANALYSIS_KEY = "automaticAnalysis"
 }

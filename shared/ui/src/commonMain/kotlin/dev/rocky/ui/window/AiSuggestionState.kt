@@ -86,7 +86,7 @@ internal class AiSuggestionState(
 
     fun updateApiKey(apiKey: String) {
         connectionVerified = false
-        update(configuration.copy(apiKey = apiKey))
+        configuration = configuration.copy(apiKey = apiKey)
     }
 
     fun updateAutomaticAnalysis(enabled: Boolean) {
@@ -208,11 +208,12 @@ internal class AiSuggestionState(
 
     private fun update(value: AiProviderConfiguration) {
         configuration = value
-        saveConfiguration()
     }
 
-    private fun saveConfiguration() {
-        onConfigurationChange(configuration)
+    fun saveConfiguration() {
+        runCatching { onConfigurationChange(configuration) }
+            .onSuccess { status = "Configuração salva no dispositivo" }
+            .onFailure { status = "Não foi possível salvar no cofre. Desbloqueie o cofre e tente novamente." }
     }
 
     companion object {

@@ -18,7 +18,7 @@ As mensagens permanecem no computador quando o endereço do Ollama é local. O R
 3. Mantenha `https://api.openai.com` como endereço, informe um modelo disponível no projeto e cole a API key.
 4. Selecione **Testar conexão**.
 
-A API key permanece na memória e é descartada quando o Rocky fecha. Ela nunca é salva nas preferências. As chamadas usam a [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) com `store: false`.
+Use **Salvar configuração e chave** para persistir a chave no Keychain (macOS) ou protegida por DPAPI do usuário (Windows). A chave não é salva em preferências comuns. **Apagar chave** remove a credencial salva; edições não salvas ficam apenas na memória. As chamadas usam a [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) com `store: false`.
 
 ## OpenRouter
 
@@ -27,7 +27,7 @@ A API key permanece na memória e é descartada quando o Rocky fecha. Ela nunca 
 3. Mantenha `https://openrouter.ai/api` como endereço e `openrouter/free` como modelo.
 4. Cole a API key e selecione **Testar conexão**.
 
-`openrouter/free` escolhe automaticamente um modelo gratuito compatível. A disponibilidade, o modelo escolhido e os limites podem variar. As mensagens selecionadas são processadas pelo OpenRouter e pelo provedor do modelo escolhido. A chave permanece somente na memória do Rocky.
+`openrouter/free` escolhe automaticamente um modelo gratuito compatível. A disponibilidade, o modelo escolhido e os limites podem variar. As mensagens selecionadas são processadas pelo OpenRouter e pelo provedor do modelo escolhido. A persistência usa o mesmo cofre descrito acima.
 
 ## Comportamento das sugestões
 

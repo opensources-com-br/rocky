@@ -373,7 +373,7 @@ fun RockyWindow(
                             generatingSuggestion = ai.generating,
                             canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messages.isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
-                            evidence = ai.suggestionSources.map { "${it.author}: ${it.text}" },
+                            evidence = ai.suggestionSources.map(::messageEvidence),
                             onSaveNote = {
                                 val note = ai.suggestion?.let { suggestion ->
                                     suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())

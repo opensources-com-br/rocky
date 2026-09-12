@@ -37,7 +37,7 @@ internal object TwitchSocketPayloads {
             "session_reconnect" -> TwitchSocketEvent.Reconnect(
                 payload.objectAt("session").stringAt("reconnect_url"),
             )
-            "notification" -> payload.chatMessage()
+            "notification" -> payload.chatMessage(root.objectAt("metadata")["message_timestamp"]?.jsonPrimitive?.content)
             "revocation" -> TwitchSocketEvent.Revoked(
                 payload.objectAt("subscription").stringAt("status"),
             )
@@ -53,7 +53,7 @@ internal object TwitchSocketPayloads {
         )
     }
 
-    private fun JsonObject.chatMessage(): TwitchSocketEvent {
+    private fun JsonObject.chatMessage(timestamp: String?): TwitchSocketEvent {
         val event = objectAt("event")
         val message = event.objectAt("message")
         return TwitchSocketEvent.MessageReceived(
@@ -62,6 +62,9 @@ internal object TwitchSocketPayloads {
                 author = event.stringAt("chatter_user_name"),
                 text = message.stringAt("text"),
                 platform = StreamPlatform.Twitch,
+                authorId = event["chatter_user_id"]?.jsonPrimitive?.content,
+                channelId = event["broadcaster_user_id"]?.jsonPrimitive?.content,
+                sourceTimestamp = timestamp,
             ),
         )
     }

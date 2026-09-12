@@ -17,6 +17,11 @@ data class ChatMessage(
     val author: String,
     val text: String,
     val platform: StreamPlatform,
+    val authorId: String? = null,
+    val channelId: String? = null,
+    val sourceTimestamp: String? = null,
+    val receivedAtMillis: Long? = null,
+    val sessionId: String? = null,
 )
 
 data class RockySuggestion(

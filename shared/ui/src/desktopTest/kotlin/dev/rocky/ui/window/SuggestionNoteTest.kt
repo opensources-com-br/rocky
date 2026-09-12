@@ -7,6 +7,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class SuggestionNoteTest {
+    @Test fun preservesSessionAndSourceMetadataInExportedEvidence() {
+        val message = ChatMessage("m1", "ana", "Dúvida", StreamPlatform.Twitch,
+            authorId = "u1", channelId = "c1", sourceTimestamp = "2026-09-12T12:00:00Z",
+            receivedAtMillis = 1234, sessionId = "session1")
+        val note = suggestionNote(RockySuggestion("s1", "Resposta", setOf("m1")), listOf(message), "now")
+        val markdown = dev.rocky.core.notes.notesAsMarkdown(listOf(note))
+        for (value in listOf("message=m1", "author=u1", "channel=c1", "session=session1", "source=2026-09-12T12:00:00Z")) {
+            org.junit.Assert.assertTrue(markdown.contains(value))
+        }
+    }
+
     @Test
     fun preservesTimestampAndCitedMessages() {
         val messages = listOf(

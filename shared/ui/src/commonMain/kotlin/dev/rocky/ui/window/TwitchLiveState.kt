@@ -22,6 +22,7 @@ internal class TwitchLiveState(
     private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
     internal val metricBucketCount: Int get() = receivedMessageTimes.size
     private var sessionGeneration = 0L
+    private var sessionId = ""
 
     var phase by mutableStateOf(TwitchConnectionPhase.Disconnected)
         private set
@@ -66,6 +67,7 @@ internal class TwitchLiveState(
         userCode = null
         verificationUri = null
         val generation = ++sessionGeneration
+        sessionId = "${currentTimeMillis()}-$generation-${kotlin.random.Random.nextLong()}"
         client.connect(clientId) { event ->
             if (generation == sessionGeneration) receive(event)
         }
@@ -116,7 +118,11 @@ internal class TwitchLiveState(
                     if (messages.size == MAX_CHAT_MESSAGES) {
                         receivedAtByMessageId.remove(messages.removeAt(0).id)
                     }
-                    messages += event.message
+                    messages += event.message.copy(
+                        receivedAtMillis = currentTimeMillis(),
+                        channelId = event.message.channelId ?: account?.userId,
+                        sessionId = sessionId,
+                    )
                     receivedAtByMessageId[event.message.id] = currentTimeMillis()
                     totalMessages += 1
                     val second = currentTimeMillis() / 1_000

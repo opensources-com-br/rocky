@@ -261,7 +261,7 @@ fun RockyWindow(
                         silenced = silenced,
                         onToggleSilence = {
                             silenced = !silenced
-                            if (silenced) voice.stopSpeaking()
+                            if (silenced) voice.interruptSpeech()
                         },
                     )
                     settingsOpen -> {
@@ -385,12 +385,12 @@ fun RockyWindow(
                             },
                             onAnalyze = { ai.analyze(aiScope, twitch.messages, agent = agent.configuration) },
                             onNext = {
-                                voice.stopSpeaking()
+                                voice.interruptSpeech()
                                 ai.dismissSuggestion()
                             },
                             onSilence = {
                                 silenced = !silenced
-                                if (silenced) voice.stopSpeaking()
+                                if (silenced) voice.interruptSpeech()
                             },
                         )
                         MainNavigation(mainSection) { mainSection = it }

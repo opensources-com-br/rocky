@@ -87,7 +87,8 @@ internal class VoiceState(
     private var captureGeneration = 0L
     private var speechGeneration = 0L
     private var lastSpokenSuggestionId: String? = null
-    private var queuedSpeech: String? = null
+    private data class QueuedSpeech(val text: String, val force: Boolean, val onFinished: () -> Unit)
+    private var queuedSpeech: QueuedSpeech? = null
     private var listenerScope: CoroutineScope? = null
     private var listenerTranscript: ((String) -> Unit)? = null
 
@@ -166,7 +167,7 @@ internal class VoiceState(
     }
 
     fun updateReadSuggestions(enabled: Boolean) {
-        if (!enabled) stopSpeaking()
+        if (!enabled) interruptSpeech()
         update(configuration.copy(readSuggestions = enabled))
     }
 
@@ -258,7 +259,7 @@ internal class VoiceState(
         if (!force && !configuration.readSuggestions) return
         lastSpokenSuggestionId = suggestionId
         if (speaking) {
-            queuedSpeech = text
+            queuedSpeech = QueuedSpeech(text, force, onFinished)
             return
         }
         speak(scope, text, force = force, onFinished = onFinished)
@@ -275,6 +276,11 @@ internal class VoiceState(
             return
         }
         speak(scope, text, force = true, onFinished = onFinished)
+    }
+
+    fun interruptSpeech() {
+        stopSpeaking()
+        resumeListener()
     }
 
     fun stopSpeaking() {
@@ -328,6 +334,7 @@ internal class VoiceState(
                     if (capturing) stopCapture(scope, onFailure, onTranscript)
                 }
             }.onFailure {
+                listenerEnabled = false
                 status = "Não foi possível acessar o microfone"
                 onFailure()
             }
@@ -409,6 +416,7 @@ internal class VoiceState(
         onFinished: () -> Unit = {},
     ) {
         if (speaking || (!force && !configuration.readSuggestions)) return
+        if (capturing || transcribing || captureJob?.isActive == true) cancelCapture()
         val generation = ++speechGeneration
         speaking = true
         status = "Rocky está falando…"
@@ -426,11 +434,9 @@ internal class VoiceState(
                 onFailure = { "Não foi possível usar a voz do sistema" },
             )
             onFinished()
-            if (result.isSuccess) {
-                queuedSpeech?.let { next ->
-                    queuedSpeech = null
-                    speak(scope, next)
-                }
+            queuedSpeech?.let { next ->
+                queuedSpeech = null
+                speak(scope, next.text, force = next.force, onFinished = next.onFinished)
             }
         }
     }

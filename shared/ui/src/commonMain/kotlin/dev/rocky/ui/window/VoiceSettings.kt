@@ -69,7 +69,7 @@ internal fun VoiceSettings(
         }
         Button(
             modifier = Modifier.fillMaxWidth().height(40.dp).testTag("test-voice"),
-            onClick = { if (voice.speaking) voice.stopSpeaking() else voice.testVoice(scope, agentName) },
+            onClick = { if (voice.speaking) voice.interruptSpeech() else voice.testVoice(scope, agentName) },
             colors = ButtonDefaults.buttonColors(backgroundColor = RockyColors.Accent, contentColor = Color.Black),
             shape = RoundedCornerShape(10.dp),
         ) {

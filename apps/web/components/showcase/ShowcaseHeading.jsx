@@ -10,10 +10,10 @@ export default function ShowcaseHeading() {
 {"SHOWCASE "}
 </div>
 <h1 style={{"margin": "16px 0 12px", "fontSize": "46px", "lineHeight": "1.05", "letterSpacing": "-.04em", "fontWeight": "500", "maxWidth": "640px", "textWrap": "balance"}} className="page-heading">
-{"Maneiras de usar o Rocky"}
+{"Casos de uso em breve"}
 </h1>
 <p style={{"margin": "0", "maxWidth": "560px", "fontSize": "16px", "lineHeight": "1.65", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
-{"Cenários ilustrativos para a versão atual: Twitch, perguntas à IA e registros locais. Não são depoimentos verificados nem resultados medidos. Abra um exemplo para entender a configuração."}
+{"Em breve, você poderá conhecer os casos de uso do Rocky nesta página."}
 </p>
 </div>
 </div>

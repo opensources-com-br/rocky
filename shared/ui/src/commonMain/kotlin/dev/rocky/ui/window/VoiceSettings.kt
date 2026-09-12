@@ -106,6 +106,12 @@ internal fun VoiceSettings(
                 )
             }
         }
+        if (voice.preparingTranscription) {
+            Button(onClick = voice::cancelTranscriptionSetup) { Text("Cancelar preparação") }
+        }
+        Text(tr("Listen while the microphone is capturing. Each recording lasts eight seconds; capture pauses during transcription and replies.",
+            "Fale enquanto o microfone estiver capturando. Cada gravação dura oito segundos; a captura pausa na transcrição e nas respostas."),
+            style = MaterialTheme.typography.caption, color = RockyColors.TextMuted)
         voice.transcriptionSetupStatus?.let {
             Text(
                 it,

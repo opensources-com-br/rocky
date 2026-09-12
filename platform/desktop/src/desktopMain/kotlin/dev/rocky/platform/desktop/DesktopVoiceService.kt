@@ -130,14 +130,25 @@ class DesktopVoiceService : VoiceService {
         val voiceDirectory = RockyDesktopPaths.voiceDirectory
         Files.createDirectories(voiceDirectory)
         val model = voiceDirectory.resolve(MANAGED_MODEL_NAME)
-        if (!Files.isRegularFile(model) || Files.size(model) < MINIMUM_MODEL_BYTES) {
+        if (!validManagedModel(model)) {
             onProgress("Baixando o modelo de voz…")
             val partial = voiceDirectory.resolve("$MANAGED_MODEL_NAME.part")
-            MODEL_URL.openStream().use { input ->
-                Files.copy(input, partial, StandardCopyOption.REPLACE_EXISTING)
+            val client = java.net.http.HttpClient.newBuilder()
+                .connectTimeout(java.time.Duration.ofSeconds(15))
+                .followRedirects(java.net.http.HttpClient.Redirect.NORMAL).build()
+            val request = java.net.http.HttpRequest.newBuilder(MODEL_URL.toURI())
+                .timeout(java.time.Duration.ofMinutes(5)).GET().build()
+            val download = client.sendAsync(request, java.net.http.HttpResponse.BodyHandlers.ofFile(partial, java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.WRITE, java.nio.file.StandardOpenOption.TRUNCATE_EXISTING))
+            try {
+                val response = download.get(5, TimeUnit.MINUTES)
+                check(response.statusCode() == 200 && validManagedModel(partial)) {
+                    "O modelo baixado não passou na verificação de integridade. Tente novamente."
+                }
+                Files.move(partial, model, StandardCopyOption.REPLACE_EXISTING)
+            } finally {
+                download.cancel(true)
+                Files.deleteIfExists(partial)
             }
-            check(Files.size(partial) >= MINIMUM_MODEL_BYTES) { "O modelo de voz baixado está incompleto" }
-            Files.move(partial, model, StandardCopyOption.REPLACE_EXISTING)
         }
         onProgress("Reconhecimento de voz pronto")
         return LocalTranscriptionConfiguration(whisper.toString(), model.toString())
@@ -147,7 +158,7 @@ class DesktopVoiceService : VoiceService {
         val brew = homebrewExecutable() ?: return null
         val whisper = brew.parent.resolve("whisper-cli")
         val model = RockyDesktopPaths.voiceDirectory.resolve(MANAGED_MODEL_NAME)
-        return if (Files.isRegularFile(whisper) && Files.isRegularFile(model) && Files.size(model) >= MINIMUM_MODEL_BYTES) {
+        return if (Files.isRegularFile(whisper) && validManagedModel(model)) {
             LocalTranscriptionConfiguration(whisper.toString(), model.toString())
         } else null
     }
@@ -317,10 +328,30 @@ class DesktopVoiceService : VoiceService {
         )
 
         internal fun waitForProcess(process: Process, timeout: Long, unit: TimeUnit): Boolean {
-            if (process.waitFor(timeout, unit)) return true
-            stopProcess(process)
-            return false
+            try {
+                if (process.waitFor(timeout, unit)) return true
+                stopProcess(process)
+                return false
+            } catch (error: InterruptedException) {
+                stopProcess(process)
+                throw error
+            }
         }
+
+        internal fun validManagedModel(path: Path): Boolean = runCatching {
+            if (!Files.isRegularFile(path) || Files.size(path) != MANAGED_MODEL_BYTES) return false
+            val digest = java.security.MessageDigest.getInstance("SHA-256")
+            Files.newInputStream(path).use { input ->
+                val buffer = ByteArray(64 * 1024)
+                while (true) {
+                    if (Thread.currentThread().isInterrupted) throw InterruptedException()
+                    val count = input.read(buffer)
+                    if (count < 0) break
+                    digest.update(buffer, 0, count)
+                }
+            }
+            digest.digest().joinToString("") { "%02x".format(it) } == MANAGED_MODEL_SHA256
+        }.getOrElse { if (it is InterruptedException) throw it else false }
 
         internal fun pcmLevel(bytes: ByteArray, count: Int): Float {
             if (count < 2) return 0f
@@ -373,9 +404,10 @@ class DesktopVoiceService : VoiceService {
         private const val TRANSCRIPTION_TIMEOUT_MINUTES = 2L
         private const val SETUP_TIMEOUT_MINUTES = 15L
         private const val MANAGED_MODEL_NAME = "ggml-base.bin"
-        private const val MINIMUM_MODEL_BYTES = 100_000_000L
+        private const val MANAGED_MODEL_BYTES = 147_951_465L
+        private const val MANAGED_MODEL_SHA256 = "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
         private val MODEL_URL = java.net.URI.create(
-            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin",
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.bin",
         ).toURL()
     }
 }

@@ -79,6 +79,8 @@ internal class VoiceState(
     val automaticTranscriptionSetupSupported: Boolean
         get() = service.automaticTranscriptionSetupSupported
 
+    private var setupJob: Job? = null
+    private var setupGeneration = 0L
     private var captureTimeout: Job? = null
     private var captureJob: Job? = null
     private var transcriptionJob: Job? = null
@@ -193,10 +195,14 @@ internal class VoiceState(
         if (preparingTranscription || !automaticTranscriptionSetupSupported) return
         preparingTranscription = true
         transcriptionSetupStatus = "Preparando reconhecimento de voz…"
-        scope.launch {
-            val result = withContext(Dispatchers.Default) {
-                runCatching { service.prepareTranscription { transcriptionSetupStatus = it } }
+        val generation = ++setupGeneration
+        setupJob = scope.launch {
+            val result = runCatching {
+                interruptibleWork { service.prepareTranscription { progress ->
+                    if (generation == setupGeneration) transcriptionSetupStatus = progress
+                } }
             }
+            if (generation != setupGeneration) return@launch
             preparingTranscription = false
             result.onSuccess { prepared ->
                 update(
@@ -213,6 +219,14 @@ internal class VoiceState(
                 transcriptionSetupStatus = it.message ?: "Não foi possível preparar o reconhecimento de voz"
             }
         }
+    }
+
+    fun cancelTranscriptionSetup() {
+        setupGeneration += 1
+        setupJob?.cancel()
+        setupJob = null
+        preparingTranscription = false
+        transcriptionSetupStatus = "Preparação cancelada; você pode tentar novamente."
     }
 
     fun testVoice(scope: CoroutineScope, agentName: String = "Rocky") {

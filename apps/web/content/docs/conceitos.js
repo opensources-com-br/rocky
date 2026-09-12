@@ -1,15 +1,53 @@
 const content = {
-  group: "Começando",
-  lead: "Cinco ideias que explicam o comportamento do app. Entender essas palavras deixa o resto da documentação mais curto.",
-  blocks: [
-    {"type": "h2", "text": "Vocabulário"},
-    {"type": "cards", "items": [{"key": "fila unificada", "text": "Todas as mensagens de todas as plataformas em ordem de chegada, com a origem marcada."}, {"key": "intervenção", "text": "Uma fala do Rocky no seu monitor. É contada e limitada pela frequência que você define."}, {"key": "turno", "text": "Um par pergunta-resposta entre você e o Rocky, registrado na aba Conversa."}, {"key": "nota", "text": "Um registro com minuto exato: promessa, dúvida sem resposta, problema técnico."}, {"key": "pulso", "text": "Mensagens por minuto e espectadores de cada plataforma conectada."}]},
-    {"type": "h2", "text": "Como ele decide o que é relevante"},
-    {"type": "para", "text": "Rocky não avalia mensagens uma a uma. Ele olha para janelas de tempo e procura padrões: a mesma pergunta feita por várias pessoas, um pedido que ficou sem resposta, uma reação coletiva forte, um aviso técnico repetido."},
-    {"type": "list", "items": ["Repetição: quantas pessoas diferentes pediram a mesma coisa.", "Silêncio: quanto tempo uma pergunta está na fila sem ser respondida.", "Intensidade: variação súbita no ritmo do chat, para cima ou para baixo.", "Dinheiro: superchats e presentes entram com prioridade própria."]},
-    {"type": "h2", "text": "O que fica em disco"},
-    {"type": "para", "text": "Notas, ideias, turnos de conversa e resumos são arquivos locais em ~/.rocky. Você pode abrir, versionar ou apagar. O histórico do chat não é salvo por padrão."},
-  ],
+  "group": "Começando",
+  "lead": "A conversa, a fila de perguntas e os registros têm papéis diferentes no Rocky.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Durante a sessão"
+    },
+    {
+      "type": "cards",
+      "items": [
+        {
+          "key": "chat",
+          "text": "Novas mensagens da Twitch recebidas enquanto conectado. Não é um arquivo completo da transmissão."
+        },
+        {
+          "key": "sugestão",
+          "text": "Resposta da IA baseada na amostra recente, que pode ser salva por você."
+        },
+        {
+          "key": "histórico",
+          "text": "Até 30 respostas temporárias da sessão; os últimos quatro pares ajudam a continuar a conversa."
+        },
+        {
+          "key": "perguntas",
+          "text": "Grupos detectados por regras de texto, com contagem de mensagens e estado pendente ou respondido."
+        },
+        {
+          "key": "pulso",
+          "text": "Métricas e tendências das amostras de espectadores e mensagens da Twitch."
+        }
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "O que persiste"
+    },
+    {
+      "type": "para",
+      "text": "Notas, ideias, perguntas com evidências, momentos e resumos ficam em SQLite. O histórico de respostas é temporário e limpa ao desconectar. Uma pergunta marcada como respondida reflete uma ação do usuário, não uma verificação automática da fala."
+    },
+    {
+      "type": "h2",
+      "text": "Tempo da sessão"
+    },
+    {
+      "type": "para",
+      "text": "Momentos e registros associados à live usam o tempo desde o início da conexão. Esse tempo não é necessariamente o timestamp do vídeo publicado."
+    }
+  ]
 };
 
 export default content;

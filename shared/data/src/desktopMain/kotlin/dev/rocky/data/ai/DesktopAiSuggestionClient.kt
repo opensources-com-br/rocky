@@ -10,6 +10,7 @@ import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import java.net.http.HttpClient
 import java.time.Duration
+import kotlinx.serialization.json.*
 
 class DesktopAiSuggestionClient internal constructor(private val allowTestLoopback: Boolean) : AiSuggestionClient {
     constructor() : this(false)
@@ -18,6 +19,19 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
         .build()
     private val ollama = OllamaAiClient(httpClient)
     private val openAi = OpenAiSuggestionClient(httpClient)
+
+    override fun availableModels(configuration: AiProviderConfiguration): List<String> {
+        configuration.copy(model = "list").validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
+        val path = if (configuration.provider == AiProviderKind.Ollama) "/api/tags" else "/v1/models"
+        val request = java.net.http.HttpRequest.newBuilder(java.net.URI(configuration.endpoint.trimEnd('/') + path))
+            .timeout(Duration.ofSeconds(15)).GET()
+        if (configuration.provider != AiProviderKind.Ollama) request.header("Authorization", "Bearer ${configuration.apiKey}")
+        val response = httpClient.send(request.build(), java.net.http.HttpResponse.BodyHandlers.ofString())
+        require(response.statusCode() in 200..299) { "Não foi possível listar modelos. Verifique a conexão e a chave." }
+        return if (configuration.provider == AiProviderKind.Ollama) AiSuggestionPayloads.ollamaModels(response.body()).sorted()
+        else Json.parseToJsonElement(response.body()).jsonObject["data"]?.jsonArray.orEmpty()
+            .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.content }.distinct().sorted()
+    }
 
     override fun testConnection(configuration: AiProviderConfiguration): AiConnectionResult {
         val validation = configuration.validationError(allowTestLoopback)

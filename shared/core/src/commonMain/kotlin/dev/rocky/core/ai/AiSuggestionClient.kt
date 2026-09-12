@@ -31,6 +31,8 @@ data class AiGeneratedSuggestion(
 class AiRequestException(message: String) : Exception(message)
 
 interface AiSuggestionClient : AutoCloseable {
+    fun availableModels(configuration: AiProviderConfiguration): List<String> = emptyList()
+
     fun testConnection(configuration: AiProviderConfiguration): AiConnectionResult
 
     fun generateSuggestion(

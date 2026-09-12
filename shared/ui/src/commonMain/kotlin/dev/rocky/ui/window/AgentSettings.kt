@@ -27,13 +27,6 @@ internal fun AgentSettings(
     val configuration = agent.configuration
     val toneLabels = AgentTone.entries.associateWith { it.localizedLabel }
     val toneLabel = toneLabels.getValue(configuration.tone)
-    val frequency = (configuration.interventionsPerTenMinutes - 1) / 8f
-    val intervalSeconds = 600 / configuration.interventionsPerTenMinutes
-    val intervalLabel = if (intervalSeconds % 60 == 0) {
-        "${intervalSeconds / 60} min"
-    } else {
-        "${intervalSeconds / 60} min ${intervalSeconds % 60} s"
-    }
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(tr("Language", "Idioma"), tr("Language used by the Rocky interface.", "Idioma usado pela interface do Rocky."))
         ChoiceRow(
@@ -65,12 +58,8 @@ internal fun AgentSettings(
             agent.updateTone(toneLabels.entries.first { it.value == selected }.key)
         }
         Spacer(Modifier.height(16.dp))
-        SettingTitle(
-            tr("Speaking frequency", "Frequência de fala"),
-            tr("How many times it may intervene every 10 minutes.", "Quantas vezes por 10 minutos ele pode intervir."),
-            "${configuration.interventionsPerTenMinutes}× · $intervalLabel",
-        )
-        RockySlider(frequency) { value -> agent.updateFrequency((value * 8).roundToInt() + 1) }
+        Text(tr("Choose on-demand, discreet or proactive interventions in AI settings.",
+            "Escolha intervenções sob demanda, discretas ou proativas em IA."), style = MaterialTheme.typography.caption)
         Spacer(Modifier.height(8.dp))
         SettingTitle(
             tr("Automatic interruption", "Interrupção automática"),

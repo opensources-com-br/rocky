@@ -390,6 +390,14 @@ fun RockyWindow(
                     },
                 )
                 Divider(color = RockyColors.Divider)
+                if (!updates.dismissed && sessionStatus != LiveSessionStatus.Running) updates.available?.let { update ->
+                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+                        androidx.compose.material.TextButton(onClick = { onOpenGuide(update.url) }) {
+                            Text(tr("Update available", "Atualização disponível") + " · ${update.version}")
+                        }
+                        androidx.compose.material.TextButton(onClick = { updates.dismissed = true }) { Text(tr("Later", "Depois")) }
+                    }
+                }
                 if (!historyOpen) localNotes.notice?.let { notice ->
                     Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {

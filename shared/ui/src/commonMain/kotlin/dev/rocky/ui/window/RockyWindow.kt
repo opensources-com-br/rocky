@@ -228,8 +228,17 @@ fun RockyWindow(
 
         val submitVoiceCommand: (String) -> Unit = { command ->
             waitingForVoiceCommand = false
+            val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
-            if (target != null) {
+            if (dictated != null) {
+                val saved = localNotes.save(LiveNote(
+                    "manual-${kotlin.random.Random.nextLong()}", dictated.text, currentTimeLabel(),
+                    if (dictated.target == VoiceSaveTarget.Idea) IDEA_TAG else "MANUAL",
+                ))
+                voice.speakAcknowledgement(aiScope,
+                    if (saved) spokenText("Saved.", "Salvo.") else spokenText("Could not save.", "Não foi possível salvar."),
+                    silenced, voice::resumeListener)
+            } else if (target != null) {
                 val hadSuggestion = ai.suggestion != null
                 val saved = saveCurrentSuggestion(target)
                 val acknowledgement = when {
@@ -294,6 +303,15 @@ fun RockyWindow(
                     },
                 )
                 Divider(color = RockyColors.Divider)
+                localNotes.notice?.let { notice ->
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+                        Text(notice, modifier = Modifier.weight(1f), style = MaterialTheme.typography.caption)
+                        if (localNotes.undoSaveId != null) androidx.compose.material.TextButton(onClick = localNotes::undoSave) {
+                            Text(tr("Undo", "Desfazer"))
+                        }
+                    }
+                }
                 when {
                     compact && !settingsOpen -> CompactContent(
                         status = sessionStatus,
@@ -476,6 +494,10 @@ fun RockyWindow(
                                     loadFailed = localNotes.loadFailed,
                                     onReload = localNotes::reload,
                                     notice = localNotes.notice,
+                                    onCreate = { text ->
+                                        localNotes.save(LiveNote("manual-${kotlin.random.Random.nextLong()}", text, currentTimeLabel(),
+                                            if (mainSection == MainSection.Ideas) IDEA_TAG else "MANUAL"))
+                                    },
                                     onUpdate = localNotes::update,
                                     onDelete = localNotes::delete,
                                     onExport = {
@@ -489,6 +511,10 @@ fun RockyWindow(
                                     notice = localNotes.notice,
                                     loadFailed = localNotes.loadFailed,
                                     onReload = localNotes::reload,
+                                    onCreate = { text ->
+                                        localNotes.save(LiveNote("manual-${kotlin.random.Random.nextLong()}", text, currentTimeLabel(),
+                                            if (mainSection == MainSection.Ideas) IDEA_TAG else "MANUAL"))
+                                    },
                                     onUpdate = localNotes::update,
                                     onDelete = localNotes::delete,
                                     onExport = {

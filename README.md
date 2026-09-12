@@ -93,4 +93,4 @@ The [implementation plan](docs/PLAN.md) describes the product direction, privacy
 
 Rocky is open-source software available under the [MIT License](LICENSE).
 
-The launch candidate is scoped to Twitch, AI, optional voice and notes. YouTube, Super Chats, automatic ideas and post-stream summaries remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md). Saved AI keys use system credential storage; text-only first use is supported.
+The launch candidate covers Twitch, AI, optional voice, grouped questions, notes, ideas, moments and a local records summary when disconnecting or closing the app. The summary includes saved pending questions; it does not cover the entire stream. YouTube, Super Chats and automatic idea generation remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md). Saved AI keys use system credential storage; text-only first use is supported.

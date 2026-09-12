@@ -745,7 +745,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Settings").assertExists()
         rule.onNodeWithText("Agent name").assertExists()
         rule.onNodeWithText("done").performClick()
-        rule.onNodeWithText("Connect Twitch or Kick in settings to follow a stream.").assertExists()
+        rule.onNodeWithText("Connect Twitch, Kick or YouTube in settings to follow a stream.").assertExists()
         rule.onNodeWithText("Conversation").assertExists()
         rule.runOnIdle { assertEquals(RockyLanguage.English, savedLanguage) }
     }

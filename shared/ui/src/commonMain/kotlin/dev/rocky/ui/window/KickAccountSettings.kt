@@ -44,7 +44,7 @@ internal fun KickAccountSettings(
                 TextButton(onClick = { onOpenBrowser("https://dev.kick.com") }) { Text("Criar app") }
             }
             Text(
-                "Configure no Kick Dev o callback ${draft.redirectUri} e um webhook HTTPS que encaminhe para ${KickConfiguration().redirectUri.substringBefore("/oauth")}/webhooks/kick.",
+                "Callback OAuth: ${draft.redirectUri}. Para receber o chat, cadastre no Kick Dev uma URL pública HTTPS que encaminhe para ${draft.redirectUri.substringBefore("/oauth")}/webhooks/kick.",
                 color = RockyColors.TextSecondary,
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(top = 8.dp),

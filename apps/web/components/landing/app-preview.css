@@ -1,0 +1,17 @@
+.rocky-preview { --rp-muted: #777479; --rp-secondary: #a5a1a5; --rp-border: #303034; width: 550px; max-width: 100%; margin: 60px 0 0; text-align: left; }
+.rocky-app { overflow: hidden; border: 1px solid var(--rp-border); border-radius: 10px; background: #171719; color: #f6f4f2; font-family: Arial, sans-serif; box-shadow: 0 24px 80px #0009; }
+.rocky-mac-titlebar { position: relative; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; background: #29292d; }
+.rocky-mac-titlebar span { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.rocky-mac-titlebar span:nth-child(2) { background: #ffbd2e; }
+.rocky-mac-titlebar span:nth-child(3) { background: #28c840; }
+.rocky-mac-titlebar strong { position: absolute; left: 50%; transform: translateX(-50%); font-size: 13px; }
+.rocky-app-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; }
+.rocky-app-header > div:first-child { flex: 1; }
+.rocky-app-header strong { font-size: 15px; }
+.rocky-app small { display: block; font-size: 12px; line-height: 16px; color: var(--rp-muted); }
+.rocky-app-header small { color: var(--rp-secondary); }
+.rocky-app-header [data-slot="badge"] { color: #e57436; border-color: #7d3d22; padding: 5px 11px; font-size: 11px; letter-spacing: 1.6px; }
+.rocky-header-icons { display: flex; gap: 15px; color: var(--rp-secondary); }
+.rocky-header-icons svg { width: 17px; height: 17px; }
+.rocky-preview figcaption { margin-top: 12px; text-align: center; font-size: 11px; color: #777479; }
+@media (max-width: 520px) { .rocky-app-header { gap: 8px; padding: 14px 12px; flex-wrap: wrap; } .rocky-header-icons { gap: 10px; } }

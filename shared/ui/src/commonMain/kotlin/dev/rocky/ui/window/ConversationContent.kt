@@ -110,11 +110,11 @@ internal fun ConversationContent(
 
         if (showTextRequest) {
             StreamerTextRequest(enabled = textRequestEnabled, onSend = onTextRequest)
-            QuickQuestions(textRequestEnabled, onTextRequest)
-            if (analyzing) {
-                androidx.compose.material.TextButton(onClick = onCancelAnalysis) {
-                    Text(tr("Cancel analysis", "Cancelar análise"))
-                }
+        }
+        QuickQuestions(textRequestEnabled, onTextRequest)
+        if (analyzing) {
+            androidx.compose.material.TextButton(onClick = onCancelAnalysis) {
+                Text(tr("Cancel analysis", "Cancelar análise"))
             }
         }
 

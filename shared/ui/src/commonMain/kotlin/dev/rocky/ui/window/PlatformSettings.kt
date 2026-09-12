@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.rocky.core.twitch.TwitchConnectionPhase
+import dev.rocky.core.kick.KickConfiguration
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
@@ -40,11 +41,15 @@ internal fun PlatformSettings(
     onConnect: () -> Unit,
     onDisconnect: () -> Unit,
     onOpenBrowser: (String) -> Unit,
+    kickConfiguration: KickConfiguration = KickConfiguration(),
+    kick: KickLiveState? = null,
+    onConnectKick: (KickConfiguration) -> Unit = {},
+    onDisconnectKick: () -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
             "Conexão com plataformas",
-            "Conecte a Twitch para receber o chat e os dados da sua live.",
+            "Conecte Twitch e Kick para receber chats e dados da live.",
         )
         Text(
             text = if (clientId.isBlank()) {
@@ -69,7 +74,8 @@ internal fun PlatformSettings(
             color = RockyColors.TextMuted,
             style = MaterialTheme.typography.caption,
         )
-        UpcomingPlatform("Kick", PlatformColor.Kick)
+        kick?.let { KickAccountSettings(kickConfiguration, it, onConnectKick, onDisconnectKick, onOpenBrowser) }
+            ?: UpcomingPlatform("Kick", PlatformColor.Kick)
         UpcomingPlatform("YouTube", PlatformColor.YouTube)
         UpcomingPlatform("Facebook", PlatformColor.Offline)
     }
@@ -162,7 +168,7 @@ private fun TwitchAccount(
 }
 
 @Composable
-private fun PrimaryButton(label: String, enabled: Boolean, onClick: () -> Unit) {
+internal fun PrimaryButton(label: String, enabled: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         enabled = enabled,

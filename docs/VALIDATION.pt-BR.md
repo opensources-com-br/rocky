@@ -70,6 +70,6 @@ Resultado da lista: passou / falhou
 Problemas encontrados:
 ```
 
-Checkpoint automatizado atual (10/09/2026): o build completo, os testes de interface, o teste de sessão prolongada e o empacotamento nativo passam nos runners macOS e Windows do GitHub. O protocolo com streamers continua sendo uma etapa manual e exige resultados registrados de lives reais.
+Checkpoint automatizado histórico (10/09/2026): o build completo, os testes de interface, o teste de sessão prolongada e o empacotamento nativo passam nos runners macOS e Windows do GitHub. O protocolo com streamers continua sendo uma etapa manual e exige resultados registrados de lives reais.
 
 Para identidade do candidato, assinatura e verificações manuais pendentes, consulte [preparação de lançamento](RELEASE_PREPARATION.md).

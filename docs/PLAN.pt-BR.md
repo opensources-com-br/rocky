@@ -1,5 +1,6 @@
 # Rocky — plano de produto e implementação
 
+> Plano original de referência. O escopo aprovado para o candidato atual está em [preparação de lançamento](RELEASE_PREPARATION.md): Twitch, IA, voz opcional e notas. As etapas de YouTube/Super Chats/resumo não são promessas deste candidato.
 Status: proposta para iniciar implementação. Data: 8 de setembro de 2026.
 
 Versão principal: [English](PLAN.md).

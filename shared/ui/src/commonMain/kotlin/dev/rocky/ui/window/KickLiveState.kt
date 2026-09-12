@@ -2,6 +2,7 @@ package dev.rocky.ui.window
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -17,6 +18,7 @@ internal class KickLiveState(
     private val currentTimeMillis: () -> Long,
 ) {
     val messages = mutableStateListOf<ChatMessage>()
+    private val receivedAtByMessageId = mutableStateMapOf<String, Long>()
     private val receivedMessageTimes = mutableStateMapOf<Long, Int>()
     var phase by mutableStateOf(KickConnectionPhase.Disconnected); private set
     var detail by mutableStateOf<String?>(null); private set
@@ -63,16 +65,22 @@ internal class KickLiveState(
             is KickConnectionEvent.AudienceUpdated -> viewerCount = event.viewerCount
             is KickConnectionEvent.MessageReceived -> {
                 if (messages.size == MAX_CHAT_MESSAGES) {
-                    messages.removeAt(0)
+                    receivedAtByMessageId.remove(messages.removeAt(0).id)
                 }
                 val receivedAt = currentTimeMillis()
                 messages += event.message.copy(receivedAtMillis = receivedAt, sessionId = sessionId)
+                receivedAtByMessageId[event.message.id] = receivedAt
                 totalMessages += 1
                 val second = receivedAt / 1_000
                 receivedMessageTimes[second] = (receivedMessageTimes[second] ?: 0) + 1
                 refreshMetrics()
             }
         }
+    }
+
+    fun messagesReceivedWithin(durationMillis: Long): List<ChatMessage> {
+        val cutoff = currentTimeMillis() - durationMillis
+        return messages.filter { (receivedAtByMessageId[it.id] ?: Long.MIN_VALUE) >= cutoff }
     }
 
     fun refreshMetrics() = Snapshot.withMutableSnapshot {

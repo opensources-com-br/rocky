@@ -19,6 +19,19 @@ fun exportNotesAsMarkdown(owner: Frame, notes: List<LiveNote>): Boolean {
     } else {
         "$selectedFile.md"
     }
-    Path.of(directory, fileName).writeText(notesAsMarkdown(notes))
+    writeMarkdownAtomically(Path.of(directory, fileName), notesAsMarkdown(notes))
     return true
+}
+
+internal fun writeMarkdownAtomically(path: Path, content: String) {
+    val temporary = java.nio.file.Files.createTempFile(path.toAbsolutePath().parent, ".rocky-export-", ".tmp")
+    try {
+        temporary.writeText(content)
+        try {
+            java.nio.file.Files.move(temporary, path, java.nio.file.StandardCopyOption.ATOMIC_MOVE,
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        } catch (_: java.nio.file.AtomicMoveNotSupportedException) {
+            java.nio.file.Files.move(temporary, path, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        }
+    } finally { java.nio.file.Files.deleteIfExists(temporary) }
 }

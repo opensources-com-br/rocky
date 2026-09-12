@@ -40,6 +40,12 @@ internal class LocalNotesState(private val repository: NoteRepository) {
         successNotice = "Nota excluída.",
     )
 
+    fun export(exporter: (List<LiveNote>) -> Boolean) {
+        runCatching { exporter(notes.toList()) }
+            .onSuccess(::setExportResult)
+            .onFailure { notice = "Não foi possível exportar. Escolha uma pasta disponível e tente novamente." }
+    }
+
     fun setExportResult(exported: Boolean) {
         if (exported) notice = "Markdown exportado."
     }

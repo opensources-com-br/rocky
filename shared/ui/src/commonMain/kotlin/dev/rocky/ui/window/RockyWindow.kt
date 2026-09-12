@@ -421,7 +421,7 @@ fun RockyWindow(
                                     onUpdate = localNotes::update,
                                     onDelete = localNotes::delete,
                                     onExport = {
-                                        localNotes.setExportResult(onExportNotes(localNotes.notes))
+                                        localNotes.export(onExportNotes)
                                     },
                                 )
                                 MainSection.Ideas -> TimelineContent(

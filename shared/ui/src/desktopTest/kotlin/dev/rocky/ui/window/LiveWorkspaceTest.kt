@@ -1,7 +1,8 @@
 package dev.rocky.ui.window
 
 import dev.rocky.core.live.*
-import kotlin.test.*
+import org.junit.Test
+import org.junit.Assert.*
 
 class LiveWorkspaceTest {
     @Test fun summarizesOnlyCurrentRecordsAndPersistsOnce() {
@@ -10,7 +11,7 @@ class LiveWorkspaceTest {
         val workspace = LiveWorkspace(records)
         workspace.start("live", "Live", 1000)
         val idea = workspace.decorate(LiveNote("i", "Fazer tutorial", "now", IDEA_TAG, completed = true), 43000)
-        assertEquals(42000, idea.offsetMillis)
+        assertEquals(42000L, idea.offsetMillis)
         records.save(idea)
         records.save(idea.copy(id = "old", text = "OUTRA LIVE", sessionId = "old"))
         records.save(idea.copy(id = "q", text = "Pergunta pendente?", tag = QUESTION_TAG, completed = false))

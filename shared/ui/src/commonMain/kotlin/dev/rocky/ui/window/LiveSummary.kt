@@ -2,6 +2,7 @@ package dev.rocky.ui.window
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -40,7 +45,12 @@ import dev.rocky.core.live.StreamPlatform
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
-internal fun PlatformStrip(platforms: List<PlatformStatus>) {
+internal fun PlatformStrip(
+    platforms: List<PlatformStatus>,
+    onDisconnect: (PlatformColor) -> Unit = {},
+) {
+    var selectedPlatform by remember { mutableStateOf<PlatformColor?>(null) }
+    val activeSelection = platforms.firstOrNull { it.colorKey == selectedPlatform && it.connected }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,6 +63,9 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
                 modifier = Modifier
                     .border(1.dp, RockyColors.Border, RoundedCornerShape(18.dp))
                     .background(RockyColors.SurfaceElevated, RoundedCornerShape(18.dp))
+                    .clickable(enabled = platform.connected) {
+                        selectedPlatform = platform.colorKey.takeUnless { it == selectedPlatform }
+                    }
                     .padding(horizontal = 10.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -67,6 +80,19 @@ internal fun PlatformStrip(platforms: List<PlatformStatus>) {
                     color = if (platform.enabled) RockyColors.TextPrimary else RockyColors.TextMuted,
                     style = MaterialTheme.typography.body2,
                 )
+            }
+        }
+        activeSelection?.let { platform ->
+            OutlinedButton(
+                onClick = {
+                    selectedPlatform = null
+                    onDisconnect(platform.colorKey)
+                },
+                shape = RoundedCornerShape(18.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, RockyColors.Border),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
+            ) {
+                Text(tr("Disconnect", "Desconectar"))
             }
         }
     }

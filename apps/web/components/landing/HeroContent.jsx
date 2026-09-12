@@ -7,7 +7,7 @@ export default function HeroContent({ chord, heroChips, heroConvo, heroTabs, mic
 <span style={{"padding": "1px 7px", "borderRadius": "999px", "background": "rgba(212,112,60,.16)", "color": "#e08b57", "fontSize": "11px", "fontWeight": "500"}}>
 {"Open source"}
 </span>
-{" Grátis, roda no seu PC, sem conta e sem servidor "}
+{" App gratuito, sem conta Rocky "}
 <span style={{"color": "rgba(255,255,255,.35)"}}>
 {"→"}
 </span>
@@ -18,18 +18,18 @@ export default function HeroContent({ chord, heroChips, heroConvo, heroTabs, mic
 {"E ela fala com você."}
 </h1>
 <p style={{"margin": "0", "maxWidth": "540px", "fontSize": "16.5px", "lineHeight": "1.6", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
-{"Rocky lê o chat de todas as suas plataformas ao mesmo tempo, separa o que importa, lê superchats em voz alta e responde quando você pergunta. Tudo roda na sua máquina, com a sua chave de API ou um modelo local."}
+{"Rocky acompanha sua Twitch, agrupa perguntas e ajuda você a consultar o chat por texto ou voz. Salve notas e ideias usando Ollama local ou sua chave de OpenAI/OpenRouter."}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px", "marginTop": "4px"}}>
 <a href={"https://github.com/opensources-com-br/rocky/releases"} style={{"padding": "11px 20px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}}>
-{"Baixar para Mac"}
+{"Ver downloads alpha"}
 </a>
 <a href={"https://github.com/opensources-com-br/rocky"} style={{"padding": "11px 20px", "borderRadius": "9px", "border": "1px solid rgba(255,255,255,.12)", "background": "rgba(255,255,255,.02)", "color": "rgba(255,255,255,.82)", "fontSize": "14px"}}>
 {"Ver no GitHub"}
 </a>
 </div>
 <span style={{"fontSize": "12px", "color": "rgba(255,255,255,.3)", "fontFamily": "var(--font-geist-mono), monospace"}}>
-{"Grátis e open source · macOS 13+ · sem conta"}
+{"macOS e Windows · alpha · instaladores não assinados"}
 </span>
 <AppPreview chord={chord} heroChips={heroChips} heroConvo={heroConvo} heroTabs={heroTabs} mic={mic} />
 <div style={{"height": "88px"}}>

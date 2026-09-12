@@ -16,6 +16,17 @@ internal class LocalNotesState(private val repository: NoteRepository) {
     var loadFailed by mutableStateOf(false)
         private set
 
+    var undoSaveId by mutableStateOf<String?>(null)
+        private set
+
+    fun undoSave() {
+        val id = undoSaveId ?: return
+        if (delete(id)) {
+            undoSaveId = null
+            notice = "Salvamento desfeito."
+        }
+    }
+
     init { reload() }
 
     fun reload() {
@@ -31,11 +42,17 @@ internal class LocalNotesState(private val repository: NoteRepository) {
             }
     }
 
-    fun save(note: LiveNote): Boolean = persist(
-        action = { repository.save(note) },
-        onSuccess = { notes.add(0, note) },
-        successNotice = "Nota salva localmente.",
-    )
+    fun save(note: LiveNote): Boolean {
+        if (notes.any { it.id == note.id }) {
+            notice = "Este item já foi salvo."
+            return true
+        }
+        return persist(
+            action = { repository.save(note) },
+            onSuccess = { notes.add(0, note); undoSaveId = note.id },
+            successNotice = if (note.tag == IDEA_TAG) "Ideia salva localmente." else "Nota salva localmente.",
+        )
+    }
 
     fun update(note: LiveNote): Boolean = persist(
         action = { repository.update(note) },
@@ -48,13 +65,13 @@ internal class LocalNotesState(private val repository: NoteRepository) {
 
     fun delete(noteId: String): Boolean = persist(
         action = { repository.delete(noteId) },
-        onSuccess = { notes.removeAll { it.id == noteId } },
+        onSuccess = { notes.removeAll { it.id == noteId }; if (undoSaveId == noteId) undoSaveId = null },
         successNotice = "Nota excluída.",
     )
 
     fun deleteAll(): Boolean = persist(
         action = { repository.deleteAll() },
-        onSuccess = { notes.clear() },
+        onSuccess = { notes.clear(); undoSaveId = null },
         successNotice = "Todas as notas foram apagadas.",
     )
 

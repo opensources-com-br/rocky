@@ -231,7 +231,9 @@ class RockyVisualCaptureTest {
         }
         rule.onNodeWithText("concluir").performClick()
 
-        rule.onNodeWithText("CONEXÃO REAL · TWITCH").assertExists()
+        assertTrue(rule.onAllNodesWithText("CONEXÃO REAL · TWITCH").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithTag("platform-twitch").performClick()
+        rule.onNodeWithText("Desconectar").assertExists()
         rule.onNodeWithText("Mensagem real").assertExists()
         assertTrue(rule.onAllNodesWithText("1.221").fetchSemanticsNodes().isEmpty())
         rule.onNodeWithText("Superchats").performClick()
@@ -246,7 +248,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Pulso").performClick()
         rule.onNodeWithText("321 assistindo · 1 msg/min").assertExists()
         rule.onNodeWithText("Conversa").performClick()
-        rule.onNodeWithTag("streamer-text-request").assertExists()
+        assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
         rule.runOnIdle {
             twitch.emit(TwitchConnectionEvent.PhaseChanged(dev.rocky.core.twitch.TwitchConnectionPhase.Reconnecting))
         }
@@ -272,7 +274,9 @@ class RockyVisualCaptureTest {
         }
         rule.onNodeWithText("concluir").performClick()
 
-        rule.onNodeWithText("CONEXÃO REAL · KICK").assertExists()
+        assertTrue(rule.onAllNodesWithText("CONEXÃO REAL · KICK").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithTag("platform-kick").performClick()
+        rule.onNodeWithText("Desconectar").assertExists()
         rule.onNodeWithText("Mensagem da Kick").assertExists()
     }
 
@@ -308,8 +312,7 @@ class RockyVisualCaptureTest {
             twitch.emitMessages(1)
         }
         rule.onNodeWithText("concluir").performClick()
-        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Primeira pergunta")
-        rule.onNodeWithTag("send-streamer-text-request").performClick()
+        rule.onNodeWithText("Dúvidas principais").performClick()
         rule.waitUntil(3_000) { rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithText("Histórico").performClick()
         rule.onNodeWithText("Histórico da conversa").assertExists()
@@ -318,7 +321,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Desfazer").performClick()
         rule.runOnIdle { assertTrue(repository.getAll().isEmpty()) }
         rule.onNodeWithText("Fechar").performClick()
-        rule.onNodeWithTag("streamer-text-request").assertIsDisplayed()
+        assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
     }
 
     @Test fun preflightAllowsTextWithoutAudioSetup() {
@@ -329,7 +332,7 @@ class RockyVisualCaptureTest {
         rule.waitUntil(3_000) { rule.onAllNodesWithText("Conexão com IA verificada").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithText("Plataforma de streaming desconectada").assertExists()
         rule.onNodeWithText("Fechar").performClick()
-        rule.onNodeWithTag("streamer-text-request").assertExists()
+        rule.onNodeWithText("Dúvidas principais").assertExists()
     }
 
     @Test
@@ -511,21 +514,18 @@ class RockyVisualCaptureTest {
             twitch.emitMessages(1)
         }
         rule.onNodeWithText("concluir").performClick()
-        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Primeiro pedido")
-        rule.onNodeWithTag("send-streamer-text-request").performClick()
-        rule.waitUntil(3_000) { ai.lastRequest == "Primeiro pedido" }
+        rule.onNodeWithText("Dúvidas principais").performClick()
+        rule.waitUntil(3_000) { ai.lastRequest != null }
         rule.onNodeWithText("Cancelar análise").performClick()
         rule.waitUntil(3_000) { ai.interrupted }
         ai.responseGate = null
-        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Segundo pedido")
-        rule.onNodeWithTag("send-streamer-text-request").performClick()
-        rule.waitUntil(3_000) { ai.lastRequest == "Segundo pedido" }
+        val firstRequest = ai.lastRequest
+        rule.onNodeWithText("O que perdi?").performClick()
+        rule.waitUntil(3_000) { ai.lastRequest != firstRequest }
         rule.onNodeWithText("O chat quer saber o preço.").assertExists()
         capture("implementation-active-answer.png")
-        val inputHeight = rule.onNodeWithTag("streamer-text-request").fetchSemanticsNode().boundsInRoot.height
         val chatHeight = rule.onNodeWithTag("chat-messages").fetchSemanticsNode().boundsInRoot.height
-        assertTrue("Input height: $inputHeight", inputHeight >= 56f)
-        assertTrue("Chat height: $chatHeight", chatHeight >= 60f)
+        assertTrue("Chat height: $chatHeight", chatHeight >= 140f)
     }
 
     @Test

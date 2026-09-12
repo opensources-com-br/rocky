@@ -202,7 +202,8 @@ fun RockyWindow(
         LaunchedEffect(twitch.totalMessages, ai.filters, workspace.sessionId) {
             if (workspace.sessionId.isNotBlank()) {
                 workspace.questions.collect(dev.rocky.core.live.filterChat(twitch.messages.toList(), ai.filters).messages,
-                    workspace.sessionId, workspace.label, currentTimeLabel(), workspace.offset(currentTimeMillis()))
+                    workspace.sessionId, workspace.label, currentTimeLabel(), workspace.offset(currentTimeMillis()),
+                    twitch.messages.map { it.id }.toSet())
             }
         }
         LaunchedEffect(visibleSuggestion?.id, silenced) {

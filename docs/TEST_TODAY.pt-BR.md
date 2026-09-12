@@ -26,3 +26,17 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 - Confira as abas Notas e Ideias, reinicie o aplicativo e confirme a persistência. Teste edição, exclusão e exportação de cada categoria.
 - Sem resposta disponível, o comando de salvar deve explicar que ainda não há uma resposta para salvar.
 - Confira o ícone com os três pontos laranja na janela, no Dock do macOS e no instalador. No Windows, confira também a barra de tarefas e o atalho instalado.
+
+
+## Experiência do MVP: dez melhorias
+
+- Histórico: gere duas respostas, consulte a primeira, copie, repita, salve como ideia e desfaça. Desconecte e confirme que o histórico foi limpo e os registros salvos permaneceram.
+- Continuidade: após uma resposta, peça “explica melhor” e “resume isso”; confirme que o assunto anterior foi mantido sem inventar novas mensagens.
+- Prioridade: inicie análise automática lenta e envie uma pergunta direta. Somente a resposta ao pedido direto deve entrar no histórico.
+- Atalhos: teste Ctrl+Shift+F8/F9/F10 com Rocky em segundo plano e durante OBS/jogo. Reconfigure, confira conflitos e teste de novo.
+- Fim da fala: compare um comando curto, uma pausa no meio da frase e silêncio total. Ajuste o limiar com ruído ambiente; confirme o limite de oito segundos.
+- Registro livre: dite uma nota sem chat/IA, crie uma ideia por texto, confirme que a aba não mudou, desfaça e verifique SQLite ao reabrir.
+- Primeiro uso: no build oficial, conecte Twitch sem editar Client ID; busque modelos, selecione um, salve e teste a IA. Endereço customizado continua em Avançado.
+- Pré-live: teste IA, voz/microfone opcionais e confira uma gravação OBS seguindo a orientação exibida.
+- Janela: mova/redimensione, reinicie, teste modo compacto e configurações sem perder o tamanho principal; remova um monitor e confira recuperação.
+- Falhas: interrompa rede/provedor, tente salvar com pasta de dados indisponível e confirme que rascunhos não desaparecem sem salvar.

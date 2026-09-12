@@ -499,6 +499,8 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("OpenRouter").performClick()
 
+        rule.onNodeWithText("https://openrouter.ai/api").assertDoesNotExist()
+        rule.onNodeWithText("Configuração avançada da conexão").performClick()
         rule.onNodeWithText("https://openrouter.ai/api").assertExists()
         rule.onNodeWithText("openrouter/free").assertExists()
         rule.onNodeWithTag("ai-api-key").assertExists()
@@ -508,6 +510,7 @@ class RockyVisualCaptureTest {
     fun togglesTwitchClientIdVisibility() {
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms, twitchClientId = "client-id")
 
+        rule.onNodeWithText("Avançado · aplicativo Twitch").performClick()
         rule.onNodeWithContentDescription("Mostrar valor").performClick()
         rule.onNodeWithContentDescription("Ocultar valor").assertExists()
     }
@@ -718,7 +721,7 @@ class RockyVisualCaptureTest {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
                 var showingSettings by remember { mutableStateOf(settingsOpen) }
-                Box(Modifier.size(420.dp, 820.dp)) {
+                Box(Modifier.size(462.dp, 820.dp)) {
                     RockyWindow(
                         compact = compact,
                         pinned = false,

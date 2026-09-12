@@ -20,6 +20,33 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AiSuggestionStateTest {
+    @Test fun directQuestionInterruptsAutomaticAnalysis() = runBlocking {
+        val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
+        val state = AiSuggestionState(client, ollamaConfiguration, initialAutomaticAnalysis = true) {}
+        state.analyze(this, messages(3), automatic = true)
+        withTimeout(3_000) { while (client.started.count > 0) delay(1) }
+        client.responseGate = null
+        state.analyze(this, messages(3), streamerRequest = "Pergunta urgente")
+        withTimeout(3_000) { while (state.generating) delay(1) }
+        assertTrue(client.interrupted.get())
+        assertEquals("Pergunta urgente", state.history.single().question)
+    }
+
+    @Test fun keepsBoundedHistoryAndUsesItForFollowups() = runBlocking {
+        val client = FakeAiSuggestionClient()
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        repeat(32) { index ->
+            state.analyze(this, messages(1), streamerRequest = "Pergunta $index")
+            withTimeout(3_000) { while (state.generating) delay(1) }
+        }
+        assertEquals(30, state.history.size)
+        assertEquals("Pergunta 2", state.history.first().question)
+        assertEquals(4, client.lastAgent.conversation.size)
+        assertEquals("Pergunta 30", client.lastAgent.conversation.last().question)
+        state.resetSession()
+        assertTrue(state.history.isEmpty())
+    }
+
     @Test fun clearsCredentialsWhenProviderOrEndpointChanges() {
         val config = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic")
         val state = AiSuggestionState(FakeAiSuggestionClient(), config) {}
@@ -279,6 +306,7 @@ class AiSuggestionStateTest {
     private class FakeAiSuggestionClient : AiSuggestionClient {
         val started = CountDownLatch(1)
         val interrupted = AtomicBoolean(false)
+        var lastAgent = AgentConfiguration()
         var requests = 0
         var failuresRemaining = 0
         var lastStreamerRequest: String? = null
@@ -293,6 +321,7 @@ class AiSuggestionStateTest {
             streamerRequest: String?,
             agent: AgentConfiguration,
         ): AiGeneratedSuggestion {
+            lastAgent = agent
             requests += 1
             lastMessageCount = messages.size
             if (failuresRemaining-- > 0) error("Temporary provider failure")

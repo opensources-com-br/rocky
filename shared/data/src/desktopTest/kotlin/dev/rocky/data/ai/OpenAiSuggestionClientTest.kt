@@ -33,7 +33,7 @@ class OpenAiSuggestionClientTest {
             start()
         }
         try {
-            val result = DesktopAiSuggestionClient().testConnection(
+            val result = DesktopAiSuggestionClient(allowTestLoopback = true).testConnection(
                 AiProviderConfiguration(
                     AiProviderKind.OpenRouter,
                     "http://localhost:${server.address.port}",

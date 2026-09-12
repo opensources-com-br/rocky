@@ -11,7 +11,8 @@ import dev.rocky.core.live.StreamPlatform
 import java.net.http.HttpClient
 import java.time.Duration
 
-class DesktopAiSuggestionClient : AiSuggestionClient {
+class DesktopAiSuggestionClient internal constructor(private val allowTestLoopback: Boolean) : AiSuggestionClient {
+    constructor() : this(false)
     private val httpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
         .build()
@@ -19,7 +20,7 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
     private val openAi = OpenAiSuggestionClient(httpClient)
 
     override fun testConnection(configuration: AiProviderConfiguration): AiConnectionResult {
-        val validation = configuration.validationError()
+        val validation = configuration.validationError(allowTestLoopback)
         if (validation != null) return AiConnectionResult(false, validation)
         val connection = when (configuration.provider) {
             AiProviderKind.Ollama -> ollama.testConnection(configuration.endpoint, configuration.model)
@@ -50,7 +51,7 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
         streamerRequest: String?,
         agent: AgentConfiguration,
     ): AiGeneratedSuggestion? {
-        configuration.validationError()?.let { throw IllegalArgumentException(it) }
+        configuration.validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
         require(messages.isNotEmpty()) { "At least one chat message is required" }
         return when (configuration.provider) {
             AiProviderKind.Ollama -> ollama.generate(
@@ -82,9 +83,18 @@ class DesktopAiSuggestionClient : AiSuggestionClient {
     override fun close() = Unit
 }
 
-private fun AiProviderConfiguration.validationError(): String? = when {
+internal fun AiProviderConfiguration.validationError(allowTestLoopback: Boolean = false): String? = when {
+    !safeEndpoint(endpoint, provider == AiProviderKind.Ollama || allowTestLoopback) ->
+        "Use HTTPS para APIs remotas. HTTP é permitido apenas para Ollama em loopback."
     endpoint.isBlank() -> "Informe o endereço do provedor"
     model.isBlank() -> "Informe o modelo"
     provider != AiProviderKind.Ollama && apiKey.isBlank() -> "Informe a API key do provedor"
     else -> null
 }
+
+private fun safeEndpoint(value: String, allowLoopback: Boolean): Boolean = runCatching {
+    val uri = java.net.URI(value.trim())
+    val loopback = uri.host?.lowercase() in setOf("localhost", "127.0.0.1", "[::1]", "::1")
+    uri.host != null && uri.rawUserInfo == null && uri.rawQuery == null && uri.rawFragment == null &&
+        (uri.scheme.equals("https", true) || (allowLoopback && loopback && uri.scheme.equals("http", true)))
+}.getOrDefault(false)

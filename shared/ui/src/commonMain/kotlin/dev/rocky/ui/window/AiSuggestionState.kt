@@ -59,7 +59,10 @@ internal class AiSuggestionState(
     private var analysisJob: Job? = null
 
     fun updateProvider(provider: AiProviderKind) {
+        if (provider == configuration.provider) return
+        cancelAnalysis()
         connectionVerified = false
+        configuration = configuration.copy(apiKey = "")
         configuration = when (provider) {
             AiProviderKind.Ollama -> configuration.copy(
                 provider = provider, endpoint = DEFAULT_OLLAMA_ENDPOINT, model = DEFAULT_OLLAMA_MODEL,
@@ -76,7 +79,11 @@ internal class AiSuggestionState(
 
     fun updateEndpoint(endpoint: String) {
         connectionVerified = false
-        update(configuration.copy(endpoint = endpoint))
+        if (endpoint.trim().trimEnd('/') != configuration.endpoint.trim().trimEnd('/')) {
+            cancelAnalysis()
+            configuration = configuration.copy(endpoint = endpoint, apiKey = "")
+            saveConfiguration()
+        } else update(configuration.copy(endpoint = endpoint))
     }
 
     fun updateModel(model: String) {

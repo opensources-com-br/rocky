@@ -20,6 +20,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AiSuggestionStateTest {
+    @Test fun clearsCredentialsWhenProviderOrEndpointChanges() {
+        val config = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic")
+        val state = AiSuggestionState(FakeAiSuggestionClient(), config) {}
+        state.updateProvider(AiProviderKind.OpenRouter)
+        assertEquals("", state.configuration.apiKey)
+        state.updateApiKey("another-synthetic")
+        state.updateEndpoint("https://another.example")
+        assertEquals("", state.configuration.apiKey)
+    }
+
     @Test
     fun cancelInterruptsBlockingProviderAndAllowsAnotherRequest() = runBlocking {
         val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
@@ -163,6 +173,8 @@ class AiSuggestionStateTest {
         state.updateProvider(AiProviderKind.OpenAI)
         state.updateApiKey("secret-key")
         state.updateModel("another-model")
+        assertEquals("", saved?.apiKey)
+        state.saveConfiguration()
 
         assertTrue(state.isReady)
         assertEquals("secret-key", saved?.apiKey)
@@ -176,6 +188,8 @@ class AiSuggestionStateTest {
         state.updateProvider(AiProviderKind.OpenRouter)
         state.updateApiKey("router-key")
         state.updateModel("openrouter/free")
+        assertEquals("", saved?.apiKey)
+        state.saveConfiguration()
 
         assertEquals("https://openrouter.ai/api", state.configuration.endpoint)
         assertEquals("openrouter/free", state.configuration.model)

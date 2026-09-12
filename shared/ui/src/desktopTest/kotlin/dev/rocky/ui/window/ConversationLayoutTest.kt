@@ -14,6 +14,26 @@ import org.junit.Assert.*
 
 class ConversationLayoutTest {
     @get:Rule val rule = createComposeRule()
+
+    @Test fun placesTheNewestMessageAtTheBottom() {
+        rule.setContent {
+            Box(Modifier.size(462.dp, 300.dp)) {
+                ConversationContent(
+                    messages = listOf(
+                        ChatMessage("new", "viewer", "Newest", StreamPlatform.Twitch, receivedAtMillis = 3),
+                        ChatMessage("old", "viewer", "Oldest", StreamPlatform.Twitch, receivedAtMillis = 1),
+                        ChatMessage("middle", "viewer", "Middle", StreamPlatform.Twitch, receivedAtMillis = 2),
+                    ),
+                )
+            }
+        }
+
+        val oldestTop = rule.onNodeWithText("Oldest").fetchSemanticsNode().boundsInRoot.top
+        val middleTop = rule.onNodeWithText("Middle").fetchSemanticsNode().boundsInRoot.top
+        val newestTop = rule.onNodeWithText("Newest").fetchSemanticsNode().boundsInRoot.top
+        assertTrue("Message positions: $oldestTop, $middleTop, $newestTop", oldestTop < middleTop && middleTop < newestTop)
+    }
+
     @Test fun preservesChatWhileBusyControlsScrollInShortWindow() {
         var cancelled = false
         rule.setContent {

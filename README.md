@@ -80,8 +80,8 @@ Before promoting an alpha, follow the [streamer test protocol](docs/STREAMER_TES
 | Directory | Responsibility |
 | --- | --- |
 | [apps/desktop](apps/desktop/) | Desktop entry point, packaging, and application lifecycle |
-| [apps/web](apps/web/) | Next.js application with the default starter |
-| [apps/landing](apps/landing/) | Bilingual static landing page published with GitHub Pages |
+| [apps/web](apps/web/) | Rocky landing page in Next.js (default starter for now) |
+| [apps/landing](apps/landing/) | Previous static landing, preserved as a reference |
 | [shared/core](shared/core/) | Domain models, contracts, and export rules |
 | [shared/data](shared/data/) | Twitch, AI, and SQLite implementations |
 | [shared/ui](shared/ui/) | Compose UI and presentation state |

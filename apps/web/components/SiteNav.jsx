@@ -6,7 +6,7 @@ export default function SiteNav({ active, onShowcase }) {
     <nav aria-label="Navegação principal" style={{ maxWidth: 1120, margin: "0 auto", display: "flex", alignItems: "center", gap: 10, padding: "0 28px", height: 56, borderLeft: "1px solid rgba(255,255,255,.07)", borderRight: "1px solid rgba(255,255,255,.07)" }}>
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, color: "inherit", flex: "none" }}>
         <span style={{ width: 22, height: 22, borderRadius: 6, background: "#d4703c", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#140a05" }}>R</span>
-        <span style={{ fontSize: 14.5, fontWeight: 600, letterSpacing: "-.02em" }}>Rocky</span>
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-.01em" }}>Rocky</span>
       </Link>
       <div style={{ marginLeft: 26, display: "flex", gap: 20, fontSize: 13, color: "rgba(255,255,255,.5)" }}>
         {onShowcase ? <Button variant="ghost" className="reference-button" onClick={onShowcase} style={{ color: "#f2efec" }}>Showcase</Button> : <Link href="/showcase/" style={{ color: "inherit" }}>Showcase</Link>}

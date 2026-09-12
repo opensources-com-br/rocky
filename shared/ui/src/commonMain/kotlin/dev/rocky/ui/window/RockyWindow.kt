@@ -710,7 +710,11 @@ fun RockyWindow(
                                     },
                                 )
                                 MainSection.Pulse -> PulseContent(
-                                    samples = if (kick.isActive) kick.pulse.toList() else twitch.pulse.toList(),
+                                    samples = when {
+                                        youtube.isActive -> youtube.pulse.toList()
+                                        kick.isActive -> kick.pulse.toList()
+                                        else -> twitch.pulse.toList()
+                                    },
                                     platforms = visiblePlatforms,
                                 )
                             }

@@ -212,10 +212,34 @@ fun RockyWindow(
                 },
             )
         }
+        fun saveCurrentSuggestion(target: VoiceSaveTarget): Boolean {
+            val suggestion = ai.suggestion ?: return false
+            val note = suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel()).copy(
+                id = "saved-${kotlin.random.Random.nextLong()}",
+                tag = if (target == VoiceSaveTarget.Idea) IDEA_TAG else "SUGESTÃO IA",
+            )
+            if (!localNotes.save(note)) return false
+            mainSection = if (target == VoiceSaveTarget.Idea) MainSection.Ideas else MainSection.Notes
+            return true
+        }
+
         val submitVoiceCommand: (String) -> Unit = { command ->
             waitingForVoiceCommand = false
-            voice.speakAcknowledgement(aiScope, spokenText("I will check the chat.", "Vou verificar o chat."), silenced) {
-                if (voice.listenerEnabled) analyzeVoiceCommand(command)
+            val target = voiceSaveTarget(command)
+            if (target != null) {
+                val hadSuggestion = ai.suggestion != null
+                val saved = saveCurrentSuggestion(target)
+                val acknowledgement = when {
+                    saved && target == VoiceSaveTarget.Idea -> spokenText("Idea saved.", "Ideia salva.")
+                    saved -> spokenText("Note saved.", "Nota salva.")
+                    !hadSuggestion -> spokenText("There is no answer to save yet.", "Ainda não há uma resposta para salvar.")
+                    else -> spokenText("Could not save. Please try again.", "Não foi possível salvar. Tente novamente.")
+                }
+                voice.speakAcknowledgement(aiScope, acknowledgement, silenced, voice::resumeListener)
+            } else {
+                voice.speakAcknowledgement(aiScope, spokenText("I will check the chat.", "Vou verificar o chat."), silenced) {
+                    if (voice.listenerEnabled) analyzeVoiceCommand(command)
+                }
             }
         }
         val handleVoiceRequest: (String) -> Unit = { transcript ->
@@ -294,7 +318,7 @@ fun RockyWindow(
                                 SettingsSection.Data -> DataSettings(
                                     localNotes, dataDirectoryLabel, buildLabel,
                                     onOpenDataDirectory = onOpenDataDirectory,
-                                    onExportNotes = { localNotes.export(onExportNotes) },
+                                    onExportNotes = { localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) } },
                                     onResetSettings = {
                                         voice.resetSession(); ai.resetSession(); twitch.disconnect()
                                         onResetSettings()
@@ -395,15 +419,7 @@ fun RockyWindow(
                             canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS).isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
                             evidence = ai.suggestionSources.map(::messageEvidence),
-                            onSaveNote = {
-                                val note = ai.suggestion?.let { suggestion ->
-                                    suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())
-                                }
-                                if (note != null && localNotes.save(note)) {
-                                    ai.dismissSuggestion()
-                                    mainSection = MainSection.Notes
-                                }
-                            },
+                            onSaveNote = { saveCurrentSuggestion(VoiceSaveTarget.Note) },
                             onAnalyze = { ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), agent = agent.configuration.copy(language = language)) },
                             onNext = {
                                 voice.interruptSpeech()
@@ -442,18 +458,31 @@ fun RockyWindow(
                                 )
                                 MainSection.Support -> SupportContent()
                                 MainSection.Notes -> NotesContent(
-                                    notes = localNotes.notes,
+                                    notes = localNotes.notes.filter { it.tag != IDEA_TAG },
                                     loadFailed = localNotes.loadFailed,
                                     onReload = localNotes::reload,
                                     notice = localNotes.notice,
                                     onUpdate = localNotes::update,
                                     onDelete = localNotes::delete,
                                     onExport = {
-                                        localNotes.export(onExportNotes)
+                                        localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) }
                                     },
                                 )
-                                MainSection.Ideas -> TimelineContent(
-                                    onExportIdeas = onExportIdeas,
+                                MainSection.Ideas -> NotesContent(
+                                    notes = localNotes.notes.filter { it.tag == IDEA_TAG },
+                                    title = "Ideias da live",
+                                    notice = localNotes.notice,
+                                    loadFailed = localNotes.loadFailed,
+                                    onReload = localNotes::reload,
+                                    onUpdate = localNotes::update,
+                                    onDelete = localNotes::delete,
+                                    onExport = {
+                                        localNotes.export { notes ->
+                                            onExportIdeas(notes.filter { it.tag == IDEA_TAG }.map {
+                                                LiveIdea(it.text, it.timestamp, it.tag)
+                                            })
+                                        }
+                                    },
                                 )
                                 MainSection.Pulse -> PulseContent(
                                     platforms = visiblePlatforms,

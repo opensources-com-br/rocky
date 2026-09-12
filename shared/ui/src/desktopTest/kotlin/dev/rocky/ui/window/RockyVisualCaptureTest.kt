@@ -174,7 +174,7 @@ class RockyVisualCaptureTest {
         val mainSections = mapOf(
             MainSection.Support to "Super Chats ainda não estão conectados.",
             MainSection.Notes to "Notas locais",
-            MainSection.Ideas to "A geração automática de ideias ainda não está disponível em sessões reais.",
+            MainSection.Ideas to "Ideias da live",
             MainSection.Pulse to "audiência indisponível · 0 msg/min",
         )
         mainSections.forEach { (section, visibleText) ->
@@ -232,7 +232,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Super Chats ainda não estão conectados.").assertExists()
         assertTrue(rule.onAllNodesWithText("ju.lia").fetchSemanticsNodes().isEmpty())
         rule.onNodeWithText("Ideias").performClick()
-        rule.onNodeWithText("A geração automática de ideias ainda não está disponível em sessões reais.").assertExists()
+        rule.onNodeWithText("Ideias da live").assertExists()
         assertTrue(
             rule.onAllNodesWithText("Série curta respondendo as 5 dúvidas mais repetidas do chat.")
                 .fetchSemanticsNodes().isEmpty(),
@@ -295,6 +295,39 @@ class RockyVisualCaptureTest {
 
         assertEquals("o que o chat quer?", ai.lastRequest)
         assertEquals(listOf("Vou verificar o chat.", "O chat quer saber o preço."), voice.spoken.take(2))
+    }
+
+    @Test
+    fun savesNotesAndIdeasByVoiceWithoutAnotherAiRequest() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient()
+        val repository = TransientNoteRepository()
+        val voice = FakeVoiceService().apply {
+            transcripts.addAll(listOf("Rocky, o que o chat quer?", "Rocky, salva isso como nota", "Rocky, salva isso como ideias"))
+        }
+        render(
+            settingsOpen = true, settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch, twitchClientId = "client-id",
+            aiSuggestionClient = ai, voiceService = voice, noteRepository = repository,
+            voiceConfiguration = VoiceConfiguration(transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin")),
+        )
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(1)
+        }
+        for (turn in 1..3) {
+            rule.waitUntil(5_000) { voice.captureStarts >= turn }
+            rule.mainClock.advanceTimeBy(8_100L)
+            rule.waitUntil(5_000) { voice.captureStarts >= turn + 1 }
+        }
+        rule.runOnIdle {
+            assertEquals(1, ai.requests)
+            assertEquals(2, repository.getAll().size)
+            assertEquals(1, repository.getAll().count { it.tag == IDEA_TAG })
+            assertTrue(voice.spoken.contains("Nota salva."))
+            assertTrue(voice.spoken.contains("Ideia salva."))
+        }
     }
 
     @Test

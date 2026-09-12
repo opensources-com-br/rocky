@@ -15,3 +15,15 @@ internal fun extractRockyCommand(transcript: String, agentName: String = "Rocky"
     ?.trimStart { it.isWhitespace() || it in ",.:;!?-" }
     ?.trim()
     ?.takeIf(String::isNotEmpty)
+
+internal enum class VoiceSaveTarget { Note, Idea }
+
+internal fun voiceSaveTarget(command: String): VoiceSaveTarget? {
+    val match = Regex(
+        """^(?:salva|salve|salvar)\s+isso\s+como\s+(nota[s]?|ideia[s]?)[.!?]*$""",
+        RegexOption.IGNORE_CASE,
+    ).matchEntire(command.trim()) ?: return null
+    return if (match.groupValues[1].startsWith("nota", ignoreCase = true)) VoiceSaveTarget.Note else VoiceSaveTarget.Idea
+}
+
+internal const val IDEA_TAG = "IDEIA"

@@ -31,6 +31,7 @@ internal fun NotesContent(
     onUpdate: (LiveNote) -> Unit,
     onDelete: (String) -> Unit,
     onExport: () -> Unit,
+    title: String = "Notas locais",
     loadFailed: Boolean = false,
     onReload: () -> Unit = {},
 ) {
@@ -63,7 +64,7 @@ internal fun NotesContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Notas locais", style = MaterialTheme.typography.subtitle1)
+                Text(title, style = MaterialTheme.typography.subtitle1)
                 Text(
                     text = "${notes.size} ${if (notes.size == 1) "nota salva" else "notas salvas"}",
                     color = RockyColors.TextSecondary,

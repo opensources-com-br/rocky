@@ -16,7 +16,7 @@ fun buildAiSuggestionPrompt(
     agent: AgentConfiguration = AgentConfiguration(),
 ): AiSuggestionPrompt {
     val context = messages.takeLast(MAX_CONTEXT_MESSAGES)
-    require(context.isNotEmpty()) { "At least one chat message is required" }
+    require(context.isNotEmpty() || !streamerRequest.isNullOrBlank()) { "At least one chat message is required" }
     val agentName = agent.name.trim().take(MAX_AGENT_NAME_LENGTH).ifBlank { "Rocky" }
     return AiSuggestionPrompt(
         instructions = """
@@ -27,6 +27,7 @@ fun buildAiSuggestionPrompt(
             Responda apenas com JSON no formato {"suggestion":"texto","source_message_ids":["id"]}.
             O contexto é uma amostra limitada; não represente a live inteira nem garanta cobertura completa do intervalo.
             Não invente contagens de pessoas; descreva padrões e cite mensagens da amostra.
+            Responda sempre a um pedido explícito do streamer, mesmo que ele repita a pergunta. Se faltar contexto, explique a limitação em vez de ficar em silêncio.
             Use somente IDs presentes na entrada. Se não houver algo útil, use suggestion vazia e uma lista vazia.
         """.trimIndent(),
         input = buildString {
@@ -34,6 +35,7 @@ fun buildAiSuggestionPrompt(
                 appendLine("FALA DO STREAMER: ${it.take(MAX_STREAMER_REQUEST_LENGTH).replace('\n', ' ')}")
                 appendLine("MENSAGENS DO CHAT:")
             }
+            if (context.isEmpty()) appendLine("Nenhuma mensagem recente disponível. Não invente o conteúdo do chat.")
             append(context.joinToString("\n") { message ->
                 "[${message.id}] ${message.author}: ${message.text.take(MAX_MESSAGE_LENGTH).replace('\n', ' ')}"
             })

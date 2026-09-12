@@ -261,6 +261,17 @@ class AiSuggestionStateTest {
         assertEquals(null, state.status)
     }
 
+    @Test fun answersRepeatedRequestsWithUnchangedOrEmptyChat() = runBlocking {
+        val client = FakeAiSuggestionClient()
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        for (context in listOf(messages(1), messages(1), emptyList())) {
+            state.analyze(this, context, streamerRequest = "O que o chat achou?")
+            while (state.generating) delay(1)
+            assertEquals("Sugestão", state.suggestion?.text)
+        }
+        assertEquals(3, client.requests)
+    }
+
     private fun messages(count: Int) = (1..count).map { index ->
         ChatMessage("m$index", "viewer", "message $index", StreamPlatform.Twitch)
     }
@@ -293,7 +304,7 @@ class AiSuggestionStateTest {
                 interrupted.set(true)
                 throw error
             }
-            return AiGeneratedSuggestion("Sugestão", setOf(messages.last().id))
+            return AiGeneratedSuggestion("Sugestão", messages.takeLast(1).map { it.id }.toSet())
         }
 
         override fun close() = Unit

@@ -148,7 +148,7 @@ internal class AiSuggestionState(
         onComplete: (RockySuggestion?) -> Unit = {},
     ) {
         if (generating) { onComplete(null); return }
-        if (messages.isEmpty()) {
+        if (messages.isEmpty() && streamerRequest.isNullOrBlank()) {
             status = "Nenhuma mensagem recebida nos últimos dois minutos"
             onComplete(null)
             return
@@ -168,10 +168,12 @@ internal class AiSuggestionState(
             if (!automaticAnalysis || newMessageCount < AUTOMATIC_BATCH_SIZE) return
             lastAutomaticAnalysisAtMillis = automaticTimeMillis
         }
-        if (!automatic) lastAnalyzedMessageId = messages.last().id
+        if (!automatic) lastAnalyzedMessageId = messages.lastOrNull()?.id
         val snapshot = messages.takeLast(messageLimit.coerceIn(1, MAX_ANALYSIS_MESSAGES))
         val activeConfiguration = configuration
         val activeSession = sessionGeneration
+        suggestion = null
+        suggestionSources = emptyList()
         generating = true
         status = "Analisando ${snapshot.size} mensagens…"
         analysisJob = scope.launch {

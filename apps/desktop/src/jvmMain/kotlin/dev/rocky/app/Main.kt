@@ -216,7 +216,7 @@ fun main() = application {
     }
 }
 
-private val ExpandedSize = DpSize(462.dp, 820.dp)
+private val ExpandedSize = DpSize(462.dp, 900.dp)
 private val SettingsSize = DpSize(462.dp, 820.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
 private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")

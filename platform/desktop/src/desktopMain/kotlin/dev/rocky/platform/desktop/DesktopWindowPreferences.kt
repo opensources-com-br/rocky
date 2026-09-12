@@ -9,7 +9,7 @@ object DesktopWindowPreferences {
 
     fun restore(): Rectangle {
         val saved = Rectangle(prefs.getInt("x", Int.MIN_VALUE), prefs.getInt("y", Int.MIN_VALUE),
-            prefs.getInt("width", 462), prefs.getInt("height", 820))
+            prefs.getInt("width", 462), prefs.getInt("height", 900))
         val screens = GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.map {
             val configuration = it.defaultConfiguration
             val insets = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(configuration)

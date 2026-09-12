@@ -23,6 +23,7 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
         try {
         addColumnIfMissing("source_message_ids", "TEXT NOT NULL DEFAULT '[]'")
         addColumnIfMissing("evidence", "TEXT NOT NULL DEFAULT '[]'")
+        addColumnIfMissing("metadata", "TEXT NOT NULL DEFAULT '{}'")
         database = RockyDatabase(driver)
         database.noteQueries.deleteLegacyDemoNotes()
         } catch (error: Exception) {
@@ -32,7 +33,7 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
     }
 
     override fun getAll(): List<LiveNote> = database.noteQueries
-        .selectAll { id, text, timestamp, tag, sourceIds, evidence ->
+        .selectAll { id, text, timestamp, tag, sourceIds, evidence, metadata ->
             LiveNote(
                 id = id,
                 text = text,
@@ -40,7 +41,7 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
                 tag = tag,
                 sourceMessageIds = decodeList(sourceIds).toSet(),
                 evidence = decodeList(evidence),
-            )
+            ).withMetadata(metadata)
         }
         .executeAsList()
 
@@ -52,6 +53,7 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
             tag = note.tag,
             source_message_ids = json.encodeToString(note.sourceMessageIds.toList()),
             evidence = json.encodeToString(note.evidence),
+            metadata = noteMetadata(note),
             created_at = System.currentTimeMillis(),
         )
     }
@@ -63,6 +65,7 @@ class SqliteNoteRepository(databasePath: Path) : NoteRepository, AutoCloseable {
             tag = note.tag,
             source_message_ids = json.encodeToString(note.sourceMessageIds.toList()),
             evidence = json.encodeToString(note.evidence),
+            metadata = noteMetadata(note),
             id = note.id,
         )
     }

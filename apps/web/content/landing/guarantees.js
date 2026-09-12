@@ -1,11 +1,11 @@
 export const guarantees = [
   {
     "title": "Sem conta Rocky",
-    "text": "Você autoriza sua Twitch e configura a IA. Não existe cadastro ou assinatura do Rocky."
+    "text": "Você autoriza Twitch ou Kick e configura a IA. Não existe cadastro ou assinatura do Rocky."
   },
   {
     "title": "Sem backend próprio",
-    "text": "O app conecta diretamente à Twitch e ao provedor escolhido. IA remota recebe o contexto selecionado."
+    "text": "O app usa as APIs oficiais das plataformas e do provedor escolhido. A Kick entrega o chat por webhook HTTPS."
   },
   {
     "title": "MIT",

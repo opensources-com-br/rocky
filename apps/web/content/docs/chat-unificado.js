@@ -1,6 +1,6 @@
 const content = {
   "group": "Recursos",
-  "lead": "A aba Conversa exibe o chat recebido da Twitch. A fila de perguntas organiza uma parte desse conteúdo; não existe chat unificado de várias plataformas nesta versão.",
+  "lead": "A aba Conversa exibe o chat recebido da Twitch ou Kick. A fila de perguntas organiza uma parte desse conteúdo; o app usa uma conexão de plataforma por sessão.",
   "blocks": [
     {
       "type": "h2",
@@ -37,7 +37,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A aba Pulso mostra tendências calculadas das amostras recebidas. As métricas ativas são da Twitch: mensagens por minuto e espectadores. Quedas de conexão ou ausência de dados limitam a leitura."
+      "text": "A aba Pulso mostra tendências calculadas das amostras recebidas: mensagens por minuto e espectadores da Twitch ou Kick conectada. Quedas de conexão ou ausência de dados limitam a leitura."
     }
   ]
 };

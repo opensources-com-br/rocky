@@ -1,20 +1,20 @@
 const content = {
   "id": "marcos",
-  "name": "marcos_dev",
+  "name": "Explicando um deploy",
   "category": "Programação",
   "filter": "Programação",
-  "quote": "Ele me avisa quando prometi algo e não voltei no assunto.",
-  "desc": "Pair programming ao vivo. Usa as notas como roteiro do vídeo editado.",
-  "stack": ["Anthropic", "Voz do macOS"],
-  "dots": ["#9146ff", "#ff0033"],
-  "tint": "rgba(145,70,255,.06)",
-  "links": [{"label": "twitch.tv/marcos_dev", "url": "https://twitch.tv/marcos_dev", "dot": "#9146ff"}, {"label": "youtube.com/@marcosdev", "url": "https://youtube.com/@marcosdev", "dot": "#ff0033"}],
-  "stats": [{"label": "PLATAFORMAS", "value": "2"}, {"label": "PICO DE CHAT", "value": "640"}, {"label": "MSG / MIN", "value": "18"}, {"label": "MODELO", "value": "Remoto"}],
-  "story": ["Faço pair programming ao vivo com convidados. O problema não é volume de chat, é atenção: quando estou discutindo arquitetura com outra pessoa, deixo de ver a tela do chat por vinte minutos seguidos.", "O Rocky resolve isso sendo chato na medida. Ele não me interrompe no meio de um raciocínio — deixei a interrupção desligada, ele espera a pausa. Aí fala uma coisa só, a mais importante.", "O uso que virou hábito é outro: as notas. Toda vez que prometo mostrar algo depois, ele registra com o minuto. No fim da live tenho a lista do que ficou pendente e o timestamp de cada momento que vale virar corte."],
-  "changes": ["As notas com timestamp substituíram o caderno que eu nunca preenchia.", "O convidado também ouve o Rocky no retorno, então os dois sabem o que o chat quer.", "Promessa esquecida deixou de acontecer."],
-  "setup": [{"label": "IA", "value": "anthropic"}, {"label": "Voz", "value": "system · Luciana"}, {"label": "Tom", "value": "analítico"}, {"label": "Frequência", "value": "2 / 10min"}, {"label": "Interrupção", "value": "desligada"}],
-  "config": "[ai]\nprovider = \"anthropic\"\n\n[agent]\ntone      = \"analitico\"\ninterrupt = false\ninterventions_per_10min = 2",
-  "sample": "Você prometeu mostrar o raio-x do repositório há vinte minutos.",
+  "quote": "Retomar uma explicação com contexto",
+  "desc": "Cenário ilustrativo. Pergunte e use “explica melhor” para continuar uma resposta da sessão.",
+  "stack": ["OpenAI API", "Voz do sistema"],
+  "dots": ["#9146ff"],
+  "tint": "rgba(212,112,60,.06)",
+  "links": [],
+  "stats": [{"label": "INTEGRAÇÃO", "value": "Twitch"}, {"label": "PERFIL", "value": "Sob demanda"}, {"label": "DADOS", "value": "Exemplo"}, {"label": "IA", "value": "OpenAI API"}],
+  "story": ["Pergunte e use “explica melhor” para continuar uma resposta da sessão.", "Este cenário não é um depoimento de usuário nem um resultado medido. Configure e teste o provedor no seu computador; consultas de chat usam até 200 mensagens recebidas nos últimos dois minutos.", "Se usar IA remota, o pedido e a amostra de chat vão ao provedor. Para voz, prepare whisper.cpp e uma voz do sistema. Verifique a captura de tela e áudio no OBS antes da transmissão."],
+  "changes": ["Consultar perguntas recentes da Twitch.", "Salvar notas ou ideias escolhidas por você.", "Revisar registros e perguntas pendentes da sessão."],
+  "setup": [{"label": "Plataforma", "value": "Twitch"}, {"label": "IA", "value": "OpenAI API"}, {"label": "Modelo", "value": "modelo disponível na sua conta"}, {"label": "Voz", "value": "Sistema + whisper.cpp opcional"}, {"label": "Perfil", "value": "Sob demanda"}, {"label": "Tom", "value": "Analítico"}],
+  "config": "Preencha nas Configurações do Rocky:\n\nPlataforma: Twitch\nIA: OpenAI API\nModelo: modelo disponível na sua conta\nVoz: Sistema + whisper.cpp opcional\nPerfil: Sob demanda\nTom: Analítico\n\nExemplo descritivo, não importável.",
+  "sample": "Resume as dúvidas recentes sobre o deploy."
 };
 
 export default content;

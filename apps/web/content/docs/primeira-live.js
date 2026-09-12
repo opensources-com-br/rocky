@@ -9,11 +9,11 @@ const content = {
     {
       "type": "list",
       "items": [
-        "Em Plataformas, conecte sua Twitch e autorize o código no navegador. Se o Client ID estiver vazio, informe o de um aplicativo público Twitch.",
+        "Em Plataformas, conecte Twitch ou Kick e autorize no navegador. A Kick exige credenciais de aplicativo e encaminhamento por webhook HTTPS público.",
         "Em IA, escolha Ollama, OpenAI API ou OpenRouter, informe o modelo e teste a conexão. Salve explicitamente a configuração e a chave, quando aplicável.",
         "Receba mensagens novas no canal autenticado. Use Analisar agora ou o campo de pergunta da aba Conversa.",
         "Se quiser voz, configure o whisper-cli, o modelo de transcrição e o microfone; teste a conversa de voz.",
-        "Abra Antes da live para conferir Twitch, IA e áudio opcional. Grave um teste no OBS para verificar o que o público ouvirá e verá."
+        "Abra Antes da live para conferir a plataforma, a IA e o áudio opcional. Grave um teste no OBS para verificar o que o público ouvirá e verá."
       ]
     },
     {

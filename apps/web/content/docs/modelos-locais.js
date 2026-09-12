@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Ollama em loopback mantém o processamento da amostra de chat no computador. Transcrição e vozes do sistema também podem ser locais após preparação. A conexão Twitch e os downloads de instalação continuam exigindo internet."
+      "text": "Ollama em loopback mantém o processamento da amostra de chat no computador. Transcrição e vozes do sistema também podem ser locais após preparação. Twitch, Kick e downloads continuam exigindo internet; o chat da Kick exige encaminhamento HTTPS."
     }
   ]
 };

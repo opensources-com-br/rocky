@@ -93,4 +93,4 @@ O [plano de implementação](docs/PLAN.pt-BR.md) descreve a direção do produto
 
 Rocky é um software de código aberto disponibilizado sob a [Licença MIT](LICENSE).
 
-O candidato de lançamento cobre Twitch, IA, voz opcional e notas. YouTube, Super Chats, ideias automáticas e resumo pós-live ficam fora deste candidato. Consulte [preparação de lançamento](docs/RELEASE_PREPARATION.md) e [dados e privacidade](docs/PRIVACY.md). Chaves de IA salvas usam o cofre do sistema; é possível concluir o primeiro uso apenas com texto.
+O candidato de lançamento cobre Twitch, IA, voz opcional, perguntas agrupadas, notas, ideias, momentos e resumo dos registros locais ao desconectar ou fechar o app. O resumo inclui pendências salvas; não representa toda a transmissão. YouTube, Super Chats e geração automática de ideias ficam fora deste candidato. Consulte [preparação de lançamento](docs/RELEASE_PREPARATION.md) e [dados e privacidade](docs/PRIVACY.md). Chaves de IA salvas usam o cofre do sistema; é possível concluir o primeiro uso apenas com texto.

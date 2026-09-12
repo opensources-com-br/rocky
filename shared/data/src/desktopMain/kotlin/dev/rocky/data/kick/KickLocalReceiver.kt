@@ -55,8 +55,9 @@ internal class KickLocalReceiver(
         val signature = exchange.requestHeaders.getFirst("Kick-Event-Signature").orEmpty()
         val type = exchange.requestHeaders.getFirst("Kick-Event-Type").orEmpty()
         if (type != "chat.message.sent" || messageId.isBlank() ||
-            !verifier.verify(messageId, timestamp, body, signature) || !remember(messageId)
+            !verifier.verify(messageId, timestamp, body, signature)
         ) return exchange.respond(401, "Webhook inválido")
+        if (!remember(messageId)) return exchange.respond(204, "")
         val message = runCatching { KickPayloads.chatMessage(body.toString(StandardCharsets.UTF_8)) }
             .getOrElse { return exchange.respond(400, "Payload inválido") }
         exchange.respond(204, "")

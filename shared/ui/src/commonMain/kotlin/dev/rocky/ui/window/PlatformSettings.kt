@@ -45,6 +45,7 @@ internal fun PlatformSettings(
     kick: KickLiveState? = null,
     onConnectKick: (KickConfiguration) -> Unit = {},
     onDisconnectKick: () -> Unit = {},
+    onOpenKickBrowser: (String) -> Unit = onOpenBrowser,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
@@ -74,7 +75,7 @@ internal fun PlatformSettings(
             color = RockyColors.TextMuted,
             style = MaterialTheme.typography.caption,
         )
-        kick?.let { KickAccountSettings(kickConfiguration, it, onConnectKick, onDisconnectKick, onOpenBrowser) }
+        kick?.let { KickAccountSettings(kickConfiguration, it, onConnectKick, onDisconnectKick, onOpenKickBrowser) }
             ?: UpcomingPlatform("Kick", PlatformColor.Kick)
         UpcomingPlatform("YouTube", PlatformColor.YouTube)
         UpcomingPlatform("Facebook", PlatformColor.Offline)

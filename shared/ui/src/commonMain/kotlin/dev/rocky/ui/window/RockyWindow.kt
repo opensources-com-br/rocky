@@ -34,6 +34,9 @@ import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.live.StreamPlatform
+import dev.rocky.core.kick.KickChatClient
+import dev.rocky.core.kick.KickConfiguration
+import dev.rocky.core.kick.KickConnectionListener
 import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionListener
@@ -61,6 +64,7 @@ fun RockyWindow(
     onToggleCompact: () -> Unit,
     noteRepository: NoteRepository? = null,
     twitchChatClient: TwitchChatClient = InactiveTwitchChatClient,
+    kickChatClient: KickChatClient = InactiveKickChatClient,
     aiSuggestionClient: AiSuggestionClient = InactiveAiSuggestionClient,
     initialAgentConfiguration: AgentConfiguration = AgentConfiguration(),
     onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
@@ -84,6 +88,9 @@ fun RockyWindow(
     initialTwitchClientId: String = "",
     onTwitchClientIdChange: (String) -> Unit = {},
     onOpenTwitchAuthorization: (String) -> Unit = {},
+    initialKickConfiguration: KickConfiguration = KickConfiguration(),
+    onKickConfigurationChange: (KickConfiguration) -> Unit = {},
+    onOpenKickAuthorization: (String) -> Unit = {},
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
@@ -126,6 +133,7 @@ fun RockyWindow(
         var silenced by remember { mutableStateOf(false) }
         var waitingForVoiceCommand by remember { mutableStateOf(false) }
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
+        val kick = remember(kickChatClient) { KickLiveState(kickChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
                 aiSuggestionClient, initialAiConfiguration,
@@ -149,6 +157,7 @@ fun RockyWindow(
         LaunchedEffect(Unit) { if (checkUpdatesOnStart) updates.check(aiScope) }
         val mainContentScrollState = rememberScrollState()
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
+        var kickConfiguration by remember { mutableStateOf(initialKickConfiguration) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
@@ -492,6 +501,15 @@ fun RockyWindow(
                                         finishLive()
                                     },
                                     onOpenBrowser = onOpenTwitchAuthorization,
+                                    kickConfiguration = kickConfiguration,
+                                    kick = kick,
+                                    onConnectKick = { configuration ->
+                                        kickConfiguration = configuration
+                                        onKickConfigurationChange(configuration)
+                                        kick.connect(configuration)
+                                    },
+                                    onDisconnectKick = kick::disconnect,
+                                    onOpenKickBrowser = onOpenKickAuthorization,
                                 )
                             }
                         }
@@ -673,6 +691,12 @@ private object InactiveTwitchChatClient : TwitchChatClient {
 
     override fun disconnect() = Unit
 
+    override fun close() = Unit
+}
+
+private object InactiveKickChatClient : KickChatClient {
+    override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) = Unit
+    override fun disconnect() = Unit
     override fun close() = Unit
 }
 

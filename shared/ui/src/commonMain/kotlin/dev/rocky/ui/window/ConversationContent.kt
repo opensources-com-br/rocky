@@ -153,7 +153,7 @@ internal fun ConversationContent(
             LazyColumn(
                 modifier = Modifier.weight(1f).testTag("chat-messages"),
                 state = chatScrollState,
-                verticalArrangement = Arrangement.spacedBy(14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Bottom),
             ) {
                 items(messages, key = { it.id }) { ChatMessageRow(it) }
             }

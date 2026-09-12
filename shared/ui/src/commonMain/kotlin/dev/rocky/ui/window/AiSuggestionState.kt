@@ -202,7 +202,10 @@ internal class AiSuggestionState(
             if (!automatic && activeAutomatic) cancelAnalysis()
             else { onComplete(null); return }
         }
-        if (messages.isEmpty() && streamerRequest.isNullOrBlank()) {
+        val filtered = dev.rocky.core.live.filterChat(messages, filters)
+        val contextMessages = filtered.messages
+        filteredCount = filtered.removed
+        if (contextMessages.isEmpty() && streamerRequest.isNullOrBlank()) {
             status = "Nenhuma mensagem recebida nos últimos dois minutos"
             onComplete(null)
             return
@@ -213,17 +216,17 @@ internal class AiSuggestionState(
             return
         }
         if (automatic) {
-            val lastIndex = lastAnalyzedMessageId?.let { id -> messages.indexOfLast { it.id == id } }
+            val lastIndex = lastAnalyzedMessageId?.let { id -> contextMessages.indexOfLast { it.id == id } }
             val newMessageCount = if (lastIndex == null || lastIndex < 0) {
-                messages.size
+                contextMessages.size
             } else {
-                messages.lastIndex - lastIndex
+                contextMessages.lastIndex - lastIndex
             }
             if (!automaticAnalysis || newMessageCount < AUTOMATIC_BATCH_SIZE) return
             lastAutomaticAnalysisAtMillis = automaticTimeMillis
         }
-        if (!automatic) lastAnalyzedMessageId = messages.lastOrNull()?.id
-        val snapshot = messages.takeLast(messageLimit.coerceIn(1, MAX_ANALYSIS_MESSAGES))
+        if (!automatic) lastAnalyzedMessageId = contextMessages.lastOrNull()?.id
+        val snapshot = contextMessages.takeLast(messageLimit.coerceIn(1, MAX_ANALYSIS_MESSAGES))
         val conversationAgent = agent.copy(conversation = if (automatic) emptyList() else history.takeLast(4).map {
             dev.rocky.core.agent.ConversationTurn(it.question, it.answer.text)
         })

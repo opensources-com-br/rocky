@@ -4,7 +4,7 @@ Rocky is a local-first live-stream assistant for macOS and Windows. It follows t
 
 The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatform, SQLDelight, and Gradle.
 
-> Rocky is currently an early desktop prototype. Installers are unsigned development builds. Real chat integration is available for Twitch and Kick; Kick requires a public HTTPS webhook forwarder.
+> Rocky is currently an early desktop prototype. Installers are unsigned development builds. Real chat integration is available for Twitch, Kick, and YouTube; Kick requires a public HTTPS webhook forwarder.
 
 [Leia em português](README.pt-BR.md).
 
@@ -15,7 +15,8 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - movable, resizable, always-on-top, and compact desktop window;
 - Twitch authentication through Device Code Flow, live chat through EventSub, and automatic reconnection;
 - Kick OAuth, signed chat webhooks, and event subscriptions;
-- live viewer count and messages-per-minute metrics for Twitch and Kick;
+- YouTube desktop OAuth, active-broadcast discovery, and live-chat polling;
+- live viewer count and messages-per-minute metrics for Twitch, Kick, and YouTube;
 - grounded AI suggestions using local Ollama models, the OpenAI API, or OpenRouter;
 - on-device speech synthesis through macOS and Windows system voices;
 - wake-word voice commands with local `whisper.cpp` transcription;
@@ -23,7 +24,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - automated builds and development installers for macOS and Windows;
 - English and Brazilian Portuguese interface, selected from the system language and adjustable in Settings.
 
-Rocky does not require a Rocky account or bundled remote backend. Platform and AI settings are stored on the user's computer. The Kick Client Secret and saved AI keys use the system credential vault; platform access tokens remain in memory. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
+Rocky does not require a Rocky account or bundled remote backend. Platform and AI settings are stored on the user's computer. Kick and YouTube Client Secrets and saved AI keys use the system credential vault; platform access tokens remain in memory. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
 
 ## Run from source
 
@@ -53,12 +54,12 @@ Run all automated checks with `./gradlew build` or `.\gradlew.bat build`.
 
 ## Configure a real session
 
-1. Follow the [Twitch](docs/TWITCH.md) or [Kick](docs/KICK.md) connection guide. Kick requires a public HTTPS endpoint that forwards signed webhooks to Rocky.
+1. Follow the [Twitch](docs/TWITCH.md), [Kick](docs/KICK.md), or [YouTube](docs/YOUTUBE.md) connection guide. Kick requires a public HTTPS endpoint that forwards signed webhooks to Rocky.
 2. Follow the [AI provider guide](docs/AI.md) to use local Ollama, the OpenAI API, or OpenRouter.
 3. Follow the [voice guide](docs/VOICE.md) to prepare local transcription and test an audio conversation.
 4. Start a live stream, connect Rocky, and send a message from another account. New messages will appear in the Conversation tab.
 
-The Twitch and Kick connectors read new chat messages and the current viewer count. Paid support events, channel points, Super Chats, historical messages, YouTube, and Facebook are not integrated yet.
+The Twitch, Kick, and YouTube connectors read new chat messages and the current viewer count. Paid support events, channel points, Super Chats, historical messages, and Facebook are not integrated yet.
 
 ## Build installers
 
@@ -83,7 +84,7 @@ Before promoting an alpha, follow the [streamer test protocol](docs/STREAMER_TES
 | [apps/desktop](apps/desktop/) | Desktop entry point, packaging, and application lifecycle |
 | [apps/web](apps/web/) | Rocky landing, documentation and showcase in Next.js |
 | [shared/core](shared/core/) | Domain models, contracts, and export rules |
-| [shared/data](shared/data/) | Twitch, Kick, AI, and SQLite implementations |
+| [shared/data](shared/data/) | Twitch, Kick, YouTube, AI, and SQLite implementations |
 | [shared/ui](shared/ui/) | Compose UI and presentation state |
 | [platform/desktop](platform/desktop/) | Native files, browser, preferences, audio, and transcription |
 | [docs/adr](docs/adr/) | Architecture decision records |
@@ -94,4 +95,4 @@ The [implementation plan](docs/PLAN.md) describes the product direction, privacy
 
 Rocky is open-source software available under the [MIT License](LICENSE).
 
-The current code covers Twitch, Kick, AI, optional voice, grouped questions, notes, ideas, moments and a local records summary when disconnecting or closing the app. Kick still needs validation with real developer credentials and a public webhook before release. YouTube, Super Chats and automatic idea generation remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md).
+The current code covers Twitch, Kick, YouTube, AI, optional voice, grouped questions, notes, ideas, moments and a local records summary when disconnecting or closing the app. Kick and YouTube still need validation with real developer credentials before release; Kick also needs a public webhook. Super Chats and automatic idea generation remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md).

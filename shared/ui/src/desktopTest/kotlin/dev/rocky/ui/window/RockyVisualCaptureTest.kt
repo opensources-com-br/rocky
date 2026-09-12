@@ -447,7 +447,7 @@ class RockyVisualCaptureTest {
 
         assertEquals(1, ai.requests)
         rule.runOnIdle { twitch.emitMessages(3, startAt = 3) }
-        rule.mainClock.advanceTimeBy(200_100)
+        rule.mainClock.advanceTimeBy(300_100)
         rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 2 }
         assertEquals(2, ai.requests)
     }
@@ -464,7 +464,7 @@ class RockyVisualCaptureTest {
         }
         rule.onNodeWithText("concluir").performClick()
         rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 1 }
-        rule.mainClock.advanceTimeBy(200_100)
+        rule.mainClock.advanceTimeBy(300_100)
         rule.waitUntil(timeoutMillis = 3_000) { ai.requests == 2 }
 
         rule.onNodeWithText("O chat quer saber o preço.").assertExists()
@@ -647,10 +647,10 @@ class RockyVisualCaptureTest {
         val repository = TransientNoteRepository()
         repository.save(LiveNote("note", "Keep me", "now", "test"))
         render(settingsOpen = true, settingsSection = SettingsSection.Data, noteRepository = repository)
-        rule.onNodeWithText("Apagar notas").performClick()
+        rule.onNodeWithText("Apagar notas").performScrollTo().performClick()
         rule.onNodeWithText("Cancelar").performClick()
         assertEquals(1, repository.getAll().size)
-        rule.onNodeWithText("Apagar notas").performClick()
+        rule.onNodeWithText("Apagar notas").performScrollTo().performClick()
         rule.onNodeWithText("Confirmar").performClick()
         assertTrue(repository.getAll().isEmpty())
     }
@@ -730,7 +730,7 @@ class RockyVisualCaptureTest {
             twitchClientId = "client-id",
             aiSuggestionClient = ai,
         )
-        rule.onNodeWithTag("automatic-analysis").performClick()
+        rule.onNodeWithTag("automatic-analysis").performScrollTo().performClick()
         rule.onNodeWithText("Plataformas").performClick()
         rule.onNodeWithText("Conectar Twitch").performClick()
     }

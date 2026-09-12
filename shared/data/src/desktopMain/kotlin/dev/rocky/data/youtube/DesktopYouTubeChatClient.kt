@@ -34,6 +34,7 @@ class DesktopYouTubeChatClient internal constructor(
         stop(notify = false)
         require(configuration.clientId.isNotBlank()) { "Informe o Client ID do YouTube." }
         require(configuration.clientSecret.isNotBlank()) { "Informe o Client Secret do YouTube." }
+        val run = generation.incrementAndGet()
         this.configuration = configuration.copy(
             clientId = configuration.clientId.trim(),
             clientSecret = configuration.clientSecret.trim(),
@@ -42,6 +43,51 @@ class DesktopYouTubeChatClient internal constructor(
         this.listener = listener
         active = true
         emit(YouTubeConnectionPhase.Authenticating, "Preparando autorização do YouTube")
+        ioExecutor.execute { prepareAuthorization(run) }
+    }
+
+    private fun prepareAuthorization(run: Long) {
+        runCatching {
+            val authorization = createYouTubeAuthorization(configuration.clientId, configuration.redirectUri)
+            receiver = YouTubeAuthorizationReceiver(configuration.redirectUri, authorization.state) { code ->
+                completeAuthorization(run, authorization.verifier, code)
+            }
+            authorization.uri
+        }.onSuccess { uri ->
+            if (isCurrent(run)) {
+                emit(YouTubeConnectionPhase.AwaitingAuthorization, "Autorize o canal no navegador")
+                listener.onEvent(YouTubeConnectionEvent.AuthorizationRequired(uri))
+            }
+        }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+    }
+
+    private fun completeAuthorization(run: Long, verifier: String, code: String) {
+        if (!isCurrent(run)) return
+        receiver?.close()
+        receiver = null
+        emit(YouTubeConnectionPhase.FindingBroadcast, "Procurando uma live ativa no canal")
+        ioExecutor.execute {
+            runCatching {
+                val tokens = tokenApi.exchangeCode(
+                    configuration.clientId,
+                    configuration.clientSecret,
+                    configuration.redirectUri,
+                    verifier,
+                    code,
+                )
+                val access = YouTubeAccessSession(configuration, tokenApi, tokens, currentTimeMillis)
+                val account = access.request(liveApi::account)
+                val broadcast = requireNotNull(access.request(liveApi::activeBroadcast)) {
+                    "Nenhuma live ativa com chat foi encontrada no canal do YouTube."
+                }
+                Triple(access, account, broadcast)
+            }.onSuccess { (access, account, broadcast) ->
+                if (isCurrent(run)) {
+                    poller = YouTubeChatPoller(liveApi, access, broadcast, {}, {}, currentTimeMillis)
+                    listener.onEvent(YouTubeConnectionEvent.Connected(account, broadcast))
+                }
+            }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+        }
     }
 
     override fun disconnect() = stop(notify = true)
@@ -64,4 +110,17 @@ class DesktopYouTubeChatClient internal constructor(
 
     private fun emit(phase: YouTubeConnectionPhase, detail: String? = null) =
         listener.onEvent(YouTubeConnectionEvent.PhaseChanged(phase, detail))
+
+    private fun fail(run: Long, message: String) {
+        if (!isCurrent(run)) return
+        active = false
+        receiver?.close()
+        receiver = null
+        poller = null
+        emit(YouTubeConnectionPhase.Failed, message)
+    }
+
+    private fun isCurrent(run: Long) = active && generation.get() == run
+    private fun Throwable.userMessage() = message?.takeIf { it.isNotBlank() }
+        ?: "Não foi possível conectar com o YouTube."
 }

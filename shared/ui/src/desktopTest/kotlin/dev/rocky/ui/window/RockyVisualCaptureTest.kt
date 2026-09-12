@@ -36,6 +36,11 @@ import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.agent.AgentTone
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
+import dev.rocky.core.kick.KickAccount
+import dev.rocky.core.kick.KickChatClient
+import dev.rocky.core.kick.KickConfiguration
+import dev.rocky.core.kick.KickConnectionEvent
+import dev.rocky.core.kick.KickConnectionListener
 import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchAccount
 import dev.rocky.core.twitch.TwitchChatClient
@@ -246,6 +251,29 @@ class RockyVisualCaptureTest {
             twitch.emit(TwitchConnectionEvent.PhaseChanged(dev.rocky.core.twitch.TwitchConnectionPhase.Reconnecting))
         }
         capture("implementation-real-session.png")
+    }
+
+    @Test
+    fun connectsAndDisplaysRealKickChat() {
+        val kick = FakeKickChatClient()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            kickChatClient = kick,
+            kickConfiguration = KickConfiguration("client-id", "client-secret"),
+        )
+
+        rule.onNodeWithText("Conectar Kick").performScrollTo().performClick()
+        rule.runOnIdle {
+            kick.emit(KickConnectionEvent.Connected(KickAccount("42", "rocky_kick")))
+            kick.emit(KickConnectionEvent.MessageReceived(
+                ChatMessage("kick-message", "viewer", "Mensagem da Kick", StreamPlatform.Kick, channelId = "42"),
+            ))
+        }
+        rule.onNodeWithText("concluir").performClick()
+
+        rule.onNodeWithText("CONEXÃO REAL · KICK").assertExists()
+        rule.onNodeWithText("Mensagem da Kick").assertExists()
     }
 
     @Test
@@ -746,6 +774,8 @@ class RockyVisualCaptureTest {
         onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
         twitchChatClient: TwitchChatClient? = null,
         twitchClientId: String = "",
+        kickChatClient: KickChatClient? = null,
+        kickConfiguration: KickConfiguration = KickConfiguration(),
         aiSuggestionClient: AiSuggestionClient? = null,
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
@@ -766,11 +796,13 @@ class RockyVisualCaptureTest {
                         onToggleCompact = {},
                         noteRepository = noteRepository,
                         twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
+                        kickChatClient = kickChatClient ?: FakeKickChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         voiceService = voiceService,
                         initialVoiceConfiguration = voiceConfiguration,
                         onAgentConfigurationChange = onAgentConfigurationChange,
                         initialTwitchClientId = twitchClientId,
+                        initialKickConfiguration = kickConfiguration,
                         onExportNotes = onExportNotes,
                         onExportIdeas = onExportIdeas,
                         initialMainSectionIndex = mainSection.ordinal,
@@ -817,6 +849,16 @@ class RockyVisualCaptureTest {
                 ),
             )
         }
+    }
+
+    private class FakeKickChatClient : KickChatClient {
+        private var listener = KickConnectionListener {}
+        override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
+            this.listener = listener
+        }
+        override fun disconnect() = Unit
+        override fun close() = Unit
+        fun emit(event: KickConnectionEvent) = listener.onEvent(event)
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {

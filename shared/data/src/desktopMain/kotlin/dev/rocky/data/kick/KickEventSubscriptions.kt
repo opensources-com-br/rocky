@@ -18,7 +18,11 @@ internal class KickEventSubscriptions(
                     """{"events":[{"name":"chat.message.sent","version":1}],"method":"webhook"}""",
                 )),
         )
-        return KickPayloads.subscriptionIds(response)
+        return KickPayloads.subscriptionIds(response).also { ids ->
+            check(ids.isNotEmpty()) {
+                KickPayloads.subscriptionError(response) ?: "A Kick não criou a assinatura do chat."
+            }
+        }
     }
 
     fun unsubscribe(accessToken: String, subscriptionIds: List<String>) {

@@ -1,0 +1,40 @@
+import AppPreview from "./AppPreview";
+
+export default function HeroContent({ chord, heroChips, heroConvo, heroTabs, mic }) {
+  return (<>
+<div style={{"position": "relative", "maxWidth": "1120px", "margin": "0 auto", "padding": "88px 28px 0", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "20px", "textAlign": "center"}}>
+<a href={"#recursos"} style={{"display": "inline-flex", "alignItems": "center", "gap": "8px", "padding": "5px 12px 5px 8px", "borderRadius": "999px", "border": "1px solid rgba(255,255,255,.1)", "background": "rgba(255,255,255,.03)", "fontSize": "12.5px", "color": "rgba(255,255,255,.62)"}}>
+<span style={{"padding": "1px 7px", "borderRadius": "999px", "background": "rgba(212,112,60,.16)", "color": "#e08b57", "fontSize": "11px", "fontWeight": "500"}}>
+{"Open source"}
+</span>
+{" Grátis, roda no seu PC, sem conta e sem servidor "}
+<span style={{"color": "rgba(255,255,255,.35)"}}>
+{"→"}
+</span>
+</a>
+<h1 style={{"margin": "0", "maxWidth": "780px", "fontSize": "62px", "lineHeight": "1.02", "letterSpacing": "-.04em", "fontWeight": "500", "textWrap": "balance"}} className="page-heading">
+{"O chat ganhou voz."}
+<br />
+{"E ela fala com você."}
+</h1>
+<p style={{"margin": "0", "maxWidth": "540px", "fontSize": "16.5px", "lineHeight": "1.6", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
+{"Rocky lê o chat de todas as suas plataformas ao mesmo tempo, separa o que importa, lê superchats em voz alta e responde quando você pergunta. Tudo roda na sua máquina, com a sua chave de API ou um modelo local."}
+</p>
+<div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px", "marginTop": "4px"}}>
+<a href={"https://github.com/opensources-com-br/rocky/releases"} style={{"padding": "11px 20px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}}>
+{"Baixar para Mac"}
+</a>
+<a href={"https://github.com/opensources-com-br/rocky"} style={{"padding": "11px 20px", "borderRadius": "9px", "border": "1px solid rgba(255,255,255,.12)", "background": "rgba(255,255,255,.02)", "color": "rgba(255,255,255,.82)", "fontSize": "14px"}}>
+{"Ver no GitHub"}
+</a>
+</div>
+<span style={{"fontSize": "12px", "color": "rgba(255,255,255,.3)", "fontFamily": "var(--font-geist-mono), monospace"}}>
+{"Grátis e open source · macOS 13+ · sem conta"}
+</span>
+<AppPreview chord={chord} heroChips={heroChips} heroConvo={heroConvo} heroTabs={heroTabs} mic={mic} />
+<div style={{"height": "88px"}}>
+
+</div>
+</div>
+  </>);
+}

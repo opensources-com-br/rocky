@@ -73,8 +73,7 @@ internal class VoiceState(
         private set
 
     val transcriptionReady: Boolean
-        get() = configuration.transcription.executablePath.isNotBlank() &&
-            configuration.transcription.modelPath.isNotBlank()
+        get() = service.isTranscriptionConfigured(configuration.transcription)
 
     val outputVolumeSupported: Boolean get() = service.outputVolumeSupported
 

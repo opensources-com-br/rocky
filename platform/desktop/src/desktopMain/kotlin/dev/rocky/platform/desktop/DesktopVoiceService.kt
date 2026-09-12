@@ -156,6 +156,12 @@ class DesktopVoiceService : VoiceService {
         return LocalTranscriptionConfiguration(whisper.toString(), model.toString())
     }
 
+    override fun isTranscriptionConfigured(configuration: LocalTranscriptionConfiguration): Boolean = runCatching {
+        val executable = Path.of(configuration.executablePath)
+        val model = Path.of(configuration.modelPath)
+        Files.isRegularFile(executable) && Files.isExecutable(executable) && Files.isRegularFile(model) && Files.size(model) > 0
+    }.getOrDefault(false)
+
     override fun detectedTranscription(): LocalTranscriptionConfiguration? {
         val brew = homebrewExecutable() ?: return null
         val whisper = brew.parent.resolve("whisper-cli")

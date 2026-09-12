@@ -11,6 +11,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopVoiceServiceTest {
+    @kotlin.test.Test fun rejectsMissingTranscriptionFiles() {
+        DesktopVoiceService().use { service ->
+            kotlin.test.assertFalse(service.isTranscriptionConfigured(dev.rocky.core.voice.LocalTranscriptionConfiguration("/missing/whisper-cli", "/missing/model.bin")))
+        }
+    }
+
     @kotlin.test.Test fun rejectsCorruptManagedModelEvenWithExpectedSize() {
         val file = java.nio.file.Files.createTempFile("rocky-model-test", ".bin")
         try {

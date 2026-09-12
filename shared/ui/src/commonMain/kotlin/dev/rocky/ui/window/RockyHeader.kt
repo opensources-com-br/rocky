@@ -14,6 +14,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.CloseFullscreen
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.PushPin
@@ -37,6 +38,7 @@ internal fun RockyHeader(
     sessionStatus: LiveSessionStatus = LiveSessionStatus.Stopped,
     twitchPhase: TwitchConnectionPhase? = null,
     microphoneActive: Boolean = false,
+    onPreflight: () -> Unit = {},
     onTogglePinned: () -> Unit = {},
     onToggleCompact: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
@@ -63,6 +65,10 @@ internal fun RockyHeader(
             }
         }
         ListeningBadge(sessionStatus, twitchPhase, microphoneActive)
+        IconButton(onClick = onPreflight, modifier = Modifier.size(32.dp)) {
+            Icon(androidx.compose.material.icons.Icons.Outlined.CheckCircle, contentDescription = tr("Before going live", "Antes da live"),
+                tint = RockyColors.TextSecondary, modifier = Modifier.size(17.dp))
+        }
         IconButton(onClick = onToggleCompact, modifier = Modifier.size(34.dp)) {
             Icon(
                 imageVector = if (compact) Icons.Outlined.OpenInFull else Icons.Outlined.CloseFullscreen,

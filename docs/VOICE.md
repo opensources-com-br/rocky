@@ -17,3 +17,14 @@ Each capture lasts eight seconds. Speak while the input meter is active; capture
 Managed downloads are pinned to a repository revision and checked against SHA-256. Setup can be cancelled and retried. Windows still requires an external whisper-cli/model; macOS automatic setup requires Homebrew. The volume control is disabled on macOS because system output volume must be used.
 
 Use headphones and record an OBS test: desktop audio capture can include Rocky. This build does not provide a separate output-device selector or guarantee private monitoring.
+
+
+## Conversation controls
+
+Global defaults: Ctrl+Shift+F8 captures one direct command without the wake word; Ctrl+Shift+F9 mutes/unmutes speech; Ctrl+Shift+F10 shows/hides the window. On macOS use Control (and Fn if required by the keyboard). Configure three distinct F1–F12 keys in Voice settings. Registration conflicts are shown there.
+
+Capture now ends after detected speech followed by configurable silence (450–1500 ms), with an eight-second maximum. Adjust the noise threshold or disable endpoint detection for fixed chunks. This is an energy-based gate, not a guarantee against background speech. Raw audio remains local.
+
+The session History keeps up to 30 answers and offers copy, repeat, save note and save idea actions. The last four interactions provide bounded conversational context; disconnecting clears history. Saved notes and ideas remain in SQLite.
+
+Free dictation supports “Rocky, anota: …”, “Rocky, ideia: …”, “Rocky, save a note: …” and “Rocky, save an idea: …”. Saving stays on the current tab and offers Undo. The Before going live dialog checks Twitch, AI and optional audio, including a user-reviewed OBS recording.

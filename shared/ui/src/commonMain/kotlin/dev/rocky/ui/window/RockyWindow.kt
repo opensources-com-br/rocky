@@ -336,10 +336,10 @@ fun RockyWindow(
                     },
                 )
                 Divider(color = RockyColors.Divider)
-                localNotes.notice?.let { notice ->
+                if (!historyOpen) localNotes.notice?.let { notice ->
                     Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-                        Text(notice, modifier = Modifier.weight(1f), style = MaterialTheme.typography.caption)
+                        Text(notice, modifier = Modifier.weight(1f), style = MaterialTheme.typography.caption, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                         if (localNotes.undoSaveId != null) androidx.compose.material.TextButton(onClick = localNotes::undoSave) {
                             Text(tr("Undo", "Desfazer"))
                         }

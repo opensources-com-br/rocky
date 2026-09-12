@@ -3,7 +3,6 @@ package dev.rocky.data.kick
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import dev.rocky.core.live.ChatMessage
-import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.URI
 import java.net.URLDecoder
@@ -31,7 +30,7 @@ internal class KickLocalReceiver(
             "O callback da Kick deve usar http://localhost."
         }
         require(redirect.port in 1..65535) { "O callback da Kick precisa informar uma porta." }
-        server = HttpServer.create(InetSocketAddress(InetAddress.getLoopbackAddress(), redirect.port), 0)
+        server = HttpServer.create(InetSocketAddress(redirect.host, redirect.port), 0)
         server.executor = executor
         server.createContext(redirect.path, ::handleCallback)
         server.createContext(WEBHOOK_PATH, ::handleWebhook)

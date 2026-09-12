@@ -4,6 +4,15 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class VoiceCommandTest {
+    @org.junit.Test fun parsesFreeNotesAndIdeas() {
+        org.junit.Assert.assertEquals(DictatedNote(VoiceSaveTarget.Note, "fazer uma live amanhã"),
+            dictatedNote("anota: fazer uma live amanhã"))
+        org.junit.Assert.assertEquals(DictatedNote(VoiceSaveTarget.Idea, "jogar com o chat"),
+            dictatedNote("ideia: jogar com o chat"))
+        org.junit.Assert.assertNull(dictatedNote("anota: "))
+        org.junit.Assert.assertNull(dictatedNote("o que devo anotar?"))
+    }
+
     @org.junit.Test fun identifiesSaveCommandsWithoutMatchingQuestions() {
         org.junit.Assert.assertEquals(VoiceSaveTarget.Note, voiceSaveTarget(extractRockyCommand("Rocky, salva isso como nota")!!))
         org.junit.Assert.assertEquals(VoiceSaveTarget.Idea, voiceSaveTarget(extractRockyCommand("Rocky, salva isso como ideias.")!!))

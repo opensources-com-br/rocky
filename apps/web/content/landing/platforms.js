@@ -1,6 +1,18 @@
 export const platforms = [
-  {"name": "Twitch", "color": "#9146ff"},
-  {"name": "Kick", "color": "#53fc18"},
-  {"name": "YouTube", "color": "#ff0033"},
-  {"name": "Facebook", "color": "#1877f2"},
+  {
+    "name": "Twitch · disponível",
+    "color": "#9146ff"
+  },
+  {
+    "name": "Kick · em breve",
+    "color": "#4d4d51"
+  },
+  {
+    "name": "YouTube · em breve",
+    "color": "#4d4d51"
+  },
+  {
+    "name": "Facebook · em breve",
+    "color": "#4d4d51"
+  }
 ];

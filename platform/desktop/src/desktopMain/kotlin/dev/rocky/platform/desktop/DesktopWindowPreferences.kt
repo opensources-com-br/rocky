@@ -10,7 +10,14 @@ object DesktopWindowPreferences {
     fun restore(): Rectangle {
         val saved = Rectangle(prefs.getInt("x", Int.MIN_VALUE), prefs.getInt("y", Int.MIN_VALUE),
             prefs.getInt("width", 462), prefs.getInt("height", 820))
-        val screens = GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.map { it.defaultConfiguration.bounds }
+        val screens = GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.map {
+            val configuration = it.defaultConfiguration
+            val insets = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(configuration)
+            Rectangle(configuration.bounds).apply {
+                x += insets.left; y += insets.top
+                width -= insets.left + insets.right; height -= insets.top + insets.bottom
+            }
+        }
         return fitWindow(saved, screens)
     }
 

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export default function SiteNav({ active, onShowcase }) {
   return <header className="site-nav" style={{ position: "sticky", top: 0, zIndex: 60, borderBottom: "1px solid rgba(255,255,255,.07)", background: "rgba(8,7,6,.8)", backdropFilter: "blur(16px)" }}>
-    <nav aria-label="Navegação principal" style={{ maxWidth: active === "docs" ? 1176 : 1120, margin: "0 auto", display: "flex", alignItems: "center", gap: 10, padding: "0 28px", height: 56, borderLeft: "1px solid rgba(255,255,255,.07)", borderRight: "1px solid rgba(255,255,255,.07)" }}>
+    <nav aria-label="Navegação principal" style={{ maxWidth: 1120, margin: "0 auto", display: "flex", alignItems: "center", gap: 10, padding: "0 28px", height: 56, borderLeft: "1px solid rgba(255,255,255,.07)", borderRight: "1px solid rgba(255,255,255,.07)" }}>
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, color: "inherit", flex: "none" }}>
         <span style={{ width: 22, height: 22, borderRadius: 6, background: "#d4703c", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#140a05" }}>R</span>
         <span style={{ fontSize: 14.5, fontWeight: 600, letterSpacing: "-.02em" }}>Rocky</span>

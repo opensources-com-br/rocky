@@ -16,10 +16,13 @@ internal interface SecretStore {
     fun delete()
 }
 
-internal fun desktopSecretStore(): SecretStore = when {
-    System.getProperty("os.name").lowercase().contains("mac") -> MacSecretStore()
+internal fun desktopSecretStore(namespace: String = "ai"): SecretStore = when {
+    System.getProperty("os.name").lowercase().contains("mac") -> MacSecretStore(
+        serviceName = "dev.rocky.$namespace",
+        accountName = if (namespace == "ai") "active-provider" else "active-credential",
+    )
     System.getProperty("os.name").lowercase().contains("win") -> WindowsSecretStore(
-        RockyDesktopPaths.notesDatabase.resolveSibling("ai-credential.dpapi"),
+        RockyDesktopPaths.notesDatabase.resolveSibling("$namespace-credential.dpapi"),
     )
     else -> error("Secure credential storage is unavailable on this system")
 }
@@ -45,11 +48,11 @@ internal class WindowsSecretStore(private val path: Path) : SecretStore {
 }
 
 // Native Keychain calls keep the password out of command-line arguments and process output.
-internal class MacSecretStore : SecretStore {
+internal class MacSecretStore(serviceName: String, accountName: String) : SecretStore {
     private val security by lazy { Native.load("Security", Security::class.java) }
     private val core by lazy { Native.load("CoreFoundation", Core::class.java) }
-    private val service = "dev.rocky.ai".toByteArray()
-    private val account = "active-provider".toByteArray()
+    private val service = serviceName.toByteArray()
+    private val account = accountName.toByteArray()
 
     override fun read(): String? {
         val size = IntByReference()

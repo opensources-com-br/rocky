@@ -94,7 +94,7 @@ private fun dynamicEnglish(text: String): String = when {
     else -> text
 }
 
-private val allTranslations by lazy { settingsTranslations + liveTranslations }
+private val allTranslations by lazy { settingsTranslations + liveTranslations + releaseTranslations }
 
 private val settingsTranslations = mapOf(
     "Configurações" to "Settings",
@@ -324,4 +324,44 @@ private val liveTranslations = mapOf(
     "Essa aula salvou minha semana, obrigada!" to "This class saved my week, thank you!",
     "Vale a pena usar isso em produção hoje?" to "Is this worth using in production today?",
     "Quantas vagas ainda tem na turma?" to "How many seats are left in the class?",
+)
+
+private val releaseTranslations = mapOf(
+    "Dados" to "Data",
+    "Dados e privacidade" to "Data and privacy",
+    "Teste a voz (opcional)" to "Test voice (optional)",
+    "Conecte a Twitch e a IA para começar por texto. Ative a voz quando quiser." to "Connect Twitch and AI to start with text. Enable voice whenever you want.",
+    "Rocky não exige uma conta própria. As notas ficam no computador. Chaves de IA salvas usam o cofre do sistema; tokens Twitch ficam na memória." to "Rocky requires no account. Notes stay on your computer. Saved AI keys use system credential storage; Twitch tokens remain in memory.",
+    "Use Salvar chave para guardá-la no cofre do sistema. A edição permanece na memória até salvar." to "Save configuration and key to keep it in system credential storage. Unsaved edits remain in memory.",
+    "Salvar configuração e chave" to "Save configuration and key",
+    "Apagar chave" to "Delete key",
+    "Configuração salva no dispositivo" to "Configuration saved on this device",
+    "Não foi possível salvar no cofre. Desbloqueie o cofre e tente novamente." to "Could not save to system credential storage. Unlock it and try again.",
+    "Tentar carregar novamente" to "Retry loading",
+    "Não foi possível exportar. Escolha uma pasta disponível e tente novamente." to "Export failed. Choose an available folder and try again.",
+    "Não foi possível abrir o banco de notas. Verifique a pasta de dados e tente carregar novamente. O arquivo original foi preservado." to "Could not open the notes database. Check the data folder and retry. The original file was preserved.",
+    "Nenhuma mensagem recebida nos últimos dois minutos" to "No messages received in the last two minutes",
+    "Cancelar preparação" to "Cancel setup",
+    "Preparação cancelada; você pode tentar novamente." to "Setup cancelled; you can try again.",
+    "Todas as notas foram apagadas." to "All notes were deleted.",
+    "Rocky não exige uma conta própria." to "Rocky requires no account.",
+    "Abrir pasta de dados" to "Open data folder",
+    "Pasta de dados aberta." to "Data folder opened.",
+    "Exportar notas antes de apagar" to "Export notes before deleting",
+    "Apagar notas" to "Delete notes",
+    "Redefinir configurações" to "Reset settings",
+    "Remover modelo de voz" to "Remove voice model",
+    "Confirmar" to "Confirm",
+    "Configurações e chave removidas. Reabra o Rocky." to "Settings and key removed. Reopen Rocky.",
+    "Modelo gerenciado removido. Modelos externos foram preservados." to "Managed model removed. External models were preserved.",
+    "Esta ação apaga todas as notas e suas fontes. Exporte antes de continuar." to "This deletes all notes and their evidence. Export before continuing.",
+    "A sessão será interrompida. Reabra o Rocky após concluir. Notas e exportações serão preservadas." to "The session will stop. Reopen Rocky afterwards. Notes and exports will be preserved.",
+    "O ouvinte será interrompido e apenas o modelo gerenciado será removido. Notas e modelos externos serão preservados." to "Listening will stop and only the managed model will be removed. Notes and external models will be preserved.",
+    "Não foi possível concluir. Verifique o acesso ao cofre ou à pasta de dados e tente novamente." to "Could not finish. Check access to system credential storage or the data folder and retry.",
+    "Rocky " to "Rocky ",
+    "Notas e fontes ficam no SQLite local. O chat é temporário. APIs de IA recebem as mensagens selecionadas; Ollama pode processá-las localmente." to "Notes and evidence stay in local SQLite storage. Chat is temporary. AI APIs receive selected messages; Ollama can process them locally.",
+    "Chaves salvas usam Keychain no macOS ou DPAPI do usuário no Windows. Tokens Twitch ficam na memória." to "Saved keys use macOS Keychain or user-scoped Windows DPAPI. Twitch tokens remain in memory.",
+    "A exclusão lógica não apaga cópias já exportadas, backups do sistema ou dados retidos pelo provedor de IA." to "Logical deletion does not remove exports, system backups, or data retained by the AI provider.",
+    "Microfone capturando · fale agora" to "Microphone capturing · speak now",
+    "Cofre indisponível. A chave está apenas na memória; salve novamente quando o cofre estiver disponível." to "System credential storage unavailable. The key is in memory only; save it when storage becomes available.",
 )

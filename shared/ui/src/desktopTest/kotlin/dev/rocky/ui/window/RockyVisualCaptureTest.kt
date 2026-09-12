@@ -605,7 +605,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Set up Rocky").assertExists()
         rule.onNodeWithText("1. Connect your Twitch").assertExists()
         rule.onNodeWithText("2. Configure AI").assertExists()
-        rule.onNodeWithText("3. Test voice").assertExists()
+        rule.onNodeWithText("3. Test voice (optional)").assertExists()
     }
 
     @Test

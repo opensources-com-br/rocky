@@ -343,7 +343,7 @@ internal class VoiceState(
             captureJob = null
             result.onSuccess {
                 capturing = true
-                status = "Ouvinte ativo · diga “Rocky” e faça sua pergunta"
+                status = "Microfone capturando · fale agora"
                 levelJob?.cancel()
                 levelJob = scope.launch {
                     while (capturing) {

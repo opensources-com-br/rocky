@@ -8,8 +8,8 @@ export const platforms = [
     "color": "#53fc18"
   },
   {
-    "name": "YouTube · em breve",
-    "color": "#4d4d51"
+    "name": "YouTube · disponível",
+    "color": "#ff164a"
   },
   {
     "name": "Facebook · em breve",

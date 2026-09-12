@@ -1,6 +1,6 @@
 # AI providers
 
-Rocky can generate grounded suggestions from Twitch or Kick chat with local Ollama, the OpenAI Responses API, or OpenRouter.
+Rocky can generate grounded suggestions from Twitch, Kick, or YouTube chat with local Ollama, the OpenAI Responses API, or OpenRouter.
 
 ## Ollama
 
@@ -31,7 +31,7 @@ Use **Save configuration and key** to save the key in macOS Keychain or with use
 
 ## Suggestion behavior
 
-- **Analyze now** works after at least one real Twitch or Kick message arrives.
+- **Analyze now** works after at least one real Twitch, Kick, or YouTube message arrives.
 - Automatic analysis starts disabled. Once enabled, it follows the agent's configured frequency and requires three additional messages.
 - All chat requests use up to 200 received messages from the last two minutes, with up to 300 characters per message. This is a limited sample, not a complete stream history. Connection gaps are shown in Conversation.
 - Chat is labeled as untrusted content. A generated suggestion must cite message IDs present in the request or Rocky rejects it.

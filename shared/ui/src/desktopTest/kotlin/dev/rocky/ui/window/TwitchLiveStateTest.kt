@@ -13,6 +13,26 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TwitchLiveStateTest {
+    @Test fun recordsMeasuredPulseAndBoundsItsHistory() {
+        var now = 0L
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client) { now }
+        state.connect("client")
+        client.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "live")))
+        client.emit(message("first"))
+        state.refreshMetrics()
+        assertEquals(1, state.pulse.last().messagesPerMinute)
+        assertEquals(null, state.pulse.last().viewers)
+        repeat(130) { now += 5000; state.refreshMetrics() }
+        assertEquals(120, state.pulse.size)
+        assertEquals(0, state.pulse.last().messagesPerMinute)
+        client.emit(TwitchConnectionEvent.PhaseChanged(TwitchConnectionPhase.Reconnecting))
+        now += 5000; state.refreshMetrics()
+        assertFalse(state.pulse.last().connected)
+        state.connect("client")
+        assertTrue(state.pulse.isEmpty())
+    }
+
     @Test fun expiresAudienceAndMarksRecoveryGaps() {
         var now = 0L
         val client = FakeTwitchChatClient()

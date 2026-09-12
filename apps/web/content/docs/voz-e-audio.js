@@ -24,7 +24,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Com voz preparada, o ouvinte inicia ao conectar Twitch ou Kick e pode ser alternado pelo rodapé. Diga “Rocky” seguido do pedido. O nome configurado do agente funciona como palavra de ativação. Ctrl + Shift + F8 captura um comando direto sem essa palavra."
+      "text": "Com voz preparada, o ouvinte inicia ao conectar Twitch, Kick ou YouTube e pode ser alternado pelo rodapé. Diga “Rocky” seguido do pedido. O nome configurado do agente funciona como palavra de ativação. Ctrl + Shift + F8 captura um comando direto sem essa palavra."
     },
     {
       "type": "h2",

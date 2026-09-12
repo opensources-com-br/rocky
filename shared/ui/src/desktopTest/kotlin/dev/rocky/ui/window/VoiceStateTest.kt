@@ -15,6 +15,28 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun transcribesAfterSpeechEndsBeforeTheCaptureLimit() = runBlocking {
+        val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 3_000) {}
+        var received = false
+        state.enableListener(this) { received = true }
+        waitUntil { state.capturing }
+        delay(350)
+        service.level = 0f
+        waitUntil { received }
+        assertEquals(1, service.transcriptions)
+        state.resetSession()
+    }
+
+    @Test fun silentCaptureRestartsWithoutTranscribing() = runBlocking {
+        val service = FakeVoiceService().apply { supportsLevel = true }
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 200) {}
+        state.enableListener(this) {}
+        waitUntil { service.captureStarts >= 2 }
+        assertEquals(0, service.transcriptions)
+        state.resetSession()
+    }
+
     @Test fun completedAnswerResumesWithoutNextButton() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}
@@ -294,6 +316,11 @@ class VoiceStateTest {
 
     private class FakeVoiceService : VoiceService {
         val spoken = mutableListOf<String>()
+        var supportsLevel = false
+        @Volatile var level = 0f
+        var transcriptions = 0
+        override val supportsInputLevel: Boolean get() = supportsLevel
+        override fun inputLevel(): Float = level
         var captureStarted = false
         var captureStarts = 0
         var speechGate: CountDownLatch? = null
@@ -324,6 +351,7 @@ class VoiceStateTest {
         }
         override fun detectedTranscription(): LocalTranscriptionConfiguration? = detectedTranscription
         override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
+            transcriptions += 1
             transcriptionGate?.await()
             return "O que o chat achou?"
         }

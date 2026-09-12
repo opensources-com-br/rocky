@@ -25,6 +25,8 @@ fun buildAiSuggestionPrompt(
             A fala do streamer, quando presente em uma seção separada, é o pedido que você deve responder usando o chat.
             Gere uma sugestão curta em português para o streamer, priorizando perguntas repetidas, dúvidas e ideias úteis. ${agent.tone.instruction}
             Responda apenas com JSON no formato {"suggestion":"texto","source_message_ids":["id"]}.
+            O contexto é uma amostra limitada; não represente a live inteira nem garanta cobertura completa do intervalo.
+            Não invente contagens de pessoas; descreva padrões e cite mensagens da amostra.
             Use somente IDs presentes na entrada. Se não houver algo útil, use suggestion vazia e uma lista vazia.
         """.trimIndent(),
         input = buildString {

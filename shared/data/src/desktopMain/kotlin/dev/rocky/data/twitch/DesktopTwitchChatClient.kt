@@ -284,7 +284,10 @@ class DesktopTwitchChatClient : TwitchChatClient {
             }.onSuccess { viewerCount ->
                 if (isCurrent(run)) listener.onEvent(TwitchConnectionEvent.AudienceUpdated(viewerCount))
             }
-            audienceRefreshRunning = false
+            .onFailure {
+                if (isCurrent(run)) listener.onEvent(TwitchConnectionEvent.AudienceUpdated(null))
+            }
+            if (isCurrent(run)) audienceRefreshRunning = false
         }
     }
 

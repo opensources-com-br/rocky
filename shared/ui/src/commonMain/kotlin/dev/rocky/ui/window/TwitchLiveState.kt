@@ -50,6 +50,9 @@ internal class TwitchLiveState(
 
     var viewerCount by mutableStateOf<Int?>(null)
         private set
+    private var audienceUpdatedAt: Long? = null
+    var hasCaptureGaps by mutableStateOf(false)
+        private set
 
     fun connect(clientId: String) {
         if (clientId.isBlank()) {
@@ -57,6 +60,8 @@ internal class TwitchLiveState(
             detail = "Informe o Client ID da Twitch."
             return
         }
+        hasCaptureGaps = false
+        audienceUpdatedAt = null
         messages.clear()
         receivedAtByMessageId.clear()
         receivedMessageTimes.clear()
@@ -92,7 +97,8 @@ internal class TwitchLiveState(
                 is TwitchConnectionEvent.PhaseChanged -> {
                     phase = event.phase
                     detail = event.detail
-                    if (event.phase == TwitchConnectionPhase.Failed) viewerCount = null
+                    if (event.phase == TwitchConnectionPhase.Reconnecting) hasCaptureGaps = true
+                    if (event.phase != TwitchConnectionPhase.Connected) viewerCount = null
                     if (event.phase == TwitchConnectionPhase.Disconnected) {
                         account = null
                         viewerCount = null
@@ -113,7 +119,10 @@ internal class TwitchLiveState(
                     userCode = null
                     verificationUri = null
                 }
-                is TwitchConnectionEvent.AudienceUpdated -> viewerCount = event.viewerCount
+                is TwitchConnectionEvent.AudienceUpdated -> {
+                    viewerCount = event.viewerCount
+                    audienceUpdatedAt = currentTimeMillis()
+                }
                 is TwitchConnectionEvent.MessageReceived -> {
                     if (messages.size == MAX_CHAT_MESSAGES) {
                         receivedAtByMessageId.remove(messages.removeAt(0).id)
@@ -134,6 +143,7 @@ internal class TwitchLiveState(
     }
 
     fun refreshMetrics() = Snapshot.withMutableSnapshot {
+        if (audienceUpdatedAt?.let { currentTimeMillis() - it > 60_000 } == true) viewerCount = null
         val cutoff = currentTimeMillis() / 1_000 - 59
         receivedMessageTimes.keys.filter { it < cutoff }.forEach(receivedMessageTimes::remove)
         messagesPerMinute = receivedMessageTimes.values.sum()

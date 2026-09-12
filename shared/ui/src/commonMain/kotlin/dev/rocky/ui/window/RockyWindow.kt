@@ -142,7 +142,7 @@ fun RockyWindow(
                 delay(ai.automaticAnalysisDelay(currentTimeMillis(), agent.configuration.analysisIntervalMillis))
                 ai.analyze(
                     aiScope,
-                    twitch.messages,
+                    twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS),
                     automatic = true,
                     agent = agent.configuration,
                     automaticTimeMillis = currentTimeMillis(),
@@ -383,7 +383,7 @@ fun RockyWindow(
                                     mainSection = MainSection.Notes
                                 }
                             },
-                            onAnalyze = { ai.analyze(aiScope, twitch.messages, agent = agent.configuration) },
+                            onAnalyze = { ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), agent = agent.configuration) },
                             onNext = {
                                 voice.interruptSpeech()
                                 ai.dismissSuggestion()
@@ -409,9 +409,10 @@ fun RockyWindow(
                                     showTextRequest = true,
                                     textRequestEnabled = twitch.phase == TwitchConnectionPhase.Connected && ai.isReady && !ai.generating,
                                     analyzing = ai.generating,
+                                    hasCaptureGaps = twitch.hasCaptureGaps,
                                     onCancelAnalysis = { ai.cancelAnalysis(); voice.resumeListener() },
                                     onTextRequest = { request ->
-                                        ai.analyze(aiScope, twitch.messages, streamerRequest = request, agent = agent.configuration)
+                                        ai.analyze(aiScope, twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS), streamerRequest = request, agent = agent.configuration)
                                     },
                                 )
                                 MainSection.Support -> SupportContent()

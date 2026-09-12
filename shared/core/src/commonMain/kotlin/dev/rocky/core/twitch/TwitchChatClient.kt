@@ -30,7 +30,7 @@ sealed interface TwitchConnectionEvent {
 
     data class Connected(val account: TwitchAccount) : TwitchConnectionEvent
 
-    data class AudienceUpdated(val viewerCount: Int) : TwitchConnectionEvent
+    data class AudienceUpdated(val viewerCount: Int?) : TwitchConnectionEvent
 
     data class MessageReceived(val message: ChatMessage) : TwitchConnectionEvent
 }

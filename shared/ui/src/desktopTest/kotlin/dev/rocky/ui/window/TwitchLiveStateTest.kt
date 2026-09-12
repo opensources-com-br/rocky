@@ -13,6 +13,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TwitchLiveStateTest {
+    @Test fun expiresAudienceAndMarksRecoveryGaps() {
+        var now = 0L
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client) { now }
+        state.connect("client")
+        client.emit(TwitchConnectionEvent.AudienceUpdated(123))
+        now = 60_001
+        state.refreshMetrics()
+        assertEquals(null, state.viewerCount)
+        client.emit(TwitchConnectionEvent.AudienceUpdated(456))
+        client.emit(TwitchConnectionEvent.AudienceUpdated(null))
+        assertEquals(null, state.viewerCount)
+        client.emit(TwitchConnectionEvent.PhaseChanged(TwitchConnectionPhase.Reconnecting))
+        assertTrue(state.hasCaptureGaps)
+        state.connect("client")
+        assertFalse(state.hasCaptureGaps)
+    }
+
     @Test
     fun keepsMetricsBoundedUnderHeavyTrafficAndExpiresAtIdle() {
         var now = 0L

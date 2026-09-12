@@ -137,7 +137,9 @@ internal class AiSuggestionState(
         messageLimit: Int = MAX_ANALYSIS_MESSAGES,
         onComplete: (RockySuggestion?) -> Unit = {},
     ) {
-        if (generating || messages.isEmpty()) {
+        if (generating) { onComplete(null); return }
+        if (messages.isEmpty()) {
+            status = "Nenhuma mensagem recebida nos últimos dois minutos"
             onComplete(null)
             return
         }
@@ -157,7 +159,7 @@ internal class AiSuggestionState(
             lastAutomaticAnalysisAtMillis = automaticTimeMillis
         }
         if (!automatic) lastAnalyzedMessageId = messages.last().id
-        val snapshot = messages.takeLast(messageLimit.coerceAtLeast(1))
+        val snapshot = messages.takeLast(messageLimit.coerceIn(1, MAX_ANALYSIS_MESSAGES))
         val activeConfiguration = configuration
         val activeSession = sessionGeneration
         generating = true
@@ -232,6 +234,6 @@ internal class AiSuggestionState(
         const val DEFAULT_OPENROUTER_MODEL = "openrouter/free"
 
         private const val AUTOMATIC_BATCH_SIZE = 3
-        private const val MAX_ANALYSIS_MESSAGES = 30
+        private const val MAX_ANALYSIS_MESSAGES = 200
     }
 }

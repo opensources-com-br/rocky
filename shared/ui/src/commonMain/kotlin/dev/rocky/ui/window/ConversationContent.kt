@@ -36,6 +36,7 @@ internal fun ConversationContent(
     textRequestEnabled: Boolean = false,
     showTextRequest: Boolean = textRequestEnabled,
     analyzing: Boolean = false,
+    hasCaptureGaps: Boolean = false,
     onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
 ) {
@@ -67,6 +68,17 @@ internal fun ConversationContent(
             )
         }
 
+        Text(
+            text = tr("AI uses up to 200 received messages from the last two minutes; this is a limited sample.",
+                "A IA usa até 200 mensagens recebidas nos últimos dois minutos; o contexto é uma amostra limitada."),
+            style = MaterialTheme.typography.caption,
+            color = RockyColors.TextMuted,
+        )
+        if (hasCaptureGaps) {
+            Text(tr("Connection interrupted: some chat messages may be missing.",
+                "Houve interrupção de conexão: algumas mensagens podem estar ausentes."),
+                style = MaterialTheme.typography.caption, color = RockyColors.Accent)
+        }
         if (showTextRequest) {
             StreamerTextRequest(enabled = textRequestEnabled && messages.isNotEmpty(), onSend = onTextRequest)
             if (analyzing) {

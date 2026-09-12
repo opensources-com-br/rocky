@@ -45,7 +45,7 @@ internal object AiSuggestionPayloads {
         val sources = payload.arrayAt("source_message_ids")
             .map { it.jsonPrimitive.content }
             .filterTo(linkedSetOf()) { it in allowedMessageIds }
-        require(sources.isNotEmpty()) { "AI suggestion did not cite a valid chat message" }
+        require(sources.isNotEmpty() || (allowedMessageIds.isEmpty() && payload.arrayAt("source_message_ids").isEmpty())) { "AI suggestion did not cite a valid chat message" }
         return AiGeneratedSuggestion(suggestion, sources)
     }
 

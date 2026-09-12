@@ -268,6 +268,42 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun savesAnEarlierAnswerAndUndoesItFromHistory() {
+        val twitch = FakeTwitchChatClient()
+        val repository = TransientNoteRepository()
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch, twitchClientId = "client", noteRepository = repository)
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(1)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithTag("streamer-text-request").performTextReplacement("Primeira pergunta")
+        rule.onNodeWithTag("send-streamer-text-request").performClick()
+        rule.waitUntil(3_000) { rule.onAllNodesWithText("O chat quer saber o preço.").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Histórico").performClick()
+        rule.onNodeWithText("Histórico da conversa").assertExists()
+        rule.onNodeWithText("Salvar ideia").performClick()
+        rule.runOnIdle { assertEquals(1, repository.getAll().size) }
+        rule.onNodeWithText("Desfazer").performClick()
+        rule.runOnIdle { assertTrue(repository.getAll().isEmpty()) }
+        rule.onNodeWithText("Fechar").performClick()
+        rule.onNodeWithTag("streamer-text-request").assertIsDisplayed()
+    }
+
+    @Test fun preflightAllowsTextWithoutAudioSetup() {
+        render()
+        rule.onNodeWithContentDescription("Antes da live").performClick()
+        rule.onNodeWithText("Você pode continuar por texto sem microfone.").assertExists()
+        rule.onNodeWithText("Testar IA").performClick()
+        rule.waitUntil(3_000) { rule.onAllNodesWithText("Conexão com IA verificada").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Twitch desconectada").assertExists()
+        rule.onNodeWithText("Fechar").performClick()
+        rule.onNodeWithTag("streamer-text-request").assertExists()
+    }
+
+    @Test
     fun answersACompleteRockyVoiceCommand() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient()

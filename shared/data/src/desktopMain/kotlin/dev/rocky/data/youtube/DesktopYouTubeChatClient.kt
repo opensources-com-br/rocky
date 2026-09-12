@@ -83,11 +83,32 @@ class DesktopYouTubeChatClient internal constructor(
                 Triple(access, account, broadcast)
             }.onSuccess { (access, account, broadcast) ->
                 if (isCurrent(run)) {
-                    poller = YouTubeChatPoller(liveApi, access, broadcast, {}, {}, currentTimeMillis)
+                    poller = YouTubeChatPoller(
+                        liveApi,
+                        access,
+                        broadcast,
+                        onMessage = { if (isCurrent(run)) listener.onEvent(YouTubeConnectionEvent.MessageReceived(it)) },
+                        onAudience = { if (isCurrent(run)) listener.onEvent(YouTubeConnectionEvent.AudienceUpdated(it)) },
+                        currentTimeMillis = currentTimeMillis,
+                    )
                     listener.onEvent(YouTubeConnectionEvent.Connected(account, broadcast))
+                    schedulePoll(run, 0)
                 }
             }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
         }
+    }
+
+    private fun schedulePoll(run: Long, delayMillis: Long) {
+        if (!isCurrent(run) || scheduler.isShutdown) return
+        scheduler.schedule({
+            if (isCurrent(run) && !ioExecutor.isShutdown) ioExecutor.execute { poll(run) }
+        }, delayMillis, TimeUnit.MILLISECONDS)
+    }
+
+    private fun poll(run: Long) {
+        runCatching { requireNotNull(poller).poll() }
+            .onSuccess { if (isCurrent(run)) schedulePoll(run, it) }
+            .onFailure { if (isCurrent(run)) fail(run, it.userMessage()) }
     }
 
     override fun disconnect() = stop(notify = true)

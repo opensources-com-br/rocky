@@ -13,7 +13,7 @@ Cada push na `main` e cada pull request executa o build Gradle completo no macOS
 
 Os pacotes ainda são builds de desenvolvimento sem assinatura. A assinatura e a notarização do macOS fazem parte da etapa de lançamento.
 
-A suíte automatizada também executa um teste prolongado do estado da Twitch com 20.000 mensagens e sete quedas simuladas. Ele verifica que a recuperação preserva a sessão ativa e que a memória continua limitada às 1.000 mensagens mais recentes do chat.
+A suíte automatizada executa um teste prolongado da Twitch com 20.000 mensagens e sete quedas simuladas. Os testes da Kick cobrem payloads OAuth, entrega assinada de webhook, deduplicação, estado limitado, Pulso e preferências seguras. OAuth real e encaminhamento público da Kick continuam manuais.
 
 ## Comandos locais
 

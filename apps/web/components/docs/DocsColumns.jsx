@@ -4,7 +4,7 @@ import DocsArticle from "./DocsArticle";
 
 export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, nav, nextTitle, pageGroup, pageLead, pageTitle, prevTitle, toc }) {
   return (<>
-<div style={{"position": "relative", "display": "grid", "gridTemplateColumns": "214px minmax(0, 1fr) 200px", "gap": "0", "maxWidth": "1176px", "margin": "0 auto", "alignItems": "start", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)"}} className="responsive-grid">
+<div style={{"position": "relative", "display": "grid", "gridTemplateColumns": "214px minmax(0, 1fr) 200px", "gap": "0", "maxWidth": "1176px", "margin": "0 auto", "alignItems": "start", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)"}} className="responsive-grid docs-columns">
 <div style={{"position": "absolute", "top": "0", "bottom": "0", "left": "214px", "width": "1px", "background": "rgba(255,255,255,.07)", "pointerEvents": "none"}}>
 
 </div>

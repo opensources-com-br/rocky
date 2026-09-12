@@ -16,6 +16,9 @@ a:hover { color: #d4703c; }
   .site-nav > nav { padding: 0 16px !important; gap: 8px !important; flex-wrap: wrap; height: auto !important; min-height: 56px; }
   .site-nav > nav > div { margin-left: auto !important; gap: 12px !important; }
   .site-nav a:has(svg) { display: none !important; }
+  .docs-columns > div[style*="absolute"] { display: none; }
+  .docs-columns > .sticky-panel { max-height: 220px !important; padding: 20px 18px !important; overflow-y: auto; }
+  .docs-columns > .sticky-panel:last-child { display: none; }
   .page-heading { font-size: clamp(32px, 8vw, 48px) !important; }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -606,6 +606,7 @@ fun RockyWindow(
                             val active = when (platform) {
                                 PlatformColor.Twitch -> twitch.isRealSession
                                 PlatformColor.Kick -> kick.isActive
+                                PlatformColor.YouTube -> youtube.isActive
                                 else -> false
                             }
                             if (active) {

@@ -13,7 +13,8 @@ fun openRockyDataDirectory() {
 fun resetRockySettings() {
     AiDesktopPreferences.clear()
     KickDesktopPreferences.clear()
-    for (name in listOf("agent", "voice", "twitch", "kick", "interface", "onboarding", "window", "shortcuts", "experience")) {
+    YouTubeDesktopPreferences.clear()
+    for (name in listOf("agent", "voice", "twitch", "kick", "youtube", "interface", "onboarding", "window", "shortcuts", "experience")) {
         Preferences.userRoot().node("dev/rocky/$name").apply { clear(); flush() }
     }
 }

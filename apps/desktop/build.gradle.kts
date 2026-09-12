@@ -48,6 +48,11 @@ compose.desktop {
 
             macOS {
                 bundleID = "dev.rocky.app"
+                signing {
+                    sign.set(providers.environmentVariable("ROCKY_MAC_SIGN").map { it == "true" }.orElse(false))
+                    identity.set(providers.environmentVariable("ROCKY_MAC_SIGN_IDENTITY"))
+                    keychain.set(providers.environmentVariable("ROCKY_MAC_KEYCHAIN"))
+                }
                 infoPlist {
                     extraKeysRawXml = """
                         <key>NSMicrophoneUsageDescription</key>

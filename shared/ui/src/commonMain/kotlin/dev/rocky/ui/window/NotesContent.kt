@@ -31,7 +31,7 @@ internal fun NotesContent(
     onUpdate: (LiveNote) -> Unit,
     onDelete: (String) -> Unit,
     onExport: () -> Unit,
-    onCreate: (String) -> Unit = {},
+    onCreate: (String) -> Boolean = { false },
     title: String = "Notas locais",
     ideas: Boolean = false,
     loadFailed: Boolean = false,
@@ -45,7 +45,7 @@ internal fun NotesContent(
         text = { androidx.compose.material.OutlinedTextField(value = draft, onValueChange = { draft = it.take(2000) },
             label = { Text(tr("Text", "Texto")) }) },
         confirmButton = { androidx.compose.material.TextButton(enabled = draft.isNotBlank(),
-            onClick = { onCreate(draft.trim()); creating = false; draft = "" }) { Text(tr("Save", "Salvar")) } },
+            onClick = { if (onCreate(draft.trim())) { creating = false; draft = "" } }) { Text(tr("Save", "Salvar")) } },
         dismissButton = { androidx.compose.material.TextButton(onClick = { creating = false }) { Text(tr("Cancel", "Cancelar")) } },
     )
     var editingNote by remember { mutableStateOf<LiveNote?>(null) }

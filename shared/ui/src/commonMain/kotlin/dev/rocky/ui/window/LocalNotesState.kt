@@ -55,6 +55,12 @@ internal class LocalNotesState(private val repository: NoteRepository) {
         )
     }
 
+    fun putRecord(note: LiveNote): Boolean = runCatching {
+        val index = notes.indexOfFirst { it.id == note.id }
+        if (index < 0) { repository.save(note); notes.add(0, note) }
+        else { repository.update(note); notes[index] = note }
+    }.fold({ true }, { notice = "Não foi possível salvar a alteração."; false })
+
     fun update(note: LiveNote): Boolean = persist(
         action = { repository.update(note) },
         onSuccess = {

@@ -148,7 +148,11 @@ internal fun LiveSummary(
                     "Estou recebendo o chat real. Posso analisar agora ou aguardar o próximo lote automático."
                 }
             },
-            style = if (suggestion == null) MaterialTheme.typography.subtitle1 else MaterialTheme.typography.h1,
+            style = if (suggestion == null) {
+                MaterialTheme.typography.subtitle1
+            } else {
+                MaterialTheme.typography.h1.copy(fontSize = 24.sp, lineHeight = 30.sp)
+            },
             modifier = Modifier.heightIn(max = if (suggestion == null) 56.dp else 170.dp).verticalScroll(rememberScrollState()),
         )
         Spacer(Modifier.height(7.dp))

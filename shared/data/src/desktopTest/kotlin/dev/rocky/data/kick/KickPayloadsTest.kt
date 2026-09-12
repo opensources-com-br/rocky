@@ -36,4 +36,9 @@ class KickPayloadsTest {
         assertEquals(listOf("01SUB"), KickPayloads.subscriptionIds(
             """{"data":[{"name":"chat.message.sent","version":1,"subscription_id":"01SUB"}]}"""))
     }
+
+    @Test fun parsesRejectedSubscriptionError() {
+        assertEquals("Webhook URL is not configured", KickPayloads.subscriptionError(
+            """{"data":[{"name":"chat.message.sent","version":1,"error":"Webhook URL is not configured"}]}"""))
+    }
 }

@@ -23,6 +23,7 @@ internal data class PlatformStatus(
     val messagesPerMinute: Int,
     val colorKey: PlatformColor,
     val enabled: Boolean = true,
+    val connected: Boolean = false,
 )
 
 internal enum class PlatformColor {

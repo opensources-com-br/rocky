@@ -86,6 +86,7 @@ private fun TwitchAccount(
     onDisconnect: () -> Unit,
     onOpenAuthorization: (String) -> Unit,
 ) {
+    var advanced by remember { mutableStateOf(clientId.isBlank()) }
     var clientIdVisible by remember { mutableStateOf(false) }
 
     Surface(
@@ -107,7 +108,10 @@ private fun TwitchAccount(
                     )
                 }
             }
-            OutlinedTextField(
+            androidx.compose.material.TextButton(onClick = { advanced = !advanced }) {
+                Text(tr("Advanced · Twitch app", "Avançado · aplicativo Twitch"))
+            }
+            if (advanced) OutlinedTextField(
                 value = clientId,
                 onValueChange = onClientIdChange,
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp).testTag("twitch-client-id"),

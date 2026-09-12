@@ -43,7 +43,7 @@ internal fun FirstUseContent(
         SetupStep(
             number = 1,
             title = "Conecte sua Twitch",
-            description = "Informe o Client ID de um aplicativo público e autorize o canal que fará a transmissão.",
+            description = tr("Connect and authorize your channel in the browser. Official builds include the application ID.", "Conecte e autorize seu canal no navegador. Builds oficiais incluem o identificador do aplicativo."),
             complete = twitchConnected,
             action = if (twitchConnected) "Revisar Twitch" else "Configurar Twitch",
             onAction = onConfigureTwitch,

@@ -398,7 +398,8 @@ fun RockyWindow(
                             silenced = silenced,
                             speaking = voice.speaking,
                             generatingSuggestion = ai.generating,
-                            canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messages.isNotEmpty() && ai.isReady,
+                            aiConfigured = ai.isReady,
+                            canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS).isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
                             evidence = ai.suggestionSources.map(::messageEvidence),
                             onSaveNote = {

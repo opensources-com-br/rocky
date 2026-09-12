@@ -84,6 +84,7 @@ internal fun LiveSummary(
     speaking: Boolean = false,
     generatingSuggestion: Boolean = false,
     canAnalyze: Boolean = false,
+    aiConfigured: Boolean = false,
     analysisStatus: String? = null,
     evidence: List<String> = emptyList(),
     onSaveNote: () -> Unit,
@@ -100,7 +101,7 @@ internal fun LiveSummary(
                     listOf(Color(0xFF2A1B17), Color(0xFF171315)),
                 ),
             )
-            .padding(horizontal = 20.dp, vertical = 18.dp),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -128,30 +129,34 @@ internal fun LiveSummary(
                 modifier = Modifier.size(42.dp, 26.dp),
             )
         }
-        Spacer(Modifier.height(17.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             text = suggestion?.text ?: run {
                 if (!sessionAvailable) {
                     "Conecte sua Twitch nas configurações para acompanhar uma live."
                 } else if (generatingSuggestion) {
                     "Estou analisando o chat para encontrar uma resposta ou ideia útil."
-                } else if (!canAnalyze) {
+                } else if (sessionStatus != LiveSessionStatus.Running) {
+                    "Aguardando a conexão da Twitch. As mensagens anteriores estão preservadas."
+                } else if (!aiConfigured) {
                     "Configure e teste um provedor na aba IA para gerar sugestões."
+                } else if (!canAnalyze) {
+                    "Aguardando mensagens do chat nos últimos dois minutos."
                 } else if (analysisStatus?.startsWith("Não foi possível") == true) {
                     analysisStatus
                 } else {
                     "Estou recebendo o chat real. Posso analisar agora ou aguardar o próximo lote automático."
                 }
             },
-            style = MaterialTheme.typography.h1,
-            modifier = Modifier.heightIn(max = 140.dp).verticalScroll(rememberScrollState()),
+            style = if (suggestion == null) MaterialTheme.typography.subtitle1 else MaterialTheme.typography.h1,
+            modifier = Modifier.heightIn(max = if (suggestion == null) 56.dp else 64.dp).verticalScroll(rememberScrollState()),
         )
         Spacer(Modifier.height(13.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             SourceCount(sourceCounts[StreamPlatform.Twitch] ?: 0, "Twitch", RockyColors.Twitch)
+            EvidenceButton(evidence)
         }
-        EvidenceButton(evidence)
-        Spacer(Modifier.height(17.dp))
+        Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

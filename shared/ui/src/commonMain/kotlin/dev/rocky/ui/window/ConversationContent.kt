@@ -16,6 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -42,6 +46,24 @@ internal fun ConversationContent(
     onCancelAnalysis: () -> Unit = {},
     onTextRequest: (String) -> Unit = {},
 ) {
+    var showDetails by remember { mutableStateOf(false) }
+    if (showDetails) {
+        androidx.compose.material.AlertDialog(
+            onDismissRequest = { showDetails = false },
+            title = { Text(tr("Analysis details", "Detalhes da análise")) },
+            text = { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(tr("AI uses up to 200 received messages from the last two minutes; this is a limited sample.",
+                    "A IA usa até 200 mensagens recebidas nos últimos dois minutos; o contexto é uma amostra limitada."))
+                if (hasCaptureGaps) Text(tr("Some messages may be missing after a connection interruption.",
+                    "Algumas mensagens podem estar ausentes após uma interrupção de conexão."))
+                analysisStatus?.let { Text(it) }
+                performanceNotice?.let { Text(it) }
+                Text(tr("Reported tokens are partial and exclude unreported usage, tests and some retries. Cancellation does not reverse charges.",
+                    "Tokens são parciais e excluem uso não informado, testes e algumas tentativas. Cancelar não reverte cobranças."))
+            } },
+            confirmButton = { androidx.compose.material.TextButton(onClick = { showDetails = false }) { Text("OK") } },
+        )
+    }
     val chatScrollState = rememberLazyListState()
     LaunchedEffect(messages.lastOrNull()?.id) {
         if (messages.isNotEmpty()) chatScrollState.scrollToItem(messages.lastIndex)
@@ -49,7 +71,7 @@ internal fun ConversationContent(
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -63,6 +85,11 @@ internal fun ConversationContent(
                 fontWeight = FontWeight.Medium,
             )
             Spacer(Modifier.weight(1f))
+            androidx.compose.material.TextButton(onClick = { showDetails = true }) {
+                Text(if (hasCaptureGaps) tr("Chat incomplete", "Chat incompleto") else tr("Sample · details", "Amostra · detalhes"),
+                    color = if (hasCaptureGaps) RockyColors.Accent else RockyColors.TextMuted,
+                    style = MaterialTheme.typography.caption)
+            }
             Text(
                 text = "${messages.size} ${if (messages.size == 1) "mensagem" else "mensagens"}",
                 color = RockyColors.TextMuted,
@@ -70,17 +97,6 @@ internal fun ConversationContent(
             )
         }
 
-        Text(
-            text = tr("AI uses up to 200 received messages from the last two minutes; this is a limited sample.",
-                "A IA usa até 200 mensagens recebidas nos últimos dois minutos; o contexto é uma amostra limitada."),
-            style = MaterialTheme.typography.caption,
-            color = RockyColors.TextMuted,
-        )
-        if (hasCaptureGaps) {
-            Text(tr("Connection interrupted: some chat messages may be missing.",
-                "Houve interrupção de conexão: algumas mensagens podem estar ausentes."),
-                style = MaterialTheme.typography.caption, color = RockyColors.Accent)
-        }
         if (showTextRequest) {
             StreamerTextRequest(enabled = textRequestEnabled && messages.isNotEmpty(), onSend = onTextRequest)
             if (analyzing) {
@@ -90,8 +106,10 @@ internal fun ConversationContent(
             }
         }
 
-        analysisStatus?.let { Text(it, style = MaterialTheme.typography.caption, color = RockyColors.TextSecondary) }
-        performanceNotice?.let { Text(it, style = MaterialTheme.typography.caption, color = RockyColors.TextMuted) }
+        if (analysisStatus?.startsWith("Não foi possível") == true) {
+            Text(analysisStatus, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.caption, color = RockyColors.Accent)
+        }
         streamerSpeech?.let { speech ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -103,6 +121,8 @@ internal fun ConversationContent(
                 )
                 Text(
                     text = speech,
+                    maxLines = 2,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                     color = RockyColors.TextPrimary,
                     style = MaterialTheme.typography.body1,

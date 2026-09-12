@@ -101,6 +101,7 @@ internal class AiSuggestionState(
     }
 
     fun updateApiKey(apiKey: String) {
+        if (generating && apiKey != configuration.apiKey) cancelAnalysis()
         connectionVerified = false
         configuration = configuration.copy(apiKey = apiKey)
     }

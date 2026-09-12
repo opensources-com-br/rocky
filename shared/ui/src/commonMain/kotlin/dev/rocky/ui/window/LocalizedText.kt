@@ -327,6 +327,8 @@ private val liveTranslations = mapOf(
 )
 
 private val releaseTranslations = mapOf(
+    "Aguardando a conexão da Twitch. As mensagens anteriores estão preservadas." to "Waiting for Twitch to connect. Previous messages are preserved.",
+    "Aguardando mensagens do chat nos últimos dois minutos." to "Waiting for chat messages from the last two minutes.",
     "Dados" to "Data",
     "Dados e privacidade" to "Data and privacy",
     "Teste a voz (opcional)" to "Test voice (optional)",

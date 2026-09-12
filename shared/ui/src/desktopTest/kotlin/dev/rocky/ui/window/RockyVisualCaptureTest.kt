@@ -423,6 +423,11 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("send-streamer-text-request").performClick()
         rule.waitUntil(3_000) { ai.lastRequest == "Segundo pedido" }
         rule.onNodeWithText("O chat quer saber o preço.").assertExists()
+        capture("implementation-active-answer.png")
+        val inputHeight = rule.onNodeWithTag("streamer-text-request").fetchSemanticsNode().boundsInRoot.height
+        val chatHeight = rule.onNodeWithTag("chat-messages").fetchSemanticsNode().boundsInRoot.height
+        assertTrue("Input height: $inputHeight", inputHeight >= 56f)
+        assertTrue("Chat height: $chatHeight", chatHeight >= 60f)
     }
 
     @Test

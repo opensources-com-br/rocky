@@ -4,7 +4,7 @@ Rocky é um assistente local para transmissões ao vivo no macOS e Windows. Ele 
 
 O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Multiplatform, SQLDelight e Gradle.
 
-> Rocky está atualmente em uma versão inicial do protótipo desktop. Os instaladores são builds de desenvolvimento sem assinatura e a integração real oferece suporte apenas à Twitch.
+> Rocky está atualmente em uma versão inicial do protótipo desktop. Os instaladores são builds de desenvolvimento sem assinatura. A integração de chat real está disponível para Twitch e Kick; a Kick exige encaminhamento por webhook HTTPS público.
 
 [Read in English](README.md).
 
@@ -14,7 +14,8 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 
 - janela desktop móvel, redimensionável, fixável sobre outros apps e com modo compacto;
 - autenticação da Twitch pelo Device Code Flow, chat ao vivo pelo EventSub e reconexão automática;
-- contagem de espectadores e mensagens por minuto da live atual da Twitch;
+- OAuth da Kick, webhooks de chat assinados e assinatura de eventos;
+- contagem de espectadores e mensagens por minuto da live atual na Twitch e na Kick;
 - sugestões fundamentadas no chat usando modelos locais do Ollama, a API da OpenAI ou OpenRouter;
 - leitura local por meio das vozes do macOS e Windows;
 - comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
@@ -22,7 +23,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;
 - interface em inglês e português brasileiro, selecionada pelo idioma do sistema e ajustável nas Configurações.
 
-Rocky não exige uma conta própria nem um backend remoto. O Client ID da Twitch e as configurações do provedor de IA são armazenados no computador. Os tokens de acesso da Twitch ficam na memória e são apagados quando o Rocky fecha. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
+Rocky não exige uma conta própria nem inclui um backend remoto. Configurações das plataformas e da IA ficam no computador. O Client Secret da Kick e chaves de IA salvas usam o cofre do sistema; tokens das plataformas permanecem na memória. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
 
 ## Executar pelo código-fonte
 
@@ -52,12 +53,12 @@ Execute todas as verificações automatizadas com `./gradlew build` ou `.\gradle
 
 ## Configurar uma sessão real
 
-1. Siga o [guia de conexão com a Twitch](docs/TWITCH.pt-BR.md) para registrar um cliente público e conectar o canal do próprio streamer.
+1. Siga o guia de conexão com a [Twitch](docs/TWITCH.pt-BR.md) ou [Kick](docs/KICK.pt-BR.md). A Kick exige uma URL HTTPS pública que encaminhe os webhooks assinados ao Rocky.
 2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API ou OpenRouter.
 3. Siga o [guia de voz](docs/VOICE.pt-BR.md) para preparar a transcrição local e testar a conversa por áudio.
-4. Inicie uma live na Twitch, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
+4. Inicie uma live, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 
-O conector da Twitch atualmente lê novas mensagens e a contagem atual de espectadores. Inscrições, pontos do canal, Super Chats, mensagens anteriores e outras plataformas ainda não estão integrados.
+Os conectores da Twitch e da Kick leem novas mensagens e a contagem atual de espectadores. Eventos de apoio, pontos do canal, Super Chats, mensagens anteriores, YouTube e Facebook ainda não estão integrados.
 
 ## Gerar instaladores
 
@@ -82,7 +83,7 @@ Antes de promover uma alpha, siga o [protocolo de teste com streamers](docs/STRE
 | [apps/desktop](apps/desktop/) | Ponto de entrada, empacotamento e ciclo de vida do aplicativo desktop |
 | [apps/web](apps/web/) | Landing, documentação e showcase do Rocky em Next.js |
 | [shared/core](shared/core/) | Modelos de domínio, contratos e regras de exportação |
-| [shared/data](shared/data/) | Implementações da Twitch, IA e SQLite |
+| [shared/data](shared/data/) | Implementações da Twitch, Kick, IA e SQLite |
 | [shared/ui](shared/ui/) | Interface Compose e estado de apresentação |
 | [platform/desktop](platform/desktop/) | Arquivos, navegador, preferências, áudio e transcrição nativos |
 | [docs/adr](docs/adr/) | Registros de decisões de arquitetura |
@@ -93,4 +94,4 @@ O [plano de implementação](docs/PLAN.pt-BR.md) descreve a direção do produto
 
 Rocky é um software de código aberto disponibilizado sob a [Licença MIT](LICENSE).
 
-O candidato de lançamento cobre Twitch, IA, voz opcional, perguntas agrupadas, notas, ideias, momentos e resumo dos registros locais ao desconectar ou fechar o app. O resumo inclui pendências salvas; não representa toda a transmissão. YouTube, Super Chats e geração automática de ideias ficam fora deste candidato. Consulte [preparação de lançamento](docs/RELEASE_PREPARATION.md) e [dados e privacidade](docs/PRIVACY.md). Chaves de IA salvas usam o cofre do sistema; é possível concluir o primeiro uso apenas com texto.
+O código atual cobre Twitch, Kick, IA, voz opcional, perguntas agrupadas, notas, ideias, momentos e resumo dos registros locais ao desconectar ou fechar o app. A Kick ainda precisa de validação com credenciais reais e webhook público antes do lançamento. YouTube, Super Chats e geração automática de ideias ficam fora deste candidato. Consulte [preparação de lançamento](docs/RELEASE_PREPARATION.md) e [dados e privacidade](docs/PRIVACY.md).

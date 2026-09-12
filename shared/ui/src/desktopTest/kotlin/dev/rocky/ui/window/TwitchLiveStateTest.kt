@@ -44,6 +44,7 @@ class TwitchLiveStateTest {
         assertEquals("ABCD-1234", state.userCode)
 
         client.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+        client.emit(TwitchConnectionEvent.AudienceUpdated(321))
         client.emit(
             TwitchConnectionEvent.MessageReceived(
                 ChatMessage("message-1", "viewer", "Olá!", StreamPlatform.Twitch),
@@ -52,11 +53,24 @@ class TwitchLiveStateTest {
 
         assertEquals(TwitchConnectionPhase.Connected, state.phase)
         assertEquals("rocky_live", state.account?.login)
+        assertEquals(321, state.viewerCount)
         assertEquals("Olá!", state.messages.single().text)
         assertTrue(state.isRealSession)
 
         state.disconnect()
         assertFalse(state.isRealSession)
+    }
+
+    @Test
+    fun clearsAudienceWhenTheConnectionFails() {
+        val client = FakeTwitchChatClient()
+        val state = TwitchLiveState(client)
+        state.connect("client-id")
+        client.emit(TwitchConnectionEvent.AudienceUpdated(321))
+
+        client.emit(TwitchConnectionEvent.PhaseChanged(TwitchConnectionPhase.Failed, "offline"))
+
+        assertEquals(null, state.viewerCount)
     }
 
     @Test

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -72,6 +73,22 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("microphone-level", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithText("Microphone listening").assertIsDisplayed()
         rule.onNodeWithText("Speak now · level 42%").assertIsDisplayed()
+    }
+
+    @Test
+    fun showsCurrentLiveMetricsInFooter() {
+        rule.setContent {
+            AssistantFooter(
+                viewerCount = 321,
+                messagesPerMinute = 18,
+                onTalk = {},
+            )
+        }
+
+        rule.onNodeWithText("321").assertIsDisplayed()
+        rule.onNodeWithText("18").assertIsDisplayed()
+        rule.onNodeWithText("assistindo").assertIsDisplayed()
+        rule.onNodeWithText("msg/min").assertIsDisplayed()
     }
 
     @Test
@@ -151,16 +168,14 @@ class RockyVisualCaptureTest {
         }
 
         render()
-        rule.onNodeWithText("Iniciar").performClick()
-        waitForSuggestion()
-        rule.onNodeWithText("Também queria saber o valor.").assertExists()
+        rule.onNodeWithText("Conecte sua Twitch nas configurações para acompanhar uma live.").assertExists()
         capture("implementation-main.png")
 
         val mainSections = mapOf(
-            MainSection.Support to "ju.lia",
+            MainSection.Support to "Super Chats ainda não estão conectados.",
             MainSection.Notes to "Notas locais",
-            MainSection.Ideas to "Série curta respondendo as 5 dúvidas mais repetidas do chat.",
-            MainSection.Pulse to "820 assistindo · 26 msg/min",
+            MainSection.Ideas to "A geração automática de ideias ainda não está disponível em sessões reais.",
+            MainSection.Pulse to "audiência indisponível · 0 msg/min",
         )
         mainSections.forEach { (section, visibleText) ->
             render(mainSection = section)
@@ -179,36 +194,6 @@ class RockyVisualCaptureTest {
             rule.onNodeWithText(visibleText).assertExists()
             capture("implementation-settings-${section.name.lowercase()}.png")
         }
-    }
-
-    @Test
-    fun saveSimulatedSuggestionAsNote() {
-        render()
-        rule.onNodeWithText("Iniciar").performClick()
-        waitForSuggestion()
-
-        rule.onNodeWithText("Salvar como nota").performClick()
-
-        rule.onNodeWithText("Nota salva").assertExists()
-        rule.onNodeWithText("SUGESTÃO").assertExists()
-    }
-
-    @Test
-    fun startsEndsAndRestartsDemonstration() {
-        render()
-
-        rule.onNodeWithText("MODO DEMONSTRAÇÃO").assertExists()
-        rule.onNodeWithText("Sem conexão com uma live real").assertExists()
-        rule.onNodeWithText("PARADO").assertExists()
-        rule.onNodeWithText("Iniciar").performClick()
-        rule.onNodeWithText("OUVINDO").assertExists()
-
-        rule.onNodeWithText("Encerrar").performClick()
-        rule.onNodeWithText("ENCERRADO").assertExists()
-
-        rule.onNodeWithText("Reiniciar").performClick()
-        rule.onNodeWithText("OUVINDO").assertExists()
-        rule.onNodeWithText("Encerrar").assertExists()
     }
 
     @Test
@@ -231,6 +216,7 @@ class RockyVisualCaptureTest {
 
         rule.runOnIdle {
             twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emit(TwitchConnectionEvent.AudienceUpdated(321))
             twitch.emit(
                 TwitchConnectionEvent.MessageReceived(
                     ChatMessage("message-1", "viewer", "Mensagem real", StreamPlatform.Twitch),
@@ -252,7 +238,7 @@ class RockyVisualCaptureTest {
                 .fetchSemanticsNodes().isEmpty(),
         )
         rule.onNodeWithText("Pulso").performClick()
-        rule.onNodeWithText("1 mensagem recebida").assertExists()
+        rule.onNodeWithText("321 assistindo · 1 msg/min").assertExists()
         rule.onNodeWithText("Conversa").performClick()
         assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
         rule.runOnIdle {
@@ -478,7 +464,7 @@ class RockyVisualCaptureTest {
         var stopped = false
         rule.setContent {
             Box(Modifier.size(340.dp, 125.dp)) {
-                CompactContent(LiveSessionStatus.Running, 10, "Resposta ".repeat(80), true, false) {
+                CompactContent(LiveSessionStatus.Running, 10, "Resposta ".repeat(80), false) {
                     stopped = true
                 }
             }
@@ -487,7 +473,7 @@ class RockyVisualCaptureTest {
         rule.runOnIdle { assertTrue(stopped) }
         assertEquals(
             "O chat quer saber o preço.",
-            compactHeadline(LiveSessionStatus.Running, "O chat quer saber o preço.", real = true),
+            compactHeadline(LiveSessionStatus.Running, "O chat quer saber o preço."),
         )
     }
 
@@ -520,7 +506,7 @@ class RockyVisualCaptureTest {
     }
 
     @Test
-    fun exportsVisibleIdeas() {
+    fun doesNotExportPlaceholderIdeas() {
         var exportedIdeas = emptyList<LiveIdea>()
         render(
             mainSection = MainSection.Ideas,
@@ -530,11 +516,9 @@ class RockyVisualCaptureTest {
             },
         )
 
-        rule.onNodeWithText("Exportar .md").performClick()
-        rule.onNodeWithText("Markdown exportado.").assertExists()
+        rule.onNodeWithText("Exportar .md").assertIsNotEnabled()
         rule.runOnIdle {
-            assertEquals(3, exportedIdeas.size)
-            assertEquals("CONTEÚDO", exportedIdeas.first().tag)
+            assertTrue(exportedIdeas.isEmpty())
         }
     }
 
@@ -559,10 +543,8 @@ class RockyVisualCaptureTest {
 
     @Test
     fun guidesFirstUseThroughSettings() {
-        var finished = false
         render(
             firstUseOpen = true,
-            onFirstUseFinished = { finished = true },
         )
 
         rule.onNodeWithText("Configure o Rocky").assertExists()
@@ -571,9 +553,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("concluir").performClick()
         rule.onNodeWithText("Configure o Rocky").assertExists()
 
-        rule.onNodeWithText("Usar demonstração").performScrollTo().performClick()
-        rule.onNodeWithText("MODO DEMONSTRAÇÃO").assertExists()
-        rule.runOnIdle { assertTrue(finished) }
+        assertTrue(rule.onAllNodesWithText("Usar demonstração").fetchSemanticsNodes().isEmpty())
     }
 
     @Test
@@ -589,8 +569,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Settings").assertExists()
         rule.onNodeWithText("Agent name").assertExists()
         rule.onNodeWithText("done").performClick()
-        rule.onNodeWithText("DEMO MODE").assertExists()
-        rule.onNodeWithText("Start").assertExists()
+        rule.onNodeWithText("Connect your Twitch in settings to follow a stream.").assertExists()
         rule.onNodeWithText("Conversation").assertExists()
         rule.runOnIdle { assertEquals(RockyLanguage.English, savedLanguage) }
     }
@@ -700,14 +679,6 @@ class RockyVisualCaptureTest {
         val data = requireNotNull(Image.makeFromBitmap(bitmap).encodeToData(EncodedImageFormat.PNG))
         Files.createDirectories(outputDirectory)
         Files.write(outputDirectory.resolve(fileName), data.bytes)
-    }
-
-    private fun waitForSuggestion() {
-        rule.waitUntil(timeoutMillis = 10_000) {
-            rule.onAllNodesWithText(
-                "Sete pessoas perguntaram o preço do curso nos últimos dois minutos. Vale responder agora.",
-            ).fetchSemanticsNodes().isNotEmpty()
-        }
     }
 
     private class FakeTwitchChatClient : TwitchChatClient {

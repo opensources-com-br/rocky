@@ -6,11 +6,6 @@ enum class StreamPlatform {
     YouTube,
 }
 
-enum class LiveSessionMode {
-    Demonstration,
-    Real,
-}
-
 enum class LiveSessionStatus {
     Stopped,
     Running,

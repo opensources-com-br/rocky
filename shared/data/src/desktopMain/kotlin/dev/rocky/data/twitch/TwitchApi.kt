@@ -63,6 +63,18 @@ internal class TwitchApi(
         return TwitchAuthPayloads.account(response.body())
     }
 
+    fun viewerCount(clientId: String, accessToken: String, userId: String): Int {
+        val request = HttpRequest.newBuilder(URI.create("$STREAMS_ENDPOINT?user_id=${userId.urlEncode()}"))
+            .timeout(Duration.ofSeconds(20))
+            .header("Authorization", "Bearer $accessToken")
+            .header("Client-Id", clientId)
+            .GET()
+            .build()
+        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
+        response.requireSuccess()
+        return TwitchAuthPayloads.viewerCount(response.body())
+    }
+
     fun subscribeToChat(
         clientId: String,
         accessToken: String,
@@ -123,6 +135,7 @@ internal class TwitchApi(
         const val TOKEN_ENDPOINT = "https://id.twitch.tv/oauth2/token"
         const val VALIDATE_ENDPOINT = "https://id.twitch.tv/oauth2/validate"
         const val EVENTSUB_ENDPOINT = "https://api.twitch.tv/helix/eventsub/subscriptions"
+        const val STREAMS_ENDPOINT = "https://api.twitch.tv/helix/streams"
         const val DEVICE_GRANT = "urn:ietf:params:oauth:grant-type:device_code"
     }
 }

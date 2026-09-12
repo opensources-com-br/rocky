@@ -32,7 +32,6 @@ import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.LiveIdea
-import dev.rocky.core.live.LiveSessionMode
 import dev.rocky.core.live.LiveSessionStatus
 import dev.rocky.core.live.StreamPlatform
 import dev.rocky.core.notes.NoteRepository
@@ -101,7 +100,6 @@ fun RockyWindow(
         }
         var silenced by remember { mutableStateOf(false) }
         var waitingForVoiceCommand by remember { mutableStateOf(false) }
-        val live = rememberSimulatedLiveState()
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
@@ -124,15 +122,14 @@ fun RockyWindow(
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
         val sessionStatus = when {
-            !twitch.isRealSession -> live.status
             twitch.phase == TwitchConnectionPhase.Connected -> LiveSessionStatus.Running
             twitch.phase == TwitchConnectionPhase.Failed -> LiveSessionStatus.Ended
             else -> LiveSessionStatus.Stopped
         }
-        val visibleMessages = if (twitch.isRealSession) twitch.messages else live.messages
-        val visibleMessageCount = if (twitch.isRealSession) twitch.totalMessages else visibleMessages.size
-        val visibleSuggestion = if (twitch.isRealSession) ai.suggestion else live.suggestion
-        val visiblePlatforms = if (twitch.isRealSession) twitch.platforms else samplePlatforms
+        val visibleMessages = twitch.messages
+        val visibleMessageCount = twitch.totalMessages
+        val visibleSuggestion = ai.suggestion
+        val visiblePlatforms = twitch.platforms
 
         LaunchedEffect(
             twitch.phase,
@@ -261,7 +258,6 @@ fun RockyWindow(
                         status = sessionStatus,
                         messageCount = visibleMessageCount,
                         suggestion = visibleSuggestion?.text,
-                        real = twitch.isRealSession,
                         silenced = silenced,
                         onToggleSilence = {
                             silenced = !silenced
@@ -307,7 +303,6 @@ fun RockyWindow(
                                     onConnect = {
                                         silenced = false
                                         voice.resetSession()
-                                        live.end()
                                         ai.resetSession()
                                         twitch.connect(twitchClientId)
                                     },
@@ -351,14 +346,6 @@ fun RockyWindow(
                                     firstUseOpen = false
                                     onFirstUseFinished()
                                 },
-                                onUseDemonstration = {
-                                    silenced = false
-                                    voice.resetSession()
-                                    ai.resetSession()
-                                    if (twitch.isRealSession) twitch.disconnect()
-                                    firstUseOpen = false
-                                    onFirstUseFinished()
-                                },
                             )
                         }
                     }
@@ -370,22 +357,6 @@ fun RockyWindow(
                                 ai.resetSession()
                                 twitch.disconnect()
                             }
-                        } else {
-                            LiveSessionControls(
-                                status = live.status,
-                                onStart = {
-                                    silenced = false
-                                    live.start()
-                                },
-                                onEnd = {
-                                    silenced = false
-                                    live.end()
-                                },
-                                onRestart = {
-                                    silenced = false
-                                    live.restart()
-                                },
-                            )
                         }
                         Divider(color = RockyColors.Divider)
                         PlatformStrip(visiblePlatforms)
@@ -393,37 +364,29 @@ fun RockyWindow(
                         LiveSummary(
                             agentName = agent.displayName,
                             suggestion = visibleSuggestion,
-                            sourceCounts = if (twitch.isRealSession) {
-                                mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0))
-                            } else {
-                                live.sourceCounts
-                            },
+                            sourceCounts = mapOf(StreamPlatform.Twitch to (ai.suggestion?.sourceMessageIds?.size ?: 0)),
                             sessionStatus = sessionStatus,
-                            sessionMode = if (twitch.isRealSession) LiveSessionMode.Real else LiveSessionMode.Demonstration,
-                            suggestionSaved = !twitch.isRealSession && live.suggestionSaved,
+                            sessionAvailable = twitch.isRealSession,
+                            suggestionSaved = false,
                             silenced = silenced,
                             speaking = voice.speaking,
                             generatingSuggestion = ai.generating,
                             canAnalyze = twitch.phase == TwitchConnectionPhase.Connected && twitch.messages.isNotEmpty() && ai.isReady,
                             analysisStatus = ai.status,
-                            evidence = if (twitch.isRealSession) ai.suggestionSources.map { "${it.author}: ${it.text}" } else emptyList(),
+                            evidence = ai.suggestionSources.map { "${it.author}: ${it.text}" },
                             onSaveNote = {
-                                val note = if (twitch.isRealSession) {
-                                    ai.suggestion?.let { suggestion ->
-                                        suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())
-                                    }
-                                } else {
-                                    live.createNoteFromSuggestion()
+                                val note = ai.suggestion?.let { suggestion ->
+                                    suggestionNote(suggestion, ai.suggestionSources, currentTimeLabel())
                                 }
                                 if (note != null && localNotes.save(note)) {
-                                    if (twitch.isRealSession) ai.dismissSuggestion() else live.markSuggestionSaved()
+                                    ai.dismissSuggestion()
                                     mainSection = MainSection.Notes
                                 }
                             },
                             onAnalyze = { ai.analyze(aiScope, twitch.messages, agent = agent.configuration) },
                             onNext = {
                                 voice.stopSpeaking()
-                                if (twitch.isRealSession) ai.dismissSuggestion() else live.dismissSuggestion()
+                                ai.dismissSuggestion()
                             },
                             onSilence = {
                                 silenced = !silenced
@@ -444,7 +407,7 @@ fun RockyWindow(
                                     messages = visibleMessages,
                                     streamerSpeech = voice.transcript,
                                 )
-                                MainSection.Support -> SupportContent(demonstration = !twitch.isRealSession)
+                                MainSection.Support -> SupportContent()
                                 MainSection.Notes -> NotesContent(
                                     notes = localNotes.notes,
                                     notice = localNotes.notice,
@@ -455,14 +418,10 @@ fun RockyWindow(
                                     },
                                 )
                                 MainSection.Ideas -> TimelineContent(
-                                    section = mainSection,
-                                    demonstration = !twitch.isRealSession,
                                     onExportIdeas = onExportIdeas,
                                 )
                                 MainSection.Pulse -> PulseContent(
                                     platforms = visiblePlatforms,
-                                    realSession = twitch.isRealSession,
-                                    messageCount = visibleMessageCount,
                                 )
                             }
                         }
@@ -474,8 +433,8 @@ fun RockyWindow(
                             inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
-                            realSession = twitch.isRealSession,
-                            messageCount = visibleMessageCount,
+                            viewerCount = twitch.viewerCount,
+                            messagesPerMinute = twitch.messagesPerMinute,
                             onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }
@@ -525,14 +484,13 @@ internal fun CompactContent(
     status: LiveSessionStatus,
     messageCount: Int,
     suggestion: String?,
-    real: Boolean,
     silenced: Boolean,
     onToggleSilence: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 4.dp)) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             Text(
-                text = if (real) "$messageCount mensagens recebidas" else "$messageCount mensagens simuladas · sem live real",
+                text = "$messageCount mensagens recebidas",
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.caption,
             )
@@ -541,7 +499,7 @@ internal fun CompactContent(
             }
         }
         Text(
-            text = compactHeadline(status, suggestion, real),
+            text = compactHeadline(status, suggestion),
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             style = MaterialTheme.typography.subtitle1,
             color = RockyColors.TextPrimary,
@@ -549,25 +507,24 @@ internal fun CompactContent(
     }
 }
 
-internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?, real: Boolean): String =
-    if (real) suggestion ?: "Chat real da Twitch" else when (status) {
-        LiveSessionStatus.Stopped -> "Demonstração parada"
-        LiveSessionStatus.Running -> suggestion ?: "Ouvindo a demonstração"
-        LiveSessionStatus.Ended -> "Demonstração encerrada"
-    }
+internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): String = suggestion ?: when (status) {
+    LiveSessionStatus.Stopped -> "Conecte sua Twitch"
+    LiveSessionStatus.Running -> "Chat real da Twitch"
+    LiveSessionStatus.Ended -> "Conexão da Twitch encerrada"
+}
 
 private val TwitchLiveState.platforms: List<PlatformStatus>
     get() = listOf(
         PlatformStatus(
             name = "Twitch",
             account = account?.let { "@${it.login}" } ?: "Conectando",
-            audience = "—",
+            audience = viewerCount?.toString() ?: "—",
             messagesPerMinute = messagesPerMinute,
             colorKey = PlatformColor.Twitch,
             enabled = phase != TwitchConnectionPhase.Failed,
         ),
-        PlatformStatus("Kick", "Em breve", "0", 0, PlatformColor.Kick, enabled = false),
-        PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.YouTube, enabled = false),
+        PlatformStatus("Kick", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
+        PlatformStatus("YouTube", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
         PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
     )
 

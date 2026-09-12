@@ -30,7 +30,6 @@ internal fun FirstUseContent(
     onConfigureAi: () -> Unit,
     onConfigureVoice: () -> Unit,
     onComplete: () -> Unit,
-    onUseDemonstration: () -> Unit,
 ) {
     val ready = firstUseReady(twitchConnected, aiVerified, voiceVerified)
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 16.dp)) {
@@ -79,15 +78,6 @@ internal fun FirstUseContent(
             shape = RoundedCornerShape(10.dp),
         ) {
             Text("Concluir configuração", fontWeight = FontWeight.Bold)
-        }
-        OutlinedButton(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp).height(42.dp),
-            onClick = onUseDemonstration,
-            border = BorderStroke(1.dp, RockyColors.Border),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
-            shape = RoundedCornerShape(10.dp),
-        ) {
-            Text("Usar demonstração")
         }
     }
 }

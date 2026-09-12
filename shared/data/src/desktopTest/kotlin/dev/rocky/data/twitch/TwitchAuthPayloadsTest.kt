@@ -49,4 +49,13 @@ class TwitchAuthPayloadsTest {
         assertEquals("123456", account.userId)
         assertEquals("rocky_streamer", account.login)
     }
+
+    @Test
+    fun parsesLiveViewerCountAndOfflineChannel() {
+        assertEquals(
+            321,
+            TwitchAuthPayloads.viewerCount("""{"data":[{"viewer_count":321}]}"""),
+        )
+        assertEquals(0, TwitchAuthPayloads.viewerCount("""{"data":[]}"""))
+    }
 }

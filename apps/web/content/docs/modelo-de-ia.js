@@ -1,17 +1,48 @@
 const content = {
-  group: "Configuração",
-  lead: "Rocky não intermedeia nada. Você cola a chave do provedor que já usa, ou aponta para um modelo rodando na sua máquina — e paga direto ao provedor, ou nada.",
-  blocks: [
-    {"type": "h2", "text": "Provedores suportados"},
-    {"type": "table", "cols": "minmax(0,1fr) minmax(0,1fr) minmax(0,1.4fr)", "head": ["PROVIDER", "ONDE RODA", "OBSERVAÇÃO"], "rows": [["anthropic", "Remoto", "Requer chave; melhor qualidade de síntese"], ["openai", "Remoto", "Requer chave"], ["ollama", "Local", "Sem chave, sem internet"], ["openai-compat", "Local ou remoto", "Qualquer servidor com API compatível"]]},
-    {"type": "h2", "text": "Arquivo de configuração"},
-    {"type": "para", "text": "Tudo que a tela de configurações faz pode ser escrito à mão. O arquivo é lido a cada alteração, sem precisar reiniciar o app."},
-    {"type": "code", "file": "~/.rocky/config.toml", "text": "[ai]\n# anthropic | openai | ollama | openai-compat\nprovider = \"ollama\"\nmodel    = \"llama3.1:8b\"\nbase_url = \"http://localhost:11434\"\n# api_key = \"sk-...\"   (provedores remotos)\n\n[agent]\ntone      = \"direto\"\ninterrupt = false\ninterventions_per_10min = 3\nread_superchats = true"},
-    {"type": "h2", "text": "Janela de contexto"},
-    {"type": "para", "text": "Quanto do chat o Rocky considera ao formular uma fala. Janelas curtas reagem rápido ao que está acontecendo agora; janelas longas percebem padrões que atravessam a live inteira, e custam mais tokens."},
-    {"type": "cards", "items": [{"key": "2 min", "text": "Reação imediata. Bom para chat muito rápido."}, {"key": "10 min", "text": "Padrão. Equilibra reação e memória."}, {"key": "live inteira", "text": "Percebe promessas do começo da transmissão."}]},
-    {"type": "note", "text": "Com provedor local, o custo por token é zero e a janela longa só pesa em memória. Um modelo de 8B roda confortavelmente ao lado de um encoder de transmissão em máquinas com 16 GB."},
-  ],
+  "group": "Configuração",
+  "lead": "Escolha o provedor em Configurações → IA. A integração atual oferece Ollama local, OpenAI API e OpenRouter.",
+  "blocks": [
+    {
+      "type": "h2",
+      "text": "Ollama"
+    },
+    {
+      "type": "para",
+      "text": "Mantenha o servidor e um modelo de texto instalados. Use http://localhost:11434 e informe o nome exato do modelo; o padrão do app é llama3.2. Rocky não instala modelos de IA nem detecta uma lista automaticamente."
+    },
+    {
+      "type": "h2",
+      "text": "OpenAI e OpenRouter"
+    },
+    {
+      "type": "para",
+      "text": "OpenAI usa https://api.openai.com e a API Responses. OpenRouter usa https://openrouter.ai/api; o modelo padrão é openrouter/free, cuja disponibilidade varia. Informe uma chave e um modelo disponível na sua conta. Não há seletor Anthropic ou integração genérica OpenAI-compatible."
+    },
+    {
+      "type": "h2",
+      "text": "Testar e salvar"
+    },
+    {
+      "type": "para",
+      "text": "Teste a conexão antes da live. O teste faz uma geração curta e pode consumir uso do provedor. Salvar configuração e chave grava a credencial no Keychain do macOS ou protegida por DPAPI no Windows; edições não salvas ficam na memória. Trocar provedor ou endpoint limpa a chave atual."
+    },
+    {
+      "type": "h2",
+      "text": "Contexto e continuidade"
+    },
+    {
+      "type": "para",
+      "text": "As análises usam até 200 mensagens recebidas nos últimos dois minutos, com até 300 caracteres por mensagem. Os últimos quatro pares de pergunta e resposta ajudam na continuidade. Não há janela configurável de dez minutos ou da live inteira. Fontes citadas precisam pertencer à amostra enviada."
+    },
+    {
+      "type": "h2",
+      "text": "Uso e privacidade"
+    },
+    {
+      "type": "para",
+      "text": "Ollama em loopback processa as sugestões no computador. OpenAI/OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Totais de tokens são parciais, não uma estimativa de cobrança. Cancelar não desfaz consumo já ocorrido."
+    }
+  ]
 };
 
 export default content;

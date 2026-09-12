@@ -66,7 +66,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
         agent: AgentConfiguration,
     ): AiGeneratedSuggestion? {
         configuration.validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
-        require(messages.isNotEmpty()) { "At least one chat message is required" }
+        require(messages.isNotEmpty() || !streamerRequest.isNullOrBlank()) { "At least one chat message is required" }
         return try { when (configuration.provider) {
             AiProviderKind.Ollama -> ollama.generate(
                 configuration.endpoint,

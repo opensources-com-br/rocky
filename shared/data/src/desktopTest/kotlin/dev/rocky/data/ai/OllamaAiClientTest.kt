@@ -51,6 +51,23 @@ class OllamaAiClientTest {
         }
     }
 
+    @Test fun listsModelsAndAnswersWithoutNewChatThroughDesktopClient() {
+        val server = HttpServer.create(InetSocketAddress(0), 0).apply {
+            createContext("/api/tags") { it.respond("""{"models":[{"name":"local-model"}]}""") }
+            createContext("/api/chat") {
+                it.respond("""{"message":{"content":"{\"suggestion\":\"Sem mensagens recentes.\",\"source_message_ids\":[]}"}}""")
+            }
+            start()
+        }
+        try {
+            val config = AiProviderConfiguration(AiProviderKind.Ollama, "http://localhost:${server.address.port}", "local-model")
+            val client = DesktopAiSuggestionClient()
+            assertEquals(listOf("local-model"), client.availableModels(config.copy(model = "")))
+            val answer = client.generateSuggestion(config, emptyList(), "O que o chat achou?", dev.rocky.core.agent.AgentConfiguration())
+            assertEquals("Sem mensagens recentes.", answer?.text)
+        } finally { server.stop(0) }
+    }
+
     private val message = ChatMessage("m1", "viewer", "Qual é o preço?", StreamPlatform.Twitch)
 }
 

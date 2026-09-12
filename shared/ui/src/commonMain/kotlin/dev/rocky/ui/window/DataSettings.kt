@@ -11,6 +11,14 @@ internal fun DataSettings(
     notes: LocalNotesState,
     directory: String,
     buildLabel: String,
+    onBackup: (List<dev.rocky.core.live.LiveNote>) -> Boolean = { false },
+    onChooseImport: () -> List<dev.rocky.core.live.LiveNote>? = { null },
+    updates: UpdateState = remember { UpdateState { null } },
+    diagnosticReport: () -> String = { "" },
+    onExportDiagnostic: (String) -> Boolean = { false },
+    onOpenGuide: (String) -> Unit = {},
+    checkUpdatesOnStart: Boolean = false,
+    onCheckUpdatesOnStart: (Boolean) -> Unit = {},
     onOpenDataDirectory: () -> Unit,
     onExportNotes: () -> Unit,
     onResetSettings: () -> Unit,
@@ -42,8 +50,11 @@ internal fun DataSettings(
     Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text("Dados e privacidade", style = MaterialTheme.typography.h6)
         Text("Rocky $buildLabel", style = MaterialTheme.typography.caption)
-        Text("Notas e fontes ficam no SQLite local. O chat é temporário. APIs de IA recebem as mensagens selecionadas; Ollama pode processá-las localmente.")
+        Text("Registros, perguntas agrupadas e suas fontes ficam no SQLite local. O restante do chat é temporário. APIs de IA recebem o contexto selecionado; Ollama pode processá-lo localmente.")
         Text("Chaves salvas usam Keychain no macOS ou DPAPI do usuário no Windows. Tokens Twitch ficam na memória.")
+        RecordTransferSettings(notes, onBackup, onChooseImport)
+        MaintenanceSettings(updates, diagnosticReport, onExportDiagnostic, onOpenGuide)
+        SettingSwitch(tr("Check updates when opening Rocky", "Verificar atualizações ao abrir Rocky"), checkUpdatesOnStart, onCheckUpdatesOnStart)
         Text(directory, style = MaterialTheme.typography.caption)
         OutlinedButton(onClick = { perform(onOpenDataDirectory, "Pasta de dados aberta.") }) { Text("Abrir pasta de dados") }
         OutlinedButton(onClick = onExportNotes, enabled = notes.notes.isNotEmpty()) { Text("Exportar notas antes de apagar") }

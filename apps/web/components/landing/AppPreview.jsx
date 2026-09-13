@@ -8,7 +8,7 @@ export default function AppPreview() {
   return <figure className="rocky-preview">
     <div className="rocky-app" inert aria-label="Demonstração da interface desktop do Rocky">
       <AppTitlebar />
-      <div className="rocky-platforms">{["Twitch", "Kick", "YouTube", "Facebook"].map((name, index) => <span key={name} className={index < 3 ? `available ${name.toLowerCase()}` : ""}><i />{name}</span>)}</div>
+      <div className="rocky-platforms">{["Twitch", "Kick", "YouTube", "Facebook"].map(name => <span key={name} className={`available ${name.toLowerCase()}`}><i />{name}</span>)}</div>
       <AppAnswer />
       <div className="rocky-tabs">{["Conversa", "Superchats", "Notas", "Ideias", "Pulso"].map((name, index) => <span key={name} className={index === 0 ? "selected" : ""}>{name}</span>)}</div>
       <AppConversation />

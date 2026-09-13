@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Com voz preparada, o ouvinte inicia ao conectar Twitch, Kick ou YouTube e pode ser alternado pelo rodapé. Diga “Rocky” seguido do pedido. O nome configurado do agente funciona como palavra de ativação. Ctrl + Shift + F8 captura um comando direto sem essa palavra."
+      "text": "Com voz preparada, o ouvinte inicia ao conectar Twitch, Kick ou YouTube e pode ser alternado pelo rodapé. Diga “Rocky” seguido do pedido. O nome configurado do agente funciona como palavra de ativação. Ctrl + Shift + F8 interrompe a fala e captura um comando direto sem essa palavra. Após uma resposta, continuações como “explica melhor”, “resume isso” e “salva isso como nota” dispensam o nome por 12 segundos. Uma nova pergunta substitui a análise anterior."
     },
     {
       "type": "h2",
@@ -40,7 +40,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A captura termina após fala seguida de silêncio configurável entre 450 e 1500 ms, com máximo de oito segundos. É possível ajustar o limiar de ruído ou desativar essa detecção. A captura pausa durante transcrição e respostas."
+      "text": "A captura termina após fala seguida de silêncio entre 450 e 1500 ms. Frases em andamento podem durar até 30 segundos; sem detecção, são blocos de oito segundos. Calibre o ruído em Voz ou ajuste o limiar. O microfone mantém um buffer durante transcrição e escuta durante análise; pausa na reprodução para evitar reconhecer a própria voz. Use o atalho de fala para interromper e reformular."
     },
     {
       "type": "h2",

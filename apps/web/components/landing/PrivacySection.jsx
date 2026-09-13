@@ -1,10 +1,11 @@
+import SiteFrame from "@/components/SiteFrame";
 import React from "react";
 import ProviderCards from "./ProviderCards";
 
 export default function PrivacySection({ guarantees, localCards }) {
   return (<>
 <div id={"local"} style={{"borderBottom": "1px solid rgba(255,255,255,.07)"}}>
-<div style={{"maxWidth": "1120px", "margin": "0 auto", "padding": "76px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)"}}>
+<SiteFrame className="site-section">
 <div style={{"display": "flex", "alignItems": "center", "gap": "8px", "fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".12em", "color": "#e08b57"}}>
 <span style={{"width": "5px", "height": "5px", "borderRadius": "50%", "background": "#d4703c"}}>
 
@@ -30,7 +31,7 @@ export default function PrivacySection({ guarantees, localCards }) {
 </div>
 </React.Fragment>)}
 </div>
-</div>
+</SiteFrame>
 </div>
   </>);
 }

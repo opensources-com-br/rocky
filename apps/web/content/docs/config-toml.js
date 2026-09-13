@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Dados permite visualizar e exportar diagnóstico sem mensagens ou chaves. A consulta opcional de atualização acessa a API do GitHub e oferece o link da release; não instala automaticamente. Redefinir configurações remove a chave salva e encerra a sessão; reabra o app para aplicar todos os padrões."
+      "text": "Dados permite visualizar e exportar diagnóstico sem mensagens ou chaves. A consulta opcional de atualização acessa o GitHub. Baixar atualização seleciona o DMG ou MSI compatível, mostra progresso e verifica o SHA-256 publicado. Você pode cancelar e tentar novamente. Desconecte as plataformas para abrir o instalador verificado; feche Rocky, conclua a instalação e reabra o app. No macOS, substitua Rocky em Aplicativos. A instalação e o reinício são manuais. Redefinir configurações remove a chave salva e encerra a sessão; reabra o app para aplicar todos os padrões."
     }
   ]
 };

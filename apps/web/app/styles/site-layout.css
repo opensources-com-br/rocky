@@ -17,3 +17,8 @@ html { scrollbar-gutter: stable; }
   border-inline: var(--site-border);
   min-width: 0;
 }
+.site-section { padding-block: var(--site-section-space); }
+.site-heading { padding-block: var(--site-heading-space); }
+.site-footer { padding-block: 24px; }
+.site-hero { padding-block: var(--site-heading-space) var(--site-section-space); }
+.site-strip { padding-block: 24px; }

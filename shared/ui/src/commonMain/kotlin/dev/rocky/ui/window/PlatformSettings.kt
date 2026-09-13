@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import dev.rocky.core.twitch.TwitchConnectionPhase
 import dev.rocky.core.kick.KickConfiguration
 import dev.rocky.core.youtube.YouTubeConfiguration
+import dev.rocky.core.facebook.FacebookConfiguration
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
@@ -52,11 +53,16 @@ internal fun PlatformSettings(
     onConnectYouTube: (YouTubeConfiguration) -> Unit = {},
     onDisconnectYouTube: () -> Unit = {},
     onOpenYouTubeBrowser: (String) -> Unit = onOpenBrowser,
+    facebookConfiguration: FacebookConfiguration = FacebookConfiguration(),
+    facebook: FacebookLiveState? = null,
+    onConnectFacebook: (FacebookConfiguration) -> Unit = {},
+    onDisconnectFacebook: () -> Unit = {},
+    onOpenFacebookBrowser: (String) -> Unit = onOpenBrowser,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
             "Conexão com plataformas",
-            "Conecte Twitch, Kick ou YouTube para receber chats e dados da live.",
+            "Conecte Twitch, Kick, YouTube ou Facebook para receber chats e dados da live.",
         )
         Text(
             text = if (clientId.isBlank()) {
@@ -86,7 +92,9 @@ internal fun PlatformSettings(
         youtube?.let {
             YouTubeAccountSettings(youtubeConfiguration, it, onConnectYouTube, onDisconnectYouTube, onOpenYouTubeBrowser)
         } ?: UpcomingPlatform("YouTube", PlatformColor.YouTube)
-        UpcomingPlatform("Facebook", PlatformColor.Offline)
+        facebook?.let {
+            FacebookAccountSettings(facebookConfiguration, it, onConnectFacebook, onDisconnectFacebook, onOpenFacebookBrowser)
+        } ?: UpcomingPlatform("Facebook", PlatformColor.Facebook)
     }
 }
 
@@ -239,5 +247,6 @@ private fun PlatformColor.color(): Color = when (this) {
     PlatformColor.Twitch -> RockyColors.Twitch
     PlatformColor.Kick -> RockyColors.Kick
     PlatformColor.YouTube -> RockyColors.YouTube
+    PlatformColor.Facebook -> RockyColors.Facebook
     PlatformColor.Offline -> RockyColors.TextMuted
 }

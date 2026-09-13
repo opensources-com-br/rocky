@@ -1,7 +1,8 @@
+import SiteFrame from "@/components/SiteFrame";
 
 export default function DownloadContent() {
   return (<>
-<div style={{"position": "relative", "maxWidth": "1120px", "margin": "0 auto", "padding": "96px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "textAlign": "center", "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "20px"}}>
+<SiteFrame className="site-section" style={{"position": "relative", "textAlign": "center", "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "20px"}}>
 <h2 style={{"margin": "0", "maxWidth": "620px", "fontSize": "44px", "lineHeight": "1.07", "letterSpacing": "-.04em", "fontWeight": "500", "textWrap": "balance"}}>
 {"Dê mais atenção às perguntas do chat."}
 </h2>
@@ -16,6 +17,6 @@ export default function DownloadContent() {
 {"Ver o código"}
 </a>
 </div>
-</div>
+</SiteFrame>
   </>);
 }

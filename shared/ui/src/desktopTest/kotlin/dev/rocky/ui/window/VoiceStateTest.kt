@@ -15,6 +15,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun bufferedSpeechProtectsFixedDurationCaptureImmediately() = runBlocking {
+        val service = FakeVoiceService().apply { supportsLevel = true; bufferedSpeech = true }
+        val state = VoiceState(service, readyConfiguration.copy(detectEndOfSpeech = false)) {}
+        try {
+            state.startCapture(this) {}
+            waitUntil { state.capturing }
+            state.speakSuggestion(this, "automatic", "Uma sugestão", silenced = false)
+            assertTrue(state.heardInput)
+            assertTrue(state.capturing)
+            assertTrue(service.spoken.isEmpty())
+        } finally {
+            state.resetSession()
+        }
+    }
+
     @Test fun fixedDurationCaptureProtectsTheStreamerFromAutomaticSpeech() = runBlocking {
         val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
         val configuration = readyConfiguration.copy(detectEndOfSpeech = false, silenceMillis = 150)
@@ -406,6 +421,8 @@ class VoiceStateTest {
             return dev.rocky.core.voice.VoiceCatalog(listOf(SystemVoice("old", "Old account")), emptyList())
         }
         var supportsLevel = false
+        var bufferedSpeech = false
+        override fun hasBufferedSpeech(threshold: Float): Boolean = bufferedSpeech
         @Volatile var level = 0f
         var transcriptions = 0
         override val supportsInputLevel: Boolean get() = supportsLevel

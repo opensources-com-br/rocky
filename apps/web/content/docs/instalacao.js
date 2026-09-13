@@ -28,6 +28,14 @@ const content = {
     },
     {
       "type": "h2",
+      "text": "Abrir o alpha atual no macOS"
+    },
+    {
+      "type": "para",
+      "text": "Depois de tentar abrir Rocky, acesse Ajustes do Sistema → Privacidade e Segurança, localize o aviso do Rocky e clique em Abrir Mesmo Assim. Use essa exceção somente se você baixou o DMG da release oficial e conferiu o SHA-256 publicado. A próxima release gerada com as credenciais de distribuição será assinada e notarizada."
+    },
+    {
+      "type": "h2",
       "text": "Sistemas"
     },
     {

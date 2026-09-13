@@ -1,9 +1,10 @@
 import SiteFrame from "@/components/SiteFrame";
 import { Button } from "@/components/ui/button";
+import { localized } from "@/lib/i18n";
 import React from "react";
 import DocsArticle from "./DocsArticle";
 
-export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, nav, nextTitle, pageGroup, pageLead, pageTitle, prevTitle, toc }) {
+export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, locale, nav, nextTitle, pageGroup, pageLead, pageTitle, prevTitle, toc }) {
   return (<>
 <SiteFrame className="docs-columns">
 <div style={{"position": "absolute", "top": "0", "bottom": "0", "left": "214px", "width": "1px", "background": "rgba(255,255,255,.07)", "pointerEvents": "none"}}>
@@ -26,10 +27,10 @@ export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, 
 </div>
 </React.Fragment>)}
 </div>
-<DocsArticle blocks={blocks} goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} nextTitle={nextTitle} pageGroup={pageGroup} pageLead={pageLead} pageTitle={pageTitle} prevTitle={prevTitle} />
+<DocsArticle blocks={blocks} goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} locale={locale} nextTitle={nextTitle} pageGroup={pageGroup} pageLead={pageLead} pageTitle={pageTitle} prevTitle={prevTitle} />
 <div style={{"position": "sticky", "top": "var(--site-nav-height)", "padding": "var(--site-heading-space) 20px var(--site-section-space)", "boxSizing": "border-box", "display": "flex", "flexDirection": "column", "gap": "10px"}} className="sticky-panel">
 <span style={{"fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".1em", "color": "rgba(255,255,255,.35)"}}>
-{"NESTA PÁGINA"}
+{localized(locale, "ON THIS PAGE", "NESTA PÁGINA")}
 </span>
 {toc.map((t, index) => <React.Fragment key={t?.id ?? t?.name ?? index}>
 <a href={t.href} style={{"fontSize": "13px", "lineHeight": "1.4", "color": "rgba(255,255,255,.45)"}}>
@@ -37,7 +38,7 @@ export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, 
 </a>
 </React.Fragment>)}
 <a href={"https://github.com/opensources-com-br/rocky"} style={{"marginTop": "14px", "paddingTop": "14px", "borderTop": "1px solid rgba(255,255,255,.07)", "fontSize": "13px", "color": "rgba(255,255,255,.4)"}}>
-{"Ver o repositório no GitHub"}
+{localized(locale, "View the repository on GitHub", "Ver o repositório no GitHub")}
 </a>
 </div>
 </SiteFrame>

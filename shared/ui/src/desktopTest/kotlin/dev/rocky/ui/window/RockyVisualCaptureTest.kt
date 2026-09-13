@@ -186,7 +186,7 @@ class RockyVisualCaptureTest {
         }
 
         render()
-        rule.onNodeWithText("Conecte Twitch, Kick ou YouTube nas configurações para acompanhar uma live.").assertExists()
+        rule.onNodeWithText("Conecte Twitch, Kick, YouTube ou Facebook nas configurações para acompanhar uma live.").assertExists()
         capture("implementation-main.png")
 
         val mainSections = mapOf(
@@ -805,7 +805,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Settings").assertExists()
         rule.onNodeWithText("Agent name").assertExists()
         rule.onNodeWithText("done").performClick()
-        rule.onNodeWithText("Connect Twitch, Kick or YouTube in settings to follow a stream.").assertExists()
+        rule.onNodeWithText("Connect Twitch, Kick, YouTube or Facebook in settings to follow a stream.").assertExists()
         rule.onNodeWithText("Conversation").assertExists()
         rule.runOnIdle { assertEquals(RockyLanguage.English, savedLanguage) }
     }

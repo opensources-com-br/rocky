@@ -1,39 +1,74 @@
 import introducao from "./introducao";
 import instalacao from "./instalacao";
-import primeira_live from "./primeira-live";
+import primeiraLive from "./primeira-live";
 import conceitos from "./conceitos";
 import plataformas from "./plataformas";
-import modelo_de_ia from "./modelo-de-ia";
-import voz_e_audio from "./voz-e-audio";
-import comportamento_do_agente from "./comportamento-do-agente";
-import chat_unificado from "./chat-unificado";
+import modeloDeIa from "./modelo-de-ia";
+import vozEAudio from "./voz-e-audio";
+import comportamentoDoAgente from "./comportamento-do-agente";
+import chatUnificado from "./chat-unificado";
 import superchats from "./superchats";
-import notas_e_ideias from "./notas-e-ideias";
-import resumo_pos_live from "./resumo-pos-live";
-import config_toml from "./config-toml";
-import modelos_locais from "./modelos-locais";
+import notasEIdeias from "./notas-e-ideias";
+import resumoPosLive from "./resumo-pos-live";
+import configToml from "./config-toml";
+import modelosLocais from "./modelos-locais";
 import plugins from "./plugins";
 import contribuir from "./contribuir";
 import depoimentos from "./depoimentos";
-export const PAGES = {
-  "Introdução": introducao,
-  "Instalação": instalacao,
-  "Primeira live": primeira_live,
-  "Conceitos": conceitos,
-  "Plataformas": plataformas,
-  "Modelo de IA": modelo_de_ia,
-  "Voz e áudio": voz_e_audio,
-  "Comportamento do agente": comportamento_do_agente,
-  "Chat e perguntas": chat_unificado,
-  "Superchats": superchats,
-  "Notas e ideias": notas_e_ideias,
-  "Resumo pós-live": resumo_pos_live,
-  "Dados e configuração": config_toml,
-  "Modelos locais": modelos_locais,
-  "Plugins": plugins,
-  "Contribuir": contribuir,
-  "Cenários de uso": depoimentos,
+import enIntroducao from "./en/introducao";
+import enInstalacao from "./en/instalacao";
+import enPrimeiraLive from "./en/primeira-live";
+import enConceitos from "./en/conceitos";
+import enPlataformas from "./en/plataformas";
+import enModeloDeIa from "./en/modelo-de-ia";
+import enVozEAudio from "./en/voz-e-audio";
+import enComportamentoDoAgente from "./en/comportamento-do-agente";
+import enChatUnificado from "./en/chat-unificado";
+import enSuperchats from "./en/superchats";
+import enNotasEIdeias from "./en/notas-e-ideias";
+import enResumoPosLive from "./en/resumo-pos-live";
+import enConfigToml from "./en/config-toml";
+import enModelosLocais from "./en/modelos-locais";
+import enPlugins from "./en/plugins";
+import enContribuir from "./en/contribuir";
+import enDepoimentos from "./en/depoimentos";
+
+const pageIds = {
+  introduction: [introducao, "Introdução", enIntroducao],
+  installation: [instalacao, "Instalação", enInstalacao],
+  firstStream: [primeiraLive, "Primeira live", enPrimeiraLive],
+  concepts: [conceitos, "Conceitos", enConceitos],
+  platforms: [plataformas, "Plataformas", enPlataformas],
+  aiModel: [modeloDeIa, "Modelo de IA", enModeloDeIa],
+  voiceAudio: [vozEAudio, "Voz e áudio", enVozEAudio],
+  agentBehavior: [comportamentoDoAgente, "Comportamento do agente", enComportamentoDoAgente],
+  chatQuestions: [chatUnificado, "Chat e perguntas", enChatUnificado],
+  superchats: [superchats, "Superchats", enSuperchats],
+  notesIdeas: [notasEIdeias, "Notas e ideias", enNotasEIdeias],
+  postStream: [resumoPosLive, "Resumo pós-live", enResumoPosLive],
+  dataConfiguration: [configToml, "Dados e configuração", enConfigToml],
+  localModels: [modelosLocais, "Modelos locais", enModelosLocais],
+  plugins: [plugins, "Plugins", enPlugins],
+  contributing: [contribuir, "Contribuir", enContribuir],
+  useCases: [depoimentos, "Cenários de uso", enDepoimentos],
 };
-export const NAV = [{"title": "Começando", "items": ["Introdução", "Instalação", "Primeira live", "Conceitos"]}, {"title": "Configuração", "items": ["Plataformas", "Modelo de IA", "Voz e áudio", "Comportamento do agente"]}, {"title": "Recursos", "items": ["Chat e perguntas", "Superchats", "Notas e ideias", "Resumo pós-live"]}, {"title": "Avançado", "items": ["Dados e configuração", "Modelos locais", "Plugins", "Contribuir"]}, {"title": "Showcase", "items": ["Cenários de uso"]}];
-export const FLAT = NAV.flatMap(group => group.items);
+
+const groups = [
+  ["Getting started", "Começando", ["introduction", "installation", "firstStream", "concepts"]],
+  ["Configuration", "Configuração", ["platforms", "aiModel", "voiceAudio", "agentBehavior"]],
+  ["Features", "Recursos", ["chatQuestions", "superchats", "notesIdeas", "postStream"]],
+  ["Advanced", "Avançado", ["dataConfiguration", "localModels", "plugins", "contributing"]],
+  ["Showcase", "Showcase", ["useCases"]],
+];
+
+export function getDocsContent(locale) {
+  const isPortuguese = locale === "pt-BR";
+  const pages = Object.fromEntries(Object.entries(pageIds).map(([id, [portuguese, title, english]]) => [
+    id,
+    isPortuguese ? { ...portuguese, title } : english,
+  ]));
+  const nav = groups.map(([english, portuguese, items]) => ({ title: isPortuguese ? portuguese : english, items }));
+  return { pages, nav, flat: nav.flatMap(group => group.items), firstPage: "introduction" };
+}
+
 export const slug = text => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

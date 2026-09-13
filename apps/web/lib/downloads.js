@@ -1,5 +1,6 @@
 export const RELEASES_API = "https://api.github.com/repos/opensources-com-br/rocky/releases?per_page=10";
 export const RELEASES_PAGE = "https://github.com/opensources-com-br/rocky/releases";
+const MINIMUM_INSTALLER_VERSION = [1, 0, 11];
 
 export function detectDesktopPlatform(platform = "", userAgent = "") {
   const value = `${platform} ${userAgent}`.toLowerCase();
@@ -22,8 +23,21 @@ function assetArchitecture(name) {
   return "universal";
 }
 
+function isCurrentInstallerRelease(release) {
+  const match = release.tag_name?.match(/^v?(\d+)\.(\d+)\.(\d+)/i);
+  if (!match) return true;
+
+  const version = match.slice(1).map(Number);
+  for (let index = 0; index < version.length; index += 1) {
+    if (version[index] !== MINIMUM_INSTALLER_VERSION[index]) {
+      return version[index] > MINIMUM_INSTALLER_VERSION[index];
+    }
+  }
+  return true;
+}
+
 export function selectInstaller(releases, platform, architecture = "unknown") {
-  const release = releases.find(item => !item.draft);
+  const release = releases.find(item => !item.draft && isCurrentInstallerRelease(item));
   if (!release || !["macos", "windows"].includes(platform)) return null;
 
   const extensions = platform === "macos" ? [".dmg"] : [".msi", ".exe"];

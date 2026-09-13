@@ -17,7 +17,7 @@ class FacebookOAuthTest {
             URLDecoder.decode(key, Charsets.UTF_8) to URLDecoder.decode(value, Charsets.UTF_8)
         }
         assertEquals("code", query["response_type"])
-        assertEquals("pages_show_list,pages_read_engagement", query["scope"])
+        assertEquals("pages_show_list,pages_read_engagement,pages_read_user_content", query["scope"])
         assertEquals(authorization.state, query["state"])
         assertTrue(authorization.state.length >= 32)
     }

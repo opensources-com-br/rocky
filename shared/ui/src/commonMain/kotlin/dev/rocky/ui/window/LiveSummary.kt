@@ -189,6 +189,7 @@ internal fun LiveSummary(
                 Triple(StreamPlatform.Twitch, "Twitch", RockyColors.Twitch),
                 Triple(StreamPlatform.Kick, "Kick", RockyColors.Kick),
                 Triple(StreamPlatform.YouTube, "YouTube", RockyColors.YouTube),
+                Triple(StreamPlatform.Facebook, "Facebook", RockyColors.Facebook),
             ).forEach { (platform, label, color) ->
                 val count = sourceCounts[platform] ?: 0
                 if (count > 0) SourceCount(count, label, color)
@@ -268,6 +269,7 @@ internal fun PlatformStatus.color(): Color {
         PlatformColor.Twitch -> RockyColors.Twitch
         PlatformColor.Kick -> RockyColors.Kick
         PlatformColor.YouTube -> RockyColors.YouTube
+        PlatformColor.Facebook -> RockyColors.Facebook
         PlatformColor.Offline -> RockyColors.Offline
     }
 }

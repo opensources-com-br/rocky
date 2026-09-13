@@ -46,6 +46,7 @@ internal fun VoiceSettings(
     LaunchedEffect(voice) { voice.loadDevices(scope) }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        VoiceProviderSettings(voice)
         SettingSwitch(tr("Detect end of speech", "Detectar fim da fala"), voice.configuration.detectEndOfSpeech, voice::updateEndDetection)
         if (voice.configuration.detectEndOfSpeech) {
             SettingTitle(tr("Trailing silence", "Silêncio após a fala"), "${voice.configuration.silenceMillis} ms")
@@ -55,7 +56,7 @@ internal fun VoiceSettings(
         }
         SettingTitle(
             "Leitura das sugestões",
-            "Usa uma voz instalada no sistema e a saída de áudio padrão.",
+            "Usa o provedor selecionado e a saída de áudio padrão.",
             if (voice.speaking) "falando" else null,
         )
         SettingSwitch("ler novas sugestões", voice.configuration.readSuggestions, voice::updateReadSuggestions)
@@ -68,7 +69,7 @@ internal fun VoiceSettings(
         }
         SettingTitle(
             "Volume",
-            "Aplicado pelo Windows; no macOS, ajuste a saída padrão do sistema.",
+            "Disponível no streaming ElevenLabs e na voz local do Windows. Na voz local do macOS, ajuste o volume do sistema.",
             "${voice.configuration.output.volumePercent}%",
         )
         RockySlider(voice.configuration.output.volumePercent / 100f, enabled = voice.outputVolumeSupported) {

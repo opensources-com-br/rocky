@@ -29,6 +29,31 @@ internal class VoiceState(
 
     var microphones by mutableStateOf<List<AudioInputDevice>>(emptyList())
         private set
+    var voiceCatalog by mutableStateOf<dev.rocky.core.voice.VoiceCatalog?>(null); private set
+    var loadingCatalog by mutableStateOf(false); private set
+    val telemetry get() = service.telemetry
+
+    fun updateOutput(output: dev.rocky.core.voice.VoiceOutputConfiguration) {
+        stopSpeaking()
+        voiceTested = false
+        if (output.elevenLabs.apiKey != configuration.output.elevenLabs.apiKey) voiceCatalog = null
+        update(configuration.copy(output = output))
+        resumeListener()
+    }
+
+    fun loadCatalog(scope: CoroutineScope) {
+        if (loadingCatalog) return
+        loadingCatalog = true
+        val selected = configuration.output.elevenLabs
+        scope.launch {
+            try {
+                val catalog = interruptibleWork { service.loadVoiceCatalog(selected) }
+                if (configuration.output.elevenLabs == selected) { voiceCatalog = catalog; status = "Vozes ElevenLabs carregadas." }
+            } catch (error: kotlinx.coroutines.CancellationException) { throw error }
+            catch (_: Exception) { status = "Não foi possível consultar ElevenLabs. Confira sua chave, permissões e conexão." }
+            finally { loadingCatalog = false }
+        }
+    }
 
     var loadingDevices by mutableStateOf(false)
         private set
@@ -75,7 +100,7 @@ internal class VoiceState(
     val transcriptionReady: Boolean
         get() = service.isTranscriptionConfigured(configuration.transcription)
 
-    val outputVolumeSupported: Boolean get() = service.outputVolumeSupported
+    val outputVolumeSupported: Boolean get() = configuration.output.provider == dev.rocky.core.voice.SpeechProvider.ElevenLabs || service.outputVolumeSupported
 
     val automaticTranscriptionSetupSupported: Boolean
         get() = service.automaticTranscriptionSetupSupported
@@ -470,7 +495,7 @@ internal class VoiceState(
                     onSuccess()
                     "Leitura concluída"
                 },
-                onFailure = { "Não foi possível usar a voz do sistema" },
+                onFailure = { it.message?.takeIf { message -> message.startsWith("ElevenLabs") } ?: "Não foi possível reproduzir a voz. Confira Voz nas configurações." },
             )
             val nextSpeech = queuedSpeech
             queuedSpeech = null

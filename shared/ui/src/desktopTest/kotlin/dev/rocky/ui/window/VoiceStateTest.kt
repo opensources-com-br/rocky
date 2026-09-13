@@ -350,6 +350,22 @@ class VoiceStateTest {
         assertEquals(0f, state.inputLevel)
     }
 
+    @Test fun immediateResetDoesNotLeaveCalibrationBusy() = runBlocking {
+        val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
+        state.calibrate(this)
+        state.resetSession()
+        kotlinx.coroutines.yield()
+        assertFalse(state.calibrating)
+    }
+
+    @Test fun cancelledCatalogScopeDoesNotLeaveLoadingBusy() = runBlocking {
+        val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Job().apply { cancel() })
+        val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
+        state.loadCatalog(scope)
+        kotlinx.coroutines.yield()
+        assertFalse(state.loadingCatalog)
+    }
+
     private suspend fun waitUntil(condition: () -> Boolean) {
         repeat(1_000) {
             if (condition()) return

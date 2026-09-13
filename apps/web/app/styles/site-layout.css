@@ -1,0 +1,8 @@
+:root {
+  --site-width: 1120px;
+  --site-gutter: 28px;
+  --site-section-space: 64px;
+  --site-heading-space: 48px;
+  --site-nav-height: 56px;
+  --site-border: 1px solid rgba(255,255,255,.07);
+}

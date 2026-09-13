@@ -20,6 +20,8 @@ import javax.sound.sampled.DataLine
 import javax.sound.sampled.TargetDataLine
 
 class DesktopVoiceService : VoiceService {
+    @Volatile override var telemetry = dev.rocky.core.voice.VoiceTelemetry(); private set
+    private var captureStarted = 0L
     private val operatingSystem = System.getProperty("os.name").lowercase()
 
     override val supportsInputLevel: Boolean get() = true
@@ -52,6 +54,7 @@ class DesktopVoiceService : VoiceService {
     override fun startCapture(microphoneId: String?) {
         transcriber.begin()
         microphone.start(microphoneId)
+        captureStarted = System.nanoTime()
     }
     override fun inputLevel(): Float = microphone.level()
 
@@ -106,8 +109,13 @@ class DesktopVoiceService : VoiceService {
     }
 
     private val transcriber = WhisperTranscriber()
-    override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String =
-        transcriber.transcribe(finishCapture(), configuration)
+    override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
+        val audio = finishCapture()
+        val started = System.nanoTime()
+        telemetry = telemetry.copy(captureMillis = (started - captureStarted) / 1_000_000)
+        try { return transcriber.transcribe(audio, configuration) }
+        finally { telemetry = telemetry.copy(transcriptionMillis = (System.nanoTime() - started) / 1_000_000) }
+    }
     override fun cancelCapture() { microphone.cancel(); transcriber.cancel() }
 
     override fun close() {

@@ -1,6 +1,6 @@
 const content = {
   "group": "Começando",
-  "lead": "Comece pelo assistente de primeira utilização ou pelas Configurações. A voz pode ser preparada depois; perguntas por texto não exigem microfone.",
+  "lead": "Comece pelo assistente de primeira utilização ou pelas Configurações. A voz pode ser preparada depois; as ações rápidas de análise não exigem microfone.",
   "blocks": [
     {
       "type": "h2",
@@ -11,7 +11,7 @@ const content = {
       "items": [
         "Em Plataformas, conecte Twitch, Kick ou YouTube e autorize no navegador. A Kick exige credenciais de aplicativo e encaminhamento por webhook HTTPS público; o YouTube exige credenciais OAuth para desktop e uma live ativa com chat.",
         "Em IA, escolha Ollama, OpenAI API ou OpenRouter, informe o modelo e teste a conexão. Salve explicitamente a configuração e a chave, quando aplicável.",
-        "Receba mensagens novas no canal autenticado. Use Analisar agora ou o campo de pergunta da aba Conversa.",
+        "Receba mensagens novas no canal autenticado. Use Analisar agora ou Dúvidas principais, O que perdi? e Ideias do chat na aba Conversa. O campo de pergunta digitada está oculto no layout atual.",
         "Se quiser voz, configure o whisper-cli, o modelo de transcrição e o microfone; teste a conversa de voz.",
         "Abra Antes da live para conferir a plataforma, a IA e o áudio opcional. Grave um teste no OBS para verificar o que o público ouvirá e verá."
       ]

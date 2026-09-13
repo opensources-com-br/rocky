@@ -23,17 +23,29 @@ internal class UpdateTransfer {
     }
 
     fun <T> read(url: String, consume: (InputStream) -> T): T {
+        var uri = URI(url)
         require(url.startsWith(RELEASE_DOWNLOAD)) { "Origem de atualização inválida." }
-        checkCancelled()
-        val request = HttpRequest.newBuilder(URI(url)).timeout(Duration.ofSeconds(30)).GET().build()
-        val future = client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
-        pending = future
-        val response = try { future.get(30, TimeUnit.SECONDS) } finally { future.cancel(true); pending = null }
-        stream = response.body()
-        return response.body().use { input ->
+        repeat(6) {
             checkCancelled()
-            check(response.statusCode() == 200) { "Não foi possível baixar a atualização." }
-            consume(input).also { checkCancelled() }
+            require(uri.scheme == "https" && uri.userInfo == null && uri.port == -1 &&
+                uri.host in setOf("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com")) {
+                "Redirecionamento de atualização inválido."
+            }
+            val request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30)).GET().build()
+            val future = client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+            pending = future
+            val response = try { future.get(30, TimeUnit.SECONDS) } finally { future.cancel(true); pending = null }
+            stream = response.body()
+            response.body().use { input ->
+                checkCancelled()
+                if (response.statusCode() in setOf(301, 302, 303, 307, 308)) {
+                    uri = uri.resolve(response.headers().firstValue("location").orElseThrow())
+                } else {
+                    check(response.statusCode() == 200) { "Não foi possível baixar a atualização (${response.statusCode()})." }
+                    return consume(input).also { checkCancelled() }
+                }
+            }
         }
+        error("Redirecionamentos demais no download da atualização.")
     }
 }

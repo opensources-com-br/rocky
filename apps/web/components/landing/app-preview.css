@@ -64,6 +64,7 @@
 
 .rocky-platforms .kick i { background: #53fc18; }
 .rocky-platforms .youtube i { background: #ff164a; }
+.rocky-platforms .facebook i { background: #1877f2; }
 @media (max-width: 400px) {
   .rocky-answer-actions { flex-wrap: wrap; }
   .rocky-answer-actions [data-slot="button"]:first-child { flex-basis: 100%; }

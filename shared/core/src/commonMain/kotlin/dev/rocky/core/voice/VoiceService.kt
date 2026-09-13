@@ -34,6 +34,7 @@ data class VoiceConfiguration(
 )
 
 interface VoiceService : AutoCloseable {
+    val telemetry: VoiceTelemetry get() = VoiceTelemetry()
     val supportsInputLevel: Boolean get() = false
     val outputVolumeSupported: Boolean get() = true
     val automaticTranscriptionSetupSupported: Boolean

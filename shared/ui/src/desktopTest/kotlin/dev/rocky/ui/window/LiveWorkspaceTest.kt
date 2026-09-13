@@ -34,4 +34,23 @@ class LiveWorkspaceTest {
         assertNull(momentCommand("marca esse momentoseguinte"))
         assertEquals("1:02:03", momentLabel(3723000))
     }
+    @Test fun failedSummaryPreservesTheSessionForRetry() {
+        val storage = TransientNoteRepository()
+        var offline = true
+        val repository = object : dev.rocky.core.notes.NoteRepository by storage {
+            override fun save(note: LiveNote) {
+                if (offline) error("disk unavailable")
+                storage.save(note)
+            }
+        }
+        val workspace = LiveWorkspace(LocalNotesState(repository))
+        workspace.start("live", "Live", 1000)
+        assertFalse(workspace.finish("end"))
+        assertEquals("live", workspace.sessionId)
+        assertNull(workspace.summary)
+        offline = false
+        assertTrue(workspace.finish("end"))
+        assertTrue(workspace.finish("end"))
+        assertEquals(1, storage.getAll().count { it.tag == SUMMARY_TAG })
+    }
 }

@@ -326,6 +326,30 @@ class VoiceStateTest {
         assertEquals(0L, service.speechGate!!.count)
     }
 
+    @Test fun discardsCatalogFromAPreviousAccount() = runBlocking {
+        val service = FakeVoiceService().apply { catalogGate = CountDownLatch(1) }
+        val state = VoiceState(service, readyConfiguration) {}
+        state.loadCatalog(this)
+        waitUntil { service.catalogStarted.count == 0L }
+        state.updateOutput(state.configuration.output.copy(
+            elevenLabs = dev.rocky.core.voice.ElevenLabsConfiguration(apiKey = "new-account")))
+        service.catalogGate!!.countDown()
+        waitUntil { !state.loadingCatalog }
+        assertEquals(null, state.voiceCatalog)
+    }
+
+    @Test fun resetCancelsNoiseCalibrationAndReleasesMicrophone() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) {}
+        state.calibrate(this)
+        waitUntil { service.captureStarts > 0 }
+        state.resetSession()
+        waitUntil { !state.calibrating }
+        assertTrue(service.captureCancels > 0)
+        assertFalse(state.listenerEnabled)
+        assertEquals(0f, state.inputLevel)
+    }
+
     private suspend fun waitUntil(condition: () -> Boolean) {
         repeat(1_000) {
             if (condition()) return

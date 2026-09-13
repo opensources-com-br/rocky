@@ -7,8 +7,8 @@ const instrument = localFont({ src: "../../app/fonts/instrument-serif.ttf" });
 export default function AppAnswer() {
   return <section className="rocky-answer">
     <div className="rocky-answer-label"><span>♪ SUGESTÃO DO ROCKY</span><AudioLines aria-hidden="true" /></div>
-    <p className={instrument.className}>Sete pessoas perguntaram o preço do curso. Vale responder agora.</p>
-    <div className="rocky-sources"><span>●</span> 7 na Twitch <span className="rocky-evidence">Ver fontes</span></div>
+    <p className={instrument.className}>Duas pessoas perguntaram o preço do curso. Vale responder agora.</p>
+    <div className="rocky-sources"><span>●</span> 2 na Twitch <span className="rocky-evidence">Ver fontes</span></div>
     <div className="rocky-answer-actions">
       <Button tabIndex={-1}>Salvar como nota</Button>
       <Button variant="outline" tabIndex={-1}>Próxima</Button>

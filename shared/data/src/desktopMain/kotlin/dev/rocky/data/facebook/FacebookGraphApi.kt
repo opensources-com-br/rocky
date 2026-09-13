@@ -36,10 +36,9 @@ internal class FacebookGraphApi(
         get("/${pageId.facebookUrlEncode()}/live_videos?broadcast_status=LIVE&fields=id%2Ctitle&limit=1", pageAccessToken),
     )
 
-    fun comments(liveVideoId: String, pageAccessToken: String, after: String?): FacebookCommentPage {
-        val cursor = after?.let { "&after=${it.facebookUrlEncode()}" }.orEmpty()
+    fun comments(liveVideoId: String, pageAccessToken: String): FacebookCommentPage {
         return FacebookPayloads.comments(
-            get("/${liveVideoId.facebookUrlEncode()}/comments?order=chronological&filter=stream&fields=id%2Cmessage%2Cfrom%2Ccreated_time&limit=100$cursor", pageAccessToken),
+            get("/${liveVideoId.facebookUrlEncode()}/comments?order=reverse_chronological&filter=stream&fields=id%2Cmessage%2Cfrom%2Ccreated_time&limit=100", pageAccessToken),
         )
     }
 

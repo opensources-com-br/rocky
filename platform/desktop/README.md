@@ -1,9 +1,7 @@
 # Desktop platform services
 
-Implementations of system services for macOS and Windows: credential storage, audio, shortcuts, tray/menu bar, and native window operations.
+Native/JVM implementations for macOS and Windows: Keychain/DPAPI credentials, preferences, local paths and data management, microphone capture, whisper.cpp transcription, system speech, PCM playback, global shortcuts and window bounds.
 
-Planned dependency: `shared/core`. Keep JVM and native operating-system APIs here, behind the shared contracts.
+Depends on `shared/core`. The desktop application supplies these services to the UI and data adapters. No user plugin runtime or application tray/menu-bar flow is implemented.
 
-The desktop application selects and supplies these implementations at startup. Shared modules must not depend on this module.
-
-Status: directory scaffold only; Gradle configuration and source code come next.
+Run `./gradlew :platform:desktop:desktopTest` from the repository root. Installed-app checks are still required for OS permissions, audio devices and credential storage on both systems.

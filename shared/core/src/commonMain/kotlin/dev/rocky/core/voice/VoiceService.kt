@@ -15,6 +15,8 @@ data class VoiceOutputConfiguration(
     val voiceId: String? = null,
     val speedPercent: Int = 100,
     val volumePercent: Int = 70,
+    val provider: SpeechProvider = SpeechProvider.System,
+    val elevenLabs: ElevenLabsConfiguration = ElevenLabsConfiguration(),
 )
 
 data class LocalTranscriptionConfiguration(
@@ -35,6 +37,7 @@ data class VoiceConfiguration(
 
 interface VoiceService : AutoCloseable {
     val telemetry: VoiceTelemetry get() = VoiceTelemetry()
+    fun loadVoiceCatalog(configuration: ElevenLabsConfiguration): VoiceCatalog = error("Provedor indisponível")
     val supportsInputLevel: Boolean get() = false
     val outputVolumeSupported: Boolean get() = true
     val automaticTranscriptionSetupSupported: Boolean

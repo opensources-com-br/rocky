@@ -5,7 +5,7 @@ Escopo: Twitch, Kick, YouTube, IA, ações rápidas, voz do sistema/ElevenLabs, 
 1. Instale em máquina limpa. Em **Dados**, registre versão, commit e arquitetura; compare com `BUILDINFO` e checksums do pacote.
 2. Em **Plataformas**, use o Client ID incluído quando disponível. Só registre um cliente público próprio se o campo estiver vazio. Autorize a conta do canal da live.
 3. Configure a IA, teste uma geração e salve explicitamente a configuração/chave. Feche e reabra: confira recuperação pelo cofre. Remova a chave e confira que não volta. Troque provedor/endereço: a chave anterior não deve acompanhar a troca.
-4. Conclua o onboarding sem configurar voz. Envie uma pergunta textual, cancele uma análise e envie outra; teste falha de rede/cota e a mensagem de recuperação.
+4. Conclua o onboarding sem configurar voz. Use uma ação rápida, cancele a análise e use outra; teste falha de rede/cota e a mensagem de recuperação.
 5. Abra fontes, salve uma nota, edite, reinicie e exporte. Confira data, mensagem, autor, canal e sessão. Teste exportação para um destino indisponível: deve haver erro recuperável.
 6. Opcionalmente prepare voz. No Mac, teste cancelamento do download e nova tentativa; no Windows, selecione whisper-cli/modelo. Use o teste de conversa para validar microfone, idioma e TTS.
 7. Durante a live diga “Rocky” (ou o nome configurado) e um pedido. Interrompa a resposta com Silenciar/Próxima e faça outro pedido. Teste PT-BR e EN, nome personalizado e ausência de reação a palavras apenas parecidas.
@@ -20,12 +20,12 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 ## Regressão de perguntas e comandos de salvar
 
 - Faça uma pergunta por voz; depois da resposta, confirme que o microfone volta a capturar sem clicar em Próxima.
-- Repita a pergunta sem enviar novas mensagens no chat, por voz e por texto. Uma nova resposta deve ser gerada.
+- Repita a pergunta sem enviar novas mensagens no chat, por voz e pelas ações rápidas. O campo de pergunta digitada está oculto. Uma nova resposta deve ser gerada.
 - Aguarde mais de dois minutos sem mensagens e pergunte novamente. Rocky deve responder explicando a falta de contexto recente, sem inventar mensagens.
 - Com uma resposta na tela, diga “Rocky, salva isso como nota” e depois “Rocky, salva isso como ideias”. Os comandos salvam a resposta atual, sem consultar a IA novamente.
 - Confira as abas Notas e Ideias, reinicie o aplicativo e confirme a persistência. Teste edição, exclusão e exportação de cada categoria.
 - Sem resposta disponível, o comando de salvar deve explicar que ainda não há uma resposta para salvar.
-- Confira o ícone com os três pontos laranja na janela, no Dock do macOS e no instalador. No Windows, confira também a barra de tarefas e o atalho instalado.
+- Confira o ícone com a letra R sobre fundo laranja, igual ao da web, na janela, no Dock do macOS e no instalador. No Windows, confira também a barra de tarefas e o atalho instalado.
 
 
 ## Experiência do MVP: dez melhorias

@@ -12,7 +12,7 @@ export const platforms = [
     "color": "#ff164a"
   },
   {
-    "name": "Facebook · em breve",
-    "color": "#4d4d51"
+    "name": "Facebook · disponível",
+    "color": "#1877f2"
   }
 ];

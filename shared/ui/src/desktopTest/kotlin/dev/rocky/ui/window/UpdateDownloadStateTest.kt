@@ -46,7 +46,7 @@ class UpdateDownloadStateTest {
         val state = UpdateDownloadState(Installer())
         state.download(this, AvailableUpdate("v2.0.0", ""))
         state.cancel()
-        yield()
+        withTimeout(5000) { while (state.busy) delay(10) }
         assertFalse(state.busy)
         assertNull(state.prepared)
         state.download(this, AvailableUpdate("v2.0.0", ""))

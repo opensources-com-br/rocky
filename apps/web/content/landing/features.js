@@ -1,4 +1,4 @@
-export const features = [
+const portuguese = [
   {
     "tag": "VOZ",
     "title": "Pergunte por voz ou use atalhos",
@@ -30,3 +30,38 @@ export const features = [
     "text": "Ao desconectar ou fechar, consulte o resumo local das notas, ideias, momentos e perguntas pendentes salvas."
   }
 ];
+
+const english = [
+  {
+    "tag": "VOICE",
+    "title": "Ask by voice or use shortcuts",
+    "text": "Use local whisper.cpp transcription and system or ElevenLabs speech, or use quick actions without a microphone. The typed question field is hidden in the current layout."
+  },
+  {
+    "tag": "NOTES",
+    "title": "Keep what matters",
+    "text": "Save answers and dictation as notes, with editing, search, and Markdown export."
+  },
+  {
+    "tag": "IDEAS",
+    "title": "Organize your topics",
+    "text": "Ask AI for ideas, save the ones you choose, and mark completed ideas. Filter records by stream."
+  },
+  {
+    "tag": "MOMENTS",
+    "title": "Mark a moment",
+    "text": "Say “Rocky, mark this moment” to save a session time reference without recording or cutting video."
+  },
+  {
+    "tag": "PULSE",
+    "title": "Track the pace",
+    "text": "See viewers and messages per minute from Twitch, Kick, YouTube, or Facebook, with trends calculated from received samples."
+  },
+  {
+    "tag": "SUMMARY",
+    "title": "Review your records",
+    "text": "When you disconnect or close the app, review a local summary of saved notes, ideas, moments, and pending questions."
+  }
+];
+
+export const getFeatures = locale => locale === "pt-BR" ? portuguese : english;

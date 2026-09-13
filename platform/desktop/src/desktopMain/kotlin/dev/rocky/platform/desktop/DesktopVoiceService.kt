@@ -62,6 +62,7 @@ class DesktopVoiceService : VoiceService {
         captureStarted = System.nanoTime()
     }
     override fun inputLevel(): Float = microphone.level()
+    override fun hasBufferedSpeech(threshold: Float) = microphone.hasBufferedSpeech(threshold)
 
     override fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration {
         check(operatingSystem.contains("mac")) { "A configuração automática ainda está disponível apenas no macOS" }

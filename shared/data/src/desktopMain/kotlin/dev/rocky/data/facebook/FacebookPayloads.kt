@@ -46,7 +46,7 @@ internal object FacebookPayloads {
                 authorId = author?.optionalString("id"),
                 sourceTimestamp = item.optionalString("created_time"),
             )
-        }
+        }.asReversed()
         val after = payload["paging"]?.jsonObject?.get("cursors")?.jsonObject?.optionalString("after")
         return FacebookCommentPage(messages, after)
     }

@@ -48,5 +48,15 @@ internal class DesktopMicrophone : dev.rocky.core.voice.AudioCapture {
         segment()
     }
     fun segment(): ByteArray = synchronized(samplesLock) { audio.toByteArray().also { audio.reset() } }
+    fun hasBufferedSpeech(threshold: Float): Boolean = synchronized(samplesLock) {
+        val bytes = audio.toByteArray()
+        var voiced = 0
+        for (offset in 0 until bytes.size - 639 step 640) {
+            val level = DesktopVoiceService.pcmLevel(bytes.copyOfRange(offset, offset + 640), 640)
+            voiced = if (level >= threshold) voiced + 20 else 0
+            if (voiced >= 220) return@synchronized true
+        }
+        false
+    }
     override fun cancel() { synchronized(lock) { if (line != null) finish() } }
 }

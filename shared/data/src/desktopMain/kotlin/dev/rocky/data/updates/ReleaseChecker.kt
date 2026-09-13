@@ -30,5 +30,5 @@ internal fun selectUpdate(json: String, current: ReleaseVersion): AvailableUpdat
         val tag = record["tag_name"]?.jsonPrimitive?.content ?: return@mapNotNull null
         val version = ReleaseVersion.parse(tag) ?: return@mapNotNull null
         if (version <= current || (current.alpha == null && version.alpha != null)) return@mapNotNull null
-        version to AvailableUpdate(tag, "https://github.com/opensources-com-br/rocky/releases/tag/$tag")
+        version to AvailableUpdate(tag, "https://github.com/opensources-com-br/rocky/releases/tag/$tag", releaseAssets(record, tag))
     }.maxByOrNull { it.first }?.second

@@ -6,7 +6,7 @@ import java.net.http.*
 import java.time.Duration
 import java.util.concurrent.*
 
-internal class UpdateTransfer {
+internal open class UpdateTransfer {
     private val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build()
     @Volatile private var pending: CompletableFuture<*>? = null
     @Volatile private var stream: InputStream? = null
@@ -22,7 +22,7 @@ internal class UpdateTransfer {
         if (cancelled || Thread.currentThread().isInterrupted) throw InterruptedException("Download cancelado")
     }
 
-    fun <T> read(url: String, consume: (InputStream) -> T): T {
+    open fun <T> read(url: String, consume: (InputStream) -> T): T {
         var uri = URI(url)
         require(url.startsWith(RELEASE_DOWNLOAD)) { "Origem de atualização inválida." }
         repeat(6) {

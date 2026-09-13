@@ -3,7 +3,8 @@ package dev.rocky.data.updates
 import dev.rocky.core.updates.*
 import java.nio.file.*
 
-class UpdateDownloader(private val directory: Path) {
+class UpdateDownloader internal constructor(private val directory: Path, private val transferFactory: () -> UpdateTransfer) {
+    constructor(directory: Path) : this(directory, ::UpdateTransfer)
     @Volatile private var transfer: UpdateTransfer? = null
 
     fun cancel() { transfer?.cancel() }
@@ -17,10 +18,10 @@ class UpdateDownloader(private val directory: Path) {
         val sums = update.assets.singleOrNull { it.name == "SHA256SUMS.txt" }
             ?: error("A versão não publicou checksums. Use a página de releases.")
         require(sums.url == "$RELEASE_DOWNLOAD${update.version}/SHA256SUMS.txt")
-        val connection = UpdateTransfer().also { transfer = it }
         Files.createDirectories(directory)
         val staging = Files.createTempDirectory(directory, "download-")
         val partial = staging.resolve(asset.name + ".part")
+        val connection = transferFactory().also { transfer = it }
         var complete = false
         try {
             val checksum = connection.read(sums.url) { input ->

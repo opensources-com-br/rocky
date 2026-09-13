@@ -15,6 +15,7 @@ class SpeechEndpointDetector(
             quietMillis = 0
         } else {
             quietMillis += elapsedMillis
+            if (!heardSpeech && quietMillis >= 150) voicedMillis = 0
         }
         return heardSpeech && quietMillis >= silenceMillis
     }

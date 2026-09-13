@@ -46,7 +46,7 @@ const content = {
       "type": "list",
       "items": [
         "Crie um app Business no Meta for Developers, adicione o produto Login do Facebook e cadastre o callback http://127.0.0.1:18183/oauth/facebook/callback.",
-        "Solicite pages_show_list e pages_read_engagement. Informe App ID e App Secret no Rocky e autorize a conta que administra a Página.",
+        "Solicite pages_show_list, pages_read_engagement e pages_read_user_content. Informe App ID e App Secret no Rocky e autorize a conta que administra a Página.",
         "Inicie uma live na Página antes de conectar. O Rocky seleciona a primeira Página autorizada com transmissão ativa e acompanha os novos comentários."
       ]
     },

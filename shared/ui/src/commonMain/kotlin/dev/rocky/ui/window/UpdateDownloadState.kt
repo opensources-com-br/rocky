@@ -35,4 +35,18 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
         notice = "Download cancelado. Você pode tentar novamente."
     }
 
+    fun install(scope: CoroutineScope, canInstall: () -> Boolean) {
+        val service = installer ?: return
+        val ready = prepared ?: return
+        if (busy || !canInstall()) return
+        busy = true
+        job = scope.launch {
+            try {
+                interruptibleWork { service.open(ready) }
+                notice = "Instalador aberto. Feche o Rocky, conclua a instalação e abra o app novamente."
+            } catch (error: CancellationException) { throw error }
+            catch (error: Exception) { notice = "Não foi possível abrir o instalador. Tente baixar novamente ou use o download oficial." }
+            finally { busy = false; job = null }
+        }
+    }
 }

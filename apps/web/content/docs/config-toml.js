@@ -16,7 +16,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "No macOS, os dados ficam em ~/Library/Application Support/Rocky; no Windows, em %APPDATA%/Rocky. Preferências não secretas usam o namespace dev/rocky. Chaves de IA e o Client Secret da Kick usam o cofre do sistema; tokens das plataformas ficam na memória. SQLite não é criptografado pelo Rocky."
+      "text": "No macOS, os dados ficam em ~/Library/Application Support/Rocky; no Windows, em %APPDATA%/Rocky. Preferências não secretas usam o namespace dev/rocky. Chaves de IA e ElevenLabs e os Client Secrets da Kick e do YouTube usam o cofre do sistema; tokens das plataformas ficam na memória. SQLite não é criptografado pelo Rocky."
     },
     {
       "type": "h2",
@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Dados permite visualizar e exportar diagnóstico sem mensagens ou chaves. A consulta opcional de atualização acessa o GitHub. Baixar atualização seleciona o DMG ou MSI compatível, mostra progresso e verifica o SHA-256 publicado. Você pode cancelar e tentar novamente. Desconecte as plataformas para abrir o instalador verificado; feche Rocky, conclua a instalação e reabra o app. No macOS, substitua Rocky em Aplicativos. A instalação e o reinício são manuais. Redefinir configurações remove a chave salva e encerra a sessão; reabra o app para aplicar todos os padrões."
+      "text": "Dados permite visualizar e exportar diagnóstico sem mensagens ou chaves. A consulta opcional de atualização acessa o GitHub. Baixar atualização seleciona o DMG ou MSI compatível, mostra progresso e verifica o SHA-256 publicado. Você pode cancelar e tentar novamente. Desconecte as plataformas para abrir o instalador verificado; feche Rocky, conclua a instalação e reabra o app. No macOS, substitua Rocky em Aplicativos. A instalação e o reinício são manuais. Redefinir configurações remove as credenciais salvas e encerra a sessão; reabra o app para aplicar todos os padrões."
     }
   ]
 };

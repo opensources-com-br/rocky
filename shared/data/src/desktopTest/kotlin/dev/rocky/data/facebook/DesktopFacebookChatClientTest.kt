@@ -17,10 +17,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopFacebookChatClientTest {
+    private val requests = CopyOnWriteArrayList<String>()
+
     @Test fun connectsToTheActivePageAndReceivesComments() {
         val callbackPort = ServerSocket(0).use { it.localPort }
         val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
-            createContext("/") { exchange -> exchange.respond(apiResponse(exchange.requestURI.path)) }
+            createContext("/") { exchange ->
+                requests += "${exchange.requestMethod} ${exchange.requestURI}"
+                exchange.respond(apiResponse(exchange.requestURI.path))
+            }
             start()
         }
         val events = CopyOnWriteArrayList<FacebookConnectionEvent>()
@@ -44,6 +49,8 @@ class DesktopFacebookChatClientTest {
             assertTrue(events.any { it is FacebookConnectionEvent.Connected && it.page.name == "Rocky" })
             assertTrue(events.any { it is FacebookConnectionEvent.AudienceUpdated && it.viewerCount == 42 })
             assertEquals("Olá do Facebook", events.filterIsInstance<FacebookConnectionEvent.MessageReceived>().single().message.text)
+            assertTrue(requests.any { it.startsWith("POST /v25.0/oauth/access_token") })
+            assertTrue(requests.none { "secret" in it })
         } finally {
             client.close()
             server.stop(0)

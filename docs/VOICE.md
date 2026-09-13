@@ -18,9 +18,9 @@ Use **Test voice conversation** before going live. The panel shows the transcrip
 
 The temporary WAV is 16-bit, 16 kHz mono and is deleted after each transcription, including failures. Raw audio is neither sent to the AI provider nor retained by Rocky.
 
-Each capture lasts eight seconds. Speak while the input meter is active; capture pauses during transcription and replies. Silencing or skipping an answer resumes listening when listening is enabled. The configured agent name is also the wake word. The interface language selects the response/transcription language; choose an installed system voice for that language.
+With endpoint detection enabled, an ongoing phrase can last up to 30 seconds. Without it, captures remain fixed at eight seconds. The microphone buffers during transcription and listens during analysis. Capture pauses during playback to avoid recognizing Rocky's own voice. Use the talk shortcut to interrupt playback and rephrase; this is not acoustic echo cancellation. After playback, known follow-ups such as “explain”, “summarize” and “save” work without the wake word for 12 seconds. Calling only the agent name opens an eight-second command window. A newer direct request cancels the earlier analysis.
 
-Managed downloads are pinned to a repository revision and checked against SHA-256. Setup can be cancelled and retried. Windows still requires an external whisper-cli/model; macOS automatic setup requires Homebrew. The volume control is disabled on macOS because system output volume must be used.
+Managed downloads are pinned to a repository revision and checked against SHA-256. Setup can be cancelled and retried. Windows still requires an external whisper-cli/model; macOS automatic setup requires Homebrew. System speech on macOS uses system volume; ElevenLabs playback supports app volume.
 
 Use headphones and record an OBS test: desktop audio capture can include Rocky. This build does not provide a separate output-device selector or guarantee private monitoring.
 
@@ -29,7 +29,7 @@ Use headphones and record an OBS test: desktop audio capture can include Rocky. 
 
 Global defaults: Ctrl+Shift+F8 captures one direct command without the wake word; Ctrl+Shift+F9 mutes/unmutes speech; Ctrl+Shift+F10 shows/hides the window. On macOS use Control (and Fn if required by the keyboard). Configure three distinct F1–F12 keys in Voice settings. Registration conflicts are shown there.
 
-Capture now ends after detected speech followed by configurable silence (450–1500 ms), with an eight-second maximum. Adjust the noise threshold or disable endpoint detection for fixed chunks. This is an energy-based gate, not a guarantee against background speech. Raw audio remains local.
+Capture now ends after detected speech followed by configurable silence (450–1500 ms), with a 30-second maximum for ongoing speech. Calibrate three seconds of ambient noise or adjust the noise threshold or disable endpoint detection for fixed chunks. This is an energy-based gate, not a guarantee against background speech. Raw audio remains local.
 
 The session History keeps up to 30 answers and offers copy, repeat, save note and save idea actions. The last four interactions provide bounded conversational context; disconnecting clears history. Saved notes and ideas remain in SQLite.
 

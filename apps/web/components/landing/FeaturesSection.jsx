@@ -1,9 +1,10 @@
+import SiteFrame from "@/components/SiteFrame";
 import FeaturesGrid from "./FeaturesGrid";
 
 export default function FeaturesSection({ features }) {
   return (<>
 <div id={"recursos"} style={{"borderBottom": "1px solid rgba(255,255,255,.07)"}}>
-<div style={{"maxWidth": "1120px", "margin": "0 auto", "padding": "76px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)"}}>
+<SiteFrame className="site-section">
 <div style={{"display": "flex", "alignItems": "center", "gap": "8px", "fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".12em", "color": "#e08b57"}}>
 <span style={{"width": "5px", "height": "5px", "borderRadius": "50%", "background": "#d4703c"}}>
 
@@ -14,7 +15,7 @@ export default function FeaturesSection({ features }) {
 {"O que ele faz enquanto você transmite"}
 </h2>
 <FeaturesGrid features={features} />
-</div>
+</SiteFrame>
 </div>
   </>);
 }

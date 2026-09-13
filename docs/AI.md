@@ -9,7 +9,7 @@ Rocky can generate grounded suggestions from Twitch, Kick, or YouTube chat with 
 3. In Rocky, open **Settings → AI** and select **Ollama local**.
 4. Keep `http://localhost:11434` as the endpoint, enter the installed model name, and select **Test connection**.
 
-Messages stay on the computer when the Ollama endpoint is local. Rocky does not install or bundle models.
+Use a local Ollama model to keep analysis on the computer; a loopback endpoint alone does not prove where the server runs its model. Rocky does not install or bundle models. Use Find models and Choose model in AI settings, or enter a model name manually.
 
 ## OpenAI API
 
@@ -32,15 +32,15 @@ Use **Save configuration and key** to save the key in macOS Keychain or with use
 ## Suggestion behavior
 
 - **Analyze now** works after at least one real Twitch, Kick, or YouTube message arrives.
-- Automatic analysis starts disabled. Once enabled, it follows the agent's configured frequency and requires three additional messages.
+- Automatic analysis starts disabled. Once enabled, it follows the AI profile (Discreet: five minutes; Proactive: two minutes) and requires three additional messages.
 - All chat requests use up to 200 received messages from the last two minutes, with up to 300 characters per message. This is a limited sample, not a complete stream history. Connection gaps are shown in Conversation.
-- Chat is labeled as untrusted content. A generated suggestion must cite message IDs present in the request or Rocky rejects it.
+- Chat is labeled as untrusted content. When the sample contains messages, a suggestion must cite at least one valid ID. Direct requests with no messages can answer without sources.
 - Only one analysis runs at a time. Rocky never falls back from Ollama to OpenAI automatically.
-- Typed requests require no microphone. In-progress analysis can be cancelled. Testing a connection also generates a short response using synthetic messages; API providers may charge for this request.
+- Quick analysis actions require no microphone. The free-text input is hidden in the current layout; use configured voice recognition for free-form requests. In-progress analysis can be cancelled. Testing a connection also generates a short response using synthetic messages; API providers may charge for this request.
 - Saving a generated suggestion uses the existing local SQLite notes and Markdown export.
 
 API providers receive the selected chat content. Review the provider's data controls before enabling automatic analysis.
 
 Remote API endpoints require HTTPS. HTTP is accepted only for loopback Ollama. Changing provider or endpoint clears the current key; enter the correct key and save again.
 
-Conversation shows the last request duration and reported token totals. Totals are partial: failed/cancelled requests, connection tests, and unsuccessful retry attempts may not include usage. OpenRouter can try up to three responses when the format is invalid. These counters are not a billing estimate; cancellation does not reverse provider charges.
+Conversation → Sample · details shows the last request duration and reported token totals. Totals are partial: failed/cancelled requests, connection tests, and unsuccessful retry attempts may not include usage. OpenRouter can try up to three responses when the format is invalid. These counters are not a billing estimate; cancellation does not reverse provider charges.

@@ -12,4 +12,13 @@ class UpdateIntegrityTest {
         assertFails { expectedChecksum("$hash  Rocky.msi\n$hash  Rocky.msi", "Rocky.msi") }
         assertFails { expectedChecksum("invalid  Rocky.msi", "Rocky.msi") }
     }
+    @Test fun detectsAlteredPackageBytes() {
+        val file = Files.createTempFile("rocky-integrity-", ".msi")
+        try {
+            Files.writeString(file, "abc")
+            assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", updateChecksum(file))
+            Files.writeString(file, "modified")
+            assertNotEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", updateChecksum(file))
+        } finally { Files.deleteIfExists(file) }
+    }
 }

@@ -22,6 +22,14 @@ html { scrollbar-gutter: stable; }
 .site-footer { padding-block: 24px; }
 .site-hero { padding-block: var(--site-heading-space) var(--site-section-space); }
 .site-strip { padding-block: 24px; }
+.site-navigation {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: var(--site-nav-height);
+}
+.site-navigation-links { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,.5); }
+.site-navigation-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
 
 @media (max-width: 800px) {
   :root {

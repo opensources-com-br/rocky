@@ -12,7 +12,9 @@ export default function LocaleProvider({ children }) {
 
   useEffect(() => {
     const storedLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (storedLocale) setLocaleState(normalizeLocale(storedLocale));
+    if (!storedLocale) return undefined;
+    const restoreLocale = window.setTimeout(() => setLocaleState(normalizeLocale(storedLocale)), 0);
+    return () => window.clearTimeout(restoreLocale);
   }, []);
 
   useEffect(() => {

@@ -19,7 +19,7 @@ internal fun createFacebookAuthorization(
         "client_id" to appId,
         "redirect_uri" to redirectUri,
         "response_type" to "code",
-        "scope" to "pages_show_list,pages_read_engagement",
+        "scope" to "pages_show_list,pages_read_engagement,pages_read_user_content",
         "state" to state,
     )
     val query = parameters.entries.joinToString("&") { (key, value) ->

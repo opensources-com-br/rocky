@@ -22,3 +22,14 @@ html { scrollbar-gutter: stable; }
 .site-footer { padding-block: 24px; }
 .site-hero { padding-block: var(--site-heading-space) var(--site-section-space); }
 .site-strip { padding-block: 24px; }
+
+@media (max-width: 800px) {
+  :root {
+    --site-gutter: 20px;
+    --site-section-space: 40px;
+    --site-heading-space: 32px;
+  }
+}
+@media (max-width: 480px) {
+  :root { --site-gutter: 16px; }
+}

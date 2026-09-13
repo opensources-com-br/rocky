@@ -8,10 +8,10 @@ export default function AppTitlebar({ platform = "macos" }) {
         <span /><span /><span /><strong>Rocky</strong>
       </div>
     ) : (
-      <div className="rocky-linux-titlebar" aria-hidden="true">
-        <span className="rocky-linux-app-icon">R</span>
+      <div className="rocky-windows-titlebar" aria-hidden="true">
+        <span className="rocky-windows-app-icon">R</span>
         <strong>Rocky</strong>
-        <div className="rocky-linux-controls"><span>−</span><span>□</span><span>×</span></div>
+        <div className="rocky-windows-controls"><span>−</span><span>□</span><span>×</span></div>
       </div>
     )}
     <header className="rocky-app-header">

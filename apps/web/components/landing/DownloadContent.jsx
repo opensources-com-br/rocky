@@ -9,7 +9,7 @@ export default function DownloadContent({ locale }) {
 {localized(locale, "Give chat questions more attention.", "Dê mais atenção às perguntas do chat.")}
 </h2>
 <p style={{"margin": "0", "maxWidth": "460px", "fontSize": "15px", "lineHeight": "1.6", "color": "rgba(255,255,255,.45)"}}>
-{localized(locale, "Try the alpha for macOS or Windows. Connect Twitch, Kick, YouTube, or Facebook and test AI before your stream. Unsigned development installers.", "Experimente a versão alpha para macOS ou Windows. Conecte Twitch, Kick, YouTube ou Facebook e teste a IA antes da live. Instaladores de desenvolvimento não assinados.")}
+{localized(locale, "The signed alpha for macOS and Windows is being prepared. Soon you can connect Twitch, Kick, YouTube, or Facebook and test AI before your stream.", "A versão alpha assinada para macOS e Windows está sendo preparada. Em breve você poderá conectar Twitch, Kick, YouTube ou Facebook e testar a IA antes da live.")}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px"}}>
 <DownloadButton locale={locale} style={{"padding": "12px 24px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}} />

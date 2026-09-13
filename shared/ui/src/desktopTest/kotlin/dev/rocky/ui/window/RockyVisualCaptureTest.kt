@@ -420,7 +420,8 @@ class RockyVisualCaptureTest {
         for (turn in 1..4) {
             rule.waitUntil(5_000) { voice.captureStarts >= turn }
             rule.mainClock.advanceTimeBy(8_100L)
-            rule.waitUntil(5_000) { voice.captureStarts >= turn + 1 }
+            rule.waitUntil(5_000) { voice.spoken.size >= turn }
+            rule.mainClock.advanceTimeBy(350L)
         }
         rule.runOnIdle {
             assertEquals(2, ai.requests)

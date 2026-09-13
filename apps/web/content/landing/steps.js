@@ -7,7 +7,7 @@ export const steps = [
   {
     "n": "02",
     "title": "Ajuda a consultar o chat",
-    "text": "Pergunte por texto ou use “Dúvidas principais”, “O que perdi?” e “Ideias do chat”. A análise considera uma amostra dos últimos dois minutos."
+    "text": "Use “Dúvidas principais”, “O que perdi?” e “Ideias do chat”. A análise considera uma amostra dos últimos dois minutos."
   },
   {
     "n": "03",

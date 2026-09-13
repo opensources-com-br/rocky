@@ -4,7 +4,7 @@ Scope: landing page, 17 documentation topics, showcase coming-soon notice, disab
 
 | Topic | Implemented behavior used by the web | Source |
 | --- | --- | --- |
-| Platforms | Twitch, Kick and YouTube chat/viewers; Kick needs public HTTPS forwarding; no paid support or chat sending | `docs/TWITCH.md`, `docs/KICK.md`, `docs/YOUTUBE.md` |
+| Platforms | Twitch, Kick, YouTube and Facebook chat/viewers; Kick needs public HTTPS forwarding; no paid support or chat sending | `docs/TWITCH.md`, `docs/KICK.md`, `docs/YOUTUBE.md`, `docs/FACEBOOK.md` |
 | AI | Ollama, OpenAI API, OpenRouter; model discovery and bounded recent chat; loopback alone does not prove local inference | `docs/AI.md`, `shared/ui/.../AiSuggestionState.kt` |
 | Conversation | Quick actions and voice; free-text field hidden; up to 30 answers and last 4 pairs for continuity | `shared/ui/.../AiSuggestionState.kt` |
 | Profiles | On demand, discreet (5 min), proactive (2 min) | `shared/core/.../agent/InterventionProfile.kt` |

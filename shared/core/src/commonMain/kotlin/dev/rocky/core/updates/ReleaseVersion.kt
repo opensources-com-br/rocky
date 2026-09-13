@@ -1,6 +1,6 @@
 package dev.rocky.core.updates
 
-data class AvailableUpdate(val version: String, val url: String)
+data class AvailableUpdate(val version: String, val url: String, val assets: List<ReleaseAsset> = emptyList())
 
 data class ReleaseVersion(val major: Int, val minor: Int, val patch: Int, val alpha: Int?) : Comparable<ReleaseVersion> {
     override fun compareTo(other: ReleaseVersion): Int = compareValuesBy(this, other,

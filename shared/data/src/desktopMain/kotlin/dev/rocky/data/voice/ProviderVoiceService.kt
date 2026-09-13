@@ -15,6 +15,7 @@ class ProviderVoiceService(private val local: VoiceService, player: PcmPlayback)
 
     @Synchronized
     override fun speak(text: String, configuration: VoiceOutputConfiguration) {
+        local.cancelCapture()
         val run = generation.get()
         val started = System.nanoTime()
         speechTiming = VoiceTelemetry()

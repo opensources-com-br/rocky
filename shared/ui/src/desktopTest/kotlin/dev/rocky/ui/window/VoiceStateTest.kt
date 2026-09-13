@@ -15,6 +15,31 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun changingMicrophoneDoesNotEnableADisabledListener() {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) {}
+        state.updateMicrophone("usb-mic")
+        assertEquals("usb-mic", state.configuration.transcription.microphoneId)
+        assertFalse(state.listenerEnabled)
+        assertEquals(0, service.captureStarts)
+        assertEquals(0, service.captureCancels)
+    }
+
+    @Test fun selectingTheSameMicrophoneKeepsTheActiveCapture() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) {}
+        try {
+            state.enableListener(this) {}
+            waitUntil { state.capturing }
+            state.updateMicrophone(state.configuration.transcription.microphoneId)
+            assertTrue(state.capturing)
+            assertEquals(1, service.captureStarts)
+            assertEquals(0, service.captureCancels)
+        } finally {
+            state.resetSession()
+        }
+    }
+
     @Test fun changingMicrophoneRestartsTheListenerOnTheSelectedDevice() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration, captureDurationMillis = 500) {}

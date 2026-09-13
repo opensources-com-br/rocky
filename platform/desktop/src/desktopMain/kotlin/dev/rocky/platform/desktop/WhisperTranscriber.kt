@@ -19,8 +19,8 @@ internal class WhisperTranscriber : SpeechTranscriber {
     }
     override fun transcribe(audio: ByteArray, configuration: LocalTranscriptionConfiguration): String {
         require(audio.size >= 3_200) { "A gravação ficou curta demais para transcrever" }
-        require(Files.isRegularFile(Path.of(configuration.executablePath)))
-        require(Files.isRegularFile(Path.of(configuration.modelPath)))
+        require(Files.isRegularFile(Path.of(configuration.executablePath))) { "Selecione o executável whisper-cli" }
+        require(Files.isRegularFile(Path.of(configuration.modelPath))) { "Selecione um modelo GGML do Whisper" }
         val wav = Files.createTempFile("rocky-command-", ".wav")
         val outputBase = wav.resolveSibling(wav.fileName.toString().removeSuffix(".wav") + "-transcript")
         val transcript = Path.of("$outputBase.txt")

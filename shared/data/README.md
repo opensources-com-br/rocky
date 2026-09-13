@@ -1,9 +1,7 @@
 # Shared data
 
-Chat connectors, AI provider adapters, persistence, and repository implementations behind the contracts in `shared/core`.
+Implements core contracts for Twitch EventSub, Kick webhooks, YouTube live-chat polling, Ollama/OpenAI/OpenRouter, ElevenLabs streaming, updates and local SQLite records.
 
-Planned dependency: `shared/core`. Receive platform services through its contracts; do not reference the desktop application or UI.
+Depends on `shared/core`. SQLDelight schema and portable repository code live in `commonMain`; JVM HTTP, SQLite drivers and provider adapters live in `desktopMain`. Native audio playback and system services are injected through core contracts.
 
-Keep portable logic in `commonMain` and platform-specific drivers in their target source sets. Start with connectors and providers as internal packages.
-
-Status: directory scaffold only; Gradle configuration and source code come next.
+Run `./gradlew :shared:data:desktopTest` from the repository root. Simulated transports do not replace real account and webhook validation.

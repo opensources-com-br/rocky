@@ -511,8 +511,11 @@ internal class VoiceState(
             conversationTestTranscript = null
             conversationTestResponse = null
         }
-        configuration = value
-        onConfigurationChange(value)
+        try {
+            onConfigurationChange(value)
+            configuration = value
+        } catch (_: Exception) { status = "Não foi possível salvar a configuração de voz no cofre do sistema." }
+        catch (_: LinkageError) { status = "Cofre do sistema indisponível." }
     }
 
     private companion object {

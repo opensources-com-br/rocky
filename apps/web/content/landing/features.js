@@ -1,8 +1,8 @@
 export const features = [
   {
     "tag": "VOZ",
-    "title": "Pergunte por voz ou texto",
-    "text": "Use transcrição local com whisper.cpp e respostas pela voz do sistema ou ElevenLabs, ou comece somente com texto."
+    "title": "Pergunte por voz ou use atalhos",
+    "text": "Use transcrição local com whisper.cpp e respostas pela voz do sistema ou ElevenLabs, ou use as ações rápidas sem microfone. O campo de pergunta digitada está oculto no layout atual."
   },
   {
     "tag": "NOTAS",

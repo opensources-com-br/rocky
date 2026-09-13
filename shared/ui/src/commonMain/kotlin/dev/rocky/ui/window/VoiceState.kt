@@ -402,15 +402,17 @@ internal class VoiceState(
                 status = "Microfone capturando · fale agora"
                 levelJob?.cancel()
                 val endpoint = dev.rocky.core.voice.SpeechEndpointDetector(configuration.silenceMillis, configuration.speechThreshold)
-                val detectEnd = service.supportsInputLevel && configuration.detectEndOfSpeech
-                if (detectEnd && service.hasBufferedSpeech(configuration.speechThreshold)) endpoint.sample(configuration.speechThreshold, 225)
+                val trackSpeech = service.supportsInputLevel
+                val detectEnd = trackSpeech && configuration.detectEndOfSpeech
+                if (trackSpeech && service.hasBufferedSpeech(configuration.speechThreshold)) endpoint.sample(configuration.speechThreshold, 225)
+                heardInput = endpoint.heardSpeech
                 levelJob = scope.launch {
                     while (capturing) {
                         delay(INPUT_LEVEL_REFRESH_MILLIS)
                         inputLevel = service.inputLevel()
-                        val ended = detectEnd && endpoint.sample(inputLevel, INPUT_LEVEL_REFRESH_MILLIS)
+                        val ended = trackSpeech && endpoint.sample(inputLevel, INPUT_LEVEL_REFRESH_MILLIS)
                         heardInput = endpoint.heardSpeech
-                        if (ended) {
+                        if (detectEnd && ended) {
                             stopCapture(scope, onFailure, onTranscript)
                             break
                         }

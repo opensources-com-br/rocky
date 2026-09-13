@@ -106,6 +106,7 @@ fun RockyWindow(
     onBackup: (List<LiveNote>) -> Boolean = { false },
     onChooseImport: () -> List<LiveNote>? = { null },
     onCheckUpdate: () -> dev.rocky.core.updates.AvailableUpdate? = { null },
+    updateInstaller: dev.rocky.core.updates.UpdateInstaller? = null,
     onExportDiagnostic: (String) -> Boolean = { false },
     initialCheckUpdatesOnStart: Boolean = false,
     onCheckUpdatesOnStartChange: (Boolean) -> Unit = {},
@@ -163,6 +164,8 @@ fun RockyWindow(
         }
         val aiScope = rememberCoroutineScope()
         val updates = remember { UpdateState(onCheckUpdate) }
+        val updateDownload = remember(updateInstaller) { UpdateDownloadState(updateInstaller) }
+        DisposableEffect(updateDownload) { onDispose { updateDownload.cancel() } }
         var checkUpdatesOnStart by remember { mutableStateOf(initialCheckUpdatesOnStart) }
         LaunchedEffect(Unit) { if (checkUpdatesOnStart) updates.check(aiScope) }
         val mainContentScrollState = rememberScrollState()
@@ -488,6 +491,8 @@ fun RockyWindow(
                                     localNotes, dataDirectoryLabel, buildLabel,
                                     onBackup = onBackup, onChooseImport = onChooseImport,
                                     updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
+                                    updateDownload = updateDownload,
+                                    updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || liveConnected,
                                     checkUpdatesOnStart = checkUpdatesOnStart,
                                     onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
                                     diagnosticReport = {

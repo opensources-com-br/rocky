@@ -14,6 +14,8 @@ internal fun DataSettings(
     onBackup: (List<dev.rocky.core.live.LiveNote>) -> Boolean = { false },
     onChooseImport: () -> List<dev.rocky.core.live.LiveNote>? = { null },
     updates: UpdateState = remember { UpdateState { null } },
+    updateDownload: UpdateDownloadState = remember { UpdateDownloadState(null) },
+    updateBlocked: Boolean = false,
     diagnosticReport: () -> String = { "" },
     onExportDiagnostic: (String) -> Boolean = { false },
     onOpenGuide: (String) -> Unit = {},
@@ -54,6 +56,7 @@ internal fun DataSettings(
         Text("Chaves salvas usam Keychain no macOS ou DPAPI do usuário no Windows. Tokens Twitch ficam na memória.")
         RecordTransferSettings(notes, onBackup, onChooseImport)
         MaintenanceSettings(updates, diagnosticReport, onExportDiagnostic, onOpenGuide)
+        UpdateDownloadSettings(updateDownload, updates.available, updateBlocked)
         SettingSwitch(tr("Check updates when opening Rocky", "Verificar atualizações ao abrir Rocky"), checkUpdatesOnStart, onCheckUpdatesOnStart)
         Text(directory, style = MaterialTheme.typography.caption)
         OutlinedButton(onClick = { perform(onOpenDataDirectory, "Pasta de dados aberta.") }) { Text("Abrir pasta de dados") }

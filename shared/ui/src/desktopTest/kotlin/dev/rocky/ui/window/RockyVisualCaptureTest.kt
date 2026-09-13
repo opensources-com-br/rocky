@@ -404,7 +404,7 @@ class RockyVisualCaptureTest {
         val ai = FakeAiSuggestionClient()
         val repository = TransientNoteRepository()
         val voice = FakeVoiceService().apply {
-            transcripts.addAll(listOf("Rocky, o que o chat quer?", "Rocky, salva isso como nota", "Rocky, salva isso como ideias", "Rocky, o que o chat quer?"))
+            transcripts.addAll(listOf("Rocky, o que o chat quer?", "salva isso como nota", "salva isso como ideias", "Rocky, o que o chat quer?"))
         }
         render(
             settingsOpen = true, settingsSection = SettingsSection.Platforms,

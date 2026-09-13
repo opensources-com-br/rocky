@@ -83,6 +83,9 @@ internal class VoiceState(
     var transcriptionSetupStatus by mutableStateOf<String?>(null)
         private set
 
+    var processing by mutableStateOf(false)
+    var heardInput by mutableStateOf(false); private set
+
     var speaking by mutableStateOf(false)
         private set
 
@@ -330,7 +333,7 @@ internal class VoiceState(
             onFinished()
             return
         }
-        if (!force && !configuration.readSuggestions) { onFinished(); return }
+        if (!force && (processing || transcribing || heardInput || !configuration.readSuggestions)) { onFinished(); return }
         lastSpokenSuggestionId = suggestionId
         if (force && speaking) stopSpeaking()
         if (speaking) {
@@ -394,6 +397,7 @@ internal class VoiceState(
             captureJob = null
             result.onSuccess {
                 capturing = true
+                heardInput = false
                 status = "Microfone capturando · fale agora"
                 levelJob?.cancel()
                 val endpoint = dev.rocky.core.voice.SpeechEndpointDetector(configuration.silenceMillis, configuration.speechThreshold)
@@ -403,7 +407,9 @@ internal class VoiceState(
                     while (capturing) {
                         delay(INPUT_LEVEL_REFRESH_MILLIS)
                         inputLevel = service.inputLevel()
-                        if (detectEnd && endpoint.sample(inputLevel, INPUT_LEVEL_REFRESH_MILLIS)) {
+                        val ended = detectEnd && endpoint.sample(inputLevel, INPUT_LEVEL_REFRESH_MILLIS)
+                        heardInput = endpoint.heardSpeech
+                        if (ended) {
                             stopCapture(scope, onFailure, onTranscript)
                             break
                         }
@@ -480,6 +486,7 @@ internal class VoiceState(
         transcriptionJob = null
         if (wasActive) service.cancelCapture()
         capturing = false
+        heardInput = false
         transcribing = false
         inputLevel = 0f
         if (wasActive) status = "Captura cancelada"
@@ -487,6 +494,7 @@ internal class VoiceState(
 
     fun resetSession() {
         calibrationJob?.cancel()
+        processing = false
         service.setContinuousCapture(false)
         listenerEnabled = false
         listenerScope = null

@@ -165,6 +165,7 @@ internal class VoiceState(
             return
         }
         listenerEnabled = true
+        service.setContinuousCapture(true)
         listenerScope = scope
         listenerTranscript = onTranscript
         startCapture(scope, onTranscript = onTranscript)
@@ -173,6 +174,7 @@ internal class VoiceState(
     fun disableListener() {
         if (!listenerEnabled) return
         listenerEnabled = false
+        service.setContinuousCapture(false)
         cancelCapture()
         status = "Ouvinte desativado"
     }
@@ -484,6 +486,7 @@ internal class VoiceState(
 
     fun resetSession() {
         calibrationJob?.cancel()
+        service.setContinuousCapture(false)
         listenerEnabled = false
         listenerScope = null
         listenerTranscript = null

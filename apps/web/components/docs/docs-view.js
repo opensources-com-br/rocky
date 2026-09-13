@@ -1,10 +1,12 @@
-import { PAGES, NAV, FLAT, slug } from "@/content/docs";
-export function docsView(selectedPage, onNavigate) {
-    const page = PAGES[selectedPage] ? selectedPage : "Introdução";
-    const data = PAGES[page];
-    const i = FLAT.indexOf(page);
-    const prev = FLAT[i - 1];
-    const next = FLAT[i + 1];
+import { getDocsContent, slug } from "@/content/docs";
+
+export function docsView(selectedPage, onNavigate, locale) {
+    const { pages, nav, flat, firstPage } = getDocsContent(locale);
+    const page = pages[selectedPage] ? selectedPage : firstPage;
+    const data = pages[page];
+    const i = flat.indexOf(page);
+    const prev = flat[i - 1];
+    const next = flat[i + 1];
 
     const blocks = data.blocks.map((b) => ({
       isH2: b.type === "h2",
@@ -27,23 +29,24 @@ export function docsView(selectedPage, onNavigate) {
 
     return {
       blocks,
-      pageTitle: page,
+      locale,
+      pageTitle: data.title,
       pageGroup: data.group,
       pageLead: data.lead,
-      nav: NAV.map((g) => ({
+      nav: nav.map((g) => ({
         title: g.title,
-        items: g.items.map((name) => ({
-          name,
-          go: () => onNavigate(name),
-          color: name === page ? "#f2efec" : "rgba(255,255,255,.48)",
-          bg: name === page ? "rgba(255,255,255,.07)" : "transparent",
+        items: g.items.map((id) => ({
+          name: pages[id].title,
+          go: () => onNavigate(id),
+          color: id === page ? "#f2efec" : "rgba(255,255,255,.48)",
+          bg: id === page ? "rgba(255,255,255,.07)" : "transparent",
         })),
       })),
       toc: data.blocks.filter((b) => b.type === "h2").map((b) => ({ name: b.text, href: "#" + slug(b.text) })),
       hasPrev: !!prev,
       hasNext: !!next,
-      prevTitle: prev || "",
-      nextTitle: next || "",
+      prevTitle: prev ? pages[prev].title : "",
+      nextTitle: next ? pages[next].title : "",
       goPrev: () => prev && onNavigate(prev),
       goNext: () => next && onNavigate(next),
     };

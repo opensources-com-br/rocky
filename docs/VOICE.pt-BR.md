@@ -41,3 +41,5 @@ Com a palavra de ativação normal, diga:
 Salvar mantém a aba atual e mostra confirmação com Desfazer. Notas/Ideias também têm o botão Nova para digitação. O Histórico guarda até 30 respostas da sessão para consultar, repetir, copiar e salvar; as quatro últimas interações entram como contexto limitado de continuidade. Desconectar limpa esse histórico temporário, preservando notas/ideias salvas.
 
 O botão Antes da live reúne a conexão da plataforma, teste de IA, teste de voz/microfone e orientação para conferir uma gravação no OBS. O áudio é opcional; a interface indica quais verificações foram feitas, sem presumir que a saída está isolada da transmissão.
+
+Referência da integração: [API de streaming da ElevenLabs](https://elevenlabs.io/docs/api-reference/text-to-speech/stream).

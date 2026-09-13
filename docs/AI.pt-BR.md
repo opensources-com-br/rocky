@@ -1,6 +1,6 @@
 # Provedores de IA
 
-O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick ou YouTube usando Ollama local, a Responses API da OpenAI ou OpenRouter.
+O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube ou Facebook usando Ollama local, a Responses API da OpenAI ou OpenRouter.
 
 ## Ollama
 
@@ -31,7 +31,7 @@ Use **Salvar configuração e chave** para persistir a chave no Keychain (macOS)
 
 ## Comportamento das sugestões
 
-- **Analisar agora** funciona depois que pelo menos uma mensagem real da Twitch, Kick ou YouTube chega.
+- **Analisar agora** funciona depois que pelo menos uma mensagem real da Twitch, Kick, YouTube ou Facebook chega.
 - A análise automática começa desativada. Quando ativada, segue o perfil escolhido em IA (Discreto: cinco minutos; Proativo: dois minutos) e só envia um novo lote após mais três mensagens.
 - Cada chamada usa até 200 mensagens recebidas nos últimos dois minutos e até 300 caracteres de cada mensagem. É uma amostra limitada; quedas podem causar lacunas.
 - O chat é marcado como conteúdo não confiável. Com mensagens na amostra, uma sugestão precisa citar ao menos um ID válido. Pedidos diretos sem mensagens podem responder sem fontes.

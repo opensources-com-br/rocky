@@ -10,6 +10,8 @@ Antes de promover um build alpha, conclua:
 
 - uma instalação limpa em uma versão compatível do macOS;
 - uma instalação limpa no Windows 11;
+- uma sessão autenticada na Kick com webhook público e uma sessão de chat ao vivo no YouTube;
+- testes de voz do sistema e ElevenLabs em macOS e Windows, incluindo cancelamento e alternativa local;
 - pelo menos três sessões reais na Twitch com dois streamers diferentes;
 - uma sessão contínua de pelo menos duas horas;
 - uma gravação no OBS em cada sistema operacional;
@@ -36,7 +38,7 @@ Use um snapshot de máquina virtual, um usuário novo do sistema operacional ou 
 3. Instale e abra o Rocky pelo Finder ou menu Iniciar do Windows.
 4. Confirme que o guia inicial abre e acompanha o idioma do sistema operacional.
 5. Alterne entre inglês e português, feche o Rocky, abra novamente e confirme que a escolha persiste.
-6. Conclua as verificações obrigatórias de Twitch e IA. Confirme que **Concluir configuração** é liberado sem testar a voz; depois configure e teste a voz opcionalmente.
+6. Conclua as verificações obrigatórias de plataforma (Twitch, Kick ou YouTube) e IA. Confirme que **Concluir configuração** é liberado sem testar a voz; depois configure e teste a voz opcionalmente.
 7. Feche e abra o Rocky novamente. Confirme que o guia permanece concluído e as notas locais continuam disponíveis.
 8. Desinstale o Rocky pelo Finder ou pelos Aplicativos instalados do Windows. Confirme que nenhum atalho permanece.
 
@@ -78,7 +80,7 @@ Faça uma gravação local curta antes da transmissão pública.
 
 Use fones de ouvido nos testes de voz. Não mostre a tela de configurações de IA em uma cena pública enquanto houver uma API key nela.
 
-## 4. Interrupção da conexão
+## 4. Interrupção da conexão da Twitch
 
 Mantenha uma segunda conta pronta para enviar uma mensagem única depois de cada recuperação.
 
@@ -106,7 +108,7 @@ Versão e commit do Rocky:
 Instalador e SHA-256:
 Sistema operacional, versão e arquitetura:
 Resolução e escala da tela:
-Canal da Twitch:
+Plataforma e canal:
 Provedor e modelo de IA:
 Voz e microfone:
 Versão do OBS e fontes de captura:

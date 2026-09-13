@@ -832,6 +832,12 @@ private object InactiveYouTubeChatClient : YouTubeChatClient {
     override fun close() = Unit
 }
 
+private object InactiveFacebookChatClient : FacebookChatClient {
+    override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) = Unit
+    override fun disconnect() = Unit
+    override fun close() = Unit
+}
+
 private object InactiveAiSuggestionClient : AiSuggestionClient {
     override fun testConnection(configuration: AiProviderConfiguration) =
         AiConnectionResult(false, "Provedor de IA indisponível")
@@ -876,7 +882,7 @@ internal fun CompactContent(
 }
 
 internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): String = suggestion ?: when (status) {
-    LiveSessionStatus.Stopped -> "Conecte Twitch, Kick ou YouTube"
+    LiveSessionStatus.Stopped -> "Conecte Twitch, Kick, YouTube ou Facebook"
     LiveSessionStatus.Running -> "Chat da live conectado"
     LiveSessionStatus.Ended -> "Conexão da live encerrada"
 }
@@ -885,6 +891,7 @@ private fun platformStatuses(
     twitch: TwitchLiveState,
     kick: KickLiveState,
     youtube: YouTubeLiveState,
+    facebook: FacebookLiveState,
 ): List<PlatformStatus> =
     listOf(
         PlatformStatus(
@@ -914,7 +921,15 @@ private fun platformStatuses(
             enabled = youtube.phase != YouTubeConnectionPhase.Failed,
             connected = youtube.isActive,
         ),
-        PlatformStatus("Facebook", "Em breve", "0", 0, PlatformColor.Offline, enabled = false),
+        PlatformStatus(
+            name = "Facebook",
+            account = facebook.page?.name ?: "Não conectada",
+            audience = facebook.viewerCount?.toString() ?: "—",
+            messagesPerMinute = facebook.messagesPerMinute,
+            colorKey = PlatformColor.Facebook,
+            enabled = facebook.phase != FacebookConnectionPhase.Failed,
+            connected = facebook.isActive,
+        ),
     )
 
 private val AgentConfiguration.analysisIntervalMillis: Long

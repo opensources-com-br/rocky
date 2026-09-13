@@ -64,3 +64,10 @@
 
 .rocky-platforms .kick i { background: #53fc18; }
 .rocky-platforms .youtube i { background: #ff164a; }
+@media (max-width: 400px) {
+  .rocky-answer-actions { flex-wrap: wrap; }
+  .rocky-answer-actions [data-slot="button"]:first-child { flex-basis: 100%; }
+  .rocky-answer-actions [data-slot="button"] { flex: 1; }
+  .rocky-tabs { flex-wrap: wrap; gap: 2px; }
+  .rocky-tabs > span { min-width: 56px; }
+}

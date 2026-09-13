@@ -36,6 +36,12 @@ import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.agent.AgentTone
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
+import dev.rocky.core.facebook.FacebookChatClient
+import dev.rocky.core.facebook.FacebookConfiguration
+import dev.rocky.core.facebook.FacebookConnectionEvent
+import dev.rocky.core.facebook.FacebookConnectionListener
+import dev.rocky.core.facebook.FacebookLiveVideo
+import dev.rocky.core.facebook.FacebookPage
 import dev.rocky.core.kick.KickAccount
 import dev.rocky.core.kick.KickChatClient
 import dev.rocky.core.kick.KickConfiguration
@@ -311,6 +317,30 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("platform-youtube").performClick()
         rule.onNodeWithText("Desconectar").assertExists()
         rule.onNodeWithText("Mensagem do YouTube").assertExists()
+    }
+
+    @Test
+    fun connectsAndDisplaysRealFacebookChat() {
+        val facebook = FakeFacebookChatClient()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            facebookChatClient = facebook,
+            facebookConfiguration = FacebookConfiguration("app-id", "app-secret"),
+        )
+        rule.onNodeWithText("Conectar Facebook").performScrollTo().performClick()
+        rule.runOnIdle {
+            facebook.emit(FacebookConnectionEvent.Connected(
+                FacebookPage("page", "Rocky Facebook"), FacebookLiveVideo("live", "Live Rocky"),
+            ))
+            facebook.emit(FacebookConnectionEvent.MessageReceived(
+                ChatMessage("facebook-message", "viewer", "Mensagem do Facebook", StreamPlatform.Facebook),
+            ))
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithTag("platform-facebook").performClick()
+        rule.onNodeWithText("Desconectar").assertExists()
+        rule.onNodeWithText("Mensagem do Facebook").assertExists()
     }
 
     @Test
@@ -841,6 +871,8 @@ class RockyVisualCaptureTest {
         kickConfiguration: KickConfiguration = KickConfiguration(),
         youtubeChatClient: YouTubeChatClient? = null,
         youtubeConfiguration: YouTubeConfiguration = YouTubeConfiguration(),
+        facebookChatClient: FacebookChatClient? = null,
+        facebookConfiguration: FacebookConfiguration = FacebookConfiguration(),
         aiSuggestionClient: AiSuggestionClient? = null,
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
@@ -863,6 +895,7 @@ class RockyVisualCaptureTest {
                         twitchChatClient = twitchChatClient ?: FakeTwitchChatClient(),
                         kickChatClient = kickChatClient ?: FakeKickChatClient(),
                         youtubeChatClient = youtubeChatClient ?: FakeYouTubeChatClient(),
+                        facebookChatClient = facebookChatClient ?: FakeFacebookChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         voiceService = voiceService,
                         initialVoiceConfiguration = voiceConfiguration,
@@ -870,6 +903,7 @@ class RockyVisualCaptureTest {
                         initialTwitchClientId = twitchClientId,
                         initialKickConfiguration = kickConfiguration,
                         initialYouTubeConfiguration = youtubeConfiguration,
+                        initialFacebookConfiguration = facebookConfiguration,
                         onExportNotes = onExportNotes,
                         onExportIdeas = onExportIdeas,
                         initialMainSectionIndex = mainSection.ordinal,
@@ -936,6 +970,16 @@ class RockyVisualCaptureTest {
         override fun disconnect() = Unit
         override fun close() = Unit
         fun emit(event: YouTubeConnectionEvent) = listener.onEvent(event)
+    }
+
+    private class FakeFacebookChatClient : FacebookChatClient {
+        private var listener = FacebookConnectionListener {}
+        override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) {
+            this.listener = listener
+        }
+        override fun disconnect() = Unit
+        override fun close() = Unit
+        fun emit(event: FacebookConnectionEvent) = listener.onEvent(event)
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {

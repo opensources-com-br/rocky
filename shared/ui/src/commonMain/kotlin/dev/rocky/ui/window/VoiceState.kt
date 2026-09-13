@@ -56,7 +56,8 @@ internal class VoiceState(
         stopSpeaking()
         voiceTested = false
         if (output.elevenLabs.apiKey != configuration.output.elevenLabs.apiKey) voiceCatalog = null
-        update(configuration.copy(output = output))
+        update(configuration.copy(output = if (output.provider == dev.rocky.core.voice.SpeechProvider.ElevenLabs)
+            output.copy(speedPercent = output.speedPercent.coerceIn(70, 120)) else output))
         resumeListener()
     }
 

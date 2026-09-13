@@ -29,7 +29,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Não há pesos configuráveis para dinheiro, relevância ou urgência. O app não implementa uma pausa garantida de três segundos antes de falar nem um modo de interrupção inteligente do streamer."
+      "text": "Não há pesos configuráveis para dinheiro, relevância ou urgência. Não há pausa fixa de três segundos. Durante pedidos por voz, Rocky escuta na análise, aguarda fala detectada antes de responder e aceita reformulações. A captura pausa na reprodução; interrompa pelo atalho de fala. Não há cancelamento acústico de eco."
     },
     {
       "type": "h2",

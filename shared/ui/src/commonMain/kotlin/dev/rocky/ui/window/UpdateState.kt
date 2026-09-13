@@ -12,7 +12,7 @@ internal class UpdateState(private val checker: () -> AvailableUpdate?) {
     fun check(scope: CoroutineScope) {
         if (checking) return
         checking = true
-        scope.launch {
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 val result = runCatching { interruptibleWork(checker) }
                 result.onSuccess {

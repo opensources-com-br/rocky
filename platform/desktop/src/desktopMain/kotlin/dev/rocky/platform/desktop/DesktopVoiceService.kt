@@ -22,6 +22,11 @@ import javax.sound.sampled.TargetDataLine
 class DesktopVoiceService : VoiceService {
     @Volatile override var telemetry = dev.rocky.core.voice.VoiceTelemetry(); private set
     private var captureStarted = 0L
+    @Volatile private var continuousCapture = false
+    override fun setContinuousCapture(enabled: Boolean) {
+        continuousCapture = enabled
+        if (!enabled) microphone.cancel()
+    }
     private val operatingSystem = System.getProperty("os.name").lowercase()
 
     override val supportsInputLevel: Boolean get() = true
@@ -110,7 +115,7 @@ class DesktopVoiceService : VoiceService {
 
     private val transcriber = WhisperTranscriber()
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
-        val audio = finishCapture()
+        val audio = if (continuousCapture) microphone.segment() else finishCapture()
         val started = System.nanoTime()
         telemetry = telemetry.copy(captureMillis = (started - captureStarted) / 1_000_000)
         try { return transcriber.transcribe(audio, configuration) }

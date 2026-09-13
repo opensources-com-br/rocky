@@ -1,9 +1,7 @@
 # Shared core
 
-Platform-independent domain models, service contracts, context handling, and intervention policy.
+Platform-independent models, service contracts and rules for chat context, agent profiles, audio, questions, records, backups and updates.
 
-Other Kotlin modules depend on this module; it must not depend on them. Keep shared code free of UI, database, provider SDK, and desktop API dependencies.
+Implemented in `commonMain`, with portable tests in `commonTest` and a JVM target named `desktop`. Other Kotlin modules depend on this module; it has no UI, database-driver or desktop API dependencies.
 
-Planned source sets: `commonMain` and `commonTest`.
-
-Status: directory scaffold only; Gradle configuration and source code come next.
+Run `./gradlew :shared:core:desktopTest` from the repository root.

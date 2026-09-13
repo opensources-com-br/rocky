@@ -17,17 +17,23 @@ test("normalizes installer architectures", () => {
   assert.equal(normalizeArchitecture(""), "unknown");
 });
 
-test("selects installers from the newest non-draft release", () => {
+test("selects installers from the current non-draft release", () => {
   const releases = [
     { draft: true, assets: [asset("unpublished.dmg")] },
-    { draft: false, prerelease: true, assets: [asset("Rocky-1.0.10.dmg"), asset("Rocky-1.0.10.exe"), asset("Rocky-1.0.10.msi")] },
+    { tag_name: "v1.0.11-alpha.1", draft: false, prerelease: true, assets: [asset("Rocky-1.0.11.dmg"), asset("Rocky-1.0.11.exe"), asset("Rocky-1.0.11.msi")] },
+    { tag_name: "v1.0.10-alpha.17", draft: false, prerelease: true, assets: [asset("Rocky-1.0.10.dmg"), asset("Rocky-1.0.10.exe"), asset("Rocky-1.0.10.msi")] },
   ];
-  assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.10.dmg");
-  assert.equal(selectInstaller(releases, "windows")?.name, "Rocky-1.0.10.msi");
+  assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.11.dmg");
+  assert.equal(selectInstaller(releases, "windows")?.name, "Rocky-1.0.11.msi");
+});
+
+test("rejects installers published before the icon and signing fixes", () => {
+  const releases = [{ tag_name: "v1.0.10-alpha.17", draft: false, assets: [asset("Rocky-1.0.10.dmg")] }];
+  assert.equal(selectInstaller(releases, "macos"), null);
 });
 
 test("matches architecture when releases provide multiple packages", () => {
-  const releases = [{ draft: false, assets: [asset("Rocky-darwin-arm64.dmg"), asset("Rocky-darwin-x86_64.dmg")] }];
+  const releases = [{ tag_name: "v1.0.11-alpha.1", draft: false, assets: [asset("Rocky-darwin-arm64.dmg"), asset("Rocky-darwin-x86_64.dmg")] }];
   assert.equal(selectInstaller(releases, "macos", "arm64")?.name, "Rocky-darwin-arm64.dmg");
   assert.equal(selectInstaller(releases, "macos", "x64")?.name, "Rocky-darwin-x86_64.dmg");
   assert.equal(selectInstaller(releases, "macos", "unknown"), null);

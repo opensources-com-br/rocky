@@ -8,7 +8,7 @@ export default function AppTitlebar() {
     </div>
     <header className="rocky-app-header">
       <div><strong>Rocky</strong><small>a voz do chat, em acordes</small></div>
-      <Badge variant="outline">CHAT ATIVO</Badge>
+      <Badge variant="outline">MICROFONE ON</Badge>
       <div className="rocky-header-icons" aria-hidden="true">
         <CheckCircle2 /><Minimize2 /><Pin /><Settings />
       </div>

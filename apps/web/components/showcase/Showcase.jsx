@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 import { CASES } from "@/content/showcase";
 import { Chord } from "@/components/Chord";
 import ShowcaseView from "./ShowcaseView";
@@ -7,6 +8,7 @@ import { buildFile } from "./build-file";
 import { formFields } from "./form-fields";
 
 export default function Showcase() {
+  const { locale } = useLocale();
   const [filter, setFilter] = useState("Todos");
   const [open, setOpen] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -39,5 +41,5 @@ export default function Showcase() {
     filters: ["Todos", "Programação", "Games", "Educação", "Podcast", "Esportes", "Arte"].map(name => ({ name, select: () => { setFilter(name); setOpen(null); setSubmitting(false); }, bg: name === filter ? "rgba(255,255,255,.09)" : "transparent", border: name === filter ? "rgba(255,255,255,.14)" : "rgba(255,255,255,.08)", color: name === filter ? "#f2efec" : "rgba(255,255,255,.5)" })),
     prSteps: [{ n: "01", text: "Faça um fork de opensources-com-br/rocky no GitHub." }, { n: "02", text: `Crie o arquivo ${built.filename} com o conteúdo ao lado.` }, { n: "03", text: "Se quiser, adicione uma captura da sua janela do Rocky em showcase/img/." }, { n: "04", text: `Abra o PR com o título “showcase: ${form.name || "seu canal"}”.` }],
   };
-  return <ShowcaseView {...values} />;
+  return <ShowcaseView {...values} locale={locale} />;
 }

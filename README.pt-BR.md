@@ -8,7 +8,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 
 [Read in English](README.md).
 
-[Site](https://opensources-com-br.github.io/rocky/pt-BR/) · [Versões alpha](https://github.com/opensources-com-br/rocky/releases)
+[Site](https://opensources-com-br.github.io/rocky/) · [Versões alpha](https://github.com/opensources-com-br/rocky/releases)
 
 ## O que funciona hoje
 
@@ -18,13 +18,13 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - OAuth para desktop, descoberta de live ativa e consulta do chat do YouTube;
 - contagem de espectadores e mensagens por minuto da live atual na Twitch, Kick e YouTube;
 - sugestões fundamentadas no chat usando modelos locais do Ollama, a API da OpenAI ou OpenRouter;
-- leitura local por meio das vozes do macOS e Windows;
+- leitura pelas vozes do macOS/Windows ou ElevenLabs, com chave própria, streaming e alternativa local opcional;
 - comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
 - notas locais em SQLite, com criação, edição, exclusão, recuperação e exportação em Markdown;
 - builds automatizados e instaladores de desenvolvimento para macOS e Windows;
 - interface em inglês e português brasileiro, selecionada pelo idioma do sistema e ajustável nas Configurações.
 
-Rocky não exige uma conta própria nem inclui um backend remoto. Configurações das plataformas e da IA ficam no computador. Os Client Secrets da Kick e do YouTube e as chaves de IA salvas usam o cofre do sistema; tokens das plataformas permanecem na memória. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor.
+Rocky não exige uma conta própria nem inclui um backend remoto. Configurações das plataformas e da IA ficam no computador. Os Client Secrets da Kick e do YouTube e as chaves de IA/ElevenLabs salvas usam o cofre do sistema; tokens das plataformas permanecem na memória. As notas ficam em um banco SQLite local. Quando um provedor de IA em nuvem é selecionado, as mensagens usadas como contexto são enviadas a esse provedor. ElevenLabs recebe o texto a ser falado quando selecionado.
 
 ## Executar pelo código-fonte
 
@@ -50,7 +50,9 @@ cd rocky
 .\gradlew.bat :apps:desktop:run
 ```
 
-Execute todas as verificações automatizadas com `./gradlew build` ou `.\gradlew.bat build`.
+Execute as verificações Kotlin com `./gradlew build` ou `.\gradlew.bat build`.
+
+A web é validada separadamente: em `apps/web`, execute `npm ci`, `npm test`, `npm run lint` e `npm run build` (Node.js 22, como no CI).
 
 ## Configurar uma sessão real
 

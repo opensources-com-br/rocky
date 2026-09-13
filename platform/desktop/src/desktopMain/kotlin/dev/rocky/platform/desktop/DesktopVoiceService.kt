@@ -57,7 +57,7 @@ class DesktopVoiceService : VoiceService {
 
     private val microphone = DesktopMicrophone()
     override fun startCapture(microphoneId: String?) {
-        synchronized(transcriptionLock) { transcriptionCancelled = false }
+        transcriber.begin()
         microphone.start(microphoneId)
     }
     override fun inputLevel(): Float = microphone.level()
@@ -112,7 +112,11 @@ class DesktopVoiceService : VoiceService {
         } else null
     }
 
-    override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String {
+    private val transcriber = WhisperTranscriber()
+    override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String =
+        transcriber.transcribe(finishCapture(), configuration)
+
+    private fun legacyTranscribe(configuration: LocalTranscriptionConfiguration): String {
         val audio = finishCapture()
         require(audio.size >= MINIMUM_AUDIO_BYTES) { "A gravação ficou curta demais para transcrever" }
         validateTranscriptionConfiguration(configuration)
@@ -153,6 +157,7 @@ class DesktopVoiceService : VoiceService {
     }
 
     override fun cancelCapture() {
+        transcriber.cancel()
         runCatching { finishCapture() }
         val process = synchronized(transcriptionLock) {
             transcriptionCancelled = true

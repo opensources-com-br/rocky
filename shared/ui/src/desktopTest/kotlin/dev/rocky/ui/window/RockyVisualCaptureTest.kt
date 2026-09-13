@@ -392,10 +392,10 @@ class RockyVisualCaptureTest {
         }
         rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 1 }
         rule.mainClock.advanceTimeBy(8_100L)
-        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 2 }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.isNotEmpty() }
 
         assertEquals("o que o chat quer?", ai.lastRequest)
-        assertEquals(listOf("Vou verificar o chat.", "O chat quer saber o preço."), voice.spoken.take(2))
+        assertEquals("O chat quer saber o preço.", voice.spoken.first())
     }
 
     @Test
@@ -455,10 +455,9 @@ class RockyVisualCaptureTest {
         }
         rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 1 }
         rule.mainClock.advanceTimeBy(8_100L)
-        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 2 }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.isNotEmpty() }
 
-        assertEquals("Vou verificar o chat.", voice.spoken.first())
-        assertEquals("Não consegui consultar o chat agora. Vou continuar ouvindo.", voice.spoken[1])
+        assertEquals("Não consegui consultar o chat agora. Vou continuar ouvindo.", voice.spoken.first())
     }
 
     @Test
@@ -489,7 +488,7 @@ class RockyVisualCaptureTest {
         rule.mainClock.advanceTimeBy(8_100L)
         rule.waitUntil(timeoutMillis = 5_000) { voice.captureStarts == 2 }
         rule.mainClock.advanceTimeBy(8_100L)
-        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 3 }
+        rule.waitUntil(timeoutMillis = 5_000) { voice.spoken.size >= 2 }
 
         assertEquals("o pessoal está gostando?", ai.lastRequest)
         assertEquals("Estou ouvindo.", voice.spoken.first())

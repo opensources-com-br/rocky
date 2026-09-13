@@ -30,6 +30,7 @@ html { scrollbar-gutter: stable; }
 }
 .site-navigation-links { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,.5); }
 .site-navigation-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.site-footer > div { flex-wrap: wrap; }
 
 @media (max-width: 800px) {
   :root {

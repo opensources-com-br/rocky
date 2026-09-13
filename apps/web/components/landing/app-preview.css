@@ -1,6 +1,6 @@
 .rocky-preview { --rp-muted: #777479; --rp-secondary: #a5a1a5; --rp-border: #303034; width: 460px; max-width: 100%; margin: 60px 0 0; text-align: left; }
-.rocky-app { overflow: hidden; border: 1px solid var(--rp-border); border-radius: 10px; background: #171719; color: #f6f4f2; font-family: Arial, sans-serif; box-shadow: 0 24px 80px #0009; }
-.rocky-mac-titlebar { position: relative; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; background: #29292d; }
+.rocky-app { overflow: hidden; border: 1px solid var(--rp-border); border-radius: 10px; background: #111113; color: #f6f4f2; font-family: Arial, sans-serif; box-shadow: 0 24px 80px #0009; }
+.rocky-mac-titlebar { position: relative; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; background: #eceeef; color: #45464a; }
 .rocky-mac-titlebar span { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
 .rocky-mac-titlebar span:nth-child(2) { background: #ffbd2e; }
 .rocky-mac-titlebar span:nth-child(3) { background: #28c840; }
@@ -18,7 +18,7 @@
 .rocky-answer { padding: 8px 20px; background: linear-gradient(#2a1b17, #171315); }
 .rocky-answer-label { display: flex; justify-content: space-between; align-items: center; color: #e57436; font-size: 12px; letter-spacing: 2px; }
 .rocky-answer-label svg { width: 42px; height: 26px; }
-.rocky-answer p { font-size: 28px; line-height: 34px; margin: 8px 0 7px; }
+.rocky-answer p { font-size: 24px; line-height: 30px; margin: 8px 0 7px; }
 .rocky-sources { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--rp-secondary); }
 .rocky-sources > span:first-child { color: #9347ff; }
 .rocky-evidence { margin-left: 10px; color: #e57436; }
@@ -44,7 +44,7 @@
 .rocky-voice-footer { display: flex; align-items: center; gap: 14px; min-height: 74px; padding: 12px 18px; border-top: 1px solid #29292d; }
 .rocky-voice-label { flex: 1; font-size: 15px; }
 .rocky-voice-wave { display: flex; align-items: center; gap: 3px; }
-.rocky-voice-wave i { width: 4px; background: var(--rp-muted); border-radius: 4px; }
+.rocky-voice-wave i { width: 4px; background: #e57436; border-radius: 4px; }
 .rocky-voice-footer strong { font-size: 13px; }
 .rocky-message-metric { border-left: 1px solid var(--rp-border); padding-left: 8px; }
 @media (max-width: 400px) { .rocky-voice-footer { gap: 8px; padding: 12px; } .rocky-voice-label { font-size: 13px; } }

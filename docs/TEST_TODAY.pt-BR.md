@@ -1,6 +1,6 @@
 # Candidato de validação — 1.0.11-alpha.1
 
-Escopo: Twitch, Kick, IA, perguntas por texto, voz opcional e notas com fontes. Gere o candidato conforme [preparação de lançamento](RELEASE_PREPARATION.md); este documento não afirma que a versão já foi publicada ou homologada.
+Escopo: Twitch, Kick, YouTube, IA, ações rápidas, voz do sistema/ElevenLabs, perguntas agrupadas, notas, ideias, momentos, resumo local e atualização assistida. Gere o candidato conforme [preparação de lançamento](RELEASE_PREPARATION.md); este documento não afirma que a versão já foi publicada ou homologada.
 
 1. Instale em máquina limpa. Em **Dados**, registre versão, commit e arquitetura; compare com `BUILDINFO` e checksums do pacote.
 2. Em **Plataformas**, use o Client ID incluído quando disponível. Só registre um cliente público próprio se o campo estiver vazio. Autorize a conta do canal da live.

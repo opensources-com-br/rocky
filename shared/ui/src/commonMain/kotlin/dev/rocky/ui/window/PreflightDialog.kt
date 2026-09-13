@@ -71,7 +71,7 @@ internal fun PreflightDialog(
                     TextButton(onClick = { onOpenGuide("https://obsproject.com/kb/application-audio-capture-guide") }) { Text(tr("OBS audio guide (Windows)", "Guia de áudio OBS (Windows)")) }
                     TextButton(onClick = { onOpenGuide("https://obsproject.com/kb/macos-desktop-audio-capture-guide") }) { Text(tr("OBS audio guide (macOS)", "Guia de áudio OBS (macOS)")) }
                     SettingSwitch(tr("I reviewed the recording and confirmed the intended audio", "Revisei a gravação e confirmei o áudio desejado"), obsChecked, { obsChecked = it })
-                } else Text(tr("You can continue using text without a microphone.", "Você pode continuar por texto sem microfone."))
+                } else Text(tr("You can use quick analysis actions without a microphone.", "Você pode usar as ações rápidas de análise sem microfone."))
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(tr("Close", "Fechar")) } },

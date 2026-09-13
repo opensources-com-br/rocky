@@ -58,7 +58,7 @@ html { scrollbar-gutter: stable; }
     --site-heading-space: 32px;
   }
   .site-navigation { gap: 20px; }
-  .site-navigation-actions > a:first-child { display: none !important; }
+  .site-github-link { display: none !important; }
   .docs-columns { grid-template-columns: minmax(0, 1fr); }
   .docs-columns > .sticky-panel { border-bottom: var(--site-border); }
 }

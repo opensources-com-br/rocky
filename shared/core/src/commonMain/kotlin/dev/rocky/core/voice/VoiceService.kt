@@ -37,6 +37,7 @@ data class VoiceConfiguration(
 
 interface VoiceService : AutoCloseable {
     fun setContinuousCapture(enabled: Boolean) = Unit
+    fun hasBufferedSpeech(threshold: Float): Boolean = false
     val telemetry: VoiceTelemetry get() = VoiceTelemetry()
     fun loadVoiceCatalog(configuration: ElevenLabsConfiguration): VoiceCatalog = error("Provedor indisponível")
     val supportsInputLevel: Boolean get() = false

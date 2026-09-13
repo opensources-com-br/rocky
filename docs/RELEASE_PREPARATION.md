@@ -1,6 +1,6 @@
 # Preparação do candidato / Release preparation
 
-Candidato: **1.0.11-alpha.1**, versão nativa **1.0.11**. Escopo atual: Twitch, Kick, YouTube, IA, voz do sistema ou ElevenLabs, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Kick e YouTube exigem credenciais próprias; a Kick também exige webhook HTTPS público. Super Chats e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
+Candidato: **1.0.11-alpha.1**, versão nativa **1.0.11**. Escopo atual: Twitch, Kick, YouTube, Facebook, IA, voz do sistema ou ElevenLabs, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Kick, YouTube e Facebook exigem credenciais próprias; a Kick também exige webhook HTTPS público e o Facebook exige uma Página com live ativa. Super Chats, Estrelas e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
 
 ## Build e identidade
 
@@ -34,12 +34,12 @@ Se o banco não abrir, o app preserva o arquivo e permite tentar carregar novame
 
 ## Liberação
 
-Execute [o roteiro do candidato](TEST_TODAY.pt-BR.md) e [o protocolo com streamers](STREAMER_TEST.pt-BR.md). Instalação limpa e upgrade em macOS/Windows, cofre nativo, microfone, OAuth real da Twitch, Kick e YouTube, webhook Kick público, modelos de IA reais, ElevenLabs com chave/voz reais e cancelamento, OBS e lives prolongadas continuam sendo verificações humanas. Nenhum resultado deve ser preenchido como aprovado por inferência do build.
+Execute [o roteiro do candidato](TEST_TODAY.pt-BR.md) e [o protocolo com streamers](STREAMER_TEST.pt-BR.md). Instalação limpa e upgrade em macOS/Windows, cofre nativo, microfone, OAuth real da Twitch, Kick, YouTube e Facebook, webhook Kick público, Página e live reais do Facebook, modelos de IA reais, ElevenLabs com chave/voz reais e cancelamento, OBS e lives prolongadas continuam sendo verificações humanas. Nenhum resultado deve ser preenchido como aprovado por inferência do build.
 
 ## English
 
-This candidate targets Twitch, Kick, YouTube, AI, system/ElevenLabs speech, grouped questions, notes, ideas, moments and a local records summary on disconnect or app close. Kick and YouTube require developer credentials; Kick also requires public HTTPS webhook forwarding. Build with JDK 17; run `scripts/release_metadata.py` after packaging/signing to record version, commit and architecture. The release tag must match `rockyVersion`.
+This candidate targets Twitch, Kick, YouTube, Facebook, AI, system/ElevenLabs speech, grouped questions, notes, ideas, moments and a local records summary on disconnect or app close. Kick, YouTube and Facebook require developer credentials; Kick also requires public HTTPS webhook forwarding and Facebook requires an active live on an authorized Page. Build with JDK 17; run `scripts/release_metadata.py` after packaging/signing to record version, commit and architecture. The release tag must match `rockyVersion`.
 
 macOS signing uses an installed Developer ID identity via `ROCKY_MAC_SIGN=true` and `ROCKY_MAC_SIGN_IDENTITY`; notarization uses a `notarytool` profile through `scripts/notarize-macos.sh`. Windows installer signing uses an installed certificate selected by `ROCKY_WINDOWS_CERT_THUMBPRINT` through `scripts/sign-windows.ps1`. These require publisher-owned credentials and validation on the target OS. Hosted CI does not automatically import certificates.
 
-Back up the data directory with Rocky closed before upgrading. Verify notes, evidence, native version and credential migration after installation. Clean installation, upgrade, real Twitch, Kick and YouTube OAuth, Kick webhooks, AI, system/ElevenLabs speech with real credentials and cancellation, system credential storage, OBS and long streams remain manual release gates.
+Back up the data directory with Rocky closed before upgrading. Verify notes, evidence, native version and credential migration after installation. Clean installation, upgrade, real Twitch, Kick, YouTube and Facebook OAuth, Kick webhooks, Facebook Page live comments, AI, system/ElevenLabs speech with real credentials and cancellation, system credential storage, OBS and long streams remain manual release gates.

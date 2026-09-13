@@ -42,7 +42,10 @@ internal class UpdateTransfer {
                     uri = uri.resolve(response.headers().firstValue("location").orElseThrow())
                 } else {
                     check(response.statusCode() == 200) { "Não foi possível baixar a atualização (${response.statusCode()})." }
-                    return consume(input).also { checkCancelled() }
+                    val timer = Executors.newSingleThreadScheduledExecutor { task -> Thread(task, "rocky-update-timeout").apply { isDaemon = true } }
+                    val timeout = timer.schedule({ cancel() }, 15, TimeUnit.MINUTES)
+                    try { return consume(input).also { checkCancelled() } }
+                    finally { timeout.cancel(false); timer.shutdownNow(); stream = null }
                 }
             }
         }

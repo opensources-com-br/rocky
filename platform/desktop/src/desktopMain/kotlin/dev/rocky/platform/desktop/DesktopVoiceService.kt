@@ -22,11 +22,7 @@ import javax.sound.sampled.TargetDataLine
 class DesktopVoiceService : VoiceService {
     private val operatingSystem = System.getProperty("os.name").lowercase()
     private val captureLock = Any()
-    private val speechLock = Any()
     private val transcriptionLock = Any()
-
-    @Volatile
-    private var speechProcess: Process? = null
 
     @Volatile
     private var captureLine: TargetDataLine? = null
@@ -67,31 +63,9 @@ class DesktopVoiceService : VoiceService {
         AudioInputDevice(info.name, info.name).takeIf { supportsCapture }
     }.distinctBy(AudioInputDevice::id)
 
-    override fun speak(text: String, configuration: VoiceOutputConfiguration) {
-        require(text.isNotBlank()) { "Speech text cannot be empty" }
-        val process = synchronized(speechLock) {
-            speechProcess?.let(::stopProcess)
-            when {
-                operatingSystem.contains("mac") -> ProcessBuilder(macSpeechCommand(text, configuration)).start()
-                operatingSystem.contains("win") -> ProcessBuilder(windowsSpeechCommand(text, configuration)).start()
-                else -> error("System speech is unavailable on this operating system")
-            }.also { speechProcess = it }
-        }
-        val completed = waitForProcess(process, SPEECH_TIMEOUT_MINUTES, TimeUnit.MINUTES)
-        synchronized(speechLock) {
-            if (speechProcess === process) {
-                speechProcess = null
-                check(completed && process.exitValue() == 0) { "System speech failed" }
-            }
-        }
-    }
-
-    override fun stopSpeaking() {
-        val process = synchronized(speechLock) {
-            speechProcess.also { speechProcess = null }
-        }
-        process?.let(::stopProcess)
-    }
+    private val output = SystemSpeechOutput()
+    override fun speak(text: String, configuration: VoiceOutputConfiguration) = output.speak(text, configuration)
+    override fun stopSpeaking() = output.cancel()
 
     override fun startCapture(microphoneId: String?) {
         synchronized(transcriptionLock) {

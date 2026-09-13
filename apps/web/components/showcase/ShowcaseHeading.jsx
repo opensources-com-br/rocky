@@ -1,6 +1,7 @@
 import SiteFrame from "@/components/SiteFrame";
+import { localized } from "@/lib/i18n";
 
-export default function ShowcaseHeading() {
+export default function ShowcaseHeading({ locale }) {
   return (<>
 <div style={{"borderBottom": "1px solid rgba(255,255,255,.07)"}}>
 <SiteFrame className="site-heading">
@@ -11,10 +12,10 @@ export default function ShowcaseHeading() {
 {"SHOWCASE "}
 </div>
 <h1 style={{"margin": "16px 0 12px", "fontSize": "46px", "lineHeight": "1.05", "letterSpacing": "-.04em", "fontWeight": "500", "maxWidth": "640px", "textWrap": "balance"}} className="page-heading">
-{"Casos de uso em breve"}
+{localized(locale, "Use cases coming soon", "Casos de uso em breve")}
 </h1>
 <p style={{"margin": "0", "maxWidth": "560px", "fontSize": "16px", "lineHeight": "1.65", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
-{"Em breve, você poderá conhecer os casos de uso do Rocky nesta página."}
+{localized(locale, "You will soon be able to explore Rocky use cases on this page.", "Em breve, você poderá conhecer os casos de uso do Rocky nesta página.")}
 </p>
 </SiteFrame>
 </div>

@@ -18,13 +18,13 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - YouTube desktop OAuth, active-broadcast discovery, and live-chat polling;
 - live viewer count and messages-per-minute metrics for Twitch, Kick, and YouTube;
 - grounded AI suggestions using local Ollama models, the OpenAI API, or OpenRouter;
-- on-device speech synthesis through macOS and Windows system voices;
+- speech through macOS/Windows system voices or ElevenLabs, with your own key, streaming and optional local fallback;
 - wake-word voice commands with local `whisper.cpp` transcription;
 - local SQLite notes with create, edit, delete, restore, and Markdown export;
 - automated builds and development installers for macOS and Windows;
 - English and Brazilian Portuguese interface, selected from the system language and adjustable in Settings.
 
-Rocky does not require a Rocky account or bundled remote backend. Platform and AI settings are stored on the user's computer. Kick and YouTube Client Secrets and saved AI keys use the system credential vault; platform access tokens remain in memory. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider.
+Rocky does not require a Rocky account or bundled remote backend. Platform and AI settings are stored on the user's computer. Kick and YouTube Client Secrets and saved AI/ElevenLabs keys use the system credential vault; platform access tokens remain in memory. Notes are stored in a local SQLite database. When a cloud AI provider is selected, the chat messages used as context are sent to that provider. When selected, ElevenLabs receives the text to be spoken.
 
 ## Run from source
 
@@ -50,7 +50,9 @@ cd rocky
 .\gradlew.bat :apps:desktop:run
 ```
 
-Run all automated checks with `./gradlew build` or `.\gradlew.bat build`.
+Run the Kotlin checks with `./gradlew build` or `.\gradlew.bat build`.
+
+Validate the web separately: in `apps/web`, run `npm ci`, `npm test`, `npm run lint` and `npm run build` (Node.js 22, as used in CI).
 
 ## Configure a real session
 

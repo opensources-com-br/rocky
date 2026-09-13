@@ -2,9 +2,9 @@
 
 Application entry point for macOS and Windows, targeting the JVM.
 
-This module will assemble shared UI, data adapters, and desktop services through constructor injection. It owns window lifecycle and application startup/shutdown.
+This module assembles shared UI, data adapters, and desktop services through constructor injection. It owns window lifecycle and application startup/shutdown.
 
-Planned dependencies: `shared/core`, `shared/data`, `shared/ui`, and `platform/desktop`.
+Dependencies: `shared/core`, `shared/data`, `shared/ui`, and `platform/desktop`.
 
 ## Run locally
 
@@ -14,4 +14,4 @@ From the repository root:
 ./gradlew :apps:desktop:run
 ```
 
-The current window uses native decorations for dragging, resizing, and system minimize controls. Rocky also provides actions to minimize, stay on top, and switch between expanded and compact sizes.
+The current window uses native decorations for dragging, resizing, and system minimize controls. Use the native title bar for minimizing and closing. Rocky provides always-on-top and compact controls, plus a global shortcut to show/hide the window. Expanded bounds are persisted; initial expanded size is 462 × 900 dp, settings 462 × 820 dp and compact 340 × 180 dp, subject to the available display area.

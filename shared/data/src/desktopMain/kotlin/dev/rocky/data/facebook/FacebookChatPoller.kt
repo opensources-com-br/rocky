@@ -13,12 +13,10 @@ internal class FacebookChatPoller(
     private val currentTimeMillis: () -> Long = System::currentTimeMillis,
 ) {
     private val seenMessageIds = LinkedHashSet<String>()
-    private var after: String? = null
     private var lastAudienceRefreshAt = Long.MIN_VALUE
 
     fun poll(): Long {
-        val page = api.comments(liveVideo.id, pageAccessToken, after)
-        after = page.after
+        val page = api.comments(liveVideo.id, pageAccessToken)
         page.messages.forEach { message -> if (remember(message.id)) onMessage(message) }
         refreshAudienceIfNeeded()
         return POLL_INTERVAL_MILLIS

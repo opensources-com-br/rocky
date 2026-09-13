@@ -25,4 +25,21 @@ class PcmStreamTest {
         assertEquals(1, first)
         assertTrue(player.finished)
     }
+    @Test fun rejectsEmptyAndTruncatedAudio() {
+        for (bytes in listOf(byteArrayOf(), byteArrayOf(1, 2, 3))) {
+            val player = Player()
+            assertFailsWith<IllegalArgumentException> {
+                playPcm(ByteArrayInputStream(bytes), player, {}, {})
+            }
+            assertFalse(player.finished)
+        }
+    }
+    @Test fun cancellationStopsBeforeWriting() {
+        val player = Player()
+        assertFailsWith<InterruptedException> {
+            playPcm(ByteArrayInputStream(byteArrayOf(1, 2)), player, { throw InterruptedException() }, {})
+        }
+        assertTrue(player.output.isEmpty())
+        assertFalse(player.finished)
+    }
 }

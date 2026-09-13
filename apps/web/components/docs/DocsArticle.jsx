@@ -2,7 +2,7 @@ import ArticleHeading from "./ArticleHeading";
 import ArticleBlocks from "./ArticleBlocks";
 import ArticlePagination from "./ArticlePagination";
 
-export default function DocsArticle({ blocks, goNext, goPrev, hasNext, hasPrev, nextTitle, pageGroup, pageLead, pageTitle, prevTitle }) {
+export default function DocsArticle({ blocks, goNext, goPrev, hasNext, hasPrev, locale, nextTitle, pageGroup, pageLead, pageTitle, prevTitle }) {
   return (<>
 <article className="docs-article">
 <ArticleHeading pageGroup={pageGroup} pageTitle={pageTitle} />
@@ -13,7 +13,7 @@ export default function DocsArticle({ blocks, goNext, goPrev, hasNext, hasPrev, 
 {pageLead}
 </p>
 <ArticleBlocks blocks={blocks} />
-<ArticlePagination goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} nextTitle={nextTitle} prevTitle={prevTitle} />
+<ArticlePagination goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} locale={locale} nextTitle={nextTitle} prevTitle={prevTitle} />
 </article>
   </>);
 }

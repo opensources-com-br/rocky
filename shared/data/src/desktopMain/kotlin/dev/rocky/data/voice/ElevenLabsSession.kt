@@ -22,4 +22,23 @@ internal class ElevenLabsSession(private val base: String = "https://api.elevenl
         runCatching { stream?.close() }
         timer.shutdownNow()
     }
+    fun open(path: String, key: String, body: String? = null): InputStream {
+        require(key.isNotBlank()) { "Informe sua chave ElevenLabs em Voz." }
+        checkActive()
+        val request = HttpRequest.newBuilder(URI.create(base + path))
+            .header("xi-api-key", key.trim()).timeout(Duration.ofSeconds(30))
+        if (body == null) request.GET() else request.header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(body))
+        val future = client.sendAsync(request.build(), HttpResponse.BodyHandlers.ofInputStream())
+        pending = future
+        val response = try { checkActive(); future.get(30, TimeUnit.SECONDS) }
+            finally { future.cancel(true); pending = null }
+        stream = response.body()
+        checkActive()
+        if (response.statusCode() != 200) {
+            response.body().close()
+            error(elevenLabsError(response.statusCode()))
+        }
+        return response.body()
+    }
 }

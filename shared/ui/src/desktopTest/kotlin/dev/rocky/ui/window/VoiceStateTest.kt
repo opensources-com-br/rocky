@@ -15,6 +15,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun failedMicrophoneSaveKeepsTheCurrentCapture() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration) { error("vault unavailable") }
+        try {
+            state.enableListener(this) {}
+            waitUntil { state.capturing }
+            state.updateMicrophone("usb-mic")
+            assertEquals(readyConfiguration, state.configuration)
+            assertTrue(state.capturing)
+            assertTrue(state.listenerEnabled)
+            assertEquals(1, service.captureStarts)
+            assertEquals(0, service.captureCancels)
+            assertTrue(state.status.orEmpty().contains("cofre"))
+        } finally {
+            state.resetSession()
+        }
+    }
+
     @Test fun changingMicrophoneDoesNotEnableADisabledListener() {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) {}

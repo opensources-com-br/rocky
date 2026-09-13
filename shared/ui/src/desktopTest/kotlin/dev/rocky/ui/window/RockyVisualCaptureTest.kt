@@ -536,6 +536,36 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun cancellingAVoiceRequestAllowsLaterSuggestionsToBeRead() {
+        val twitch = FakeTwitchChatClient()
+        val ai = FakeAiSuggestionClient().apply { responseGate = java.util.concurrent.CountDownLatch(1) }
+        val voice = FakeVoiceService().apply {
+            transcripts += "Rocky, o que o chat quer?"
+            transcript = "Conversa sem comando"
+        }
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch, twitchClientId = "client", aiSuggestionClient = ai,
+            voiceService = voice, voiceConfiguration = VoiceConfiguration(readSuggestions = true,
+                transcription = LocalTranscriptionConfiguration("whisper-cli", "model.bin")))
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live")))
+            twitch.emitMessages(1)
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.waitUntil(5_000) { voice.captureStarts >= 1 }
+        rule.mainClock.advanceTimeBy(8_100L)
+        rule.waitUntil(5_000) { ai.lastRequest == "o que o chat quer?" }
+        rule.onNodeWithText("Cancelar análise").performClick()
+        rule.waitUntil(5_000) { ai.interrupted && voice.captureStarts >= 2 }
+        assertTrue(voice.spoken.isEmpty())
+        ai.responseGate = null
+        rule.onNodeWithText("Dúvidas principais").performClick()
+        rule.waitUntil(5_000) { voice.spoken.isNotEmpty() }
+        assertEquals(listOf("O chat quer saber o preço."), voice.spoken.toList())
+    }
+
+    @Test
     fun sendsCancelsAndRetriesFromTheRealWindow() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient().apply { responseGate = java.util.concurrent.CountDownLatch(1) }

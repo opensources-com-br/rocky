@@ -73,6 +73,9 @@ fun main() = application {
     val youtubeClient = remember { DesktopYouTubeChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
     val voiceService = remember { DesktopVoiceService() }
+    val updateInstaller = remember {
+        dev.rocky.data.updates.DesktopUpdateInstaller(RockyDesktopPaths.notesDatabase.parent.resolve("updates"))
+    }
 
     DisposableEffect(noteRepository, twitchClient, kickClient, youtubeClient, aiClient, voiceService) {
         onDispose {
@@ -150,6 +153,7 @@ fun main() = application {
                 dev.rocky.data.notes.RecordBackup.encode(notes), "rocky-backup.json") },
             onChooseImport = { dev.rocky.platform.desktop.chooseRecordBackup(window)?.let(dev.rocky.data.notes.RecordBackup::decode) },
             onCheckUpdate = { dev.rocky.data.updates.ReleaseChecker().check(System.getProperty("rocky.version", "development")) },
+            updateInstaller = updateInstaller,
             onExportDiagnostic = { report -> dev.rocky.platform.desktop.exportRecordFile(window, report, "rocky-diagnostics.txt") },
             initialCheckUpdatesOnStart = dev.rocky.platform.desktop.ExperiencePreferences.checkUpdatesOnStart,
             onCheckUpdatesOnStartChange = { dev.rocky.platform.desktop.ExperiencePreferences.checkUpdatesOnStart = it },

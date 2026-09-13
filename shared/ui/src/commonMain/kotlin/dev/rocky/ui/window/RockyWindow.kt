@@ -38,6 +38,10 @@ import dev.rocky.core.kick.KickChatClient
 import dev.rocky.core.kick.KickConfiguration
 import dev.rocky.core.kick.KickConnectionListener
 import dev.rocky.core.kick.KickConnectionPhase
+import dev.rocky.core.facebook.FacebookChatClient
+import dev.rocky.core.facebook.FacebookConfiguration
+import dev.rocky.core.facebook.FacebookConnectionListener
+import dev.rocky.core.facebook.FacebookConnectionPhase
 import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionListener
@@ -101,6 +105,10 @@ fun RockyWindow(
     initialYouTubeConfiguration: YouTubeConfiguration = YouTubeConfiguration(),
     onYouTubeConfigurationChange: (YouTubeConfiguration) -> Unit = {},
     onOpenYouTubeAuthorization: (String) -> Unit = {},
+    facebookChatClient: FacebookChatClient = InactiveFacebookChatClient,
+    initialFacebookConfiguration: FacebookConfiguration = FacebookConfiguration(),
+    onFacebookConfigurationChange: (FacebookConfiguration) -> Unit = {},
+    onOpenFacebookAuthorization: (String) -> Unit = {},
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
@@ -149,6 +157,7 @@ fun RockyWindow(
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val kick = remember(kickChatClient) { KickLiveState(kickChatClient, currentTimeMillis) }
         val youtube = remember(youtubeChatClient) { YouTubeLiveState(youtubeChatClient, currentTimeMillis) }
+        val facebook = remember(facebookChatClient) { FacebookLiveState(facebookChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
                 aiSuggestionClient, initialAiConfiguration,
@@ -176,6 +185,7 @@ fun RockyWindow(
         var twitchClientId by remember { mutableStateOf(initialTwitchClientId) }
         var kickConfiguration by remember { mutableStateOf(initialKickConfiguration) }
         var youtubeConfiguration by remember { mutableStateOf(initialYouTubeConfiguration) }
+        var facebookConfiguration by remember { mutableStateOf(initialFacebookConfiguration) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }

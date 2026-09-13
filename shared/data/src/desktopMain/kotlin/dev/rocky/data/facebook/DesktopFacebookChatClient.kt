@@ -28,7 +28,38 @@ class DesktopFacebookChatClient internal constructor(
     @Volatile private var receiver: FacebookAuthorizationReceiver? = null
     @Volatile private var poller: FacebookChatPoller? = null
 
-    override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) = Unit
+    override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) {
+        stop(notify = false)
+        require(configuration.appId.isNotBlank()) { "Informe o App ID do Facebook." }
+        require(configuration.appSecret.isNotBlank()) { "Informe o App Secret do Facebook." }
+        val run = generation.incrementAndGet()
+        this.configuration = configuration.copy(
+            appId = configuration.appId.trim(),
+            appSecret = configuration.appSecret.trim(),
+            redirectUri = configuration.redirectUri.trim(),
+        )
+        this.listener = listener
+        active = true
+        emit(FacebookConnectionPhase.Authenticating, "Preparando autorização do Facebook")
+        ioExecutor.execute { prepareAuthorization(run) }
+    }
+
+    private fun prepareAuthorization(run: Long) {
+        runCatching {
+            val authorization = createFacebookAuthorization(configuration.appId, configuration.redirectUri)
+            receiver = FacebookAuthorizationReceiver(configuration.redirectUri, authorization.state) { code ->
+                completeAuthorization(run, code)
+            }
+            authorization.uri
+        }.onSuccess { uri ->
+            if (isCurrent(run)) {
+                emit(FacebookConnectionPhase.AwaitingAuthorization, "Autorize a Página no navegador")
+                listener.onEvent(FacebookConnectionEvent.AuthorizationRequired(uri))
+            }
+        }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+    }
+
+    private fun completeAuthorization(run: Long, code: String) = Unit
     override fun disconnect() = stop(notify = true)
     override fun close() {
         stop(notify = false)
@@ -48,4 +79,17 @@ class DesktopFacebookChatClient internal constructor(
 
     private fun emit(phase: FacebookConnectionPhase, detail: String? = null) =
         listener.onEvent(FacebookConnectionEvent.PhaseChanged(phase, detail))
+
+    private fun fail(run: Long, message: String) {
+        if (!isCurrent(run)) return
+        active = false
+        receiver?.close()
+        receiver = null
+        poller = null
+        emit(FacebookConnectionPhase.Failed, message)
+    }
+
+    private fun isCurrent(run: Long) = active && generation.get() == run
+    private fun Throwable.userMessage() = message?.takeIf { it.isNotBlank() }
+        ?: "Não foi possível conectar com o Facebook."
 }

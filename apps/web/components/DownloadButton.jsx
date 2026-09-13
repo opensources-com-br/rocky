@@ -15,16 +15,25 @@ async function browserArchitecture() {
 
 export default function DownloadButton({ className, locale, style }) {
   const [loading, setLoading] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
 
   async function download(event) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (loading) return;
+    setUnavailable(false);
     setLoading(true);
     try {
       const platform = detectDesktopPlatform(navigator.userAgentData?.platform || navigator.platform, navigator.userAgent);
       const installer = await findInstaller(platform, await browserArchitecture());
-      window.location.assign(installer?.browser_download_url || RELEASES_PAGE);
+      if (installer) {
+        window.location.assign(installer.browser_download_url);
+      } else if (platform === "unknown") {
+        window.location.assign(RELEASES_PAGE);
+      } else {
+        setUnavailable(true);
+        setLoading(false);
+      }
     } catch {
       window.location.assign(RELEASES_PAGE);
     }
@@ -34,9 +43,14 @@ export default function DownloadButton({ className, locale, style }) {
     className={className}
     href={RELEASES_PAGE}
     aria-busy={loading}
+    aria-live="polite"
     onClick={download}
     style={style}
   >
-    {loading ? localized(locale, "Preparing download…", "Preparando download…") : localized(locale, "Download app", "Baixar aplicativo")}
+    {loading
+      ? localized(locale, "Preparing download…", "Preparando download…")
+      : unavailable
+        ? localized(locale, "Signed build coming soon", "Versão assinada em breve")
+        : localized(locale, "Download app", "Baixar aplicativo")}
   </a>;
 }

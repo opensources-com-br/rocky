@@ -55,6 +55,7 @@ import dev.rocky.core.voice.VoiceService
 import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun RockyWindow(
@@ -281,7 +282,11 @@ fun RockyWindow(
                 agent = agent.configuration.copy(language = language),
                 messageLimit = recentMessages.size,
                 onComplete = { suggestion ->
+                    aiScope.launch {
+                    while (turns.accepts(turn) && voice.listenerEnabled &&
+                        (voice.transcribing || (voice.capturing && voice.heardInput))) delay(75)
                     if (voice.listenerEnabled && turns.accepts(turn)) {
+                        voice.processing = false
                         if (suggestion == null) {
                             voice.speakAcknowledgement(
                                 aiScope,
@@ -300,8 +305,10 @@ fun RockyWindow(
                             )
                         }
                     }
+                    }
                 },
             )
+            voice.resumeListener()
         }
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
         fun finishLive(): Boolean {
@@ -326,6 +333,7 @@ fun RockyWindow(
             val turn = turns.begin()
             ai.cancelAnalysis()
             voice.stopSpeaking()
+            voice.processing = false
             val marker = momentCommand(command)
             val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
@@ -357,6 +365,7 @@ fun RockyWindow(
                 }
                 voice.speakAcknowledgement(aiScope, acknowledgement, silenced, voice::resumeListener)
             } else {
+                voice.processing = true
                 analyzeVoiceCommand(command, turn)
             }
         }

@@ -16,7 +16,7 @@ internal fun playPcm(input: InputStream, player: PcmPlayback, checkActive: () ->
         if (aligned > 0) {
             if (total == 0L) onFirstAudio()
             total += aligned
-            require(total <= 24_000 * 2 * 120) { "Resposta de áudio excedeu o limite." }
+            require(total <= 24_000 * 2 * 120) { "ElevenLabs: resposta de áudio excedeu o limite." }
             player.write(buffer, aligned)
         }
         pending = available % 2

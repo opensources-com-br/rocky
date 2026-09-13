@@ -15,6 +15,26 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun microphoneChangeDuringSpeechWaitsForPlaybackToFinish() = runBlocking {
+        val service = FakeVoiceService().apply { speechGate = CountDownLatch(1) }
+        val state = VoiceState(service, readyConfiguration) {}
+        try {
+            state.enableListener(this) {}
+            waitUntil { state.capturing }
+            state.speakSuggestion(this, "answer", "Resposta", silenced = false)
+            waitUntil { service.spoken.isNotEmpty() }
+            state.updateMicrophone("usb-mic")
+            assertTrue(state.speaking)
+            assertFalse(state.capturing)
+            assertEquals(1, service.captureStarts)
+            service.speechGate!!.countDown()
+            waitUntil { service.captureStarts == 2 && state.capturing }
+            assertEquals("usb-mic", service.selectedMicrophone)
+        } finally {
+            state.resetSession()
+        }
+    }
+
     @Test fun failedMicrophoneSaveKeepsTheCurrentCapture() = runBlocking {
         val service = FakeVoiceService()
         val state = VoiceState(service, readyConfiguration) { error("vault unavailable") }

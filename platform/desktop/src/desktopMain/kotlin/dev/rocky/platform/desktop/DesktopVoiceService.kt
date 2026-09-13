@@ -21,13 +21,6 @@ import javax.sound.sampled.TargetDataLine
 
 class DesktopVoiceService : VoiceService {
     private val operatingSystem = System.getProperty("os.name").lowercase()
-    private val transcriptionLock = Any()
-
-    @Volatile
-    private var transcriptionProcess: Process? = null
-
-    @Volatile
-    private var transcriptionCancelled = false
 
     override val supportsInputLevel: Boolean get() = true
     override val outputVolumeSupported: Boolean get() = operatingSystem.contains("win")
@@ -115,16 +108,7 @@ class DesktopVoiceService : VoiceService {
     private val transcriber = WhisperTranscriber()
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String =
         transcriber.transcribe(finishCapture(), configuration)
-
-    override fun cancelCapture() {
-        transcriber.cancel()
-        runCatching { finishCapture() }
-        val process = synchronized(transcriptionLock) {
-            transcriptionCancelled = true
-            transcriptionProcess.also { transcriptionProcess = null }
-        }
-        process?.let(::stopProcess)
-    }
+    override fun cancelCapture() { microphone.cancel(); transcriber.cancel() }
 
     override fun close() {
         stopSpeaking()

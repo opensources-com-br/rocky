@@ -15,6 +15,25 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun changingMicrophoneRestartsTheListenerOnTheSelectedDevice() = runBlocking {
+        val service = FakeVoiceService()
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 500) {}
+        var received: String? = null
+        try {
+            state.enableListener(this) { received = it }
+            waitUntil { state.capturing }
+            state.updateMicrophone("usb-mic")
+            waitUntil { service.captureStarts == 2 && state.capturing }
+            assertEquals("usb-mic", service.selectedMicrophone)
+            assertEquals(1, service.captureCancels)
+            assertTrue(state.listenerEnabled)
+            waitUntil { received != null }
+            assertEquals("O que o chat achou?", received)
+        } finally {
+            state.resetSession()
+        }
+    }
+
     @Test fun fixedDurationCaptureStillTranscribesAtItsLimit() = runBlocking {
         val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
         val state = VoiceState(service, readyConfiguration.copy(detectEndOfSpeech = false),
@@ -446,6 +465,7 @@ class VoiceStateTest {
         override fun inputLevel(): Float = level
         var captureStarted = false
         var captureStarts = 0
+        @Volatile var selectedMicrophone: String? = null
         var speechGate: CountDownLatch? = null
         var transcriptionGate: CountDownLatch? = null
         var setupSupported = false
@@ -465,6 +485,7 @@ class VoiceStateTest {
             speechGate?.countDown()
         }
         override fun startCapture(microphoneId: String?) {
+            selectedMicrophone = microphoneId
             captureStarted = true
             captureStarts += 1
         }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import LocaleProvider from "@/components/LocaleProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rocky — O chat ganhou voz",
-  description: "A voz do chat, em acordes. Conheça o Rocky, sua documentação e seu showcase.",
+  title: "Rocky — The chat has a voice",
+  description: "The voice of chat, in chords. Meet Rocky, read the documentation, and explore the showcase.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="pt-BR"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><LocaleProvider>{children}</LocaleProvider></body>
     </html>
   );
 }

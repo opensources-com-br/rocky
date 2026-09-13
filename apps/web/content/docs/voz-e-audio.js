@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Com voz preparada, o ouvinte inicia ao conectar Twitch, Kick ou YouTube e pode ser alternado pelo rodapé. Diga “Rocky” seguido do pedido. O nome configurado do agente funciona como palavra de ativação. Ctrl + Shift + F8 interrompe a fala e captura um comando direto sem essa palavra. Após uma resposta, continuações como “explica melhor”, “resume isso” e “salva isso como nota” dispensam o nome por 12 segundos. Uma nova pergunta substitui a análise anterior."
+      "text": "Com voz preparada, o ouvinte inicia ao conectar Twitch, Kick, YouTube ou Facebook e pode ser alternado pelo rodapé. Diga “Rocky” seguido do pedido. O nome configurado do agente funciona como palavra de ativação. Ctrl + Shift + F8 interrompe a fala e captura um comando direto sem essa palavra. Após uma resposta, continuações como “explica melhor”, “resume isso” e “salva isso como nota” dispensam o nome por 12 segundos. Uma nova pergunta substitui a análise anterior."
     },
     {
       "type": "h2",

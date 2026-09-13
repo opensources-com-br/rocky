@@ -20,8 +20,13 @@ export default function LocaleProvider({ children }) {
   useEffect(() => {
     const metadata = localizedMetadata(locale, pathname);
     document.documentElement.lang = locale;
-    document.title = metadata.title;
-    document.querySelector('meta[name="description"]')?.setAttribute("content", metadata.description);
+    const syncMetadata = () => {
+      document.title = metadata.title;
+      document.querySelector('meta[name="description"]')?.setAttribute("content", metadata.description);
+    };
+    syncMetadata();
+    const syncAfterNavigation = window.setTimeout(syncMetadata, 0);
+    return () => window.clearTimeout(syncAfterNavigation);
   }, [locale, pathname]);
 
   const value = useMemo(() => ({

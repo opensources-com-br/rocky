@@ -7,7 +7,7 @@ Rocky receives new comments and the audience reported by the Graph API for an ac
 1. Open [Meta for Developers](https://developers.facebook.com/apps/) and create a Business app.
 2. Add the Facebook Login product.
 3. Register exactly `http://127.0.0.1:18183/oauth/facebook/callback` as a valid OAuth redirect URI.
-4. Ensure the app can request `pages_show_list` and `pages_read_engagement`. Accounts outside the app roles may require Live mode and Meta review for these permissions.
+4. Ensure the app can request `pages_show_list`, `pages_read_engagement`, and `pages_read_user_content`. Accounts outside the app roles may require Live mode and Meta review for these permissions.
 5. In Settings → Platforms → Facebook, enter the App ID and App Secret.
 
 The App Secret is stored in macOS Keychain or protected with user-scoped Windows DPAPI. User and Page tokens stay in memory and are discarded when Rocky disconnects or closes.

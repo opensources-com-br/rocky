@@ -285,8 +285,8 @@ fun RockyWindow(
                     aiScope.launch {
                     while (turns.accepts(turn) && voice.listenerEnabled &&
                         (voice.transcribing || (voice.capturing && voice.heardInput))) delay(75)
+                    if (turns.accepts(turn)) voice.processing = false
                     if (voice.listenerEnabled && turns.accepts(turn)) {
-                        voice.processing = false
                         if (suggestion == null) {
                             voice.speakAcknowledgement(
                                 aiScope,
@@ -334,6 +334,7 @@ fun RockyWindow(
             ai.cancelAnalysis()
             voice.stopSpeaking()
             voice.processing = false
+            val continueListening = { turns.finish(turn); voice.resumeListener() }
             val marker = momentCommand(command)
             val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
@@ -345,7 +346,7 @@ fun RockyWindow(
                 voice.speakAcknowledgement(aiScope,
                     if (saved) spokenText("Moment saved.", "Momento salvo.")
                     else spokenText("Connect a live first, or check the records folder.", "Conecte uma live primeiro ou verifique a pasta de registros."),
-                    silenced, voice::resumeListener)
+                    silenced, continueListening)
             } else if (dictated != null) {
                 val saved = saveRecord(LiveNote(
                     "manual-${kotlin.random.Random.nextLong()}", dictated.text, currentTimeLabel(),
@@ -353,7 +354,7 @@ fun RockyWindow(
                 ))
                 voice.speakAcknowledgement(aiScope,
                     if (saved) spokenText("Saved.", "Salvo.") else spokenText("Could not save.", "Não foi possível salvar."),
-                    silenced, voice::resumeListener)
+                    silenced, continueListening)
             } else if (target != null) {
                 val hadSuggestion = ai.suggestion != null
                 val saved = saveCurrentSuggestion(target)
@@ -363,7 +364,7 @@ fun RockyWindow(
                     !hadSuggestion -> spokenText("There is no answer to save yet.", "Ainda não há uma resposta para salvar.")
                     else -> spokenText("Could not save. Please try again.", "Não foi possível salvar. Tente novamente.")
                 }
-                voice.speakAcknowledgement(aiScope, acknowledgement, silenced, voice::resumeListener)
+                voice.speakAcknowledgement(aiScope, acknowledgement, silenced, continueListening)
             } else {
                 voice.processing = true
                 analyzeVoiceCommand(command, turn)

@@ -26,6 +26,6 @@ O backup JSON em **Dados** inclui registros, fontes, identificação da live e e
 
 O diagnóstico tem prévia e exportação local: versão, estados de conexão/áudio/IA e contagens. Não contém mensagens, chaves, nomes de canal ou caminhos; não é enviado automaticamente.
 
-A consulta de atualização, desativável em **Dados**, acessa a API pública do GitHub na inicialização. O GitHub recebe os dados normais da conexão de rede. O Rocky compara versões das releases oficiais e oferece um link; não instala atualizações. Não envia registros nem credenciais nessa consulta.
+A consulta de atualização, desativável em **Dados**, acessa a API pública do GitHub na inicialização. O GitHub recebe os dados normais da conexão de rede. O download solicitado pelo usuário acessa o GitHub e seu armazenamento de releases, verifica o SHA-256 publicado e salva o instalador na subpasta `updates` dos dados locais. Não envia registros nem credenciais. Arquivos parciais são removidos ao falhar ou cancelar; instaladores completos permanecem para nova tentativa. A instalação e o reinício são manuais.
 
 Backups contain saved records and evidence, but no credentials. Import is confirmed and preserves existing records. Diagnostics are previewed/exported locally without message contents or secrets. The optional startup update check contacts GitHub's public API; updates are opened through an official release link, never installed automatically.

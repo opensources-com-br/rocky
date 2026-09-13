@@ -195,16 +195,18 @@ fun RockyWindow(
             onRegisterSessionEnd { workspace.finish(currentTimeLabel()) }
             onDispose { onRegisterSessionEnd { true } }
         }
-        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected
-        val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive
-        val visibleMessages = (twitch.messages + kick.messages + youtube.messages).sortedBy(ChatMessage::receivedAtMillis)
-        val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages
+        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected || facebook.isConnected
+        val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive
+        val visibleMessages = (twitch.messages + kick.messages + youtube.messages + facebook.messages).sortedBy(ChatMessage::receivedAtMillis)
+        val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages + facebook.totalMessages
         fun recentMessages() = (
             twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
                 kick.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
                 youtube.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
+                + facebook.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
             ).sortedBy(ChatMessage::receivedAtMillis)
-        LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId) {
+        LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId,
+            facebook.phase, facebook.sessionId) {
             when {
                 twitch.phase == TwitchConnectionPhase.Connected -> workspace.start(
                     twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}",
@@ -215,17 +217,20 @@ fun RockyWindow(
                 youtube.isConnected -> workspace.start(
                     youtube.sessionId, "${youtube.account?.displayName} · ${currentTimeLabel()}",
                     youtube.startedAtMillis ?: currentTimeMillis())
+                facebook.isConnected -> workspace.start(
+                    facebook.sessionId, "${facebook.page?.name} · ${currentTimeLabel()}",
+                    facebook.startedAtMillis ?: currentTimeMillis())
                 !liveActive -> workspace.finish(currentTimeLabel())
             }
         }
         val sessionStatus = when {
             liveConnected -> LiveSessionStatus.Running
             twitch.phase == TwitchConnectionPhase.Failed || kick.phase == KickConnectionPhase.Failed ||
-                youtube.phase == YouTubeConnectionPhase.Failed -> LiveSessionStatus.Ended
+                youtube.phase == YouTubeConnectionPhase.Failed || facebook.phase == FacebookConnectionPhase.Failed -> LiveSessionStatus.Ended
             else -> LiveSessionStatus.Stopped
         }
         val visibleSuggestion = ai.suggestion
-        val visiblePlatforms = platformStatuses(twitch, kick, youtube)
+        val visiblePlatforms = platformStatuses(twitch, kick, youtube, facebook)
 
         LaunchedEffect(
             twitch.phase,

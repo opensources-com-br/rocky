@@ -282,7 +282,6 @@ fun RockyWindow(
                 messageLimit = recentMessages.size,
                 onComplete = { suggestion ->
                     if (voice.listenerEnabled && turns.accepts(turn)) {
-                        turns.finish(turn)
                         if (suggestion == null) {
                             voice.speakAcknowledgement(
                                 aiScope,
@@ -297,7 +296,7 @@ fun RockyWindow(
                                 suggestion.text,
                                 silenced,
                                 force = true,
-                                onFinished = voice::resumeListener,
+                                onFinished = { turns.finish(turn); voice.resumeListener() },
                             )
                         }
                     }
@@ -330,7 +329,9 @@ fun RockyWindow(
             val marker = momentCommand(command)
             val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
-            if (marker != null) {
+            if (command.trim().lowercase() in setOf("para", "pare", "cancela", "cancelar", "stop", "cancel")) {
+                voice.resumeListener()
+            } else if (marker != null) {
                 val saved = workspace.sessionId.isNotBlank() && saveRecord(LiveNote(
                     "moment-${kotlin.random.Random.nextLong()}", marker, currentTimeLabel(), dev.rocky.core.live.MARKER_TAG))
                 voice.speakAcknowledgement(aiScope,

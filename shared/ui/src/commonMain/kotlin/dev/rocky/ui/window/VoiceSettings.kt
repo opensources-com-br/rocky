@@ -47,6 +47,10 @@ internal fun VoiceSettings(
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         VoiceProviderSettings(voice)
+        Button(enabled = !voice.calibrating, onClick = { voice.calibrate(scope) }) {
+            Text(if (voice.calibrating) "Calibrando… fique em silêncio" else "Calibrar ruído do microfone")
+        }
+        Text("Última transcrição: ${voice.telemetry.transcriptionMillis} ms · primeiro áudio: ${voice.telemetry.firstAudioMillis} ms")
         SettingSwitch(tr("Detect end of speech", "Detectar fim da fala"), voice.configuration.detectEndOfSpeech, voice::updateEndDetection)
         if (voice.configuration.detectEndOfSpeech) {
             SettingTitle(tr("Trailing silence", "Silêncio após a fala"), "${voice.configuration.silenceMillis} ms")
@@ -117,8 +121,8 @@ internal fun VoiceSettings(
         if (voice.preparingTranscription) {
             Button(onClick = voice::cancelTranscriptionSetup) { Text("Cancelar preparação") }
         }
-        Text(tr("Listen while the microphone is capturing. Each recording lasts eight seconds; capture pauses during transcription and replies.",
-            "Fale enquanto o microfone estiver capturando. Cada gravação dura oito segundos; a captura pausa na transcrição e nas respostas."),
+        Text(tr("Speak while the microphone is active. Silence ends a phrase; long phrases can last up to 30 seconds. Capture pauses during replies; use the microphone shortcut to interrupt.",
+            "Fale enquanto o microfone estiver ativo. O silêncio encerra a frase; falas longas podem durar até 30 segundos. A captura pausa nas respostas; use o atalho do microfone para interromper."),
             style = MaterialTheme.typography.caption, color = RockyColors.TextMuted)
         voice.transcriptionSetupStatus?.let {
             Text(

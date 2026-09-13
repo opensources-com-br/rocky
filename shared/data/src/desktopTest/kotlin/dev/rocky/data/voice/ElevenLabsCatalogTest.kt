@@ -19,4 +19,23 @@ class ElevenLabsCatalogTest {
         assertEquals("/v2/voices?page_size=100&next_page_token=a%2Bb+%26", paths[1])
         assertEquals("/v1/models", paths.last())
     }
+    @Test fun refusesIncompletePaginationInsteadOfReturningAPartialCatalog() {
+        for (token in listOf("", ",\"next_page_token\":\"\"")) {
+            assertFailsWith<IllegalArgumentException> {
+                readElevenLabsCatalog {
+                    Json.parseToJsonElement("""{"voices":[],"has_more":true$token}""")
+                }
+            }
+        }
+    }
+    @Test fun capsCatalogRequestsWhenTheProviderKeepsReturningPages() {
+        var calls = 0
+        assertFailsWith<IllegalStateException> {
+            readElevenLabsCatalog {
+                calls++
+                Json.parseToJsonElement("""{"voices":[],"has_more":true,"next_page_token":"next"}""")
+            }
+        }
+        assertEquals(10, calls)
+    }
 }

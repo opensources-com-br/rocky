@@ -14,8 +14,9 @@ fun resetRockySettings() {
     AiDesktopPreferences.clear()
     KickDesktopPreferences.clear()
     YouTubeDesktopPreferences.clear()
+    FacebookDesktopPreferences.clear()
     ElevenLabsPreferences.clear()
-    for (name in listOf("agent", "voice", "twitch", "kick", "youtube", "interface", "onboarding", "window", "shortcuts", "experience")) {
+    for (name in listOf("agent", "voice", "twitch", "kick", "youtube", "facebook", "interface", "onboarding", "window", "shortcuts", "experience")) {
         Preferences.userRoot().node("dev/rocky/$name").apply { clear(); flush() }
     }
 }

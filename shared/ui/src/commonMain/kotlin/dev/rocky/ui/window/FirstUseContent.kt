@@ -35,7 +35,7 @@ internal fun FirstUseContent(
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 16.dp)) {
         Text("Configure o Rocky", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold)
         Text(
-            text = "Conecte Twitch, Kick ou YouTube e configure a IA para começar por texto. Ative a voz quando quiser.",
+            text = "Conecte Twitch, Kick ou YouTube e configure a IA para começar pelas ações rápidas. Ative a voz quando quiser.",
             modifier = Modifier.padding(top = 5.dp, bottom = 14.dp),
             color = RockyColors.TextSecondary,
             style = MaterialTheme.typography.body2,
@@ -59,7 +59,7 @@ internal fun FirstUseContent(
         SetupStep(
             number = 3,
             title = "Teste a voz (opcional)",
-            description = "Configure o whisper.cpp e o microfone, depois confirme o áudio com “Testar voz”.",
+            description = "Teste a saída com “Testar voz”. Para falar com Rocky, configure whisper.cpp e microfone e use “Testar conversa por voz”.",
             complete = voiceVerified,
             optional = true,
             action = if (voiceVerified) "Revisar voz" else "Configurar voz",

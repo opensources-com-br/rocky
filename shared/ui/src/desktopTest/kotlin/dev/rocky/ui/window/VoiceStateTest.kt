@@ -336,6 +336,14 @@ class VoiceStateTest {
 
     private class FakeVoiceService : VoiceService {
         val spoken = mutableListOf<String>()
+        var catalogGate: CountDownLatch? = null
+        val catalogStarted = CountDownLatch(1)
+        var captureCancels = 0
+        override fun loadVoiceCatalog(configuration: dev.rocky.core.voice.ElevenLabsConfiguration): dev.rocky.core.voice.VoiceCatalog {
+            catalogStarted.countDown()
+            catalogGate?.await()
+            return dev.rocky.core.voice.VoiceCatalog(listOf(SystemVoice("old", "Old account")), emptyList())
+        }
         var supportsLevel = false
         @Volatile var level = 0f
         var transcriptions = 0
@@ -376,6 +384,7 @@ class VoiceStateTest {
             return "O que o chat achou?"
         }
         override fun cancelCapture() {
+            captureCancels++
             transcriptionGate?.countDown()
         }
         override fun close() = Unit

@@ -6,3 +6,14 @@
   --site-nav-height: 56px;
   --site-border: 1px solid rgba(255,255,255,.07);
 }
+
+html { scrollbar-gutter: stable; }
+.site-frame {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--site-width);
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+  border-inline: var(--site-border);
+  min-width: 0;
+}

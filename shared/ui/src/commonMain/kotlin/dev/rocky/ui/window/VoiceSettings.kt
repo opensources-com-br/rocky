@@ -50,7 +50,12 @@ internal fun VoiceSettings(
         Button(enabled = !voice.calibrating, onClick = { voice.calibrate(scope) }) {
             Text(if (voice.calibrating) "Calibrando… fique em silêncio" else "Calibrar ruído do microfone")
         }
-        Text("Última transcrição: ${voice.telemetry.transcriptionMillis} ms · primeiro áudio: ${voice.telemetry.firstAudioMillis} ms")
+        val timing = voice.telemetry
+        Text(tr("Last audio timing (local)", "Tempos do último áudio (locais)"))
+        Text(tr("Capture", "Captura") + ": ${timing.captureMillis} ms · " +
+            tr("Transcription", "Transcrição") + ": ${timing.transcriptionMillis} ms")
+        Text(tr("First cloud audio", "Primeiro áudio remoto") + ": ${timing.firstAudioMillis} ms · " +
+            tr("Speech operation", "Operação de fala") + ": ${timing.playbackMillis} ms")
         SettingSwitch(tr("Detect end of speech", "Detectar fim da fala"), voice.configuration.detectEndOfSpeech, voice::updateEndDetection)
         if (voice.configuration.detectEndOfSpeech) {
             SettingTitle(tr("Trailing silence", "Silêncio após a fala"), "${voice.configuration.silenceMillis} ms")

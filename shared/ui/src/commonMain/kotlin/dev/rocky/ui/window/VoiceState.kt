@@ -454,9 +454,7 @@ internal class VoiceState(
         val activeConfiguration: LocalTranscriptionConfiguration = configuration.transcription
         val generation = ++captureGeneration
         transcriptionJob = scope.launch {
-            val result = withContext(Dispatchers.Default) {
-                runCatching { service.stopCaptureAndTranscribe(activeConfiguration) }
-            }
+            val result = runCatching { interruptibleWork { service.stopCaptureAndTranscribe(activeConfiguration) } }
             if (generation != captureGeneration) return@launch
             transcriptionJob = null
             transcribing = false
@@ -525,6 +523,7 @@ internal class VoiceState(
         val readable = dev.rocky.core.voice.spokenText(text, configuration.transcription.language)
         speechJob = scope.launch {
             val result = runCatching { interruptibleWork { service.speak(readable, output) } }
+            delay(250) // Let speaker output settle before reopening the microphone.
             if (generation != speechGeneration) return@launch
             speechJob = null
             speaking = false

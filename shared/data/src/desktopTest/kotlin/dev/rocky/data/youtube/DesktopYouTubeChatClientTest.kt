@@ -45,6 +45,7 @@ class DesktopYouTubeChatClientTest {
             assertEquals(200, HttpClient.newHttpClient().send(callback, HttpResponse.BodyHandlers.ofString()).statusCode())
 
             await { events.any { it is YouTubeConnectionEvent.MessageReceived } }
+            await { events.any { it is YouTubeConnectionEvent.AudienceUpdated && it.viewerCount == 42 } }
             assertTrue(events.any { it is YouTubeConnectionEvent.Connected && it.account.displayName == "Rocky" })
             assertTrue(events.any { it is YouTubeConnectionEvent.AudienceUpdated && it.viewerCount == 42 })
             assertEquals("Olá do YouTube", events.filterIsInstance<YouTubeConnectionEvent.MessageReceived>().single().message.text)

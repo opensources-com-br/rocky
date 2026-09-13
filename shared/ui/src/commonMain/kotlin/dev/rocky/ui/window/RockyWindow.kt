@@ -239,6 +239,8 @@ fun RockyWindow(
             kick.totalMessages,
             youtube.phase,
             youtube.totalMessages,
+            facebook.phase,
+            facebook.totalMessages,
             ai.automaticAnalysis,
             ai.analysisRevision,
             ai.profile,
@@ -255,16 +257,18 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, kick.phase, youtube.phase) {
+        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, facebook.phase) {
             while (liveActive) {
                 delay(METRICS_REFRESH_MILLIS)
                 twitch.refreshMetrics()
                 kick.refreshMetrics()
                 youtube.refreshMetrics()
+                facebook.refreshMetrics()
             }
         }
 
-        LaunchedEffect(twitch.totalMessages, kick.totalMessages, youtube.totalMessages, ai.filters, workspace.sessionId) {
+        LaunchedEffect(twitch.totalMessages, kick.totalMessages, youtube.totalMessages, facebook.totalMessages,
+            ai.filters, workspace.sessionId) {
             if (workspace.sessionId.isNotBlank()) {
                 workspace.questions.collect(dev.rocky.core.live.filterChat(visibleMessages, ai.filters).messages,
                     workspace.sessionId, workspace.label, currentTimeLabel(), workspace.offset(currentTimeMillis()),
@@ -328,7 +332,7 @@ fun RockyWindow(
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
         fun finishLive(): Boolean {
             if (!workspace.finish(currentTimeLabel())) return false
-            turns.reset(); voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect()
+            turns.reset(); voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect(); facebook.disconnect()
             return true
         }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
@@ -414,7 +418,7 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, voice.transcriptionReady) {
+        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, facebook.phase, voice.transcriptionReady) {
             if (liveConnected && voice.transcriptionReady) {
                 voice.enableListener(aiScope, handleVoiceRequest)
             }

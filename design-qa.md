@@ -1,5 +1,7 @@
 # Design QA — web frame alignment
 
+> Historical visual checkpoint for the referenced screenshots. This records the layout at that review, not a current documentation audit or a guarantee for later changes. Temporary source images may no longer be available.
+
 - Source visual truth: `/var/folders/15/bsnxdb1n0r9446hfq1kl71t80000gn/T/codex-clipboard-593e8b08-c862-4c13-af6c-74b039e8d032.png` and `/var/folders/15/bsnxdb1n0r9446hfq1kl71t80000gn/T/codex-clipboard-fe3fabec-62ee-4946-b13d-36149dd19ea5.png`
 - Implementation screenshots: `design-qa-showcase.png` and `design-qa-docs.png`
 - Combined comparison: `design-qa-comparison.png`

@@ -115,7 +115,8 @@ internal class VoiceState(
     private var captureGeneration = 0L
     private var speechGeneration = 0L
     private var lastSpokenSuggestionId: String? = null
-    private data class QueuedSpeech(val text: String, val force: Boolean, val onFinished: () -> Unit)
+    private data class QueuedSpeech(val text: String, val force: Boolean, val onFinished: () -> Unit,
+        val queuedAt: kotlin.time.TimeMark = kotlin.time.TimeSource.Monotonic.markNow())
     private var queuedSpeech: QueuedSpeech? = null
     private var listenerScope: CoroutineScope? = null
     private var listenerTranscript: ((String) -> Unit)? = null
@@ -310,6 +311,7 @@ internal class VoiceState(
         }
         if (!force && !configuration.readSuggestions) { onFinished(); return }
         lastSpokenSuggestionId = suggestionId
+        if (force && speaking) stopSpeaking()
         if (speaking) {
             queuedSpeech = QueuedSpeech(text, force, onFinished)
             return
@@ -485,15 +487,16 @@ internal class VoiceState(
         speaking = true
         status = "Rocky está falando…"
         val output = configuration.output
+        val readable = dev.rocky.core.voice.spokenText(text, configuration.transcription.language)
         speechJob = scope.launch {
-            val result = withContext(Dispatchers.Default) { runCatching { service.speak(text, output) } }
+            val result = runCatching { interruptibleWork { service.speak(readable, output) } }
             if (generation != speechGeneration) return@launch
             speechJob = null
             speaking = false
             status = result.fold(
                 onSuccess = {
                     onSuccess()
-                    "Leitura concluída"
+                    service.telemetry.outputNotice ?: "Leitura concluída"
                 },
                 onFailure = { it.message?.takeIf { message -> message.startsWith("ElevenLabs") } ?: "Não foi possível reproduzir a voz. Confira Voz nas configurações." },
             )
@@ -501,7 +504,9 @@ internal class VoiceState(
             queuedSpeech = null
             onFinished()
             nextSpeech?.let { next ->
-                speak(scope, next.text, force = next.force, onFinished = next.onFinished)
+                if (next.force || next.queuedAt.elapsedNow().inWholeSeconds < 20) {
+                    speak(scope, next.text, force = next.force, onFinished = next.onFinished)
+                } else next.onFinished()
             }
         }
     }

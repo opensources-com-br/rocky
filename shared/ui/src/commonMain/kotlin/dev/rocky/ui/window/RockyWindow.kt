@@ -686,7 +686,12 @@ fun RockyWindow(
                                     performanceNotice = ai.lastDurationMillis?.let {
                                         "${it} ms · ${ai.completedRequests} análises · ${ai.reportedTokens} tokens informados (parcial)"
                                     },
-                                    onCancelAnalysis = { ai.cancelAnalysis(); voice.resumeListener() },
+                                    onCancelAnalysis = {
+                                        turns.reset()
+                                        ai.cancelAnalysis()
+                                        voice.processing = false
+                                        voice.resumeListener()
+                                    },
                                     onTextRequest = { request ->
                                         voice.stopSpeaking()
                                         ai.analyze(aiScope, recentMessages(), streamerRequest = request, agent = agent.configuration.copy(language = language))

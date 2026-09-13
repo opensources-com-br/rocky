@@ -42,12 +42,12 @@ Run this checklist on macOS and on a real Windows installation or emulator. Test
 - [ ] Install and launch Rocky without a system Java installation.
 - [ ] Move the window using the native title bar.
 - [ ] Resize the expanded window and confirm it cannot become smaller than 340 × 180.
-- [ ] Minimize from Rocky's yellow control and restore it from the Dock or taskbar.
+- [ ] Minimize using the native title-bar control and restore it from the Dock or taskbar.
 - [ ] Pin the window, place another application over it, and confirm Rocky remains visible; unpin it and confirm normal stacking returns.
 - [ ] Switch to compact mode and confirm the window becomes 340 × 180.
 - [ ] Return to expanded mode and confirm the previous size is restored.
-- [ ] Open settings and confirm the window becomes 420 × 820; close settings and confirm the previous size returns.
-- [ ] Close Rocky using its red control.
+- [ ] Open settings and confirm the window becomes 462 × 820 dp; close settings and confirm the previous size returns.
+- [ ] Close Rocky using the native window control and check the saved session summary.
 
 ## Streamer test
 

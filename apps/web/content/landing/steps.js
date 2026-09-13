@@ -1,4 +1,4 @@
-export const steps = [
+const portuguese = [
   {
     "n": "01",
     "title": "Acompanha sua live",
@@ -15,3 +15,23 @@ export const steps = [
     "text": "Com voz configurada, diga “Rocky” e faça seu pedido. Use fones e teste o OBS: a captura de áudio do desktop pode incluir as respostas."
   }
 ];
+
+const english = [
+  {
+    "n": "01",
+    "title": "Follows your stream",
+    "text": "Receives new Twitch, Kick, YouTube, or Facebook messages and groups questions. Kick requires a public HTTPS webhook."
+  },
+  {
+    "n": "02",
+    "title": "Helps you read the chat",
+    "text": "Use “Top questions,” “What did I miss?” and “Chat ideas.” Analysis considers a sample from the last two minutes."
+  },
+  {
+    "n": "03",
+    "title": "Talks with you",
+    "text": "With voice configured, say “Rocky” and make your request. Use headphones and test OBS: desktop audio capture may include the answers."
+  }
+];
+
+export const getSteps = locale => locale === "pt-BR" ? portuguese : english;

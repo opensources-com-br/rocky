@@ -9,7 +9,7 @@ const content = {
     {
       "type": "list",
       "items": [
-        "Em Plataformas, conecte Twitch, Kick ou YouTube e autorize no navegador. A Kick exige credenciais de aplicativo e encaminhamento por webhook HTTPS público; o YouTube exige credenciais OAuth para desktop e uma live ativa com chat.",
+        "Em Plataformas, conecte Twitch, Kick, YouTube ou Facebook e autorize no navegador. A Kick exige encaminhamento por webhook HTTPS público; YouTube e Facebook exigem credenciais de aplicativo e uma live ativa com chat.",
         "Em IA, escolha Ollama, OpenAI API ou OpenRouter, informe o modelo e teste a conexão. Salve explicitamente a configuração e a chave, quando aplicável.",
         "Receba mensagens novas no canal autenticado. Use Analisar agora ou Dúvidas principais, O que perdi? e Ideias do chat na aba Conversa. O campo de pergunta digitada está oculto no layout atual.",
         "Se quiser voz, configure o whisper-cli, o modelo de transcrição e o microfone; teste a conversa de voz.",

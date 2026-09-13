@@ -26,4 +26,23 @@ class ProviderVoiceServiceTest {
             assertTrue(fixture.spoken.isEmpty())
         }
     }
+    @Test fun usesLocalFallbackOnlyWhenEnabled() = withServer(429) { base ->
+        val fixture = SpeechFixture()
+        ProviderVoiceService(fixture, ElevenLabsSpeech(fixture) { ElevenLabsSession(base) }).use {
+            it.speak("Hello", output)
+            assertEquals(listOf("Hello"), fixture.spoken)
+            assertNotNull(it.telemetry.outputNotice)
+            assertFailsWith<IllegalStateException> {
+                it.speak("Again", output.copy(elevenLabs = output.elevenLabs.copy(fallbackToSystem = false)))
+            }
+            assertEquals(1, fixture.spoken.size)
+        }
+    }
+    @Test fun neverRepeatsPartiallyPlayedSpeechLocally() = withServer(200) { base ->
+        val fixture = SpeechFixture().apply { failWrite = true }
+        ProviderVoiceService(fixture, ElevenLabsSpeech(fixture) { ElevenLabsSession(base) }).use {
+            assertFailsWith<IllegalStateException> { it.speak("Hello", output) }
+            assertTrue(fixture.spoken.isEmpty())
+        }
+    }
 }

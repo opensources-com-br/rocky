@@ -15,6 +15,7 @@ internal fun PreflightDialog(
     twitch: TwitchLiveState,
     kick: KickLiveState,
     youtube: YouTubeLiveState,
+    facebook: FacebookLiveState,
     ai: AiSuggestionState,
     voice: VoiceState,
     agentName: String,
@@ -29,6 +30,7 @@ internal fun PreflightDialog(
         twitch.phase == TwitchConnectionPhase.Connected -> "Twitch"
         kick.isConnected -> "Kick"
         youtube.isConnected -> "YouTube"
+        facebook.isConnected -> "Facebook"
         else -> null
     }
     val connected = connectedPlatform != null

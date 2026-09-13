@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { localized } from "@/lib/i18n";
 
-export default function ArticlePagination({ goNext, goPrev, hasNext, hasPrev, nextTitle, prevTitle }) {
+export default function ArticlePagination({ goNext, goPrev, hasNext, hasPrev, locale, nextTitle, prevTitle }) {
   return (<>
 <div style={{"display": "flex", "gap": "12px", "paddingTop": "28px", "borderTop": "1px solid rgba(255,255,255,.07)"}}>
 {Boolean(hasPrev) && <>
 <Button variant="ghost" className="reference-button" type="button" style={{"flex": "1", "padding": "16px 18px", "borderRadius": "10px", "border": "1px solid rgba(255,255,255,.08)", "display": "flex", "flexDirection": "column", "gap": "4px", "cursor": "pointer"}} onClick={goPrev}>
 <span style={{"fontSize": "12px", "color": "rgba(255,255,255,.35)"}}>
-{"Anterior"}
+{localized(locale, "Previous", "Anterior")}
 </span>
 <span style={{"fontSize": "14.5px", "color": "rgba(255,255,255,.85)"}}>
 {prevTitle}
@@ -16,7 +17,7 @@ export default function ArticlePagination({ goNext, goPrev, hasNext, hasPrev, ne
 {Boolean(hasNext) && <>
 <Button variant="ghost" className="reference-button" type="button" style={{"flex": "1", "padding": "16px 18px", "borderRadius": "10px", "border": "1px solid rgba(255,255,255,.08)", "display": "flex", "flexDirection": "column", "gap": "4px", "textAlign": "right", "cursor": "pointer"}} onClick={goNext}>
 <span style={{"fontSize": "12px", "color": "rgba(255,255,255,.35)"}}>
-{"Próximo"}
+{localized(locale, "Next", "Próximo")}
 </span>
 <span style={{"fontSize": "14.5px", "color": "rgba(255,255,255,.85)"}}>
 {nextTitle}

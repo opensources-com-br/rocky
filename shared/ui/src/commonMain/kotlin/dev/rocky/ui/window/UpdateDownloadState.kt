@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
     val supported get() = installer != null
     var busy by mutableStateOf(false); private set
+    var opening by mutableStateOf(false); private set
     var prepared by mutableStateOf<PreparedUpdate?>(null); private set
     var notice by mutableStateOf<String?>(null); private set
     val progress = MutableStateFlow(0f)
@@ -39,14 +40,14 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
         val service = installer ?: return
         val ready = prepared ?: return
         if (busy || !canInstall()) return
-        busy = true
+        busy = true; opening = true
         job = scope.launch {
             try {
                 interruptibleWork { service.open(ready) }
                 notice = "Instalador aberto. Feche o Rocky, conclua a instalação e abra o app novamente."
             } catch (error: CancellationException) { throw error }
             catch (error: Exception) { notice = "Não foi possível abrir o instalador. Tente baixar novamente ou use o download oficial." }
-            finally { busy = false; job = null }
+            finally { busy = false; opening = false; job = null }
         }
     }
 }

@@ -11,7 +11,10 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
     val progress by state.progress.collectAsState()
     val latestBlocked by rememberUpdatedState(blocked)
     var confirm by remember { mutableStateOf(false) }
-    if (state.busy) {
+    if (state.opening) {
+        LinearProgressIndicator()
+        Text(tr("Verifying and opening installer…", "Verificando e abrindo o instalador…"))
+    } else if (state.busy) {
         LinearProgressIndicator(progress)
         Text("${(progress * 100).toInt()}% · Aguarde a verificação do pacote")
         TextButton(onClick = state::cancel) { Text(tr("Cancel", "Cancelar")) }
@@ -22,6 +25,7 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
             }
         }
         state.prepared?.let {
+            Text("${tr("Ready to install", "Pronto para instalar")}: ${it.version}")
             OutlinedButton(enabled = !blocked, onClick = { confirm = true }) {
                 Text(tr("Open verified installer", "Abrir instalador verificado"))
             }

@@ -9,7 +9,7 @@ const content = {
     {
       "type": "list",
       "items": [
-        "Perguntas por texto e, com reconhecimento configurado, por voz.",
+        "Ações rápidas de análise e, com reconhecimento configurado, perguntas livres por voz.",
         "Sugestões com Ollama, OpenAI API ou OpenRouter, usando uma amostra recente do chat.",
         "Fila de perguntas agrupadas, histórico da sessão, notas, ideias, momentos e resumo dos registros.",
         "Janela redimensionável, modo compacto e opção de manter no topo."
@@ -29,7 +29,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "O app não exige conta Rocky nem inclui backend próprio. Twitch, Kick e YouTube precisam de internet; a Kick também precisa de encaminhamento HTTPS. Provedores de IA remotos recebem o pedido e a amostra de chat. Confira as fontes do OBS com uma gravação de teste."
+      "text": "O app não exige conta Rocky nem inclui backend próprio. Twitch, Kick e YouTube precisam de internet; a Kick também precisa de encaminhamento HTTPS. Provedores de IA remotos recebem o pedido e a amostra de chat. ElevenLabs, quando selecionado em Voz, recebe o texto a ser falado e pode consumir créditos da sua conta. Confira as fontes do OBS com uma gravação de teste."
     },
     {
       "type": "h2",

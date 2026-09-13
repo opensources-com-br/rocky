@@ -18,7 +18,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
         val service = installer ?: return
         if (busy) return
         busy = true; prepared = null; notice = null; progress.value = 0f
-        job = scope.launch {
+        job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 prepared = interruptibleWork { service.download(update) { bytes, total ->
                     progress.value = if (total > 0) (bytes.toDouble() / total).toFloat().coerceIn(0f, 1f) else 0f
@@ -41,7 +41,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
         val ready = prepared ?: return
         if (busy || !canInstall()) return
         busy = true; opening = true
-        job = scope.launch {
+        job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 interruptibleWork { service.open(ready) }
                 notice = "Instalador aberto. Feche o Rocky, conclua a instalação e abra o app novamente."

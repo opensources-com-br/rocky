@@ -20,7 +20,7 @@ internal fun ElevenLabsVoiceOptions(voice: VoiceState) {
         label = { Text("Voice ID") }, singleLine = true)
     OutlinedTextField(settings.modelId, { voice.updateOutput(output.copy(elevenLabs = settings.copy(modelId = it.trim()))) },
         label = { Text("Model ID") }, singleLine = true)
-    SettingSwitch(tr("Use system voice if ElevenLabs fails before playback", "Usar voz local se ElevenLabs falhar antes de reproduzir"), settings.fallbackToSystem) {
+    SettingSwitch(tr("Use system voice if ElevenLabs fails before playback", "Usar voz local se ElevenLabs falhar antes de reproduzir"), settings.fallbackToSystem, {
         voice.updateOutput(output.copy(elevenLabs = settings.copy(fallbackToSystem = it)))
-    }
+    })
 }

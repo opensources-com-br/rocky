@@ -1,6 +1,12 @@
 # Configuração de voz
 
-Rocky usa a voz instalada no computador para responder. O macOS usa `say`, e o Windows usa `System.Speech`. Em **Configurações → Voz**, escolha a voz, ajuste a velocidade e execute o teste de reprodução.
+Rocky oferece voz do sistema ou ElevenLabs para responder. O macOS usa `say`, e o Windows usa `System.Speech`. Em **Configurações → Voz**, escolha a voz, ajuste a velocidade e execute o teste de reprodução.
+
+## ElevenLabs
+
+Em **Configurações → Voz**, selecione **ElevenLabs**, cole a chave e clique em **Salvar chave**. A chave usa Keychain no macOS e DPAPI no Windows. Clique em **Carregar vozes e modelos** e escolha ambos, ou preencha seus IDs manualmente. O modelo inicial é `eleven_flash_v2_5`; sua conta precisa permitir a voz e o modelo selecionados.
+
+Use o teste de reprodução antes da live. O texto da resposta é enviado à ElevenLabs e pode consumir créditos. A reprodução começa durante o recebimento do áudio. Falhas de chave, permissão ou quota aparecem no painel; a alternativa **Usar voz local** é opcional e só atua antes de começar a reprodução, evitando repetir uma resposta parcialmente falada. Cancelar interrompe o recebimento e a reprodução, mas não garante estorno de créditos.
 
 ## Reconhecimento do streamer
 

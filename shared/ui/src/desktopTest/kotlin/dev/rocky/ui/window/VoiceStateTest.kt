@@ -15,6 +15,27 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VoiceStateTest {
+    @Test fun fixedDurationCaptureProtectsTheStreamerFromAutomaticSpeech() = runBlocking {
+        val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
+        val configuration = readyConfiguration.copy(detectEndOfSpeech = false, silenceMillis = 150)
+        val state = VoiceState(service, configuration, captureDurationMillis = 3_000) {}
+        try {
+            state.startCapture(this) {}
+            waitUntil { state.heardInput }
+            service.level = 0f
+            delay(300)
+            state.speakSuggestion(this, "automatic", "Uma sugestão", silenced = false)
+            assertTrue(state.capturing)
+            assertEquals(0, service.transcriptions)
+            assertTrue(service.spoken.isEmpty())
+            state.stopCapture(this) {}
+            waitUntil { !state.transcribing }
+            assertEquals(1, service.transcriptions)
+        } finally {
+            state.resetSession()
+        }
+    }
+
     @Test fun transcribesAfterSpeechEndsBeforeTheCaptureLimit() = runBlocking {
         val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
         val state = VoiceState(service, readyConfiguration, captureDurationMillis = 3_000) {}

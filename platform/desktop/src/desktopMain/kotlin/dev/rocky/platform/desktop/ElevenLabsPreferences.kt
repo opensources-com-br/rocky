@@ -11,6 +11,7 @@ object ElevenLabsPreferences {
     }
     fun saveKey(value: String) {
         if (value == cached) return
+        check(value.isNotBlank() || notice == null) { "Cofre indisponível; a chave existente foi preservada." }
         val store = desktopSecretStore("elevenlabs")
         if (value.isBlank()) store.delete() else store.write(value.trim())
         cached = value.trim(); notice = null

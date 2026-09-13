@@ -3,13 +3,13 @@ package dev.rocky.platform.desktop
 import java.io.ByteArrayOutputStream
 import javax.sound.sampled.*
 
-internal class DesktopMicrophone {
+internal class DesktopMicrophone : dev.rocky.core.voice.AudioCapture {
     private val lock = Any()
     private var line: TargetDataLine? = null
     private var worker: Thread? = null
     private var audio = ByteArrayOutputStream()
     @Volatile private var inputLevel = 0f
-    fun level() = inputLevel
+    override fun level() = inputLevel
     private fun record(active: TargetDataLine, output: ByteArrayOutputStream) {
         val buffer = ByteArray(640)
         while (active.isOpen && output.size() < 16_000 * 2 * 60) {
@@ -20,7 +20,7 @@ internal class DesktopMicrophone {
         }
     }
 
-    fun start(microphoneId: String?) = synchronized(lock) {
+    override fun start(microphoneId: String?): Unit = synchronized(lock) {
         check(line == null) { "Microfone já ativo" }
         check(!Thread.currentThread().isInterrupted)
         val format = AudioFormat(16_000f, 16, 1, true, false)
@@ -34,12 +34,12 @@ internal class DesktopMicrophone {
         worker = Thread({ record(active, output) }, "rocky-microphone-capture").apply { isDaemon = true; start() }
     }
 
-    fun finish(): ByteArray = synchronized(lock) {
+    override fun finish(): ByteArray = synchronized(lock) {
         val active = line ?: error("Microfone inativo")
         active.stop(); active.close()
         worker?.join(1000)
         line = null; worker = null; inputLevel = 0f
         audio.toByteArray().also { audio.reset() }
     }
-    fun cancel() { synchronized(lock) { if (line != null) finish() } }
+    override fun cancel() { synchronized(lock) { if (line != null) finish() } }
 }

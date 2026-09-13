@@ -8,12 +8,12 @@
 .rocky-mac-titlebar span:nth-child(2) { background: #ffbd2e; }
 .rocky-mac-titlebar span:nth-child(3) { background: #28c840; }
 .rocky-mac-titlebar strong { position: absolute; left: 50%; transform: translateX(-50%); font-size: 13px; }
-.rocky-linux-titlebar { display: flex; align-items: center; height: 34px; padding-left: 10px; background: #2d2d2d; color: #f4f4f4; }
-.rocky-linux-titlebar > strong { margin-left: 8px; font-size: 12px; font-weight: 600; }
-.rocky-linux-app-icon { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 4px; background: #e57436; color: #111113; font-size: 10px; font-weight: 700; }
-.rocky-linux-controls { display: flex; align-self: stretch; margin-left: auto; }
-.rocky-linux-controls span { display: grid; place-items: center; width: 34px; color: #ddd; font-size: 14px; }
-.rocky-linux-controls span:last-child { font-size: 17px; }
+.rocky-windows-titlebar { display: flex; align-items: center; height: 34px; padding-left: 10px; background: #2d2d2d; color: #f4f4f4; }
+.rocky-windows-titlebar > strong { margin-left: 8px; font-size: 12px; font-weight: 600; }
+.rocky-windows-app-icon { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 4px; background: #e57436; color: #111113; font-size: 10px; font-weight: 700; }
+.rocky-windows-controls { display: flex; align-self: stretch; margin-left: auto; }
+.rocky-windows-controls span { display: grid; place-items: center; width: 34px; color: #ddd; font-size: 14px; }
+.rocky-windows-controls span:last-child { font-size: 17px; }
 .rocky-app-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; }
 .rocky-app-header > div:first-child { flex: 1; }
 .rocky-app-header strong { font-size: 15px; }

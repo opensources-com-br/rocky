@@ -10,11 +10,11 @@ import "./app-preview.css";
 
 export default function AppPreview() {
   const [platform, setPlatform] = useState("macos");
-  const platformName = platform === "macos" ? "macOS" : "Linux";
+  const platformName = platform === "macos" ? "macOS" : "Windows";
 
   return <figure className="rocky-preview">
     <div className="rocky-preview-switch" role="group" aria-label="Sistema da prévia">
-      {[{ id: "macos", label: "macOS" }, { id: "linux", label: "Linux" }].map(option => (
+      {[{ id: "macos", label: "macOS" }, { id: "windows", label: "Windows" }].map(option => (
         <Button
           key={option.id}
           type="button"

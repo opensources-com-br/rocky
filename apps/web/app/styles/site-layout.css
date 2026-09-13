@@ -37,7 +37,12 @@ html { scrollbar-gutter: stable; }
     --site-section-space: 40px;
     --site-heading-space: 32px;
   }
+  .site-navigation { gap: 20px; }
+  .site-navigation-actions > a:first-child { display: none !important; }
 }
 @media (max-width: 480px) {
-  :root { --site-gutter: 16px; }
+  :root { --site-gutter: 16px; --site-nav-height: 96px; }
+  .site-navigation { flex-wrap: wrap; gap: 0 16px; padding-block: 8px; }
+  .site-navigation-links { margin-left: auto; }
+  .site-navigation-actions { width: 100%; justify-content: flex-end; }
 }

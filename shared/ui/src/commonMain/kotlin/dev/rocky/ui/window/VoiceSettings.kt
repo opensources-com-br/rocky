@@ -65,11 +65,16 @@ internal fun VoiceSettings(
         )
         SettingSwitch("ler novas sugestões", voice.configuration.readSuggestions, voice::updateReadSuggestions)
         Spacer(Modifier.height(10.dp))
+        if (voice.configuration.output.provider == dev.rocky.core.voice.SpeechProvider.ElevenLabs)
+            Text(tr("System voice for optional fallback", "Voz do sistema para alternativa local"))
         VoiceSelector(voice.voices, voice.configuration.output.voiceId, voice.loadingDevices, voice::updateVoice)
         Spacer(Modifier.height(12.dp))
         SettingTitle("Velocidade", "Ritmo da fala.", "${voice.configuration.output.speedPercent}%")
-        RockySlider((voice.configuration.output.speedPercent - 50) / 100f) {
-            voice.updateSpeed((it * 100).toInt() + 50)
+        val cloudVoice = voice.configuration.output.provider == dev.rocky.core.voice.SpeechProvider.ElevenLabs
+        val minSpeed = if (cloudVoice) 70 else 50
+        val speedRange = if (cloudVoice) 50 else 100
+        RockySlider(((voice.configuration.output.speedPercent - minSpeed) / speedRange.toFloat()).coerceIn(0f, 1f)) {
+            voice.updateSpeed((it * speedRange).toInt() + minSpeed)
         }
         SettingTitle(
             "Volume",

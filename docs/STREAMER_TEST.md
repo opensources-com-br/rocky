@@ -10,6 +10,8 @@ Before promoting an alpha build, complete:
 
 - one clean installation on a supported macOS version;
 - one clean installation on Windows 11;
+- one authenticated Kick session with public webhook delivery and one YouTube live-chat session;
+- system and ElevenLabs speech tests on macOS and Windows, including cancellation and optional fallback;
 - at least three real Twitch sessions with two different streamers;
 - one continuous session lasting at least two hours;
 - one OBS recording on each operating system;
@@ -36,7 +38,7 @@ Use a virtual-machine snapshot, a new operating-system user, or a computer where
 3. Install and launch Rocky from Finder or the Windows Start menu.
 4. Confirm the first-use guide opens and follows the operating-system language.
 5. Switch between English and Portuguese, close Rocky, reopen it, and confirm the choice persists.
-6. Complete the required Twitch and AI checks. Confirm **Finish setup** becomes available without testing voice; then configure and test voice optionally.
+6. Complete the required platform (Twitch, Kick or YouTube) and AI checks. Confirm **Finish setup** becomes available without testing voice; then configure and test voice optionally.
 7. Close and reopen Rocky. Confirm the guide stays completed and local notes remain available.
 8. Uninstall Rocky through Finder or Windows Installed apps. Confirm no launcher shortcut remains.
 
@@ -78,7 +80,7 @@ Create a short local recording before the public stream.
 
 Use headphones during voice tests. Do not display the AI settings screen on a public scene while an API key is present.
 
-## 4. Connection interruption
+## 4. Twitch connection interruption
 
 Keep a second account ready to send a unique message after each recovery.
 
@@ -106,7 +108,7 @@ Rocky version and commit:
 Installer and SHA-256:
 Operating system, version, and architecture:
 Display resolution and scaling:
-Twitch channel:
+Platform and channel:
 AI provider and model:
 Voice and microphone:
 OBS version and capture sources:

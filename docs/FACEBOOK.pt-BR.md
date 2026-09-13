@@ -7,7 +7,7 @@ O Rocky recebe novos comentários e a audiência informada pela Graph API em uma
 1. Abra [Meta for Developers](https://developers.facebook.com/apps/) e crie um aplicativo do tipo Business.
 2. Adicione o produto Login do Facebook.
 3. Cadastre exatamente `http://127.0.0.1:18183/oauth/facebook/callback` como URI de redirecionamento OAuth válida.
-4. Garanta que o aplicativo possa solicitar `pages_show_list` e `pages_read_engagement`. Contas fora das funções do aplicativo podem exigir modo Live e aprovação dessas permissões pela Meta.
+4. Garanta que o aplicativo possa solicitar `pages_show_list`, `pages_read_engagement` e `pages_read_user_content`. Contas fora das funções do aplicativo podem exigir modo Live e aprovação dessas permissões pela Meta.
 5. Em Configurações → Plataformas → Facebook, informe App ID e App Secret.
 
 O App Secret é salvo no Keychain do macOS ou protegido pelo DPAPI do usuário no Windows. Tokens de usuário e de Página permanecem apenas na memória e são descartados ao desconectar ou fechar o Rocky.

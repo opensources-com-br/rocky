@@ -72,7 +72,9 @@ fun main() = application {
     val kickClient = remember { DesktopKickChatClient() }
     val youtubeClient = remember { DesktopYouTubeChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
-    val voiceService = remember { DesktopVoiceService() }
+    val voiceService = remember { dev.rocky.data.voice.ProviderVoiceService(
+        DesktopVoiceService(), dev.rocky.platform.desktop.DesktopPcmPlayback(),
+    ) }
     val updateInstaller = remember {
         dev.rocky.data.updates.DesktopUpdateInstaller(RockyDesktopPaths.notesDatabase.parent.resolve("updates"))
     }

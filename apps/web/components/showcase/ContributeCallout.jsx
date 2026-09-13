@@ -1,10 +1,11 @@
+import SiteFrame from "@/components/SiteFrame";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function ContributeCallout() {
   return (<>
 <div style={{"borderBottom": "1px solid rgba(255,255,255,.07)", "flex": "1", "display": "flex"}}>
-<div style={{"maxWidth": "1120px", "width": "100%", "margin": "0 auto", "padding": "72px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "textAlign": "center", "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "18px"}}>
+<SiteFrame className="site-section" style={{"textAlign": "center", "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "18px"}}>
 <h2 style={{"margin": "0", "maxWidth": "520px", "fontSize": "34px", "lineHeight": "1.1", "letterSpacing": "-.04em", "fontWeight": "500", "textWrap": "balance"}}>
 {"Roda o Rocky na sua live?"}
 </h2>
@@ -19,7 +20,7 @@ export default function ContributeCallout() {
 {"Ler a documentação"}
 </Link>
 </div>
-</div>
+</SiteFrame>
 </div>
   </>);
 }

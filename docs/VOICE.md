@@ -1,10 +1,16 @@
 # Voice setup
 
-Rocky uses a voice installed on the computer to answer. macOS uses `say`, and Windows uses `System.Speech`. In **Settings → Voice**, select a voice, adjust its speed, and run the playback test.
+Rocky supports system voices and ElevenLabs for spoken answers. macOS uses `say`, and Windows uses `System.Speech`. In **Settings → Voice**, select a voice, adjust its speed, and run the playback test.
+
+## ElevenLabs
+
+In **Settings → Voice**, select **ElevenLabs**, enter the API key and save it. Keys use macOS Keychain or Windows DPAPI. Load voices and models, then select both, or enter their IDs manually. The initial model is `eleven_flash_v2_5`; your account must allow the selected voice/model.
+
+Run the voice test before going live. Response text is sent to ElevenLabs and tests can consume account credits. PCM audio plays as it arrives. Key, permission and quota failures are shown in the panel. Optional system fallback applies only before playback starts, preventing a partly spoken response from being repeated. Cancelling stops the request and playback but does not guarantee a credit refund.
 
 ## Streamer recognition
 
-Voice is optional. After it is configured, listening starts when Twitch, Kick, or YouTube connects; the footer turns listening on or off. Rocky processes audio locally in short segments and only runs a command after recognizing its name. Say, for example, **“Rocky, what does chat want to play?”**. The recognized text appears in Conversation, Rocky checks up to 200 received messages from the last two minutes, and answers aloud.
+Voice is optional. After it is configured, listening starts when Twitch, Kick, or YouTube connects; the footer turns listening on or off. Rocky processes audio locally in short segments and accepts wake-word requests, direct shortcut commands and brief follow-ups. Say, for example, **“Rocky, what does chat want to play?”**. The recognized text appears in Conversation, Rocky checks up to 200 received messages from the last two minutes, and answers aloud.
 
 On macOS with Homebrew, click **Set up voice recognition**. Rocky installs `whisper.cpp`, downloads the multilingual model, and saves both paths on the device. On Windows, manually select the `whisper-cli` executable, GGML model, and microphone.
 

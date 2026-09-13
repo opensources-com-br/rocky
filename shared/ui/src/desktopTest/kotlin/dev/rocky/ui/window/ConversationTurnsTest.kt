@@ -1,6 +1,7 @@
 package dev.rocky.ui.window
 
-import kotlin.test.*
+import org.junit.Assert.*
+import org.junit.Test
 
 class ConversationTurnsTest {
     @Test fun supersededRequestsCannotFinishANewTurn() {

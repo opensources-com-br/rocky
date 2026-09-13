@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import dev.rocky.core.facebook.FacebookChatClient
 import dev.rocky.core.facebook.FacebookConfiguration
 import dev.rocky.core.facebook.FacebookConnectionEvent
@@ -56,7 +57,55 @@ internal class FacebookLiveState(
         clearConnection()
     }
 
-    private fun receive(event: FacebookConnectionEvent) = Unit
+    private fun receive(event: FacebookConnectionEvent) = Snapshot.withMutableSnapshot {
+        when (event) {
+            is FacebookConnectionEvent.PhaseChanged -> {
+                phase = event.phase
+                detail = event.detail
+                if (event.phase == FacebookConnectionPhase.Disconnected) clearConnection()
+                if (event.phase != FacebookConnectionPhase.Connected) viewerCount = null
+            }
+            is FacebookConnectionEvent.AuthorizationRequired -> authorizationUri = event.authorizationUri
+            is FacebookConnectionEvent.Connected -> {
+                if (startedAtMillis == null) startedAtMillis = currentTimeMillis()
+                phase = FacebookConnectionPhase.Connected
+                page = event.page
+                liveVideo = event.liveVideo
+                authorizationUri = null
+                detail = "Recebendo o chat de ${event.page.name}"
+            }
+            is FacebookConnectionEvent.AudienceUpdated -> viewerCount = event.viewerCount
+            is FacebookConnectionEvent.MessageReceived -> receiveMessage(event.message)
+        }
+    }
+
+    private fun receiveMessage(message: ChatMessage) {
+        if (messages.size == MAX_CHAT_MESSAGES) receivedAtByMessageId.remove(messages.removeAt(0).id)
+        val receivedAt = currentTimeMillis()
+        messages += message.copy(receivedAtMillis = receivedAt, sessionId = sessionId)
+        receivedAtByMessageId[message.id] = receivedAt
+        totalMessages += 1
+        val second = receivedAt / 1_000
+        receivedMessageTimes[second] = (receivedMessageTimes[second] ?: 0) + 1
+        refreshMetrics()
+    }
+
+    fun messagesReceivedWithin(durationMillis: Long): List<ChatMessage> {
+        val cutoff = currentTimeMillis() - durationMillis
+        return messages.filter { (receivedAtByMessageId[it.id] ?: Long.MIN_VALUE) >= cutoff }
+    }
+
+    fun refreshMetrics() = Snapshot.withMutableSnapshot {
+        val cutoff = currentTimeMillis() / 1_000 - 59
+        receivedMessageTimes.keys.filter { it < cutoff }.forEach(receivedMessageTimes::remove)
+        messagesPerMinute = receivedMessageTimes.values.sum()
+        if (startedAtMillis != null && isActive) {
+            val time = currentTimeMillis() / 5_000 * 5_000
+            val sample = PulseSample(time, messagesPerMinute, viewerCount, isConnected)
+            if (pulse.lastOrNull()?.timeMillis == time) pulse[pulse.lastIndex] = sample else pulse.add(sample)
+            while (pulse.size > 120) pulse.removeAt(0)
+        }
+    }
     private fun clearConnection() {
         phase = FacebookConnectionPhase.Disconnected
         detail = null

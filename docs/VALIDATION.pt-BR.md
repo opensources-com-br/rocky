@@ -42,12 +42,12 @@ Execute esta lista no macOS e em uma instalação ou emulador Windows real. Test
 - [ ] Instalar e abrir o Rocky sem uma instalação do Java no sistema.
 - [ ] Mover a janela pela barra de título nativa.
 - [ ] Redimensionar a janela expandida e confirmar que ela não fica menor que 340 × 180.
-- [ ] Minimizar pelo controle amarelo do Rocky e restaurar pelo Dock ou pela barra de tarefas.
+- [ ] Minimizar pelo controle nativo da barra de título e restaurar pelo Dock ou pela barra de tarefas.
 - [ ] Fixar a janela, colocar outro aplicativo sobre ela e confirmar que o Rocky continua visível; desafixar e confirmar que o empilhamento normal retorna.
 - [ ] Ativar o modo compacto e confirmar que a janela passa para 340 × 180.
 - [ ] Voltar ao modo expandido e confirmar que o tamanho anterior é restaurado.
-- [ ] Abrir as configurações e confirmar que a janela passa para 420 × 820; fechar e confirmar que o tamanho anterior retorna.
-- [ ] Fechar o Rocky pelo controle vermelho.
+- [ ] Abrir as configurações e confirmar que a janela passa para 462 × 820 dp; fechar e confirmar que o tamanho anterior retorna.
+- [ ] Fechar o Rocky pelo controle nativo da janela e conferir o resumo dos registros da sessão.
 
 ## Teste com streamers
 

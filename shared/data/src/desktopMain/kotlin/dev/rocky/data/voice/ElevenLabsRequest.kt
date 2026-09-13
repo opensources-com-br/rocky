@@ -4,7 +4,7 @@ import dev.rocky.core.voice.VoiceOutputConfiguration
 import kotlinx.serialization.json.*
 
 internal fun speechPayload(text: String, output: VoiceOutputConfiguration): String = buildJsonObject {
-    require(text.isNotBlank() && text.length <= 5000) { "Resposta longa demais para reprodução" }
+    require(text.isNotBlank() && text.length <= 5000) { "ElevenLabs: resposta vazia ou longa demais para reprodução" }
     put("text", text)
     put("model_id", output.elevenLabs.modelId)
     putJsonObject("voice_settings") {

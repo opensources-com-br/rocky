@@ -29,10 +29,21 @@ class UpdateDownloader(private val directory: Path) {
                 expectedChecksum(bytes.toString(Charsets.UTF_8), asset.name)
             }
             connection.read(asset.url) { input ->
-                val bytes = input.readNBytes(minOf(asset.size + 1, Int.MAX_VALUE.toLong()).toInt())
-                require(bytes.size.toLong() == asset.size) { "Download incompleto. Tente novamente." }
-                Files.write(partial, bytes, StandardOpenOption.CREATE_NEW)
-                onProgress(asset.size, asset.size)
+                Files.newOutputStream(partial, StandardOpenOption.CREATE_NEW).use { output ->
+                    val buffer = ByteArray(64 * 1024)
+                    var total = 0L
+                    onProgress(0, asset.size)
+                    while (true) {
+                        connection.checkCancelled()
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        total += count
+                        require(total <= asset.size) { "Instalador maior que o anunciado." }
+                        output.write(buffer, 0, count)
+                        onProgress(total, asset.size)
+                    }
+                    require(total == asset.size) { "Download incompleto. Tente novamente." }
+                }
             }
             require(updateChecksum(partial) == checksum) { "O instalador não passou na verificação de integridade." }
             connection.checkCancelled()

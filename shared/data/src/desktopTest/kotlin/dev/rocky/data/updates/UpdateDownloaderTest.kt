@@ -30,4 +30,5 @@ class UpdateDownloaderTest {
             }
         } finally { directory.toFile().deleteRecursively() }
     }
+    @Test fun stagesCompleteVerifiedPackage() = runDownload("abc")
 }

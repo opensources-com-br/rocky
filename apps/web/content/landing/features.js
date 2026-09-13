@@ -2,7 +2,7 @@ export const features = [
   {
     "tag": "VOZ",
     "title": "Pergunte por voz ou texto",
-    "text": "Use transcrição local com whisper.cpp e respostas pelas vozes do sistema, ou comece somente com texto."
+    "text": "Use transcrição local com whisper.cpp e respostas pela voz do sistema ou ElevenLabs, ou comece somente com texto."
   },
   {
     "tag": "NOTAS",

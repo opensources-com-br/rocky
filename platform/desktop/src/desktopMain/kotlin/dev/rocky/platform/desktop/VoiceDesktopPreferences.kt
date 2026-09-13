@@ -14,6 +14,13 @@ object VoiceDesktopPreferences {
                 voiceId = preferences.get(VOICE_KEY, "").ifBlank { null },
                 speedPercent = preferences.getInt(SPEED_KEY, 100),
                 volumePercent = preferences.getInt(VOLUME_KEY, 70),
+                provider = runCatching { dev.rocky.core.voice.SpeechProvider.valueOf(preferences.get("provider", "System")) }.getOrDefault(dev.rocky.core.voice.SpeechProvider.System),
+                elevenLabs = dev.rocky.core.voice.ElevenLabsConfiguration(
+                    apiKey = ElevenLabsPreferences.readKey(),
+                    voiceId = preferences.get("elevenVoice", ""),
+                    modelId = preferences.get("elevenModel", "eleven_flash_v2_5"),
+                    fallbackToSystem = preferences.getBoolean("elevenFallback", false),
+                ),
             ),
             transcription = LocalTranscriptionConfiguration(
                 executablePath = preferences.get(WHISPER_EXECUTABLE_KEY, ""),
@@ -26,6 +33,11 @@ object VoiceDesktopPreferences {
             readSuggestions = preferences.getBoolean(READ_SUGGESTIONS_KEY, false),
         )
         set(value) {
+            ElevenLabsPreferences.saveKey(value.output.elevenLabs.apiKey)
+            preferences.put("provider", value.output.provider.name)
+            preferences.put("elevenVoice", value.output.elevenLabs.voiceId)
+            preferences.put("elevenModel", value.output.elevenLabs.modelId)
+            preferences.putBoolean("elevenFallback", value.output.elevenLabs.fallbackToSystem)
             preferences.putBoolean("detectEndOfSpeech", value.detectEndOfSpeech)
             preferences.putLong("silenceMillis", value.silenceMillis)
             preferences.putFloat("speechThreshold", value.speechThreshold)

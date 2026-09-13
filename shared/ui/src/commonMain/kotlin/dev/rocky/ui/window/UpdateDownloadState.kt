@@ -29,4 +29,10 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
         }
     }
 
+    fun cancel() {
+        job?.cancel()
+        installer?.cancel()
+        notice = "Download cancelado. Você pode tentar novamente."
+    }
+
 }

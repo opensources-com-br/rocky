@@ -30,7 +30,7 @@ export default function HeroContent({ locale }) {
 </a>
 </div>
 <span style={{"fontSize": "12px", "color": "rgba(255,255,255,.3)", "fontFamily": "var(--font-geist-mono), monospace"}}>
-{localized(locale, "macOS and Windows · alpha · unsigned installers", "macOS e Windows · alpha · instaladores não assinados")}
+{localized(locale, "macOS and Windows · signed alpha in preparation", "macOS e Windows · alpha assinada em preparação")}
 </span>
 <AppPreview locale={locale} />
 </SiteFrame>

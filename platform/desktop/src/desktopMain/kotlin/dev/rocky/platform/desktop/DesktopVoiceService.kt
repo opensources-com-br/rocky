@@ -67,34 +67,12 @@ class DesktopVoiceService : VoiceService {
     override fun speak(text: String, configuration: VoiceOutputConfiguration) = output.speak(text, configuration)
     override fun stopSpeaking() = output.cancel()
 
+    private val microphone = DesktopMicrophone()
     override fun startCapture(microphoneId: String?) {
-        synchronized(transcriptionLock) {
-            check(transcriptionProcess == null) { "A transcription is already active" }
-            transcriptionCancelled = false
-        }
-        synchronized(captureLock) {
-            check(captureLine == null) { "Microphone capture is already active" }
-            val format = captureFormat()
-            val info = DataLine.Info(TargetDataLine::class.java, format)
-            val line = microphoneId
-                ?.let { id -> AudioSystem.getMixerInfo().firstOrNull { it.name == id } }
-                ?.let(AudioSystem::getMixer)
-                ?.getLine(info) as? TargetDataLine
-                ?: AudioSystem.getLine(info) as TargetDataLine
-            val output = ByteArrayOutputStream()
-            line.open(format)
-            line.start()
-            currentInputLevel = 0f
-            captureLine = line
-            capturedAudio = output
-            captureThread = Thread({ capture(line, output) }, "rocky-microphone-capture").apply {
-                isDaemon = true
-                start()
-            }
-        }
+        synchronized(transcriptionLock) { transcriptionCancelled = false }
+        microphone.start(microphoneId)
     }
-
-    override fun inputLevel(): Float = currentInputLevel
+    override fun inputLevel(): Float = microphone.level()
 
     override fun prepareTranscription(onProgress: (String) -> Unit): LocalTranscriptionConfiguration {
         check(operatingSystem.contains("mac")) { "A configuração automática ainda está disponível apenas no macOS" }
@@ -210,16 +188,7 @@ class DesktopVoiceService : VoiceService {
         }
     }
 
-    private fun finishCapture(): ByteArray = synchronized(captureLock) {
-        val line = captureLine ?: error("Microphone capture is not active")
-        line.stop()
-        line.close()
-        captureThread?.join(CAPTURE_JOIN_TIMEOUT_MILLIS)
-        captureLine = null
-        captureThread = null
-        currentInputLevel = 0f
-        (capturedAudio?.toByteArray() ?: byteArrayOf()).also { capturedAudio = null }
-    }
+    private fun finishCapture(): ByteArray = microphone.finish()
 
     private fun macVoices(): List<SystemVoice> {
         val output = runCommand(listOf("say", "-v", "?"))

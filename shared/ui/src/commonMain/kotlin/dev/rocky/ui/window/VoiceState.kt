@@ -31,6 +31,25 @@ internal class VoiceState(
         private set
     var voiceCatalog by mutableStateOf<dev.rocky.core.voice.VoiceCatalog?>(null); private set
     var loadingCatalog by mutableStateOf(false); private set
+    var calibrating by mutableStateOf(false); private set
+    private var calibrationJob: Job? = null
+    fun calibrate(scope: CoroutineScope) {
+        if (calibrating) return
+        disableListener(); stopSpeaking(); cancelCapture()
+        calibrating = true
+        calibrationJob = scope.launch {
+            try {
+                interruptibleWork { service.startCapture(configuration.transcription.microphoneId) }
+                status = "Fique em silêncio por 3 segundos para medir o ruído."
+                val noise = dev.rocky.core.voice.NoiseCalibration()
+                repeat(40) { delay(75); inputLevel = service.inputLevel(); noise.sample(inputLevel) }
+                updateSpeechThreshold(noise.threshold())
+                status = "Microfone calibrado. Ative o ouvinte para testar."
+            } catch (error: kotlinx.coroutines.CancellationException) { throw error }
+            catch (_: Exception) { status = "Não foi possível calibrar. Confira o microfone e reduza o ruído." }
+            finally { service.cancelCapture(); calibrating = false; inputLevel = 0f }
+        }
+    }
     val telemetry get() = service.telemetry
 
     fun updateOutput(output: dev.rocky.core.voice.VoiceOutputConfiguration) {
@@ -461,6 +480,7 @@ internal class VoiceState(
     }
 
     fun resetSession() {
+        calibrationJob?.cancel()
         listenerEnabled = false
         listenerScope = null
         listenerTranscript = null

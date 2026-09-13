@@ -17,4 +17,18 @@ class UpdateDownloadStateTest {
         override fun cancel() {}
         override fun open(update: PreparedUpdate) { opened++ }
     }
+    @Test fun downloadDoesNotInstallAndActiveSessionBlocksOpening() = runBlocking {
+        val installer = Installer()
+        val state = UpdateDownloadState(installer)
+        state.download(this, AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertNotNull(state.prepared)
+        assertEquals(1f, state.progress.value)
+        assertEquals(0, installer.opened)
+        state.install(this) { false }
+        assertEquals(0, installer.opened)
+        state.install(this) { true }
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertEquals(1, installer.opened)
+    }
 }

@@ -159,7 +159,7 @@ internal class VoiceState(
     }
 
     fun enableListener(scope: CoroutineScope, onTranscript: (String) -> Unit) {
-        if (listenerEnabled) return
+        if (listenerEnabled || calibrating) return
         if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
             return
@@ -372,7 +372,7 @@ internal class VoiceState(
         onFailure: () -> Unit = {},
         onTranscript: (String) -> Unit,
     ) {
-        if (capturing || transcribing || captureJob?.isActive == true) return
+        if (calibrating || capturing || transcribing || captureJob?.isActive == true) return
         if (!transcriptionReady) {
             status = "Configure o whisper.cpp na aba Voz antes de usar o microfone"
             return
@@ -410,6 +410,9 @@ internal class VoiceState(
                 captureTimeout?.cancel()
                 captureTimeout = scope.launch {
                     delay(captureDurationMillis)
+                    if (detectEnd && endpoint.heardSpeech && capturing && captureDurationMillis == 8_000L) {
+                        delay(22_000L)
+                    }
                     if (capturing) {
                         if (detectEnd && !endpoint.heardSpeech) {
                             cancelCapture()

@@ -199,7 +199,7 @@ internal class AiSuggestionState(
         onComplete: (RockySuggestion?) -> Unit = {},
     ) {
         if (generating) {
-            if (!automatic && activeAutomatic) cancelAnalysis()
+            if (!automatic) cancelAnalysis()
             else { onComplete(null); return }
         }
         val filtered = dev.rocky.core.live.filterChat(messages, filters)

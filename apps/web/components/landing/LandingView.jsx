@@ -9,7 +9,7 @@ import LandingFooter from "./LandingFooter";
 
 export default function LandingView({ features, guarantees, localCards, platforms, steps }) {
   return (<>
-<div style={{"background": "#080706", "color": "#f2efec", "fontFamily": "var(--font-geist-sans), sans-serif", "overflowX": "hidden", "letterSpacing": "-.011em"}}>
+<div style={{"background": "#080706", "color": "#f2efec", "fontFamily": "var(--font-geist-sans), sans-serif", "letterSpacing": "-.011em"}}>
 <LandingNav  />
 <HeroSection />
 <PlatformsStrip platforms={platforms} />

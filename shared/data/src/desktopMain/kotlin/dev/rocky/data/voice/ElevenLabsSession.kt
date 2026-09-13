@@ -23,7 +23,7 @@ internal class ElevenLabsSession(private val base: String = "https://api.elevenl
         timer.shutdownNow()
     }
     fun open(path: String, key: String, body: String? = null): InputStream {
-        require(key.isNotBlank()) { "Informe sua chave ElevenLabs em Voz." }
+        require(key.isNotBlank()) { "ElevenLabs: informe sua chave em Voz." }
         checkActive()
         val request = HttpRequest.newBuilder(URI.create(base + path))
             .header("xi-api-key", key.trim()).timeout(Duration.ofSeconds(30))

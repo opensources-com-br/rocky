@@ -23,7 +23,7 @@ class ProviderVoiceService(private val local: VoiceService, player: PcmPlayback)
             if (configuration.provider == SpeechProvider.System) local.speak(text, configuration)
             else try { remote.speak(text, configuration) } catch (error: Exception) {
                 if (error is InterruptedException || Thread.currentThread().isInterrupted || generation.get() != run) throw error
-                if (!configuration.elevenLabs.fallbackToSystem || remote.firstAudioMillis > 0) throw error
+                if (!configuration.elevenLabs.fallbackToSystem || remote.startedPlayback) throw error
                 speechTiming = speechTiming.copy(outputNotice = "ElevenLabs indisponível; resposta reproduzida com voz local.")
                 local.speak(text, configuration.copy(provider = SpeechProvider.System))
             }

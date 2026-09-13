@@ -24,6 +24,10 @@ O workflow público atual permanece no canal prerelease e não presume certifica
 
 ## Atualização e recuperação
 
+Em Configurações → Dados, **Baixar atualização** seleciona DMG/MSI por sistema e arquitetura, mostra progresso e valida tamanho e SHA-256. Downloads incompletos, corrompidos ou cancelados são descartados. A abertura revalida o arquivo e fica bloqueada com plataformas ativas. Feche Rocky antes de concluir o instalador; no macOS, substitua o app em Aplicativos. O pacote verificado permanece na subpasta `updates` para nova tentativa. Não há substituição silenciosa, reinício automático ou rollback automático nesta versão.
+
+Validação obrigatória entre dois instaladores: download e cancelamento; nova tentativa offline/online; pacote alterado; tentativa com conexão ativa; cancelamento do instalador; upgrade com preservação de notas, fontes, preferências e credenciais; reabertura na versão esperada. Execute em macOS e Windows. Testes automatizados não homologam a instalação nativa nem a assinatura dos releases.
+
 Feche o Rocky e copie a pasta de dados antes de validar um upgrade. Instale o candidato sobre a versão anterior; confira reabertura, notas/fontes, versão nativa e credenciais migradas. Não abra um banco migrado com uma versão antiga: restaure a cópia completa se precisar retornar. O app não instala atualizações automaticamente durante uma live.
 
 Se o banco não abrir, o app preserva o arquivo e permite tentar carregar novamente. Use Dados para localizar a pasta e faça uma cópia antes de reparos. Não apague o banco como primeiro passo. Exportações e backups não são apagados pela limpeza do app.

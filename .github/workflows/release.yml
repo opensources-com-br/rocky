@@ -25,6 +25,9 @@ jobs:
               apps/desktop/build/compose/binaries/main/msi/*.msi
               apps/desktop/build/compose/binaries/main/exe/*.exe
     runs-on: ${{ matrix.os }}
+    env:
+      ROCKY_MAC_KEYCHAIN: ${{ runner.temp }}/rocky-signing.keychain-db
+      ROCKY_NOTARY_PROFILE: rocky-ci-notary
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -36,8 +39,35 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
-      - run: ./gradlew build ${{ matrix.task }} -ProckyTwitchClientId="${{ vars.ROCKY_TWITCH_CLIENT_ID }}"
-      - run: python scripts/release_metadata.py
+      - name: Import macOS signing certificate
+        if: runner.os == 'macOS'
+        env:
+          ROCKY_MAC_CERTIFICATE_BASE64: ${{ secrets.ROCKY_MAC_CERTIFICATE_BASE64 }}
+          ROCKY_MAC_CERTIFICATE_PASSWORD: ${{ secrets.ROCKY_MAC_CERTIFICATE_PASSWORD }}
+        run: |
+          ROCKY_MAC_KEYCHAIN_PASSWORD="$(openssl rand -hex 32)"
+          echo "::add-mask::$ROCKY_MAC_KEYCHAIN_PASSWORD"
+          echo "ROCKY_MAC_KEYCHAIN_PASSWORD=$ROCKY_MAC_KEYCHAIN_PASSWORD" >> "$GITHUB_ENV"
+          export ROCKY_MAC_KEYCHAIN_PASSWORD
+          scripts/import-macos-signing-certificate.sh
+      - name: Build and package
+        env:
+          ROCKY_MAC_SIGN: ${{ runner.os == 'macOS' && 'true' || 'false' }}
+          ROCKY_MAC_SIGN_IDENTITY: ${{ secrets.ROCKY_MAC_SIGN_IDENTITY }}
+        run: ./gradlew build ${{ matrix.task }} -ProckyTwitchClientId="${{ vars.ROCKY_TWITCH_CLIENT_ID }}"
+      - name: Configure macOS notarization
+        if: runner.os == 'macOS'
+        env:
+          ROCKY_APPLE_ID: ${{ secrets.ROCKY_APPLE_ID }}
+          ROCKY_APPLE_TEAM_ID: ${{ secrets.ROCKY_APPLE_TEAM_ID }}
+          ROCKY_APPLE_APP_PASSWORD: ${{ secrets.ROCKY_APPLE_APP_PASSWORD }}
+        run: scripts/configure-macos-notary.sh
+      - name: Notarize macOS package
+        if: runner.os == 'macOS'
+        run: scripts/notarize-macos.sh
+      - name: Record Windows package metadata
+        if: runner.os == 'Windows'
+        run: python scripts/release_metadata.py
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}
@@ -46,6 +76,9 @@ jobs:
             apps/desktop/build/compose/binaries/main/BUILDINFO-*.json
           if-no-files-found: error
           retention-days: 30
+      - name: Remove temporary macOS keychain
+        if: always() && runner.os == 'macOS'
+        run: security delete-keychain "$ROCKY_MAC_KEYCHAIN" || true
 
   publish:
     needs: package

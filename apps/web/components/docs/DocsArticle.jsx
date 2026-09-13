@@ -4,7 +4,7 @@ import ArticlePagination from "./ArticlePagination";
 
 export default function DocsArticle({ blocks, goNext, goPrev, hasNext, hasPrev, nextTitle, pageGroup, pageLead, pageTitle, prevTitle }) {
   return (<>
-<div style={{"padding": "40px 36px 96px", "minWidth": "0"}}>
+<article className="docs-article">
 <ArticleHeading pageGroup={pageGroup} pageTitle={pageTitle} />
 <h1 style={{"margin": "14px 0 12px", "fontSize": "40px", "lineHeight": "1.08", "letterSpacing": "-.04em", "fontWeight": "500"}} className="page-heading">
 {pageTitle}
@@ -14,6 +14,6 @@ export default function DocsArticle({ blocks, goNext, goPrev, hasNext, hasPrev, 
 </p>
 <ArticleBlocks blocks={blocks} />
 <ArticlePagination goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} nextTitle={nextTitle} prevTitle={prevTitle} />
-</div>
+</article>
   </>);
 }

@@ -39,6 +39,12 @@ html { scrollbar-gutter: stable; }
   padding-inline: 0;
   min-height: calc(100dvh - var(--site-nav-height));
 }
+.docs-article {
+  min-width: 0;
+  padding: var(--site-heading-space) var(--site-gutter) var(--site-section-space);
+  overflow-wrap: anywhere;
+}
+.docs-article [id] { scroll-margin-top: calc(var(--site-nav-height) + 24px); }
 
 @media (max-width: 800px) {
   :root {

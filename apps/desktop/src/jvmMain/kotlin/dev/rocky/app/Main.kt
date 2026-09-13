@@ -17,6 +17,7 @@ import dev.rocky.data.ai.DesktopAiSuggestionClient
 import dev.rocky.data.kick.DesktopKickChatClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.data.youtube.DesktopYouTubeChatClient
+import dev.rocky.data.facebook.DesktopFacebookChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
 import dev.rocky.platform.desktop.AgentDesktopPreferences
 import dev.rocky.platform.desktop.AiDesktopPreferences
@@ -27,6 +28,7 @@ import dev.rocky.platform.desktop.LanguageDesktopPreferences
 import dev.rocky.platform.desktop.KickDesktopPreferences
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.YouTubeDesktopPreferences
+import dev.rocky.platform.desktop.FacebookDesktopPreferences
 import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
@@ -71,6 +73,7 @@ fun main() = application {
     val twitchClient = remember { DesktopTwitchChatClient() }
     val kickClient = remember { DesktopKickChatClient() }
     val youtubeClient = remember { DesktopYouTubeChatClient() }
+    val facebookClient = remember { DesktopFacebookChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
     val voiceService = remember { dev.rocky.data.voice.ProviderVoiceService(
         DesktopVoiceService(), dev.rocky.platform.desktop.DesktopPcmPlayback(),
@@ -79,13 +82,14 @@ fun main() = application {
         dev.rocky.data.updates.DesktopUpdateInstaller(RockyDesktopPaths.notesDatabase.parent.resolve("updates"))
     }
 
-    DisposableEffect(noteRepository, twitchClient, kickClient, youtubeClient, aiClient, voiceService) {
+    DisposableEffect(noteRepository, twitchClient, kickClient, youtubeClient, facebookClient, aiClient, voiceService) {
         onDispose {
             voiceService.close()
             aiClient.close()
             twitchClient.close()
             kickClient.close()
             youtubeClient.close()
+            facebookClient.close()
             noteRepository.close()
         }
     }

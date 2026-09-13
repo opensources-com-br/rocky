@@ -1,6 +1,6 @@
 const content = {
   "group": "Configuração",
-  "lead": "Twitch, Kick e YouTube recebem novas mensagens e a contagem atual de espectadores do canal autenticado.",
+  "lead": "Twitch, Kick, YouTube e Facebook recebem novas mensagens e a contagem atual de espectadores do canal autenticado.",
   "blocks": [
     {
       "type": "h2",
@@ -40,11 +40,23 @@ const content = {
     },
     {
       "type": "h2",
+      "text": "Conectar Facebook"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Crie um app Business no Meta for Developers, adicione o produto Login do Facebook e cadastre o callback http://127.0.0.1:18183/oauth/facebook/callback.",
+        "Solicite pages_show_list e pages_read_engagement. Informe App ID e App Secret no Rocky e autorize a conta que administra a Página.",
+        "Inicie uma live na Página antes de conectar. O Rocky seleciona a primeira Página autorizada com transmissão ativa e acompanha os novos comentários."
+      ]
+    },
+    {
+      "type": "h2",
       "text": "Dados e permissões"
     },
     {
       "type": "para",
-      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1 e webhooks assinados. O YouTube usa OAuth para desktop com acesso somente de leitura e consulta respeitando o intervalo da API. Client Secrets usam o cofre do sistema; tokens ficam somente na memória."
+      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1 e webhooks assinados. YouTube e Facebook usam OAuth e consultam periodicamente o chat. Client Secrets e App Secrets usam o cofre do sistema; tokens ficam somente na memória."
     },
     {
       "type": "h2",
@@ -52,7 +64,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Facebook aparece como indisponível. Os chips mostram o estado e abrem a ação de desconectar. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes ou Super Chats como eventos de apoio."
+      "text": "Os chips mostram o estado e abrem a ação de desconectar. Rocky não envia mensagens ao chat e não recebe subs, bits, raids, pontos do canal, presentes, Estrelas ou Super Chats como eventos de apoio."
     },
     {
       "type": "h2",
@@ -60,7 +72,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A Twitch tenta reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. O YouTube continua consultando enquanto a live estiver disponível. Nenhum conector carrega o histórico completo; mensagens podem ser perdidas durante indisponibilidade."
+      "text": "A Twitch tenta reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. YouTube e Facebook continuam consultando enquanto a live estiver disponível. Nenhum conector carrega o histórico completo; mensagens podem ser perdidas durante indisponibilidade."
     }
   ]
 };

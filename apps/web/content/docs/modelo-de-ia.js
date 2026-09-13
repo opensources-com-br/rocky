@@ -8,7 +8,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Mantenha o servidor e um modelo de texto instalados. Use http://localhost:11434 e informe o nome exato do modelo; o padrão do app é llama3.2. Rocky não instala modelos de IA nem detecta uma lista automaticamente."
+      "text": "Mantenha o servidor e um modelo de texto instalados. Use http://localhost:11434 e informe o nome exato do modelo; o padrão do app é llama3.2. Rocky não instala modelos de IA. Use Buscar modelos e Escolher modelo, ou informe o nome manualmente."
     },
     {
       "type": "h2",
@@ -40,7 +40,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Ollama em loopback processa as sugestões no computador. OpenAI/OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Totais de tokens são parciais, não uma estimativa de cobrança. Cancelar não desfaz consumo já ocorrido."
+      "text": "Para processamento local, selecione um modelo local no Ollama; um endereço loopback, sozinho, não comprova onde o servidor executa o modelo. OpenAI/OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Totais de tokens são parciais, não uma estimativa de cobrança. Cancelar não desfaz consumo já ocorrido."
     }
   ]
 };

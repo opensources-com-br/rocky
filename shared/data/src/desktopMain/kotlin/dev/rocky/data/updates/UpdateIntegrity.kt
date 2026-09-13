@@ -12,3 +12,16 @@ internal fun expectedChecksum(text: String, filename: String): String {
     return entries.single().groupValues[1].lowercase()
 }
 
+fun updateChecksum(path: Path): String {
+    val digest = MessageDigest.getInstance("SHA-256")
+    Files.newInputStream(path).use { input ->
+        val buffer = ByteArray(64 * 1024)
+        while (true) {
+            if (Thread.currentThread().isInterrupted) throw InterruptedException()
+            val count = input.read(buffer)
+            if (count < 0) break
+            digest.update(buffer, 0, count)
+        }
+    }
+    return digest.digest().joinToString("") { "%02x".format(it) }
+}

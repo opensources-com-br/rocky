@@ -8,4 +8,42 @@ class UpdateDownloader(private val directory: Path) {
 
     fun cancel() { transfer?.cancel() }
 
+    @Synchronized
+    fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
+        require(ReleaseVersion.parse(update.version) != null)
+        val asset = installerAsset(update, System.getProperty("os.name"), System.getProperty("os.arch"))
+        require(asset.size in 1..2_147_483_648L) { "Tamanho de instalador inválido." }
+        require(asset.url == "$RELEASE_DOWNLOAD${update.version}/${asset.name}")
+        val sums = update.assets.singleOrNull { it.name == "SHA256SUMS.txt" }
+            ?: error("A versão não publicou checksums. Use a página de releases.")
+        require(sums.url == "$RELEASE_DOWNLOAD${update.version}/SHA256SUMS.txt")
+        val connection = UpdateTransfer().also { transfer = it }
+        Files.createDirectories(directory)
+        val staging = Files.createTempDirectory(directory, "download-")
+        val partial = staging.resolve(asset.name + ".part")
+        var complete = false
+        try {
+            val checksum = connection.read(sums.url) { input ->
+                val bytes = input.readNBytes(256 * 1024 + 1)
+                require(bytes.size <= 256 * 1024) { "Arquivo de checksums excede o limite." }
+                expectedChecksum(bytes.toString(Charsets.UTF_8), asset.name)
+            }
+            connection.read(asset.url) { input ->
+                val bytes = input.readNBytes(minOf(asset.size + 1, Int.MAX_VALUE.toLong()).toInt())
+                require(bytes.size.toLong() == asset.size) { "Download incompleto. Tente novamente." }
+                Files.write(partial, bytes, StandardOpenOption.CREATE_NEW)
+                onProgress(asset.size, asset.size)
+            }
+            require(updateChecksum(partial) == checksum) { "O instalador não passou na verificação de integridade." }
+            connection.checkCancelled()
+            val target = staging.resolve(asset.name)
+            Files.move(partial, target, StandardCopyOption.ATOMIC_MOVE)
+            complete = true
+            return PreparedUpdate(update.version, target.toString(), checksum)
+        } finally {
+            connection.cancel()
+            transfer = null
+            if (!complete) { Files.deleteIfExists(partial); Files.deleteIfExists(staging) }
+        }
+    }
 }

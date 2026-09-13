@@ -1,17 +1,18 @@
+import SiteFrame from "@/components/SiteFrame";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import DocsArticle from "./DocsArticle";
 
 export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, nav, nextTitle, pageGroup, pageLead, pageTitle, prevTitle, toc }) {
   return (<>
-<div style={{"position": "relative", "display": "grid", "gridTemplateColumns": "214px minmax(0, 1fr) 200px", "gap": "0", "maxWidth": "1120px", "minHeight": "calc(100vh - 56px)", "margin": "0 auto", "alignItems": "start", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)"}} className="responsive-grid docs-columns">
+<SiteFrame className="docs-columns">
 <div style={{"position": "absolute", "top": "0", "bottom": "0", "left": "214px", "width": "1px", "background": "rgba(255,255,255,.07)", "pointerEvents": "none"}}>
 
 </div>
 <div style={{"position": "absolute", "top": "0", "bottom": "0", "right": "200px", "width": "1px", "background": "rgba(255,255,255,.07)", "pointerEvents": "none"}}>
 
 </div>
-<div style={{"position": "sticky", "top": "56px", "padding": "30px 18px 60px", "maxHeight": "calc(100vh - 56px)", "overflowY": "auto"}} className="sticky-panel">
+<div style={{"position": "sticky", "top": "var(--site-nav-height)", "padding": "var(--site-heading-space) 18px var(--site-section-space)", "maxHeight": "calc(100dvh - var(--site-nav-height))", "overflowY": "auto"}} className="sticky-panel">
 {nav.map((group, index) => <React.Fragment key={group?.id ?? group?.name ?? index}>
 <div style={{"display": "flex", "flexDirection": "column", "gap": "2px", "marginBottom": "22px"}}>
 <span style={{"padding": "0 10px 8px", "fontSize": "12.5px", "fontWeight": "600", "color": "rgba(255,255,255,.85)"}}>
@@ -26,7 +27,7 @@ export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, 
 </React.Fragment>)}
 </div>
 <DocsArticle blocks={blocks} goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} nextTitle={nextTitle} pageGroup={pageGroup} pageLead={pageLead} pageTitle={pageTitle} prevTitle={prevTitle} />
-<div style={{"position": "sticky", "top": "56px", "padding": "40px 20px 60px", "boxSizing": "border-box", "display": "flex", "flexDirection": "column", "gap": "10px"}} className="sticky-panel">
+<div style={{"position": "sticky", "top": "var(--site-nav-height)", "padding": "var(--site-heading-space) 20px var(--site-section-space)", "boxSizing": "border-box", "display": "flex", "flexDirection": "column", "gap": "10px"}} className="sticky-panel">
 <span style={{"fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".1em", "color": "rgba(255,255,255,.35)"}}>
 {"NESTA PÁGINA"}
 </span>
@@ -39,6 +40,6 @@ export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, 
 {"Ver o repositório no GitHub"}
 </a>
 </div>
-</div>
+</SiteFrame>
   </>);
 }

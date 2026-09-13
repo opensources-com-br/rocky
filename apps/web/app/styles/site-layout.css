@@ -31,6 +31,14 @@ html { scrollbar-gutter: stable; }
 .site-navigation-links { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,.5); }
 .site-navigation-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
 .site-footer > div { flex-wrap: wrap; }
+.docs-columns {
+  position: relative;
+  display: grid;
+  grid-template-columns: 214px minmax(0, 1fr) 200px;
+  align-items: start;
+  padding-inline: 0;
+  min-height: calc(100dvh - var(--site-nav-height));
+}
 
 @media (max-width: 800px) {
   :root {
@@ -38,6 +46,7 @@ html { scrollbar-gutter: stable; }
     --site-section-space: 40px;
     --site-heading-space: 32px;
   }
+  .docs-columns { grid-template-columns: minmax(0, 1fr); }
   .site-navigation { gap: 20px; }
   .site-navigation-actions > a:first-child { display: none !important; }
 }

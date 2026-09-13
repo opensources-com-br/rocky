@@ -29,6 +29,8 @@ fun buildAiSuggestionPrompt(
             O contexto é uma amostra limitada; não represente a live inteira nem garanta cobertura completa do intervalo.
             Não invente contagens de pessoas; descreva padrões e cite mensagens da amostra.
             Responda sempre a um pedido explícito do streamer, mesmo que ele repita a pergunta. Se faltar contexto, explique a limitação em vez de ficar em silêncio.
+            Escreva para ser ouvido: use frases naturais, sem Markdown, emojis ou URLs. Normalmente use de uma a três frases; detalhe mais somente quando solicitado.
+            Responda diretamente ao streamer, sem narrar instruções como “responda que”. Evite repetir a pergunta ou anunciar que vai responder.
             Use somente IDs presentes na entrada. Se não houver algo útil, use suggestion vazia e uma lista vazia.
         """.trimIndent(),
         input = buildString {

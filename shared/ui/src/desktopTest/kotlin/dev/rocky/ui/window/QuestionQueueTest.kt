@@ -45,4 +45,23 @@ class QuestionQueueTest {
         queue.collect(listOf(msg("new")), "other", "Other", "now", 0)
         assertEquals(1, records.notes.count { it.sessionId == "other" })
     }
+    @Test fun failedSaveDoesNotConsumeTheQuestionOrDoubleCountItsRetry() {
+        val storage = TransientNoteRepository()
+        var offline = true
+        val repository = object : dev.rocky.core.notes.NoteRepository by storage {
+            override fun save(note: LiveNote) {
+                if (offline) error("disk unavailable")
+                storage.save(note)
+            }
+        }
+        val records = LocalNotesState(repository)
+        val queue = QuestionQueue(records)
+        val messages = listOf(msg("1"))
+        queue.collect(messages, "live", "Live", "now", 0)
+        assertTrue(records.notes.isEmpty())
+        offline = false
+        repeat(2) { queue.collect(messages, "live", "Live", "now", 0) }
+        assertEquals(1, records.notes.single().messageCount)
+        assertEquals(1, storage.getAll().size)
+    }
 }

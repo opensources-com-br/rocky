@@ -243,9 +243,13 @@ internal class VoiceState(
         configuration.copy(transcription = configuration.transcription.copy(modelPath = path)),
     )
 
-    fun updateMicrophone(id: String?) = update(
-        configuration.copy(transcription = configuration.transcription.copy(microphoneId = id)),
-    )
+    fun updateMicrophone(id: String?) {
+        if (configuration.transcription.microphoneId == id) return
+        update(configuration.copy(transcription = configuration.transcription.copy(microphoneId = id)))
+        if (configuration.transcription.microphoneId != id || !listenerEnabled) return
+        cancelCapture()
+        resumeListener()
+    }
 
     fun prepareTranscription(scope: CoroutineScope) {
         if (preparingTranscription || !automaticTranscriptionSetupSupported) return

@@ -1,8 +1,9 @@
+import SiteFrame from "@/components/SiteFrame";
 
 export default function ShowcaseHeading() {
   return (<>
 <div style={{"borderBottom": "1px solid rgba(255,255,255,.07)"}}>
-<div style={{"maxWidth": "1120px", "margin": "0 auto", "padding": "64px 28px 40px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)"}}>
+<SiteFrame className="site-heading">
 <div style={{"display": "flex", "alignItems": "center", "gap": "8px", "fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".12em", "color": "#e08b57"}}>
 <span style={{"width": "5px", "height": "5px", "borderRadius": "50%", "background": "#d4703c", "animation": "livepulse 2s ease-in-out infinite"}}>
 
@@ -15,7 +16,7 @@ export default function ShowcaseHeading() {
 <p style={{"margin": "0", "maxWidth": "560px", "fontSize": "16px", "lineHeight": "1.65", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
 {"Em breve, você poderá conhecer os casos de uso do Rocky nesta página."}
 </p>
-</div>
+</SiteFrame>
 </div>
   </>);
 }

@@ -2,9 +2,11 @@
 
 Rocky não exige conta própria nem coleta telemetria. Chat e transcrição ficam na memória durante o uso. A fila salva automaticamente perguntas detectadas, autores e trechos de evidência no SQLite; notas, ideias, momentos e resumos também persistem. Uma reconexão não recupera necessariamente mensagens perdidas. O app não grava a live inteira.
 
-Chaves de IA e os Client Secrets da Kick e do YouTube são salvos no Keychain do macOS ou protegidos pelo DPAPI do usuário no Windows. Os arquivos `*-credential.dpapi` contêm somente conteúdo criptografado. Configurações não secretas usam preferências do sistema. Tokens da Twitch, Kick e YouTube ficam na memória. Se o cofre falhar, o app não grava o segredo em texto simples. Chaves de IA legadas são migradas e removidas das preferências.
+Chaves de IA/ElevenLabs e os Client Secrets da Kick e do YouTube são salvos no Keychain do macOS ou protegidos pelo DPAPI do usuário no Windows. Os arquivos `*-credential.dpapi` contêm somente conteúdo criptografado. Configurações não secretas usam preferências do sistema. Tokens da Twitch, Kick e YouTube ficam na memória. Se o cofre falhar, o app não grava o segredo em texto simples. Chaves de IA legadas são migradas e removidas das preferências.
 
 Ollama em loopback permite processamento de sugestões no computador. OpenAI/OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Retenção, uso e faturamento desses serviços seguem a conta e os controles do usuário. `store=false` na OpenAI não representa uma garantia geral de retenção zero.
+
+Ao selecionar ElevenLabs, o texto preparado para fala (inclusive testes e trechos de chat presentes na resposta) é enviado ao serviço. Áudio de microfone continua sendo transcrito localmente; a chave não acompanha pedidos à IA. Síntese segue a política e o faturamento da conta ElevenLabs. As durações de captura, transcrição e reprodução são medidas apenas no dispositivo, sem envio de métricas.
 
 Áudio temporário é removido ao terminar a transcrição, inclusive em erro tratado. Um encerramento abrupto do processo/sistema pode deixar temporários no diretório temporário do SO; não há promessa de apagamento seguro após crash. O modelo de transcrição gerenciado é baixado do Hugging Face; Homebrew pode ser usado para instalar whisper.cpp no Mac. Essas preparações exigem rede, mesmo quando a análise futura é local.
 
@@ -14,7 +16,9 @@ Localizações: macOS `~/Library/Application Support/Rocky`; Windows `%APPDATA%/
 
 ## English
 
-Rocky has no account system or telemetry. Chat/transcripts are temporary in-memory data. Detected questions and author evidence are automatically saved in local SQLite, alongside notes, ideas, moments and session summaries. Saved AI keys and the Kick and YouTube Client Secrets use macOS Keychain or user-scoped Windows DPAPI, never plaintext preferences. Twitch, Kick and YouTube tokens are discarded when the app closes. A failed secure-storage operation does not fall back to plaintext.
+Rocky has no account system or telemetry. Chat/transcripts are temporary in-memory data. Detected questions and author evidence are automatically saved in local SQLite, alongside notes, ideas, moments and session summaries. Saved AI/ElevenLabs keys and the Kick and YouTube Client Secrets use macOS Keychain or user-scoped Windows DPAPI, never plaintext preferences. Twitch, Kick and YouTube tokens are discarded when the app closes. A failed secure-storage operation does not fall back to plaintext.
+
+With ElevenLabs selected, prepared speech text, including test phrases and chat excerpts in an answer, is sent to that service under its account policies. Microphone transcription stays local. Audio timing measurements stay on the device.
 
 Cloud providers receive selected chat and the request; their account policies apply. Local loopback Ollama can process suggestions on the computer. Model downloads and Homebrew setup require network access. Temporary transcription files are deleted after normal/error completion; an abrupt crash can leave OS temporary files. SQLite itself is not encrypted by Rocky.
 

@@ -141,7 +141,10 @@ fun RockyWindow(
         var preflightOpen by remember { mutableStateOf(false) }
         var historyOpen by remember { mutableStateOf(false) }
         var silenced by remember { mutableStateOf(false) }
-        var waitingForVoiceCommand by remember { mutableStateOf(false) }
+        val turns = remember {
+            val origin = kotlin.time.TimeSource.Monotonic.markNow()
+            ConversationTurns { origin.elapsedNow().inWholeMilliseconds }
+        }
         val twitch = remember(twitchChatClient) { TwitchLiveState(twitchChatClient, currentTimeMillis) }
         val kick = remember(kickChatClient) { KickLiveState(kickChatClient, currentTimeMillis) }
         val youtube = remember(youtubeChatClient) { YouTubeLiveState(youtubeChatClient, currentTimeMillis) }
@@ -258,7 +261,7 @@ fun RockyWindow(
 
         LaunchedEffect(sessionStatus) {
             if (sessionStatus != LiveSessionStatus.Running) {
-                waitingForVoiceCommand = false
+                turns.reset()
                 voice.resetSession()
                 if (liveActive && ai.generating) ai.cancelAnalysis()
             }
@@ -269,7 +272,7 @@ fun RockyWindow(
         fun spokenText(english: String, portuguese: String) =
             if (language == RockyLanguage.English) english else portuguese
 
-        val analyzeVoiceCommand: (String) -> Unit = { request ->
+        val analyzeVoiceCommand: (String, Long) -> Unit = { request, turn ->
             val recentMessages = recentMessages()
             ai.analyze(
                 scope = aiScope,
@@ -278,7 +281,8 @@ fun RockyWindow(
                 agent = agent.configuration.copy(language = language),
                 messageLimit = recentMessages.size,
                 onComplete = { suggestion ->
-                    if (voice.listenerEnabled) {
+                    if (voice.listenerEnabled && turns.accepts(turn)) {
+                        turns.finish(turn)
                         if (suggestion == null) {
                             voice.speakAcknowledgement(
                                 aiScope,
@@ -303,7 +307,7 @@ fun RockyWindow(
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
         fun finishLive(): Boolean {
             if (!workspace.finish(currentTimeLabel())) return false
-            voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect()
+            turns.reset(); voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect()
             return true
         }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
@@ -320,7 +324,9 @@ fun RockyWindow(
         }
 
         val submitVoiceCommand: (String) -> Unit = { command ->
-            waitingForVoiceCommand = false
+            val turn = turns.begin()
+            ai.cancelAnalysis()
+            voice.stopSpeaking()
             val marker = momentCommand(command)
             val dictated = dictatedNote(command)
             val target = voiceSaveTarget(command)
@@ -350,18 +356,16 @@ fun RockyWindow(
                 }
                 voice.speakAcknowledgement(aiScope, acknowledgement, silenced, voice::resumeListener)
             } else {
-                voice.speakAcknowledgement(aiScope, spokenText("I will check the chat.", "Vou verificar o chat."), silenced) {
-                    if (voice.listenerEnabled) analyzeVoiceCommand(command)
-                }
+                analyzeVoiceCommand(command, turn)
             }
         }
         val handleVoiceRequest: (String) -> Unit = { transcript ->
             val directCommand = extractRockyCommand(transcript, agent.displayName)
             when {
                 directCommand != null -> submitVoiceCommand(directCommand)
-                waitingForVoiceCommand -> submitVoiceCommand(transcript.trim())
+                turns.awaitingCommand() || turns.acceptsFollowUp(transcript) -> submitVoiceCommand(transcript.trim())
                 containsRockyWakeWord(transcript, agent.displayName) -> {
-                    waitingForVoiceCommand = true
+                    turns.awaitCommand()
                     voice.speakAcknowledgement(aiScope, spokenText("I am listening.", "Estou ouvindo."), silenced, voice::resumeListener)
                 }
                 else -> voice.resumeListener()

@@ -1,8 +1,9 @@
 import SiteFrame from "@/components/SiteFrame";
+import { localized } from "@/lib/i18n";
 import React from "react";
 import ProviderCards from "./ProviderCards";
 
-export default function PrivacySection({ guarantees, localCards }) {
+export default function PrivacySection({ guarantees, localCards, locale }) {
   return (<>
 <div id={"local"} style={{"borderBottom": "1px solid rgba(255,255,255,.07)"}}>
 <SiteFrame className="site-section">
@@ -10,13 +11,13 @@ export default function PrivacySection({ guarantees, localCards }) {
 <span style={{"width": "5px", "height": "5px", "borderRadius": "50%", "background": "#d4703c"}}>
 
 </span>
-{"LOCAL & PRIVADO "}
+{localized(locale, "LOCAL & PRIVATE ", "LOCAL & PRIVADO ")}
 </div>
 <h2 style={{"margin": "16px 0 10px", "fontSize": "38px", "lineHeight": "1.1", "letterSpacing": "-.035em", "fontWeight": "500"}}>
-{"Você escolhe onde a IA processa"}
+{localized(locale, "You choose where AI runs", "Você escolhe onde a IA processa")}
 </h2>
 <p style={{"margin": "0 0 44px", "maxWidth": "520px", "fontSize": "15.5px", "lineHeight": "1.6", "color": "rgba(255,255,255,.45)"}}>
-{"Rocky não tem backend próprio. Registros ficam no computador; ao escolher IA remota, o pedido e a amostra de chat são enviados ao provedor."}
+{localized(locale, "Rocky has no proprietary backend. Records stay on your computer; when you choose remote AI, the request and chat sample are sent to that provider.", "Rocky não tem backend próprio. Registros ficam no computador; ao escolher IA remota, o pedido e a amostra de chat são enviados ao provedor.")}
 </p>
 <ProviderCards localCards={localCards} />
 <div style={{"marginTop": "16px", "display": "grid", "gridTemplateColumns": "repeat(auto-fit, minmax(220px, 1fr))", "gap": "1px", "background": "rgba(255,255,255,.07)", "border": "1px solid rgba(255,255,255,.07)", "borderRadius": "12px", "overflow": "hidden"}} className="responsive-grid">

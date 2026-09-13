@@ -22,4 +22,18 @@ internal class UpdateTransfer {
         if (cancelled || Thread.currentThread().isInterrupted) throw InterruptedException("Download cancelado")
     }
 
+    fun <T> read(url: String, consume: (InputStream) -> T): T {
+        require(url.startsWith(RELEASE_DOWNLOAD)) { "Origem de atualização inválida." }
+        checkCancelled()
+        val request = HttpRequest.newBuilder(URI(url)).timeout(Duration.ofSeconds(30)).GET().build()
+        val future = client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+        pending = future
+        val response = try { future.get(30, TimeUnit.SECONDS) } finally { future.cancel(true); pending = null }
+        stream = response.body()
+        return response.body().use { input ->
+            checkCancelled()
+            check(response.statusCode() == 200) { "Não foi possível baixar a atualização." }
+            consume(input).also { checkCancelled() }
+        }
+    }
 }

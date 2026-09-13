@@ -23,8 +23,8 @@ class FacebookPayloadsTest {
         val page = FacebookPayloads.comments(
             """{
               "data":[
-                {"id":"c1","message":"Primeira","created_time":"2026-09-13T10:00:00+0000","from":{"id":"u1","name":"Ana"}},
-                {"id":"c2","message":"Segunda","created_time":"2026-09-13T10:00:01+0000","from":{"id":"u2","name":"Bia"}}
+                {"id":"c2","message":"Segunda","created_time":"2026-09-13T10:00:01+0000","from":{"id":"u2","name":"Bia"}},
+                {"id":"c1","message":"Primeira","created_time":"2026-09-13T10:00:00+0000","from":{"id":"u1","name":"Ana"}}
               ],
               "paging":{"cursors":{"after":"next"}}
             }""",

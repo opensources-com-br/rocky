@@ -1,9 +1,9 @@
 # Shared UI
 
-Compose components, theme, screens, and presentation state.
+Compose components, theme, settings and presentation state for connected chat, AI suggestions, voice conversation, question queues, history, notes, ideas, pulse, onboarding and maintenance.
 
-Planned dependency: `shared/core`. Receive services through its contracts; do not reference concrete data adapters or desktop APIs.
+Depends on `shared/core`; services arrive through contracts. Reusable UI lives in `commonMain`, desktop bridges in `desktopMain`, and Compose interaction tests in `desktopTest`. The desktop application owns the native window lifecycle.
 
-Keep reusable UI in `commonMain`. The desktop application owns window lifecycle and provides platform capabilities.
+Conversation currently exposes quick analysis actions; the free-text request component exists but is hidden by `RockyWindow`. Free-form requests use configured voice recognition.
 
-Current scope: Rocky's dark theme, header, and window controls. Live-session screens and state come next.
+Run `./gradlew :shared:ui:desktopTest` from the repository root.

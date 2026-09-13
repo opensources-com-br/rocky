@@ -354,7 +354,7 @@ class VoiceStateTest {
         val state = VoiceState(FakeVoiceService(), readyConfiguration) {}
         state.calibrate(this)
         state.resetSession()
-        kotlinx.coroutines.yield()
+        waitUntil { !state.calibrating }
         assertFalse(state.calibrating)
     }
 

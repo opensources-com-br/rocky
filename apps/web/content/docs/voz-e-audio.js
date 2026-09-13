@@ -1,6 +1,6 @@
 const content = {
   "group": "Configuração",
-  "lead": "A voz é opcional. Rocky usa vozes do sistema para responder e whisper.cpp local para transcrever o microfone.",
+  "lead": "A voz é opcional. Rocky usa voz do sistema ou ElevenLabs para responder e whisper.cpp local para transcrever o microfone.",
   "blocks": [
     {
       "type": "h2",
@@ -8,7 +8,15 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Em Voz, escolha uma voz instalada, ajuste a velocidade e teste a reprodução. macOS usa say; Windows usa System.Speech. No Mac, ajuste o volume pelo sistema. Piper, ElevenLabs, ducking e seleção de saída de áudio não estão implementados."
+      "text": "Em Voz, escolha o provedor e teste a reprodução. A voz do sistema usa say no macOS e System.Speech no Windows. No Mac, essa opção usa o volume do sistema. ElevenLabs permite volume no app. Piper, ducking e seleção de saída não estão implementados."
+    },
+    {
+      "type": "h2",
+      "text": "ElevenLabs"
+    },
+    {
+      "type": "para",
+      "text": "Selecione ElevenLabs, salve sua chave e clique em Carregar vozes e modelos. Escolha ambos ou informe os IDs manualmente. A chave usa o cofre do sistema. Testes e respostas enviam texto à ElevenLabs e podem consumir créditos. O áudio toca enquanto chega; falhas de chave, permissão e quota aparecem no painel. A alternativa local é opcional e só atua antes de começar a reprodução."
     },
     {
       "type": "h2",

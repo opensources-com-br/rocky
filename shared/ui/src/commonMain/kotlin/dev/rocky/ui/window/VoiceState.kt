@@ -398,6 +398,7 @@ internal class VoiceState(
                 levelJob?.cancel()
                 val endpoint = dev.rocky.core.voice.SpeechEndpointDetector(configuration.silenceMillis, configuration.speechThreshold)
                 val detectEnd = service.supportsInputLevel && configuration.detectEndOfSpeech
+                if (detectEnd && service.hasBufferedSpeech(configuration.speechThreshold)) endpoint.sample(configuration.speechThreshold, 225)
                 levelJob = scope.launch {
                     while (capturing) {
                         delay(INPUT_LEVEL_REFRESH_MILLIS)

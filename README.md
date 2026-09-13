@@ -4,7 +4,7 @@ Rocky is a local-first live-stream assistant for macOS and Windows. It follows t
 
 The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatform, SQLDelight, and Gradle.
 
-> Rocky is currently an early desktop prototype. Installers are unsigned development builds. Real chat integration is available for Twitch, Kick, and YouTube; Kick requires a public HTTPS webhook forwarder.
+> Rocky is currently an early desktop prototype. Installers are unsigned development builds. Real chat integration is available for Twitch, Kick, YouTube, and Facebook; Kick requires a public HTTPS webhook forwarder.
 
 [Leia em português](README.pt-BR.md).
 
@@ -16,7 +16,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - Twitch authentication through Device Code Flow, live chat through EventSub, and automatic reconnection;
 - Kick OAuth, signed chat webhooks, and event subscriptions;
 - YouTube desktop OAuth, active-broadcast discovery, and live-chat polling;
-- live viewer count and messages-per-minute metrics for Twitch, Kick, and YouTube;
+- live viewer count and messages-per-minute metrics for Twitch, Kick, YouTube, and Facebook;
 - grounded AI suggestions using local Ollama models, the OpenAI API, or OpenRouter;
 - speech through macOS/Windows system voices or ElevenLabs, with your own key, streaming and optional local fallback;
 - wake-word voice commands with local `whisper.cpp` transcription;
@@ -61,7 +61,7 @@ Validate the web separately: in `apps/web`, run `npm ci`, `npm test`, `npm run l
 3. Follow the [voice guide](docs/VOICE.md) to prepare local transcription and test an audio conversation.
 4. Start a live stream, connect Rocky, and send a message from another account. New messages will appear in the Conversation tab.
 
-The Twitch, Kick, and YouTube connectors read new chat messages and the current viewer count. Paid support events, channel points, Super Chats, historical messages, and Facebook are not integrated yet.
+The Twitch, Kick, YouTube, and Facebook connectors read new chat messages and the current viewer count. Paid support events, channel points, Stars, Super Chats, and historical messages are not integrated yet. Facebook requires a Business app with `pages_show_list` and `pages_read_engagement`, plus an active live on an authorized Page.
 
 ## Build installers
 
@@ -86,7 +86,7 @@ Before promoting an alpha, follow the [streamer test protocol](docs/STREAMER_TES
 | [apps/desktop](apps/desktop/) | Desktop entry point, packaging, and application lifecycle |
 | [apps/web](apps/web/) | Rocky landing, documentation and showcase in Next.js |
 | [shared/core](shared/core/) | Domain models, contracts, and export rules |
-| [shared/data](shared/data/) | Twitch, Kick, YouTube, AI, and SQLite implementations |
+| [shared/data](shared/data/) | Twitch, Kick, YouTube, Facebook, AI, and SQLite implementations |
 | [shared/ui](shared/ui/) | Compose UI and presentation state |
 | [platform/desktop](platform/desktop/) | Native files, browser, preferences, audio, and transcription |
 | [docs/adr](docs/adr/) | Architecture decision records |
@@ -97,4 +97,4 @@ The [implementation plan](docs/PLAN.md) describes the product direction, privacy
 
 Rocky is open-source software available under the [MIT License](LICENSE).
 
-The current code covers Twitch, Kick, YouTube, AI, optional voice, grouped questions, notes, ideas, moments and a local records summary when disconnecting or closing the app. Kick and YouTube still need validation with real developer credentials before release; Kick also needs a public webhook. Super Chats and automatic idea generation remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md).
+The current code covers Twitch, Kick, YouTube, Facebook, AI, optional voice, grouped questions, notes, ideas, moments and a local records summary when disconnecting or closing the app. Kick, YouTube, and Facebook still need validation with real developer credentials before release; Kick also needs a public webhook. Super Chats, Stars, and automatic idea generation remain outside this candidate. See [release preparation](docs/RELEASE_PREPARATION.md) and [data handling](docs/PRIVACY.md).

@@ -306,6 +306,26 @@ class VoiceStateTest {
         assertEquals("Leitura interrompida", state.status)
     }
 
+    @Test fun failedCredentialSavePreservesTheActiveConfiguration() {
+        val original = readyConfiguration
+        val state = VoiceState(FakeVoiceService(), original) { error("vault unavailable") }
+        state.updateOutput(original.output.copy(provider = dev.rocky.core.voice.SpeechProvider.ElevenLabs))
+        assertEquals(original, state.configuration)
+        assertTrue(state.status.orEmpty().contains("cofre"))
+    }
+
+    @Test fun changingProviderCancelsSpeechAndInvalidatesItsTest() = runBlocking {
+        val service = FakeVoiceService().apply { speechGate = CountDownLatch(1) }
+        val state = VoiceState(service, readyConfiguration) {}
+        state.testVoice(this)
+        waitUntil { service.spoken.isNotEmpty() }
+        state.updateOutput(state.configuration.output.copy(provider = dev.rocky.core.voice.SpeechProvider.ElevenLabs))
+        delay(20)
+        assertFalse(state.speaking)
+        assertFalse(state.voiceTested)
+        assertEquals(0L, service.speechGate!!.count)
+    }
+
     private suspend fun waitUntil(condition: () -> Boolean) {
         repeat(1_000) {
             if (condition()) return

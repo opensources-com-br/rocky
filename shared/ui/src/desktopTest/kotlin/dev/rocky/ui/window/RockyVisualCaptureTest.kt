@@ -357,10 +357,10 @@ class RockyVisualCaptureTest {
         assertTrue(rule.onAllNodesWithTag("streamer-text-request").fetchSemanticsNodes().isEmpty())
     }
 
-    @Test fun preflightAllowsTextWithoutAudioSetup() {
+    @Test fun preflightExplainsQuickActionsWithoutAudioSetup() {
         render()
         rule.onNodeWithContentDescription("Antes da live").performClick()
-        rule.onNodeWithText("Você pode continuar por texto sem microfone.").assertExists()
+        rule.onNodeWithText("Você pode usar as ações rápidas de análise sem microfone.").assertExists()
         rule.onNodeWithText("Testar IA").performClick()
         rule.waitUntil(3_000) { rule.onAllNodesWithText("Conexão com IA verificada").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithText("Plataforma de streaming desconectada").assertExists()

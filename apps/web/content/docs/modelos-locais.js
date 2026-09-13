@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Ollama em loopback mantém o processamento da amostra de chat no computador. Transcrição e vozes do sistema também podem ser locais após preparação. Twitch, Kick e downloads continuam exigindo internet; o chat da Kick exige encaminhamento HTTPS."
+      "text": "Use um modelo local no Ollama para manter a análise no computador; apenas o endereço loopback não garante execução local. Transcrição e vozes do sistema também podem ser locais após preparação. Twitch, Kick, YouTube, ElevenLabs e downloads exigem internet; o chat da Kick exige encaminhamento HTTPS."
     }
   ]
 };

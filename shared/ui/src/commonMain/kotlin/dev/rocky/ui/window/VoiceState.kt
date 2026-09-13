@@ -37,7 +37,7 @@ internal class VoiceState(
         if (calibrating) return
         disableListener(); stopSpeaking(); cancelCapture()
         calibrating = true
-        calibrationJob = scope.launch {
+        calibrationJob = scope.launch(start = kotlinx.coroutines.CoroutineStart.UNDISPATCHED) {
             try {
                 interruptibleWork { service.startCapture(configuration.transcription.microphoneId) }
                 status = "Fique em silêncio por 3 segundos para medir o ruído."
@@ -65,7 +65,7 @@ internal class VoiceState(
         if (loadingCatalog) return
         loadingCatalog = true
         val selected = configuration.output.elevenLabs
-        scope.launch {
+        scope.launch(start = kotlinx.coroutines.CoroutineStart.UNDISPATCHED) {
             try {
                 val catalog = interruptibleWork { service.loadVoiceCatalog(selected) }
                 if (configuration.output.elevenLabs == selected) { voiceCatalog = catalog; status = "Vozes ElevenLabs carregadas." }

@@ -27,4 +27,29 @@ class SpeechCancellationTest {
             assertTrue(fixture.spoken.isEmpty())
         } finally { release.countDown(); service.close(); executor.shutdownNow(); server.stop(0) }
     }
+    @Test fun cancelUnblocksAStreamWaitingForMoreAudio() {
+        val release = CountDownLatch(1)
+        val received = CountDownLatch(1)
+        val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
+        server.createContext("/") { exchange ->
+            exchange.sendResponseHeaders(200, 0)
+            exchange.responseBody.use { it.write(byteArrayOf(1, 2)); it.flush(); release.await(5, TimeUnit.SECONDS) }
+        }
+        server.start()
+        val executor = Executors.newSingleThreadExecutor()
+        val session = ElevenLabsSession("http://127.0.0.1:${server.address.port}")
+        try {
+            val future = executor.submit {
+                session.open("/", "key").use { input ->
+                    check(input.readNBytes(2).size == 2)
+                    received.countDown()
+                    input.read()
+                    session.checkActive()
+                }
+            }
+            assertTrue(received.await(3, TimeUnit.SECONDS))
+            session.close()
+            assertFailsWith<ExecutionException> { future.get(2, TimeUnit.SECONDS) }
+        } finally { release.countDown(); session.close(); executor.shutdownNow(); server.stop(0) }
+    }
 }

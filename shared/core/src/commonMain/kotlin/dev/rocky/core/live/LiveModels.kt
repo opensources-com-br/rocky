@@ -4,6 +4,7 @@ enum class StreamPlatform {
     Twitch,
     Kick,
     YouTube,
+    Facebook,
 }
 
 enum class LiveSessionStatus {

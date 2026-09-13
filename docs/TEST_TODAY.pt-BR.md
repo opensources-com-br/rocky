@@ -9,7 +9,7 @@ Escopo: Twitch, Kick, IA, perguntas por texto, voz opcional e notas com fontes. 
 5. Abra fontes, salve uma nota, edite, reinicie e exporte. Confira data, mensagem, autor, canal e sessão. Teste exportação para um destino indisponível: deve haver erro recuperável.
 6. Opcionalmente prepare voz. No Mac, teste cancelamento do download e nova tentativa; no Windows, selecione whisper-cli/modelo. Use o teste de conversa para validar microfone, idioma e TTS.
 7. Durante a live diga “Rocky” (ou o nome configurado) e um pedido. Interrompa a resposta com Silenciar/Próxima e faça outro pedido. Teste PT-BR e EN, nome personalizado e ausência de reação a palavras apenas parecidas.
-8. Use o modo compacto, abra configurações e volte. No Mac o volume próprio está desabilitado; confira a saída do sistema. Fale apenas durante os oito segundos de captura; registre comandos cortados ou perdidos nas transições.
+8. Use o modo compacto, abra configurações e volte. Na voz local do Mac, confira o volume do sistema; ElevenLabs permite volume no app. Calibre o ruído e fale durante a captura; registre cortes nas transições e teste o atalho para interromper a reprodução.
 9. Desligue a rede por 15/60 s, restaure e confira novas mensagens, aviso de lacuna e audiência indisponível quando desatualizada. Desconectar deve cancelar a recuperação.
 10. Exporte um backup e teste exclusão de notas: cancelar preserva; confirmar apaga. Redefinir configurações preserva notas/exportações; remover modelo preserva modelos externos.
 
@@ -34,7 +34,7 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 - Continuidade: após uma resposta, peça “explica melhor” e “resume isso”; confirme que o assunto anterior foi mantido sem inventar novas mensagens.
 - Prioridade: inicie análise automática lenta e envie uma pergunta direta. Somente a resposta ao pedido direto deve entrar no histórico.
 - Atalhos: teste Ctrl+Shift+F8/F9/F10 com Rocky em segundo plano e durante OBS/jogo. Reconfigure, confira conflitos e teste de novo.
-- Fim da fala: compare um comando curto, uma pausa no meio da frase e silêncio total. Ajuste o limiar com ruído ambiente; confirme o limite de oito segundos.
+- Fim da fala: compare um comando curto, uma pausa no meio da frase e silêncio total. Ajuste o limiar com ruído ambiente; confirme o limite de 30 segundos com fala em andamento e oito segundos sem detecção.
 - Registro livre: dite uma nota sem chat/IA, crie uma ideia por texto, confirme que a aba não mudou, desfaça e verifique SQLite ao reabrir.
 - Primeiro uso: conecte Twitch, Kick ou YouTube; valide credenciais próprias e, na Kick, o webhook HTTPS público. Busque modelos, selecione um, salve e teste a IA.
 - Pré-live: teste IA, voz/microfone opcionais e confira uma gravação OBS seguindo a orientação exibida.
@@ -44,3 +44,12 @@ Build/testes/DMG não comprovam captura real, OAuth, cofre nativo, assinatura, u
 ## Fila, registros e manutenção
 
 Use o [roteiro de organização da live](MVP_CHAT_WORKSPACE.pt-BR.md#validação-manual-desta-etapa) para testar as nove melhorias adicionais, incluindo backup e marcadores de voz.
+
+
+### Verificação de ElevenLabs e conversa
+
+- Selecione ElevenLabs em Voz, salve a chave, carregue voz/modelo e teste reprodução, velocidade e volume no macOS e Windows.
+- Interrompa durante a espera da rede e durante a fala; nenhuma resposta antiga deve voltar. Teste chave inválida, quota e alternativa local desativada/ativada. Falha após iniciar áudio não deve repetir tudo com outra voz.
+- Pergunte, reformule durante a análise e use “resume isso” após a resposta. Salve nota e ideia em sequência sem repetir o nome. Após 12 segundos, uma continuação sem nome deve ser ignorada.
+- Use uma frase longa, pausas naturais e ruído de teclado/jogo. Confirme o início das palavras; a calibração não substitui um teste com o microfone real.
+- Com alto-falantes, confirme a pausa do microfone na reprodução e a retomada depois. Interrompa pelo atalho de fala; não pressupor cancelamento acústico de eco.

@@ -61,7 +61,7 @@ Validate the web separately: in `apps/web`, run `npm ci`, `npm test`, `npm run l
 3. Follow the [voice guide](docs/VOICE.md) to prepare local transcription and test an audio conversation.
 4. Start a live stream, connect Rocky, and send a message from another account. New messages will appear in the Conversation tab.
 
-The Twitch, Kick, YouTube, and Facebook connectors read new chat messages and the current viewer count. Paid support events, channel points, Stars, Super Chats, and historical messages are not integrated yet. Facebook requires a Business app with `pages_show_list` and `pages_read_engagement`, plus an active live on an authorized Page.
+The Twitch, Kick, YouTube, and Facebook connectors read new chat messages and the current viewer count. Paid support events, channel points, Stars, Super Chats, and historical messages are not integrated yet. Facebook requires a Business app with `pages_show_list`, `pages_read_engagement`, and `pages_read_user_content`, plus an active live on an authorized Page.
 
 ## Build installers
 

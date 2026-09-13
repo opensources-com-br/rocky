@@ -21,25 +21,13 @@ import javax.sound.sampled.TargetDataLine
 
 class DesktopVoiceService : VoiceService {
     private val operatingSystem = System.getProperty("os.name").lowercase()
-    private val captureLock = Any()
     private val transcriptionLock = Any()
-
-    @Volatile
-    private var captureLine: TargetDataLine? = null
-
-    @Volatile
-    private var captureThread: Thread? = null
-
-    @Volatile
-    private var currentInputLevel = 0f
 
     @Volatile
     private var transcriptionProcess: Process? = null
 
     @Volatile
     private var transcriptionCancelled = false
-
-    private var capturedAudio: ByteArrayOutputStream? = null
 
     override val supportsInputLevel: Boolean get() = true
     override val outputVolumeSupported: Boolean get() = operatingSystem.contains("win")
@@ -176,16 +164,6 @@ class DesktopVoiceService : VoiceService {
     override fun close() {
         stopSpeaking()
         cancelCapture()
-    }
-
-    private fun capture(line: TargetDataLine, output: ByteArrayOutputStream) {
-        val buffer = ByteArray(CAPTURE_BUFFER_BYTES)
-        while (line.isOpen && output.size() < MAXIMUM_AUDIO_BYTES) {
-            val count = runCatching { line.read(buffer, 0, buffer.size) }.getOrDefault(-1)
-            if (count <= 0) break
-            output.write(buffer, 0, count)
-            currentInputLevel = pcmLevel(buffer, count)
-        }
     }
 
     private fun finishCapture(): ByteArray = microphone.finish()

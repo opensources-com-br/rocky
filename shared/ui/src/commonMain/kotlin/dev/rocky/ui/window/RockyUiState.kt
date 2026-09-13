@@ -30,5 +30,6 @@ internal enum class PlatformColor {
     Twitch,
     Kick,
     YouTube,
+    Facebook,
     Offline,
 }

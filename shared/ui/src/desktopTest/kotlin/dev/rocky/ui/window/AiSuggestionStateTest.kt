@@ -32,6 +32,18 @@ class AiSuggestionStateTest {
         assertEquals("Pergunta urgente", state.history.single().question)
     }
 
+    @Test fun reformulationReplacesAnUnfinishedDirectQuestion() = runBlocking {
+        val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
+        val state = AiSuggestionState(client, ollamaConfiguration) {}
+        state.analyze(this, messages(3), streamerRequest = "Pedido antigo")
+        withTimeout(3_000) { while (client.started.count > 0) delay(1) }
+        client.responseGate = null
+        state.analyze(this, messages(3), streamerRequest = "Reformulação")
+        withTimeout(3_000) { while (state.generating) delay(1) }
+        assertTrue(client.interrupted.get())
+        assertEquals("Reformulação", state.history.single().question)
+    }
+
     @Test fun keepsBoundedHistoryAndUsesItForFollowups() = runBlocking {
         val client = FakeAiSuggestionClient()
         val state = AiSuggestionState(client, ollamaConfiguration) {}

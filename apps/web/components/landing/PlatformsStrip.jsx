@@ -1,9 +1,10 @@
+import SiteFrame from "@/components/SiteFrame";
 import React from "react";
 
 export default function PlatformsStrip({ platforms }) {
   return (<>
 <div style={{"borderBottom": "1px solid rgba(255,255,255,.07)"}}>
-<div style={{"maxWidth": "1120px", "margin": "0 auto", "padding": "26px 28px", "borderLeft": "1px solid rgba(255,255,255,.07)", "borderRight": "1px solid rgba(255,255,255,.07)", "display": "flex", "flexWrap": "wrap", "alignItems": "center", "gap": "14px 36px"}}>
+<SiteFrame className="site-strip" style={{"display": "flex", "flexWrap": "wrap", "alignItems": "center", "gap": "14px 36px"}}>
 <span style={{"fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".1em", "color": "rgba(255,255,255,.3)"}}>
 {"INTEGRAÇÕES"}
 </span>
@@ -20,7 +21,7 @@ export default function PlatformsStrip({ platforms }) {
 <span style={{"marginLeft": "auto", "fontSize": "13px", "color": "rgba(255,255,255,.28)"}}>
 {"Sem integração direta com OBS"}
 </span>
-</div>
+</SiteFrame>
 </div>
   </>);
 }

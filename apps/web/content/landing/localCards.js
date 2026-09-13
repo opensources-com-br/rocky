@@ -11,11 +11,12 @@ export const localCards = [
   },
   {
     "tag": "SUA VOZ",
-    "title": "Vozes do sistema",
+    "title": "Escolha a voz",
     "text": "Escolha voz do sistema ou ElevenLabs e ajuste a velocidade. ElevenLabs recebe o texto falado e usa os créditos da sua conta. A transcrição usa whisper.cpp local, com preparação automática no Mac com Homebrew ou manual no Windows.",
     "chips": [
       "Voz do macOS",
       "Voz do Windows",
+      "ElevenLabs",
       "whisper.cpp"
     ]
   }

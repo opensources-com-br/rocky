@@ -3,8 +3,8 @@ package dev.rocky.data.voice
 import dev.rocky.core.voice.*
 import java.util.concurrent.atomic.AtomicLong
 
-class ProviderVoiceService(private val local: VoiceService, player: PcmPlayback) : VoiceService by local {
-    private val remote = ElevenLabsSpeech(player)
+class ProviderVoiceService internal constructor(private val local: VoiceService, private val remote: ElevenLabsSpeech) : VoiceService by local {
+    constructor(local: VoiceService, player: PcmPlayback) : this(local, ElevenLabsSpeech(player))
     private val generation = AtomicLong()
     @Volatile private var speechTiming = VoiceTelemetry()
     override val telemetry get() = local.telemetry.copy(firstAudioMillis = speechTiming.firstAudioMillis,

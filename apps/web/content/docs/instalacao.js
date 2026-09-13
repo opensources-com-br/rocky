@@ -24,7 +24,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Voz é opcional e requer acesso ao microfone. Atalhos globais dependem das permissões e disponibilidade do sistema; confira o estado de registro nas configurações de Voz. É possível começar usando somente texto."
+      "text": "Voz é opcional e requer acesso ao microfone. Atalhos globais dependem das permissões e disponibilidade do sistema; confira o estado de registro nas configurações de Voz. É possível começar pelas ações rápidas de análise sem configurar microfone."
     },
     {
       "type": "h2",

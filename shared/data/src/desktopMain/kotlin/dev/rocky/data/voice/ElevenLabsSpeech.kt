@@ -11,8 +11,8 @@ class ElevenLabsSpeech(private val player: PcmPlayback) : SpeechOutput {
         firstAudioMillis = 0
         startedPlayback = false
         val voice = configuration.elevenLabs
-        require(Regex("[A-Za-z0-9_-]{1,128}").matches(voice.voiceId)) { "Selecione uma voz ElevenLabs." }
-        require(Regex("[A-Za-z0-9_-]{1,128}").matches(voice.modelId)) { "Selecione um modelo ElevenLabs." }
+        require(Regex("[A-Za-z0-9_-]{1,128}").matches(voice.voiceId)) { "ElevenLabs: selecione uma voz." }
+        require(Regex("[A-Za-z0-9_-]{1,128}").matches(voice.modelId)) { "ElevenLabs: selecione um modelo." }
         val started = System.nanoTime()
         firstAudioMillis = 0
         val active = ElevenLabsSession().also { session = it }

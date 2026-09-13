@@ -314,7 +314,7 @@ class DesktopVoiceService : VoiceService {
 
         private fun captureFormat() = AudioFormat(16_000f, 16, 1, true, false)
 
-        private fun writeWav(path: Path, bytes: ByteArray) {
+        internal fun writeWav(path: Path, bytes: ByteArray) {
             val format = captureFormat()
             ByteArrayInputStream(bytes).use { input ->
                 AudioInputStream(input, format, bytes.size.toLong() / format.frameSize).use { audio ->

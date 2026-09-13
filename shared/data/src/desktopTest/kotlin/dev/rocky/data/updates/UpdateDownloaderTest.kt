@@ -32,4 +32,5 @@ class UpdateDownloaderTest {
     }
     @Test fun stagesCompleteVerifiedPackage() = runDownload("abc")
     @Test fun removesTruncatedDownload() = runDownload("ab")
+    @Test fun rejectsOversizedDownload() = runDownload("abcd")
 }

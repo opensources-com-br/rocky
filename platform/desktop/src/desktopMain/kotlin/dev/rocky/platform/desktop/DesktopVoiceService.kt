@@ -6,7 +6,6 @@ import dev.rocky.core.voice.SystemVoice
 import dev.rocky.core.voice.VoiceOutputConfiguration
 import dev.rocky.core.voice.VoiceService
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -266,15 +265,6 @@ class DesktopVoiceService : VoiceService {
             if (!process.waitFor(STOP_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) process.destroyForcibly()
         }
 
-        private fun validateTranscriptionConfiguration(configuration: LocalTranscriptionConfiguration) {
-            require(Files.isRegularFile(Path.of(configuration.executablePath))) {
-                "Selecione o executável whisper-cli"
-            }
-            require(Files.isRegularFile(Path.of(configuration.modelPath))) {
-                "Selecione um modelo GGML do Whisper"
-            }
-        }
-
         private fun captureFormat() = AudioFormat(16_000f, 16, 1, true, false)
 
         internal fun writeWav(path: Path, bytes: ByteArray) {
@@ -287,14 +277,9 @@ class DesktopVoiceService : VoiceService {
         }
 
         private val MAC_VOICE_PATTERN = Regex("^(.+?)\\s{2,}([a-z]{2}_[A-Z]{2})\\s+#")
-        private const val CAPTURE_BUFFER_BYTES = 3_200
-        private const val MINIMUM_AUDIO_BYTES = 3_200
-        private const val MAXIMUM_AUDIO_BYTES = 16_000 * 2 * 60
-        private const val CAPTURE_JOIN_TIMEOUT_MILLIS = 1_000L
         private const val STOP_TIMEOUT_MILLIS = 300L
         private const val COMMAND_TIMEOUT_SECONDS = 10L
         private const val SPEECH_TIMEOUT_MINUTES = 5L
-        private const val TRANSCRIPTION_TIMEOUT_MINUTES = 2L
         private const val SETUP_TIMEOUT_MINUTES = 15L
         private const val MANAGED_MODEL_NAME = "ggml-base.bin"
         private const val MANAGED_MODEL_BYTES = 147_951_465L

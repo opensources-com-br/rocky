@@ -605,6 +605,21 @@ fun RockyWindow(
                                         finishLive()
                                     },
                                     onOpenYouTubeBrowser = onOpenYouTubeAuthorization,
+                                    facebookConfiguration = facebookConfiguration,
+                                    facebook = facebook,
+                                    onConnectFacebook = { configuration ->
+                                        if (finishLive()) {
+                                            silenced = false
+                                            facebookConfiguration = configuration
+                                            onFacebookConfigurationChange(configuration)
+                                            facebook.connect(configuration)
+                                        }
+                                    },
+                                    onDisconnectFacebook = {
+                                        silenced = false
+                                        finishLive()
+                                    },
+                                    onOpenFacebookBrowser = onOpenFacebookAuthorization,
                                 )
                             }
                         }
@@ -647,6 +662,7 @@ fun RockyWindow(
                                 PlatformColor.Twitch -> twitch.isRealSession
                                 PlatformColor.Kick -> kick.isActive
                                 PlatformColor.YouTube -> youtube.isActive
+                                PlatformColor.Facebook -> facebook.isActive
                                 else -> false
                             }
                             if (active) {
@@ -755,6 +771,7 @@ fun RockyWindow(
                                 )
                                 MainSection.Pulse -> PulseContent(
                                     samples = when {
+                                        facebook.isActive -> facebook.pulse.toList()
                                         youtube.isActive -> youtube.pulse.toList()
                                         kick.isActive -> kick.pulse.toList()
                                         else -> twitch.pulse.toList()
@@ -771,9 +788,9 @@ fun RockyWindow(
                             inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
-                            viewerCount = listOfNotNull(twitch.viewerCount, kick.viewerCount, youtube.viewerCount)
+                            viewerCount = listOfNotNull(twitch.viewerCount, kick.viewerCount, youtube.viewerCount, facebook.viewerCount)
                                 .takeIf { it.isNotEmpty() }?.sum(),
-                            messagesPerMinute = twitch.messagesPerMinute + kick.messagesPerMinute + youtube.messagesPerMinute,
+                            messagesPerMinute = twitch.messagesPerMinute + kick.messagesPerMinute + youtube.messagesPerMinute + facebook.messagesPerMinute,
                             onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }

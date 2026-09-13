@@ -116,46 +116,6 @@ class DesktopVoiceService : VoiceService {
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration): String =
         transcriber.transcribe(finishCapture(), configuration)
 
-    private fun legacyTranscribe(configuration: LocalTranscriptionConfiguration): String {
-        val audio = finishCapture()
-        require(audio.size >= MINIMUM_AUDIO_BYTES) { "A gravação ficou curta demais para transcrever" }
-        validateTranscriptionConfiguration(configuration)
-        val wav = Files.createTempFile("rocky-command-", ".wav")
-        val outputBase = wav.resolveSibling(wav.fileName.toString().removeSuffix(".wav") + "-transcript")
-        val transcript = Path.of("$outputBase.txt")
-        val processOutput = Files.createTempFile("rocky-whisper-", ".log")
-        var process: Process? = null
-        try {
-            writeWav(wav, audio)
-            process = synchronized(transcriptionLock) {
-                check(!transcriptionCancelled) { "A transcrição foi cancelada" }
-                ProcessBuilder(whisperCommand(configuration, wav, outputBase))
-                    .redirectErrorStream(true)
-                    .redirectOutput(processOutput.toFile())
-                    .start()
-                    .also { transcriptionProcess = it }
-            }
-            if (!waitForProcess(process, TRANSCRIPTION_TIMEOUT_MINUTES, TimeUnit.MINUTES)) {
-                error("A transcrição excedeu o limite de tempo")
-            }
-            val output = Files.readString(processOutput)
-            check(process.exitValue() == 0) {
-                output.lineSequence().lastOrNull { it.isNotBlank() } ?: "Falha ao executar whisper.cpp"
-            }
-            return Files.readString(transcript).trim().also {
-                require(it.isNotBlank()) { "Nenhuma fala foi reconhecida" }
-            }
-        } finally {
-            synchronized(transcriptionLock) {
-                if (transcriptionProcess === process) transcriptionProcess = null
-            }
-            process?.takeIf { it.isAlive }?.let(::stopProcess)
-            Files.deleteIfExists(wav)
-            Files.deleteIfExists(transcript)
-            Files.deleteIfExists(processOutput)
-        }
-    }
-
     override fun cancelCapture() {
         transcriber.cancel()
         runCatching { finishCapture() }

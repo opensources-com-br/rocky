@@ -23,7 +23,9 @@ internal fun readElevenLabsCatalog(json: (String) -> JsonElement): VoiceCatalog 
             SystemVoice(v["voice_id"]!!.jsonPrimitive.content, v["name"]!!.jsonPrimitive.content)
         }
         token = page["next_page_token"]?.jsonPrimitive?.contentOrNull
-        if (page["has_more"]?.jsonPrimitive?.booleanOrNull != true || token == null) {
+        val more = page["has_more"]?.jsonPrimitive?.booleanOrNull == true
+        require(!more || !token.isNullOrBlank()) { "ElevenLabs: paginação incompleta. Tente carregar o catálogo novamente." }
+        if (!more) {
             val models = json("/v1/models").jsonArray.filter { it.jsonObject["can_do_text_to_speech"]?.jsonPrimitive?.booleanOrNull == true }
                 .map { SpeechModel(it.jsonObject["model_id"]!!.jsonPrimitive.content, it.jsonObject["name"]!!.jsonPrimitive.content) }
             return VoiceCatalog(voices.distinctBy { it.id }, models)

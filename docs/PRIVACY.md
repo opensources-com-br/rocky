@@ -6,7 +6,7 @@ Chaves de IA/ElevenLabs, Client Secrets da Kick e do YouTube e o App Secret do F
 
 O conector do TikTok salva somente o nome de usuário nas preferências locais e não solicita senha, cookie ou token. Para localizar a sala e abrir o WebSocket, a biblioteca TikTokLiveJava comunica o nome de usuário e o identificador público da live ao TikTok e ao serviço Eulerstream. Essa conexão é não oficial e segue também as políticas de rede desses serviços.
 
-Um modelo local no Ollama permite processamento de sugestões no computador; o endereço loopback sozinho não comprova execução local. OpenAI, Anthropic e OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Retenção, uso e faturamento desses serviços seguem a conta e os controles do usuário. `store=false` na OpenAI não representa uma garantia geral de retenção zero.
+Um modelo local no Ollama permite processamento de sugestões no computador; o endereço loopback sozinho não comprova execução local. OpenAI, Anthropic, Google Gemini e OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Retenção, uso e faturamento desses serviços seguem a conta e os controles do usuário. `store=false` na OpenAI não representa uma garantia geral de retenção zero.
 
 Ao selecionar ElevenLabs, o texto preparado para fala (inclusive testes e trechos de chat presentes na resposta) é enviado ao serviço. Áudio de microfone continua sendo transcrito localmente; a chave não acompanha pedidos à IA. Síntese segue a política e o faturamento da conta ElevenLabs. As durações de captura, transcrição e reprodução são medidas apenas no dispositivo, sem envio de métricas.
 
@@ -24,7 +24,7 @@ The TikTok connector stores only the username in local preferences and does not 
 
 With ElevenLabs selected, prepared speech text, including test phrases and chat excerpts in an answer, is sent to that service under its account policies. Microphone transcription stays local. Audio timing measurements stay on the device.
 
-Cloud providers, including OpenAI, Anthropic and OpenRouter, receive selected chat and the request; their account policies apply. A local Ollama model can process suggestions on the computer; a loopback address alone does not prove local inference. Model downloads and Homebrew setup require network access. Temporary transcription files are deleted after normal/error completion; an abrupt crash can leave OS temporary files. SQLite itself is not encrypted by Rocky.
+Cloud providers, including OpenAI, Anthropic, Google Gemini and OpenRouter, receive selected chat and the request; their account policies apply. A local Ollama model can process suggestions on the computer; a loopback address alone does not prove local inference. Model downloads and Homebrew setup require network access. Temporary transcription files are deleted after normal/error completion; an abrupt crash can leave OS temporary files. SQLite itself is not encrypted by Rocky.
 
 **Settings → Data** provides export, note deletion, configuration/key reset, managed-model removal and folder access. Deletion is logical; exports, external models, backups and provider-held data are not erased. Close Rocky before copying the data folder for backup. Never attach keys, credential files, notes databases or transcripts to public issues.
 

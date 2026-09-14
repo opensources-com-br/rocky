@@ -5,7 +5,7 @@ const content = {
   blocks: [
     { type: "h2", text: "During the session" },
     { type: "cards", items: [
-      { key: "chat", text: "New Twitch, Kick, YouTube, or Facebook messages received while connected. This is not a complete stream archive." },
+      { key: "chat", text: "New Twitch, Kick, YouTube, Facebook, or TikTok LIVE messages received while connected. This is not a complete stream archive." },
       { key: "suggestion", text: "An AI answer based on the recent sample that you can choose to save." },
       { key: "history", text: "Up to 30 temporary session answers; the last four pairs help continue the conversation." },
       { key: "questions", text: "Groups detected by text rules, with a message count and pending or answered state." },

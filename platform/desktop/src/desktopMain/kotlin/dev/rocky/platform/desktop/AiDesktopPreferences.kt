@@ -91,6 +91,7 @@ internal class SecureAiPreferences(private val preferences: Preferences, private
         AiProviderKind.OpenRouter -> "https://openrouter.ai/api"
         AiProviderKind.Anthropic -> "https://api.anthropic.com"
         AiProviderKind.Gemini -> "https://generativelanguage.googleapis.com"
+        AiProviderKind.Grok -> "https://api.x.ai"
     }
 
     private fun defaultModel(provider: AiProviderKind): String = when (provider) {
@@ -99,6 +100,7 @@ internal class SecureAiPreferences(private val preferences: Preferences, private
         AiProviderKind.OpenRouter -> "openrouter/free"
         AiProviderKind.Anthropic -> "claude-haiku-4-5-20251001"
         AiProviderKind.Gemini -> "gemini-3.8-flash"
+        AiProviderKind.Grok -> "grok-4.6"
     }
 
     private val PROVIDER_KEY = "provider"

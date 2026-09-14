@@ -19,7 +19,7 @@ As nove imagens fornecidas são referências visuais e de comportamento, não in
 | Conta Rocky | Nenhuma; acesso protegido pela conta do sistema operacional |
 | Dados | SQLite local; credenciais no cofre do sistema |
 | IA inicial | Ollama local e OpenAI por chave do próprio usuário |
-| Outros provedores | Adaptadores posteriores para Claude, Gemini, Grok e endpoints compatíveis |
+| Adaptadores de provedores | OpenAI, Anthropic, Gemini, OpenRouter e Ollama local; Grok e endpoints compatíveis seguem como trabalho futuro |
 | Primeiro chat real | Twitch; YouTube em seguida, obrigatório para validar Super Chat |
 | Voz | Entrada por botão/atalho; transcrição local e síntese local no MVP |
 | Distribuição | Download direto primeiro; Mac App Store e Microsoft Store depois |
@@ -86,7 +86,7 @@ A API OpenAI documenta credenciais próprias para chamadas da aplicação. Isso 
 | Ollama | Endpoint local, modelo local disponível, teste de capacidade | MVP |
 | OpenAI | Chave do usuário e modelo; Responses API | MVP |
 | Claude | Chave e API oficial própria | Após MVP |
-| Gemini | Credencial atualmente suportada pelo Google AI Studio e API oficial | Após MVP |
+| Gemini | Chave de API do Google AI Studio e API Gemini oficial | Disponível |
 | Grok | Chave e API oficial do provedor | Após MVP |
 | Compatível com OpenAI | Base URL, chave opcional e capacidades detectadas/testadas | Após MVP |
 

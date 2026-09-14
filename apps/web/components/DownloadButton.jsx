@@ -21,29 +21,27 @@ export default function DownloadButton({ className, locale, style }) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (loading) return;
-    const downloadWindow = window.open(RELEASES_PAGE, "_blank");
-    if (downloadWindow) downloadWindow.opener = null;
     setUnavailable(false);
     setLoading(true);
     try {
       const platform = detectDesktopPlatform(navigator.userAgentData?.platform || navigator.platform, navigator.userAgent);
       const installer = await findInstaller(platform, await browserArchitecture());
       if (installer) {
-        downloadWindow?.location.replace(installer.browser_download_url);
+        window.location.assign(installer.browser_download_url);
+      } else if (platform === "unknown") {
+        window.location.assign(RELEASES_PAGE);
       } else {
         setUnavailable(true);
         setLoading(false);
       }
     } catch {
-      downloadWindow?.location.replace(RELEASES_PAGE);
+      window.location.assign(RELEASES_PAGE);
     }
   }
 
   return <a
     className={className}
     href={RELEASES_PAGE}
-    target="_blank"
-    rel="noreferrer"
     aria-busy={loading}
     aria-live="polite"
     onClick={download}

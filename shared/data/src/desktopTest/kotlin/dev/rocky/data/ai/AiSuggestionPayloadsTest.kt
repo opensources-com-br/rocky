@@ -25,11 +25,13 @@ class AiSuggestionPayloadsTest {
         val openAi = """{"output":[{"type":"reasoning"},{"content":[{"type":"output_text","text":${jsonString(suggestionJson)}}]}]}"""
         val openRouter = """{"choices":[{"message":{"content":${jsonString(suggestionJson)}}}]}"""
         val anthropic = """{"content":[{"type":"text","text":${jsonString(suggestionJson)}}]}"""
+        val gemini = """{"candidates":[{"content":{"parts":[{"text":${jsonString(suggestionJson)}}]}}]}"""
 
         assertEquals(suggestionJson, AiSuggestionPayloads.ollamaText(ollama))
         assertEquals(suggestionJson, AiSuggestionPayloads.openAiText(openAi))
         assertEquals(suggestionJson, AiSuggestionPayloads.openRouterText(openRouter))
         assertEquals(suggestionJson, AiSuggestionPayloads.anthropicText(anthropic))
+        assertEquals(suggestionJson, AiSuggestionPayloads.geminiText(gemini))
         assertEquals(setOf("m1"), AiSuggestionPayloads.suggestion(suggestionJson, setOf("m1"))?.sourceMessageIds)
     }
 

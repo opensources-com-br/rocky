@@ -42,6 +42,12 @@ import dev.rocky.core.facebook.FacebookConnectionEvent
 import dev.rocky.core.facebook.FacebookConnectionListener
 import dev.rocky.core.facebook.FacebookLiveVideo
 import dev.rocky.core.facebook.FacebookPage
+import dev.rocky.core.tiktok.TikTokAccount
+import dev.rocky.core.tiktok.TikTokChatClient
+import dev.rocky.core.tiktok.TikTokConfiguration
+import dev.rocky.core.tiktok.TikTokConnectionEvent
+import dev.rocky.core.tiktok.TikTokConnectionListener
+import dev.rocky.core.tiktok.TikTokLiveRoom
 import dev.rocky.core.kick.KickAccount
 import dev.rocky.core.kick.KickChatClient
 import dev.rocky.core.kick.KickConfiguration
@@ -186,7 +192,7 @@ class RockyVisualCaptureTest {
         }
 
         render()
-        rule.onNodeWithText("Conecte Twitch, Kick, YouTube ou Facebook nas configurações para acompanhar uma live.").assertExists()
+        rule.onNodeWithText("Conecte Twitch, Kick, YouTube, Facebook ou TikTok nas configurações para acompanhar uma live.").assertExists()
         capture("implementation-main.png")
 
         val mainSections = mapOf(
@@ -341,6 +347,30 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("platform-facebook").performClick()
         rule.onNodeWithText("Desconectar").assertExists()
         rule.onNodeWithText("Mensagem do Facebook").assertExists()
+    }
+
+    @Test
+    fun connectsAndDisplaysRealTikTokChat() {
+        val tiktok = FakeTikTokChatClient()
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Platforms,
+            tiktokChatClient = tiktok,
+            tiktokConfiguration = TikTokConfiguration("rocky_live"),
+        )
+        rule.onNodeWithText("Conectar TikTok").performScrollTo().performClick()
+        rule.runOnIdle {
+            tiktok.emit(TikTokConnectionEvent.Connected(
+                TikTokAccount("rocky_live", "Rocky TikTok"), TikTokLiveRoom("room", "Live Rocky"),
+            ))
+            tiktok.emit(TikTokConnectionEvent.MessageReceived(
+                ChatMessage("tiktok-message", "viewer", "Mensagem do TikTok", StreamPlatform.TikTok),
+            ))
+        }
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithTag("platform-tiktok").performClick()
+        rule.onNodeWithText("Desconectar").assertExists()
+        rule.onNodeWithText("Mensagem do TikTok").assertExists()
     }
 
     @Test
@@ -805,7 +835,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Settings").assertExists()
         rule.onNodeWithText("Agent name").assertExists()
         rule.onNodeWithText("done").performClick()
-        rule.onNodeWithText("Connect Twitch, Kick, YouTube or Facebook in settings to follow a stream.").assertExists()
+        rule.onNodeWithText("Connect Twitch, Kick, YouTube, Facebook, or TikTok in settings to follow a stream.").assertExists()
         rule.onNodeWithText("Conversation").assertExists()
         rule.runOnIdle { assertEquals(RockyLanguage.English, savedLanguage) }
     }
@@ -873,6 +903,8 @@ class RockyVisualCaptureTest {
         youtubeConfiguration: YouTubeConfiguration = YouTubeConfiguration(),
         facebookChatClient: FacebookChatClient? = null,
         facebookConfiguration: FacebookConfiguration = FacebookConfiguration(),
+        tiktokChatClient: TikTokChatClient? = null,
+        tiktokConfiguration: TikTokConfiguration = TikTokConfiguration(),
         aiSuggestionClient: AiSuggestionClient? = null,
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
@@ -896,6 +928,7 @@ class RockyVisualCaptureTest {
                         kickChatClient = kickChatClient ?: FakeKickChatClient(),
                         youtubeChatClient = youtubeChatClient ?: FakeYouTubeChatClient(),
                         facebookChatClient = facebookChatClient ?: FakeFacebookChatClient(),
+                        tiktokChatClient = tiktokChatClient ?: FakeTikTokChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         voiceService = voiceService,
                         initialVoiceConfiguration = voiceConfiguration,
@@ -904,6 +937,7 @@ class RockyVisualCaptureTest {
                         initialKickConfiguration = kickConfiguration,
                         initialYouTubeConfiguration = youtubeConfiguration,
                         initialFacebookConfiguration = facebookConfiguration,
+                        initialTikTokConfiguration = tiktokConfiguration,
                         onExportNotes = onExportNotes,
                         onExportIdeas = onExportIdeas,
                         initialMainSectionIndex = mainSection.ordinal,
@@ -980,6 +1014,16 @@ class RockyVisualCaptureTest {
         override fun disconnect() = Unit
         override fun close() = Unit
         fun emit(event: FacebookConnectionEvent) = listener.onEvent(event)
+    }
+
+    private class FakeTikTokChatClient : TikTokChatClient {
+        private var listener = TikTokConnectionListener {}
+        override fun connect(configuration: TikTokConfiguration, listener: TikTokConnectionListener) {
+            this.listener = listener
+        }
+        override fun disconnect() = Unit
+        override fun close() = Unit
+        fun emit(event: TikTokConnectionEvent) = listener.onEvent(event)
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {

@@ -35,7 +35,7 @@ internal fun FirstUseContent(
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 16.dp)) {
         Text("Configure o Rocky", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold)
         Text(
-            text = "Conecte Twitch, Kick, YouTube ou Facebook e configure a IA para começar pelas ações rápidas. Ative a voz quando quiser.",
+            text = "Conecte Twitch, Kick, YouTube, Facebook ou TikTok e configure a IA para começar pelas ações rápidas. Ative a voz quando quiser.",
             modifier = Modifier.padding(top = 5.dp, bottom = 14.dp),
             color = RockyColors.TextSecondary,
             style = MaterialTheme.typography.body2,
@@ -43,7 +43,7 @@ internal fun FirstUseContent(
         SetupStep(
             number = 1,
             title = "Conecte sua plataforma",
-            description = tr("Connect Twitch, Kick, YouTube or Facebook and authorize your channel in the browser.", "Conecte Twitch, Kick, YouTube ou Facebook e autorize seu canal no navegador."),
+            description = tr("Connect Twitch, Kick, YouTube, Facebook, or TikTok and follow the platform instructions.", "Conecte Twitch, Kick, YouTube, Facebook ou TikTok e siga as instruções da plataforma."),
             complete = twitchConnected,
             action = if (twitchConnected) "Revisar plataforma" else "Configurar plataforma",
             onAction = onConfigureTwitch,

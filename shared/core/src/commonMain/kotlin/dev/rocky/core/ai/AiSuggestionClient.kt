@@ -9,6 +9,7 @@ enum class AiProviderKind {
     OpenRouter,
     Anthropic,
     Gemini,
+    Grok,
 }
 
 data class AiProviderConfiguration(

@@ -5,7 +5,7 @@ const content = {
   blocks: [
     { type: "h2", text: "Prepare the session" },
     { type: "list", items: [
-      "Under Platforms, connect Twitch, Kick, YouTube, or Facebook and authorize it in the browser. Kick requires forwarding through a public HTTPS webhook; YouTube and Facebook require app credentials and an active stream with chat.",
+      "Under Platforms, connect Twitch, Kick, YouTube, Facebook, or TikTok LIVE. TikTok only needs the username and an active public live; Kick requires forwarding through a public HTTPS webhook; YouTube and Facebook require app credentials and an active stream with chat.",
       "Under AI, choose Ollama, OpenAI API, or OpenRouter, enter the model, and test the connection. Explicitly save the configuration and key when applicable.",
       "Receive new messages on the authenticated channel. Use Analyze now or Top questions, What did I miss?, and Chat ideas on the Conversation tab. The typed question field is hidden in the current layout.",
       "If you want voice, configure whisper-cli, the transcription model, and the microphone; then test the voice conversation.",

@@ -1,4 +1,4 @@
-import { TW, KI, YT, FB } from "@/content/showcase";
+import { TW, KI, YT, FB, TT } from "@/content/showcase";
 export function formFields(f, setField, setUrl, togglePlatform) {
     const pill = (on) => ({
       bg: on ? "rgba(212,112,60,.14)" : "rgba(255,255,255,.03)",
@@ -22,6 +22,8 @@ export function formFields(f, setField, setUrl, togglePlatform) {
       { name: "Twitch", dot: TW },
       { name: "Kick", dot: KI },
       { name: "YouTube", dot: YT },
+      { name: "Facebook", dot: FB },
+      { name: "TikTok", dot: TT },
     ];
 
 
@@ -29,16 +31,16 @@ return [
         text("Nome ou canal", "Como você quer aparecer na página.", "name", "ex. ju.lia"),
         choice("Categoria", "Onde o seu caso entra nos filtros.", "category", ["Programação", "Games", "Educação", "Podcast", "Esportes", "Arte"]),
         {
-          label: "Plataformas conectadas", hint: "A versão atual conecta Twitch, Kick, YouTube ou Facebook por sessão.", isPlatforms: true,
+          label: "Plataformas conectadas", hint: "A versão atual conecta Twitch, Kick, YouTube, Facebook ou TikTok por sessão.", isPlatforms: true,
           options: PLATS.map((p) => Object.assign({ name: p.name, dot: f.platforms.indexOf(p.name) === -1 ? "rgba(255,255,255,.22)" : p.dot, pick: () => togglePlatform(p.name) }, pill(f.platforms.indexOf(p.name) !== -1))),
         },
         {
           label: "Links dos seus canais", hint: "A URL de cada plataforma que você marcou acima.", isUrls: true,
           items: f.platforms.map((name) => ({
             name,
-            dot: { Twitch: TW, Kick: KI, YouTube: YT, Facebook: FB }[name],
+            dot: { Twitch: TW, Kick: KI, YouTube: YT, Facebook: FB, TikTok: TT }[name],
             value: (f.urls || {})[name] || "",
-            placeholder: { Twitch: "https://twitch.tv/seucanal", Kick: "https://kick.com/seucanal", YouTube: "https://youtube.com/@seucanal", Facebook: "https://facebook.com/suapagina" }[name],
+            placeholder: { Twitch: "https://twitch.tv/seucanal", Kick: "https://kick.com/seucanal", YouTube: "https://youtube.com/@seucanal", Facebook: "https://facebook.com/suapagina", TikTok: "https://tiktok.com/@seucanal/live" }[name],
             onInput: (e) => setUrl(name, e.target.value),
           })),
         },

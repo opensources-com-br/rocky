@@ -1,10 +1,10 @@
-# Web content audit · 2026-09-13
+# Web content audit · 2026-09-14
 
 Scope: landing page, 17 documentation topics, showcase coming-soon notice, disabled contribution action, preview labels and release copy. Authority: the current desktop source, cross-checked with the repository guides. This is a content audit, not launch certification or a hardware test.
 
 | Topic | Implemented behavior used by the web | Source |
 | --- | --- | --- |
-| Platforms | Twitch, Kick, YouTube and Facebook chat/viewers; Kick needs public HTTPS forwarding; no paid support or chat sending | `docs/TWITCH.md`, `docs/KICK.md`, `docs/YOUTUBE.md`, `docs/FACEBOOK.md` |
+| Platforms | Twitch, Kick, YouTube, Facebook and TikTok LIVE chat/viewers; Kick needs public HTTPS forwarding; TikTok uses unofficial WebCast through Eulerstream; no paid support or chat sending | `docs/TWITCH.md`, `docs/KICK.md`, `docs/YOUTUBE.md`, `docs/FACEBOOK.md`, `docs/TIKTOK.md` |
 | AI | Ollama, OpenAI API, OpenRouter; model discovery and bounded recent chat; loopback alone does not prove local inference | `docs/AI.md`, `shared/ui/.../AiSuggestionState.kt` |
 | Conversation | Quick actions and voice; free-text field hidden; up to 30 answers and last 4 pairs for continuity | `shared/ui/.../AiSuggestionState.kt` |
 | Profiles | On demand, discreet (5 min), proactive (2 min) | `shared/core/.../agent/InterventionProfile.kt` |

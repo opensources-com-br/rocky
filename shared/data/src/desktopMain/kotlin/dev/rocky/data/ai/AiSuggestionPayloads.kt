@@ -38,6 +38,17 @@ internal object AiSuggestionPayloads {
             ?: throw IllegalArgumentException("OpenRouter retornou conteúdo vazio")
     }
 
+    fun anthropicText(body: String): String {
+        val root = body.asObject()
+        root.errorMessage()?.let { throw IllegalArgumentException("Anthropic: $it") }
+        return root.arrayAt("content").asSequence()
+            .map { it.jsonObject }
+            .firstOrNull { it.stringAt("type") == "text" }
+            ?.stringAt("text")
+            ?.takeIf(String::isNotBlank)
+            ?: throw IllegalArgumentException("Anthropic retornou conteúdo vazio")
+    }
+
     fun suggestion(text: String, allowedMessageIds: Set<String>): AiGeneratedSuggestion? {
         val payload = text.removePrefix("```json").removePrefix("```").removeSuffix("```").trim().asObject()
         val suggestion = payload.stringAt("suggestion").trim()

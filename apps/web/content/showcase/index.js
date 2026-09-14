@@ -12,4 +12,4 @@ import bruno from "./bruno";
 export const CASES = [julia, marcos, canal_sete, tati, oficina, renan, mesa_de_bar, atelie, bruno];
 */
 export const CASES = [];
-export const TW = "#9146ff", KI = "#53fc18", YT = "#ff0033", FB = "#1877f2";
+export const TW = "#9146ff", KI = "#53fc18", YT = "#ff0033", FB = "#1877f2", TT = "#25f4ee";

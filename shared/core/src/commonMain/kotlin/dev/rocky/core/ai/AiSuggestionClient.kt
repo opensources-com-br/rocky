@@ -7,6 +7,7 @@ enum class AiProviderKind {
     Ollama,
     OpenAI,
     OpenRouter,
+    Anthropic,
 }
 
 data class AiProviderConfiguration(

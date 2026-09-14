@@ -33,6 +33,7 @@ import dev.rocky.core.twitch.TwitchConnectionPhase
 import dev.rocky.core.kick.KickConfiguration
 import dev.rocky.core.youtube.YouTubeConfiguration
 import dev.rocky.core.facebook.FacebookConfiguration
+import dev.rocky.core.tiktok.TikTokConfiguration
 import dev.rocky.ui.theme.RockyColors
 
 @Composable
@@ -58,11 +59,15 @@ internal fun PlatformSettings(
     onConnectFacebook: (FacebookConfiguration) -> Unit = {},
     onDisconnectFacebook: () -> Unit = {},
     onOpenFacebookBrowser: (String) -> Unit = onOpenBrowser,
+    tiktokConfiguration: TikTokConfiguration = TikTokConfiguration(),
+    tiktok: TikTokLiveState? = null,
+    onConnectTikTok: (TikTokConfiguration) -> Unit = {},
+    onDisconnectTikTok: () -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         SettingTitle(
             "Conexão com plataformas",
-            "Conecte Twitch, Kick, YouTube ou Facebook para receber chats e dados da live.",
+            "Conecte Twitch, Kick, YouTube, Facebook ou TikTok para receber chats e dados da live.",
         )
         Text(
             text = if (clientId.isBlank()) {
@@ -95,6 +100,9 @@ internal fun PlatformSettings(
         facebook?.let {
             FacebookAccountSettings(facebookConfiguration, it, onConnectFacebook, onDisconnectFacebook, onOpenFacebookBrowser)
         } ?: UpcomingPlatform("Facebook", PlatformColor.Facebook)
+        tiktok?.let {
+            TikTokAccountSettings(tiktokConfiguration, it, onConnectTikTok, onDisconnectTikTok)
+        } ?: UpcomingPlatform("TikTok", PlatformColor.TikTok)
     }
 }
 
@@ -248,5 +256,6 @@ private fun PlatformColor.color(): Color = when (this) {
     PlatformColor.Kick -> RockyColors.Kick
     PlatformColor.YouTube -> RockyColors.YouTube
     PlatformColor.Facebook -> RockyColors.Facebook
+    PlatformColor.TikTok -> RockyColors.TikTok
     PlatformColor.Offline -> RockyColors.TextMuted
 }

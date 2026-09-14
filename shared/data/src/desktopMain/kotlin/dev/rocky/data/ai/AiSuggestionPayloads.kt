@@ -49,6 +49,20 @@ internal object AiSuggestionPayloads {
             ?: throw IllegalArgumentException("Anthropic retornou conteúdo vazio")
     }
 
+    fun geminiText(body: String): String {
+        val root = body.asObject()
+        root.errorMessage()?.let { throw IllegalArgumentException("Gemini: $it") }
+        return root.arrayAt("candidates").firstOrNull()?.jsonObject
+            ?.objectAt("content")
+            ?.arrayAt("parts")
+            ?.asSequence()
+            ?.map { it.jsonObject["text"]?.jsonPrimitive?.content }
+            ?.filterNotNull()
+            ?.joinToString("")
+            ?.takeIf(String::isNotBlank)
+            ?: throw IllegalArgumentException("Gemini retornou conteúdo vazio")
+    }
+
     fun suggestion(text: String, allowedMessageIds: Set<String>): AiGeneratedSuggestion? {
         val payload = text.removePrefix("```json").removePrefix("```").removeSuffix("```").trim().asObject()
         val suggestion = payload.stringAt("suggestion").trim()

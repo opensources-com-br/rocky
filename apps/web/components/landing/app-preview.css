@@ -60,12 +60,12 @@
 .rocky-session { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; background: #202023; }
 .rocky-session strong { color: #9347ff; font-size: 10px; letter-spacing: 1.2px; }
 .rocky-session > span { padding: 10px 14px; border: 1px solid var(--rp-border); border-radius: 10px; font-size: 14px; }
-.rocky-platforms { display: flex; gap: 7px; padding: 11px 18px; border-block: 1px solid #29292d; flex-wrap: wrap; }
+.rocky-platforms { display: flex; gap: 5px; padding: 9px 16px; border-block: 1px solid #29292d; flex-wrap: wrap; }
 .rocky-platform-status { display: flex; flex-basis: 100%; align-items: center; gap: 7px; color: #a5a1a5; font-size: 10px; letter-spacing: 1.2px; }
 .rocky-platforms .rocky-platform-status i { background: #35d07f; box-shadow: 0 0 8px #35d07f99; }
-.rocky-platforms > span { display: flex; gap: 6px; align-items: center; padding: 6px 10px; border-radius: 18px; border: 1px solid var(--rp-border); background: #202023; color: var(--rp-muted); font-size: 13px; }
-.rocky-platforms > span small { margin-left: 1px; color: var(--rp-secondary); font-size: 11px; font-variant-numeric: tabular-nums; }
-.rocky-platforms i { width: 8px; height: 8px; border-radius: 50%; background: #4d4d51; }
+.rocky-platforms > span { display: flex; gap: 4px; align-items: center; padding: 4px 7px; border-radius: 15px; border: 1px solid var(--rp-border); background: #202023; color: var(--rp-muted); font-size: 11px; white-space: nowrap; }
+.rocky-platforms > span small { color: var(--rp-secondary); font-size: 9px; font-variant-numeric: tabular-nums; }
+.rocky-platforms i { width: 6px; height: 6px; border-radius: 50%; background: #4d4d51; }
 .rocky-platforms .available { color: #f6f4f2; }
 .rocky-platforms .twitch i { background: #9347ff; }
 .rocky-tabs { display: flex; margin: 12px 14px; padding: 4px; border-radius: 13px; background: #202023; }

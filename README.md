@@ -18,7 +18,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - YouTube desktop OAuth, active-broadcast discovery, and live-chat polling;
 - TikTok LIVE chat through a desktop connection by public username;
 - simultaneous Twitch, Kick, YouTube, Facebook, and TikTok connections with per-platform audiences, an aggregate viewer total, and messages-per-minute metrics;
-- grounded AI suggestions using local Ollama models, the OpenAI or Anthropic APIs, or OpenRouter;
+- grounded AI suggestions using local Ollama models, the OpenAI, Anthropic, or Google Gemini APIs, or OpenRouter;
 - speech through macOS/Windows system voices or ElevenLabs, with your own key, streaming and optional local fallback;
 - wake-word voice commands with local `whisper.cpp` transcription;
 - local SQLite notes with create, edit, delete, restore, and Markdown export;
@@ -58,7 +58,7 @@ Validate the web separately: in `apps/web`, run `npm ci`, `npm test`, `npm run l
 ## Configure a real session
 
 1. Follow the guides for the platforms you want to connect: [Twitch](docs/TWITCH.md), [Kick](docs/KICK.md), [YouTube](docs/YOUTUBE.md), [Facebook](docs/FACEBOOK.md), and [TikTok](docs/TIKTOK.md). More than one connection can remain active; Kick requires a public HTTPS endpoint that forwards signed webhooks to Rocky.
-2. Follow the [AI provider guide](docs/AI.md) to use local Ollama, the OpenAI API, the Anthropic API, or OpenRouter.
+2. Follow the [AI provider guide](docs/AI.md) to use local Ollama, the OpenAI API, the Anthropic API, the Google Gemini API, or OpenRouter.
 3. Follow the [voice guide](docs/VOICE.md) to prepare local transcription and test an audio conversation.
 4. Start a live stream, connect Rocky, and send a message from another account. New messages will appear in the Conversation tab.
 

@@ -5,7 +5,7 @@ Scope: landing page, 17 documentation topics, showcase coming-soon notice, disab
 | Topic | Implemented behavior used by the web | Source |
 | --- | --- | --- |
 | Platforms | Twitch, Kick, YouTube, Facebook and TikTok LIVE chat/viewers; Kick needs public HTTPS forwarding; TikTok uses unofficial WebCast through Eulerstream; no paid support or chat sending | `docs/TWITCH.md`, `docs/KICK.md`, `docs/YOUTUBE.md`, `docs/FACEBOOK.md`, `docs/TIKTOK.md` |
-| AI | Ollama, OpenAI API, OpenRouter; model discovery and bounded recent chat; loopback alone does not prove local inference | `docs/AI.md`, `shared/ui/.../AiSuggestionState.kt` |
+| AI | Ollama, OpenAI API, Anthropic API, Google Gemini API, xAI Grok API and OpenRouter; model discovery and bounded recent chat; loopback alone does not prove local inference | `docs/AI.md`, `shared/ui/.../AiSuggestionState.kt` |
 | Conversation | Quick actions and voice; free-text field hidden; up to 30 answers and last 4 pairs for continuity | `shared/ui/.../AiSuggestionState.kt` |
 | Profiles | On demand, discreet (5 min), proactive (2 min) | `shared/core/.../agent/InterventionProfile.kt` |
 | Filters | Commands, configured bots, duplicate/burst rules over 30 seconds | `shared/core/.../live/ChatContextFilter.kt` |

@@ -20,10 +20,15 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
     private val ollama = OllamaAiClient(httpClient)
     private val openAi = OpenAiSuggestionClient(httpClient)
     private val anthropic = AnthropicSuggestionClient(httpClient)
+    private val gemini = GeminiSuggestionClient(httpClient)
 
     override fun availableModels(configuration: AiProviderConfiguration): List<String> {
         configuration.copy(model = "list").validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
-        val path = if (configuration.provider == AiProviderKind.Ollama) "/api/tags" else "/v1/models"
+        val path = when (configuration.provider) {
+            AiProviderKind.Ollama -> "/api/tags"
+            AiProviderKind.Gemini -> "/v1beta/models"
+            else -> "/v1/models"
+        }
         val request = java.net.http.HttpRequest.newBuilder(java.net.URI(configuration.endpoint.trimEnd('/') + path))
             .timeout(Duration.ofSeconds(15)).GET()
         when (configuration.provider) {
@@ -31,13 +36,19 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
             AiProviderKind.Anthropic -> request
                 .header("x-api-key", configuration.apiKey.trim())
                 .header("anthropic-version", "2023-06-01")
+            AiProviderKind.Gemini -> request.header("x-goog-api-key", configuration.apiKey.trim())
             else -> request.header("Authorization", "Bearer ${configuration.apiKey}")
         }
         val response = httpClient.send(request.build(), java.net.http.HttpResponse.BodyHandlers.ofString())
         require(response.statusCode() in 200..299) { "Não foi possível listar modelos. Verifique a conexão e a chave." }
-        return if (configuration.provider == AiProviderKind.Ollama) AiSuggestionPayloads.ollamaModels(response.body()).sorted()
-        else Json.parseToJsonElement(response.body()).jsonObject["data"]?.jsonArray.orEmpty()
-            .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.content }.distinct().sorted()
+        return when (configuration.provider) {
+            AiProviderKind.Ollama -> AiSuggestionPayloads.ollamaModels(response.body()).sorted()
+            AiProviderKind.Gemini -> Json.parseToJsonElement(response.body()).jsonObject["models"]?.jsonArray.orEmpty()
+                .filter { "generateContent" in it.jsonObject["supportedGenerationMethods"]?.jsonArray.orEmpty().mapNotNull { method -> method.jsonPrimitive.contentOrNull } }
+                .mapNotNull { it.jsonObject["name"]?.jsonPrimitive?.content?.removePrefix("models/") }.distinct().sorted()
+            else -> Json.parseToJsonElement(response.body()).jsonObject["data"]?.jsonArray.orEmpty()
+                .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.content }.distinct().sorted()
+        }
     }
 
     override fun testConnection(configuration: AiProviderConfiguration): AiConnectionResult {
@@ -60,6 +71,11 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
             AiProviderKind.Anthropic -> anthropic.testConnection(
                 configuration.endpoint,
                 configuration.apiKey,
+            )
+            AiProviderKind.Gemini -> gemini.testConnection(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
             )
         }
         if (!connection.successful) return connection
@@ -103,6 +119,14 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 agent,
             )
             AiProviderKind.Anthropic -> anthropic.generate(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
+                messages,
+                streamerRequest,
+                agent,
+            )
+            AiProviderKind.Gemini -> gemini.generate(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,

@@ -725,6 +725,16 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun configuresGeminiFromAiSettings() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+
+        rule.onNodeWithText("Google Gemini API").performClick()
+
+        rule.onNodeWithText("gemini-3.8-flash").assertExists()
+        rule.onNodeWithTag("ai-api-key").assertExists()
+    }
+
+    @Test
     fun togglesTwitchClientIdVisibility() {
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms, twitchClientId = "client-id")
 

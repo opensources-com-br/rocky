@@ -10,7 +10,7 @@ Before promoting an alpha build, complete:
 
 - one clean installation on a supported macOS version;
 - one clean installation on Windows 11;
-- one authenticated Kick session with public webhook delivery and one YouTube live-chat session;
+- one authenticated Kick session with public webhook delivery, one YouTube live-chat session, one Facebook Page live session, and one public TikTok LIVE WebCast session;
 - system and ElevenLabs speech tests on macOS and Windows, including cancellation and optional fallback;
 - at least three real Twitch sessions with two different streamers;
 - one continuous session lasting at least two hours;
@@ -38,7 +38,7 @@ Use a virtual-machine snapshot, a new operating-system user, or a computer where
 3. Install and launch Rocky from Finder or the Windows Start menu.
 4. Confirm the first-use guide opens and follows the operating-system language.
 5. Switch between English and Portuguese, close Rocky, reopen it, and confirm the choice persists.
-6. Complete the required platform (Twitch, Kick, YouTube or Facebook) and AI checks. Confirm **Finish setup** becomes available without testing voice; then configure and test voice optionally.
+6. Complete the required platform (Twitch, Kick, YouTube, Facebook, or TikTok LIVE) and AI checks. For TikTok, enter a username with an active public live and confirm chat and viewer updates. Confirm **Finish setup** becomes available without testing voice; then configure and test voice optionally.
 7. Close and reopen Rocky. Confirm the guide stays completed and local notes remain available.
 8. Uninstall Rocky through Finder or Windows Installed apps. Confirm no launcher shortcut remains.
 

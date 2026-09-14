@@ -19,7 +19,7 @@ A recomendação é consolidar esse ciclo na Twitch. Novas plataformas aumentam 
 | Layout | Principal e configurações com 462 × 820 dp; compacto com 340 × 180 dp | Validar monitores pequenos, escala e fullscreen |
 | Twitch | Autorização no navegador, EventSub, renovação de tokens na sessão, reconexão e deduplicação | Só chat Twitch; autorização não é preservada entre execuções |
 | Contexto | Até 200 mensagens recentes dos últimos dois minutos; buffer visual limitado a 1.000 mensagens; aviso de lacunas | Não é memória da live inteira; chat movimentado pode exceder a amostra |
-| IA | Ollama, OpenAI e OpenRouter; teste de conexão, cancelamento, respostas com fontes, pedidos repetidos | Uma resposta corrente; sem histórico conversacional enviado ao modelo |
+| IA | Ollama, OpenAI, Anthropic, Gemini, Grok e OpenRouter; teste de conexão, cancelamento, respostas com fontes, pedidos repetidos | Uma resposta corrente; sem histórico conversacional enviado ao modelo |
 | Automação | Análise automática opcional com intervalo e lote mínimo de mensagens | Sem fila de perguntas respondidas/pendentes nem deduplicação semântica de sugestões |
 | Voz | Whisper local, vozes do sistema, nome de ativação, testes de microfone, retorno à escuta | Captura em blocos de oito segundos; pausas durante transcrição e síntese; dependências externas |
 | Notas e ideias | Salvar resposta pela UI ou por voz; categorias persistidas em SQLite, edição, exclusão e exportação | Não há criação livre por ditado nem organização por sessão; ideias usam uma categoria no repositório de notas |

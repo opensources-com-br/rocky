@@ -6,7 +6,7 @@ const content = {
     { type: "h2", text: "What works today" },
     { type: "list", items: [
       "Quick analysis actions and, with recognition configured, free-form voice questions.",
-      "Suggestions through Ollama, the OpenAI API, the Anthropic API, the Google Gemini API, or OpenRouter, using a recent chat sample.",
+      "Suggestions through Ollama, the OpenAI API, the Anthropic API, the Google Gemini API, the xAI Grok API, or OpenRouter, using a recent chat sample.",
       "A grouped question queue, session history, notes, ideas, moments, and a record summary.",
       "A resizable window, compact mode, and an option to keep it on top."
     ] },

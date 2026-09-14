@@ -30,7 +30,7 @@ export default function AppPreview({ locale }) {
     </div>
     <div className={`rocky-app rocky-app-${platform}`} inert aria-label={localized(locale, `Rocky interface demo on ${platformName}`, `Demonstração da interface do Rocky no ${platformName}`)}>
       <AppTitlebar locale={locale} platform={platform} />
-      <div className="rocky-platforms">{["Twitch", "Kick", "YouTube", "Facebook"].map(name => <span key={name} className={`available ${name.toLowerCase()}`}><i />{name}</span>)}</div>
+      <div className="rocky-platforms">{["Twitch", "Kick", "YouTube", "Facebook", "TikTok"].map(name => <span key={name} className={`available ${name.toLowerCase()}`}><i />{name}</span>)}</div>
       <AppAnswer locale={locale} />
       <div className="rocky-tabs">{localized(locale, ["Conversation", "Superchats", "Notes", "Ideas", "Pulse"], ["Conversa", "Superchats", "Notas", "Ideias", "Pulso"]).map((name, index) => <span key={name} className={index === 0 ? "selected" : ""}>{name}</span>)}</div>
       <AppConversation locale={locale} />

@@ -8,7 +8,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Os conectores atuais recebem mensagens comuns e espectadores da Twitch, Kick, YouTube ou Facebook. Não há fila de contribuições pagas, leitura de nome e valor, limite monetário ou leitura automática de Super Chats e Estrelas."
+      "text": "Os conectores atuais recebem mensagens comuns e espectadores da Twitch, Kick, YouTube, Facebook ou TikTok LIVE. Não há fila de contribuições pagas, leitura de nome e valor, limite monetário ou leitura automática de Super Chats, Estrelas e presentes."
     },
     {
       "type": "h2",

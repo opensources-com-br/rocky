@@ -13,7 +13,7 @@ Every push to `main` and every pull request runs the complete Gradle build on ma
 
 The packages are currently unsigned development builds. Signing and macOS notarization belong to the release stage.
 
-The automated suite runs a Twitch presentation-state soak test with 20,000 messages and seven simulated connection drops. Kick tests cover OAuth payloads, signed webhook delivery, replay deduplication, bounded presentation state, pulse metrics, and secure preferences. Real Kick OAuth and public webhook forwarding remain manual checks.
+The automated suite runs a Twitch presentation-state soak test with 20,000 messages and seven simulated connection drops. Kick tests cover OAuth payloads, signed webhook delivery, replay deduplication, bounded presentation state, pulse metrics, and secure preferences. TikTok tests cover event mapping, deduplication, late-event isolation, bounded presentation state, preferences, and the Compose connection flow. Real Kick OAuth and public webhook forwarding and a real TikTok LIVE WebCast session remain manual checks.
 
 ## Local commands
 

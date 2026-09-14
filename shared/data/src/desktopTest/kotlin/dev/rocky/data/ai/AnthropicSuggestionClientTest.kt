@@ -1,0 +1,53 @@
+package dev.rocky.data.ai
+
+import com.sun.net.httpserver.HttpServer
+import dev.rocky.core.ai.AiProviderConfiguration
+import dev.rocky.core.ai.AiProviderKind
+import java.net.InetSocketAddress
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class AnthropicSuggestionClientTest {
+    @Test
+    fun authenticatesAndGeneratesAGroundedSuggestion() {
+        var apiKey = ""
+        var version = ""
+        var requestBody = ""
+        val server = HttpServer.create(InetSocketAddress(0), 0).apply {
+            createContext("/v1/models") { exchange ->
+                apiKey = exchange.requestHeaders.getFirst("x-api-key")
+                version = exchange.requestHeaders.getFirst("anthropic-version")
+                exchange.respond("""{"data":[{"id":"claude-test"}]}""")
+            }
+            createContext("/v1/messages") { exchange ->
+                apiKey = exchange.requestHeaders.getFirst("x-api-key")
+                version = exchange.requestHeaders.getFirst("anthropic-version")
+                requestBody = exchange.requestBody.bufferedReader().readText()
+                exchange.respond(
+                    """{"content":[{"type":"text","text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}],"usage":{"input_tokens":11,"output_tokens":7}}""",
+                )
+            }
+            start()
+        }
+        try {
+            val endpoint = "http://localhost:${server.address.port}"
+            val config = AiProviderConfiguration(AiProviderKind.Anthropic, endpoint, "claude-test", "secret-key")
+            val client = DesktopAiSuggestionClient(allowTestLoopback = true)
+
+            val connection = client.testConnection(config)
+            val models = client.availableModels(config)
+
+            assertTrue(connection.successful)
+            assertEquals(listOf("claude-test"), models)
+            assertEquals("secret-key", apiKey)
+            assertEquals("2023-06-01", version)
+            assertTrue("\"system\"" in requestBody)
+            assertTrue("\"max_tokens\":300" in requestBody)
+            assertTrue("\"model\":\"claude-test\"" in requestBody)
+            assertTrue("secret-key" !in requestBody)
+        } finally {
+            server.stop(0)
+        }
+    }
+}

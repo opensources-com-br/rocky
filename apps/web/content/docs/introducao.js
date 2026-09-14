@@ -10,7 +10,7 @@ const content = {
       "type": "list",
       "items": [
         "Ações rápidas de análise e, com reconhecimento configurado, perguntas livres por voz.",
-        "Sugestões com Ollama, OpenAI API, Anthropic API, Google Gemini API ou OpenRouter, usando uma amostra recente do chat.",
+        "Sugestões com Ollama, OpenAI API, Anthropic API, Google Gemini API, xAI Grok API ou OpenRouter, usando uma amostra recente do chat.",
         "Fila de perguntas agrupadas, histórico da sessão, notas, ideias, momentos e resumo dos registros.",
         "Janela redimensionável, modo compacto e opção de manter no topo."
       ]

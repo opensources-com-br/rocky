@@ -35,6 +35,7 @@ internal fun AiSettings(ai: AiSuggestionState) {
         AiProviderKind.Ollama -> "Ollama local"
         AiProviderKind.OpenAI -> "OpenAI API"
         AiProviderKind.OpenRouter -> "OpenRouter"
+        AiProviderKind.Anthropic -> "Anthropic API"
     }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
@@ -44,11 +45,12 @@ internal fun AiSettings(ai: AiSuggestionState) {
             "Escolha processamento local ou uma API configurada por você.",
             providerLabel,
         )
-        ChoiceRow(listOf("Ollama local", "OpenAI API", "OpenRouter"), providerLabel) { selected ->
+        ChoiceRow(listOf("Ollama local", "OpenAI API", "OpenRouter", "Anthropic API"), providerLabel) { selected ->
             ai.updateProvider(
                 when (selected) {
                     "Ollama local" -> AiProviderKind.Ollama
                     "OpenRouter" -> AiProviderKind.OpenRouter
+                    "Anthropic API" -> AiProviderKind.Anthropic
                     else -> AiProviderKind.OpenAI
                 },
             )
@@ -97,7 +99,11 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 modifier = Modifier.fillMaxWidth().testTag("ai-api-key"),
                 label = { Text("API key") },
                 placeholder = {
-                    Text(if (ai.configuration.provider == AiProviderKind.OpenRouter) "sk-or-v1-…" else "sk-…")
+                    Text(when (ai.configuration.provider) {
+                        AiProviderKind.OpenRouter -> "sk-or-v1-…"
+                        AiProviderKind.Anthropic -> "sk-ant-…"
+                        else -> "sk-…"
+                    })
                 },
                 singleLine = true,
                 visualTransformation = if (apiKeyVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -121,6 +127,17 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 tr(
                     "openrouter/free selects an available free model. Availability and limits may vary.",
                     "openrouter/free seleciona um modelo gratuito disponível. Disponibilidade e limites podem variar.",
+                ),
+                modifier = Modifier.padding(top = 5.dp),
+                color = RockyColors.TextMuted,
+                style = MaterialTheme.typography.caption,
+            )
+        }
+        if (ai.configuration.provider == AiProviderKind.Anthropic) {
+            Text(
+                tr(
+                    "Claude API keys are separate from a Claude subscription.",
+                    "Chaves da API Claude são separadas de uma assinatura Claude.",
                 ),
                 modifier = Modifier.padding(top = 5.dp),
                 color = RockyColors.TextMuted,

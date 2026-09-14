@@ -21,6 +21,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
     private val openAi = OpenAiSuggestionClient(httpClient)
     private val anthropic = AnthropicSuggestionClient(httpClient)
     private val gemini = GeminiSuggestionClient(httpClient)
+    private val grok = GrokSuggestionClient(httpClient)
 
     override fun availableModels(configuration: AiProviderConfiguration): List<String> {
         configuration.copy(model = "list").validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
@@ -77,6 +78,11 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 configuration.apiKey,
                 configuration.model,
             )
+            AiProviderKind.Grok -> grok.testConnection(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
+            )
         }
         if (!connection.successful) return connection
         return runCatching {
@@ -127,6 +133,14 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 agent,
             )
             AiProviderKind.Gemini -> gemini.generate(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
+                messages,
+                streamerRequest,
+                agent,
+            )
+            AiProviderKind.Grok -> grok.generate(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,

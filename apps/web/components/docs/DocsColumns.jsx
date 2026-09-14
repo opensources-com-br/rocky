@@ -37,7 +37,7 @@ export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, 
 {t.name}
 </a>
 </React.Fragment>)}
-<a href={"https://github.com/opensources-com-br/rocky"} style={{"marginTop": "14px", "paddingTop": "14px", "borderTop": "1px solid rgba(255,255,255,.07)", "fontSize": "13px", "color": "rgba(255,255,255,.4)"}}>
+<a href={"https://github.com/opensources-com-br/rocky"} target="_blank" rel="noreferrer" style={{"marginTop": "14px", "paddingTop": "14px", "borderTop": "1px solid rgba(255,255,255,.07)", "fontSize": "13px", "color": "rgba(255,255,255,.4)"}}>
 {localized(locale, "View the repository on GitHub", "Ver o repositório no GitHub")}
 </a>
 </div>

@@ -184,7 +184,7 @@ private val settingsTranslations = mapOf(
     "Configure o Rocky" to "Set up Rocky",
     "Complete os três passos para acompanhar uma live real. Você pode voltar a este guia até concluir." to "Complete all three steps to follow a real stream. You can return to this guide until you finish.",
     "Conecte a Twitch e a IA para acompanhar uma live real. A voz é opcional e pode ser configurada depois." to "Connect Twitch and AI to follow a real stream. Voice is optional and can be configured later.",
-    "Conecte Twitch, Kick, YouTube ou Facebook e configure a IA para começar pelas ações rápidas. Ative a voz quando quiser." to "Connect Twitch, Kick, YouTube or Facebook and configure AI to start with quick actions. Enable voice whenever you want.",
+    "Conecte Twitch, Kick, YouTube, Facebook ou TikTok e configure a IA para começar pelas ações rápidas. Ative a voz quando quiser." to "Connect Twitch, Kick, YouTube, Facebook, or TikTok and configure AI to start with quick actions. Enable voice whenever you want.",
     "Conecte sua Twitch nas configurações para acompanhar uma live." to "Connect your Twitch in settings to follow a stream.",
     "Conecte sua Twitch" to "Connect your Twitch",
     "Conecte sua plataforma" to "Connect your platform",
@@ -343,7 +343,7 @@ private val releaseTranslations = mapOf(
     "Não foi possível listar modelos. Verifique a conexão e a chave." to "Could not list models. Check the connection and key.",
 
     "Aguardando a conexão da Twitch. As mensagens anteriores estão preservadas." to "Waiting for Twitch to connect. Previous messages are preserved.",
-    "Conecte Twitch, Kick, YouTube ou Facebook nas configurações para acompanhar uma live." to "Connect Twitch, Kick, YouTube or Facebook in settings to follow a stream.",
+    "Conecte Twitch, Kick, YouTube, Facebook ou TikTok nas configurações para acompanhar uma live." to "Connect Twitch, Kick, YouTube, Facebook, or TikTok in settings to follow a stream.",
     "Aguardando a conexão da plataforma. As mensagens anteriores estão preservadas." to "Waiting for the platform to connect. Previous messages are preserved.",
     "Aguardando mensagens do chat nos últimos dois minutos." to "Waiting for chat messages from the last two minutes.",
     "Dados" to "Data",

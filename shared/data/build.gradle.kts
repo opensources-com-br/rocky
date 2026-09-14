@@ -19,6 +19,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.sqldelight.sqlite.driver)
+                implementation(libs.tiktok.live)
             }
         }
         val desktopTest by getting {

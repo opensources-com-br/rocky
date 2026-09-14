@@ -1,6 +1,6 @@
 # AI providers
 
-Rocky can generate grounded suggestions from Twitch, Kick, YouTube, Facebook, or TikTok LIVE chat with local Ollama, the OpenAI Responses API, the Anthropic Messages API, the Google Gemini API, or OpenRouter.
+Rocky can generate grounded suggestions from Twitch, Kick, YouTube, Facebook, or TikTok LIVE chat with local Ollama, the OpenAI Responses API, the Anthropic Messages API, the Google Gemini API, the xAI Grok Responses API, or OpenRouter.
 
 ## Ollama
 
@@ -46,6 +46,15 @@ Rocky uses the [Messages API](https://docs.anthropic.com/en/api/messages) with t
 4. Paste the API key and select **Test connection**.
 
 Rocky uses `generateContent` from the [Gemini API](https://ai.google.dev/api/generate-content) with the supplied key. Selected chat messages and the request are sent to Google; a connection test also generates a short response and may incur charges. The key uses the same system credential vault described above.
+
+## xAI Grok API
+
+1. Create an API key in the [xAI Console](https://console.x.ai/).
+2. In **Settings → AI**, select **xAI Grok API**.
+3. Keep `https://api.x.ai` as the endpoint and use `grok-4.6` or another model available to your account.
+4. Paste the API key and select **Test connection**.
+
+Rocky uses the [xAI Responses API](https://docs.x.ai/developers/rest-api-reference/inference/responses) with Bearer authentication and structured output. A Grok subscription does not provide API credentials or usage credits. Selected chat messages and the request are sent to xAI; a connection test also generates a short response and may incur charges. The key uses the same system credential vault described above.
 
 ## Suggestion behavior
 

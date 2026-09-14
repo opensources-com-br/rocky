@@ -19,7 +19,7 @@ The supplied screenshots are visual and behavioural references. They do not guar
 | Rocky account | None; access is protected by the operating-system account |
 | Data | Local SQLite; credentials in the system credential store |
 | Initial AI | Local Ollama and user-provided OpenAI API key |
-| Later providers | Claude, Gemini, Grok, and compatible endpoints behind provider adapters |
+| Provider adapters | OpenAI, Anthropic, Gemini, OpenRouter and local Ollama; Grok and compatible endpoints remain later work |
 | First live chat | Twitch, then YouTube with Super Chat validation |
 | Voice | Push-to-talk/shortcut, local transcription, and local synthesis in the MVP |
 | Distribution | Direct download first; Mac App Store and Microsoft Store later |
@@ -86,7 +86,7 @@ OpenAI documents application requests using API credentials; that does not estab
 | Ollama | Local endpoint and available local model; capability test | MVP |
 | OpenAI | User API key and model through Responses API | MVP |
 | Claude | User key and its official API | After MVP |
-| Gemini | Currently supported Google AI Studio credential and official API | After MVP |
+| Gemini | Google AI Studio API key and official Gemini API | Available |
 | Grok | User key and official provider API | After MVP |
 | OpenAI-compatible | Base URL, optional key, and tested capabilities | After MVP |
 

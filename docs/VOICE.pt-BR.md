@@ -10,7 +10,7 @@ Use o teste de reprodução antes da live. O texto da resposta é enviado à Ele
 
 ## Reconhecimento do streamer
 
-A voz é opcional. Depois de configurada, o ouvinte inicia ao conectar Twitch, Kick, YouTube ou Facebook; o rodapé permite ligar e desligar. Rocky processa o áudio localmente em trechos curtos e aceita pedidos com seu nome, por atalho ou como continuação breve da resposta anterior. Diga, por exemplo, **“Rocky, o que o chat quer jogar?”**. O texto reconhecido aparece na aba Conversa, Rocky consulta até 200 mensagens recebidas nos últimos dois minutos e responde em áudio.
+A voz é opcional. Depois de configurada, o ouvinte inicia ao conectar Twitch, Kick, YouTube, Facebook ou TikTok LIVE; o rodapé permite ligar e desligar. Rocky processa o áudio localmente em trechos curtos e aceita pedidos com seu nome, por atalho ou como continuação breve da resposta anterior. Diga, por exemplo, **“Rocky, o que o chat quer jogar?”**. O texto reconhecido aparece na aba Conversa, Rocky consulta até 200 mensagens recebidas nos últimos dois minutos e responde em áudio.
 
 No macOS com Homebrew, clique em **Configurar reconhecimento de voz**. Rocky instala o `whisper.cpp`, baixa o modelo multilíngue e salva os caminhos no dispositivo. No Windows, selecione manualmente o executável `whisper-cli`, o modelo GGML e o microfone.
 

@@ -16,6 +16,7 @@ internal fun PreflightDialog(
     kick: KickLiveState,
     youtube: YouTubeLiveState,
     facebook: FacebookLiveState,
+    tiktok: TikTokLiveState,
     ai: AiSuggestionState,
     voice: VoiceState,
     agentName: String,
@@ -31,6 +32,7 @@ internal fun PreflightDialog(
         kick.isConnected -> "Kick"
         youtube.isConnected -> "YouTube"
         facebook.isConnected -> "Facebook"
+        tiktok.isConnected -> "TikTok"
         else -> null
     }
     val connected = connectedPlatform != null

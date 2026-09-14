@@ -946,7 +946,7 @@ private fun platformStatuses(
         PlatformStatus(
             name = "Twitch",
             account = twitch.account?.let { "@${it.login}" } ?: "Não conectada",
-            audience = twitch.viewerCount?.toString() ?: "—",
+            audience = twitch.viewerCount,
             messagesPerMinute = twitch.messagesPerMinute,
             colorKey = PlatformColor.Twitch,
             enabled = twitch.phase != TwitchConnectionPhase.Failed,
@@ -955,7 +955,7 @@ private fun platformStatuses(
         PlatformStatus(
             name = "Kick",
             account = kick.account?.let { "@${it.username}" } ?: "Não conectada",
-            audience = kick.viewerCount?.toString() ?: "—",
+            audience = kick.viewerCount,
             messagesPerMinute = kick.messagesPerMinute,
             colorKey = PlatformColor.Kick,
             enabled = kick.phase != KickConnectionPhase.Failed,
@@ -964,7 +964,7 @@ private fun platformStatuses(
         PlatformStatus(
             name = "YouTube",
             account = youtube.account?.displayName ?: "Não conectada",
-            audience = youtube.viewerCount?.toString() ?: "—",
+            audience = youtube.viewerCount,
             messagesPerMinute = youtube.messagesPerMinute,
             colorKey = PlatformColor.YouTube,
             enabled = youtube.phase != YouTubeConnectionPhase.Failed,
@@ -973,7 +973,7 @@ private fun platformStatuses(
         PlatformStatus(
             name = "Facebook",
             account = facebook.page?.name ?: "Não conectada",
-            audience = facebook.viewerCount?.toString() ?: "—",
+            audience = facebook.viewerCount,
             messagesPerMinute = facebook.messagesPerMinute,
             colorKey = PlatformColor.Facebook,
             enabled = facebook.phase != FacebookConnectionPhase.Failed,
@@ -982,7 +982,7 @@ private fun platformStatuses(
         PlatformStatus(
             name = "TikTok",
             account = tiktok.account?.let { "@${it.username}" } ?: "Não conectada",
-            audience = tiktok.viewerCount?.toString() ?: "—",
+            audience = tiktok.viewerCount,
             messagesPerMinute = tiktok.messagesPerMinute,
             colorKey = PlatformColor.TikTok,
             enabled = tiktok.phase != TikTokConnectionPhase.Failed,

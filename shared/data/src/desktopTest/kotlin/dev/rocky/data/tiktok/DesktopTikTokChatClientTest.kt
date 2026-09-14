@@ -1,0 +1,80 @@
+package dev.rocky.data.tiktok
+
+import dev.rocky.core.live.StreamPlatform
+import dev.rocky.core.tiktok.TikTokConfiguration
+import dev.rocky.core.tiktok.TikTokConnectionEvent
+import dev.rocky.core.tiktok.TikTokConnectionPhase
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
+
+class DesktopTikTokChatClientTest {
+    @Test
+    fun connectsByUsernameAndForwardsLiveEvents() {
+        val transport = FakeTikTokTransport()
+        var requestedUsername = ""
+        val client = DesktopTikTokChatClient(TikTokLiveTransportFactory { username, onEvent ->
+            requestedUsername = username
+            transport.onEvent = onEvent
+            transport
+        })
+        val events = mutableListOf<TikTokConnectionEvent>()
+
+        client.connect(TikTokConfiguration(" @rocky_live "), events::add)
+        transport.emit(TikTokTransportEvent.Connected(TikTokTransportRoom(
+            "room-1", "Minha live", "rocky_live", "Rocky", 42,
+        )))
+        transport.emit(TikTokTransportEvent.CommentReceived(TikTokTransportComment(
+            "message-1", "viewer-1", "Ana", "Olá do TikTok", "room-1", "2026-09-14T12:00:00Z",
+        )))
+        transport.emit(TikTokTransportEvent.AudienceUpdated(51))
+
+        assertEquals("rocky_live", requestedUsername)
+        assertTrue(transport.connected)
+        assertEquals(TikTokConnectionPhase.Connecting,
+            assertIs<TikTokConnectionEvent.PhaseChanged>(events.first()).phase)
+        val connected = events.filterIsInstance<TikTokConnectionEvent.Connected>().single()
+        assertEquals("Rocky", connected.account.displayName)
+        assertEquals("room-1", connected.room.id)
+        val message = events.filterIsInstance<TikTokConnectionEvent.MessageReceived>().single().message
+        assertEquals(StreamPlatform.TikTok, message.platform)
+        assertEquals("Olá do TikTok", message.text)
+        assertEquals(51, events.filterIsInstance<TikTokConnectionEvent.AudienceUpdated>().last().viewerCount)
+    }
+
+    @Test
+    fun ignoresDuplicatesAndEventsAfterDisconnect() {
+        val transport = FakeTikTokTransport()
+        val client = DesktopTikTokChatClient(TikTokLiveTransportFactory { _, onEvent ->
+            transport.onEvent = onEvent
+            transport
+        })
+        val events = mutableListOf<TikTokConnectionEvent>()
+        val comment = TikTokTransportEvent.CommentReceived(TikTokTransportComment(
+            "message-1", "viewer-1", "Ana", "Olá", "room-1", null,
+        ))
+
+        client.connect(TikTokConfiguration("rocky_live"), events::add)
+        transport.emit(comment)
+        transport.emit(comment)
+        client.disconnect()
+        transport.emit(TikTokTransportEvent.AudienceUpdated(99))
+
+        assertEquals(1, events.filterIsInstance<TikTokConnectionEvent.MessageReceived>().size)
+        assertFalse(transport.connected)
+        assertEquals(TikTokConnectionPhase.Disconnected,
+            events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().last().phase)
+        assertTrue(events.none { it is TikTokConnectionEvent.AudienceUpdated && it.viewerCount == 99 })
+    }
+}
+
+private class FakeTikTokTransport : TikTokLiveTransport {
+    var connected = false
+    var onEvent: (TikTokTransportEvent) -> Unit = {}
+
+    override fun connect() { connected = true }
+    override fun disconnect() { connected = false }
+    fun emit(event: TikTokTransportEvent) = onEvent(event)
+}

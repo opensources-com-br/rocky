@@ -2,10 +2,13 @@ const portuguese = [
   {
     "tag": "SUA IA",
     "title": "Escolha onde processar",
-    "text": "Use Ollama no computador ou sua chave de OpenAI/OpenRouter. Provedores remotos recebem o pedido e a amostra de chat; custos e limites dependem da sua conta.",
+    "text": "Use Ollama no computador ou sua chave de OpenAI, Anthropic, Google Gemini, xAI Grok ou OpenRouter. Provedores remotos recebem o pedido e a amostra de chat; custos e limites dependem da sua conta.",
     "chips": [
       "Ollama",
       "OpenAI API",
+      "Anthropic API",
+      "Google Gemini API",
+      "xAI Grok API",
       "OpenRouter"
     ]
   },
@@ -26,8 +29,8 @@ const english = [
   {
     "tag": "YOUR AI",
     "title": "Choose where processing happens",
-    "text": "Use Ollama on your computer or your OpenAI/OpenRouter key. Remote providers receive the request and chat sample; costs and limits depend on your account.",
-    "chips": ["Ollama", "OpenAI API", "OpenRouter"]
+    "text": "Use Ollama on your computer or your OpenAI, Anthropic, Google Gemini, xAI Grok, or OpenRouter key. Remote providers receive the request and chat sample; costs and limits depend on your account.",
+    "chips": ["Ollama", "OpenAI API", "Anthropic API", "Google Gemini API", "xAI Grok API", "OpenRouter"]
   },
   {
     "tag": "YOUR VOICE",

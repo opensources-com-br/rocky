@@ -25,7 +25,7 @@ export default function HeroContent({ locale }) {
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px", "marginTop": "4px"}}>
 <DownloadButton locale={locale} style={{"padding": "11px 20px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}} />
-<a href={"https://github.com/opensources-com-br/rocky"} style={{"padding": "11px 20px", "borderRadius": "9px", "border": "1px solid rgba(255,255,255,.12)", "background": "rgba(255,255,255,.02)", "color": "rgba(255,255,255,.82)", "fontSize": "14px"}}>
+<a href={"https://github.com/opensources-com-br/rocky"} target="_blank" rel="noreferrer" style={{"padding": "11px 20px", "borderRadius": "9px", "border": "1px solid rgba(255,255,255,.12)", "background": "rgba(255,255,255,.02)", "color": "rgba(255,255,255,.82)", "fontSize": "14px"}}>
 {localized(locale, "View on GitHub", "Ver no GitHub")}
 </a>
 </div>

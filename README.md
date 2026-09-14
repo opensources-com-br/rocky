@@ -17,7 +17,7 @@ The project is built as a monorepo with Kotlin Multiplatform, Compose Multiplatf
 - Kick OAuth, signed chat webhooks, and event subscriptions;
 - YouTube desktop OAuth, active-broadcast discovery, and live-chat polling;
 - TikTok LIVE chat through a desktop connection by public username;
-- live viewer count and messages-per-minute metrics for Twitch, Kick, YouTube, Facebook, and TikTok;
+- simultaneous Twitch, Kick, YouTube, Facebook, and TikTok connections with per-platform audiences, an aggregate viewer total, and messages-per-minute metrics;
 - grounded AI suggestions using local Ollama models, the OpenAI API, or OpenRouter;
 - speech through macOS/Windows system voices or ElevenLabs, with your own key, streaming and optional local fallback;
 - wake-word voice commands with local `whisper.cpp` transcription;
@@ -57,12 +57,12 @@ Validate the web separately: in `apps/web`, run `npm ci`, `npm test`, `npm run l
 
 ## Configure a real session
 
-1. Follow the [Twitch](docs/TWITCH.md), [Kick](docs/KICK.md), [YouTube](docs/YOUTUBE.md), [Facebook](docs/FACEBOOK.md), or [TikTok](docs/TIKTOK.md) connection guide. Kick requires a public HTTPS endpoint that forwards signed webhooks to Rocky.
+1. Follow the guides for the platforms you want to connect: [Twitch](docs/TWITCH.md), [Kick](docs/KICK.md), [YouTube](docs/YOUTUBE.md), [Facebook](docs/FACEBOOK.md), and [TikTok](docs/TIKTOK.md). More than one connection can remain active; Kick requires a public HTTPS endpoint that forwards signed webhooks to Rocky.
 2. Follow the [AI provider guide](docs/AI.md) to use local Ollama, the OpenAI API, or OpenRouter.
 3. Follow the [voice guide](docs/VOICE.md) to prepare local transcription and test an audio conversation.
 4. Start a live stream, connect Rocky, and send a message from another account. New messages will appear in the Conversation tab.
 
-The Twitch, Kick, YouTube, Facebook, and TikTok connectors read new chat messages and the current viewer count. Paid support events, channel points, Stars, Super Chats, gifts, and historical messages are not integrated yet. Facebook requires a Business app with `pages_show_list`, `pages_read_engagement`, and `pages_read_user_content`, plus an active live on an authorized Page. TikTok relies on the unofficial WebCast protocol and Eulerstream connection service.
+The Twitch, Kick, YouTube, Facebook, and TikTok connectors read new chat messages and the current viewer count. With multiple connections, the app identifies how many are online, shows a compact audience value for each platform, and sums those values in the footer total. Paid support events, channel points, Stars, Super Chats, gifts, and historical messages are not integrated yet. Facebook requires a Business app with `pages_show_list`, `pages_read_engagement`, and `pages_read_user_content`, plus an active live on an authorized Page. TikTok relies on the unofficial WebCast protocol and Eulerstream connection service.
 
 ## Build installers
 

@@ -26,7 +26,7 @@ export default function CaseHeading({ backToIndex, d }) {
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "gap": "8px"}}>
 {d.links.map((l, index) => <React.Fragment key={l?.id ?? l?.name ?? index}>
-<a href={l.url} style={{"display": "flex", "alignItems": "center", "gap": "7px", "padding": "6px 12px 6px 10px", "borderRadius": "7px", "border": "1px solid rgba(255,255,255,.09)", "background": "rgba(255,255,255,.03)", "fontSize": "12.5px", "color": "rgba(255,255,255,.7)"}}>
+<a href={l.url} target="_blank" rel="noreferrer" style={{"display": "flex", "alignItems": "center", "gap": "7px", "padding": "6px 12px 6px 10px", "borderRadius": "7px", "border": "1px solid rgba(255,255,255,.09)", "background": "rgba(255,255,255,.03)", "fontSize": "12.5px", "color": "rgba(255,255,255,.7)"}}>
 <span style={{"width": "7px", "height": "7px", "borderRadius": "50%", "background": l.dot}}>
 
 </span>

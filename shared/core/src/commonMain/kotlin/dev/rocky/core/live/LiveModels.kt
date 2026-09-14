@@ -5,6 +5,7 @@ enum class StreamPlatform {
     Kick,
     YouTube,
     Facebook,
+    TikTok,
 }
 
 enum class LiveSessionStatus {

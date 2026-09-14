@@ -8,13 +8,13 @@ export default function LandingFooter({ locale }) {
 {"Rocky © 2026"}
 </span>
 <div style={{"marginLeft": "auto", "display": "flex", "gap": "20px"}}>
-<a href={"https://github.com/opensources-com-br/rocky"} style={{"color": "inherit"}}>
+<a href={"https://github.com/opensources-com-br/rocky"} target="_blank" rel="noreferrer" style={{"color": "inherit"}}>
 {"GitHub"}
 </a>
-<a href={"https://github.com/opensources-com-br/rocky"} style={{"color": "inherit"}}>
+<a href={"https://github.com/opensources-com-br/rocky"} target="_blank" rel="noreferrer" style={{"color": "inherit"}}>
 {localized(locale, "MIT License", "Licença MIT")}
 </a>
-<a href={"https://github.com/opensources-com-br/rocky/releases"} style={{"color": "inherit"}}>
+<a href={"https://github.com/opensources-com-br/rocky/releases"} target="_blank" rel="noreferrer" style={{"color": "inherit"}}>
 {localized(locale, "The app", "O app")}
 </a>
 </div>

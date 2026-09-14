@@ -1,6 +1,6 @@
 const content = {
   "group": "Configuração",
-  "lead": "Twitch, Kick, YouTube e Facebook recebem novas mensagens e a contagem atual de espectadores do canal autenticado.",
+  "lead": "Twitch, Kick, YouTube, Facebook e TikTok LIVE recebem novas mensagens e a contagem atual de espectadores do canal conectado.",
   "blocks": [
     {
       "type": "h2",
@@ -52,11 +52,23 @@ const content = {
     },
     {
       "type": "h2",
+      "text": "Conectar TikTok LIVE"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Inicie uma live pública no TikTok e copie o nome de usuário do canal, com ou sem @.",
+        "No Rocky, abra Configurações → Plataformas → TikTok LIVE, informe o nome e use Conectar TikTok.",
+        "A conexão não pede senha nem cookies. Ela usa o protocolo WebCast não oficial por meio da biblioteca TikTokLiveJava e do serviço Eulerstream; alterações do TikTok podem interromper o recurso."
+      ]
+    },
+    {
+      "type": "h2",
       "text": "Dados e permissões"
     },
     {
       "type": "para",
-      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1 e webhooks assinados. YouTube e Facebook usam OAuth e consultam periodicamente o chat. Client Secrets e App Secrets usam o cofre do sistema; tokens ficam somente na memória."
+      "text": "A Twitch usa Device Code Flow e EventSub WebSocket. A Kick usa OAuth 2.1 e webhooks assinados. YouTube e Facebook usam OAuth e consultam periodicamente o chat. O TikTok usa o nome público do canal e WebCast não oficial via Eulerstream. Client Secrets e App Secrets usam o cofre do sistema; tokens ficam somente na memória."
     },
     {
       "type": "h2",
@@ -72,7 +84,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A Twitch tenta reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. YouTube e Facebook continuam consultando enquanto a live estiver disponível. Nenhum conector carrega o histórico completo; mensagens podem ser perdidas durante indisponibilidade."
+      "text": "Twitch e TikTok tentam reconectar automaticamente. Na Kick, mantenha o webhook HTTPS encaminhando ao app aberto. YouTube e Facebook continuam consultando enquanto a live estiver disponível. Nenhum conector carrega o histórico completo; mensagens podem ser perdidas durante indisponibilidade."
     }
   ]
 };

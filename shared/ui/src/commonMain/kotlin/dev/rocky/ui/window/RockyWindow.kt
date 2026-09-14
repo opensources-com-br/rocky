@@ -42,6 +42,10 @@ import dev.rocky.core.facebook.FacebookChatClient
 import dev.rocky.core.facebook.FacebookConfiguration
 import dev.rocky.core.facebook.FacebookConnectionListener
 import dev.rocky.core.facebook.FacebookConnectionPhase
+import dev.rocky.core.tiktok.TikTokChatClient
+import dev.rocky.core.tiktok.TikTokConfiguration
+import dev.rocky.core.tiktok.TikTokConnectionListener
+import dev.rocky.core.tiktok.TikTokConnectionPhase
 import dev.rocky.core.notes.NoteRepository
 import dev.rocky.core.twitch.TwitchChatClient
 import dev.rocky.core.twitch.TwitchConnectionListener
@@ -109,6 +113,9 @@ fun RockyWindow(
     initialFacebookConfiguration: FacebookConfiguration = FacebookConfiguration(),
     onFacebookConfigurationChange: (FacebookConfiguration) -> Unit = {},
     onOpenFacebookAuthorization: (String) -> Unit = {},
+    tiktokChatClient: TikTokChatClient = InactiveTikTokChatClient,
+    initialTikTokConfiguration: TikTokConfiguration = TikTokConfiguration(),
+    onTikTokConfigurationChange: (TikTokConfiguration) -> Unit = {},
     onExportNotes: (List<LiveNote>) -> Boolean = { false },
     onExportIdeas: (List<LiveIdea>) -> Boolean = { false },
     onSettingsVisibilityChanged: (Boolean) -> Unit = {},
@@ -158,6 +165,7 @@ fun RockyWindow(
         val kick = remember(kickChatClient) { KickLiveState(kickChatClient, currentTimeMillis) }
         val youtube = remember(youtubeChatClient) { YouTubeLiveState(youtubeChatClient, currentTimeMillis) }
         val facebook = remember(facebookChatClient) { FacebookLiveState(facebookChatClient, currentTimeMillis) }
+        val tiktok = remember(tiktokChatClient) { TikTokLiveState(tiktokChatClient, currentTimeMillis) }
         val ai = remember(aiSuggestionClient) {
             AiSuggestionState(
                 aiSuggestionClient, initialAiConfiguration,
@@ -186,6 +194,7 @@ fun RockyWindow(
         var kickConfiguration by remember { mutableStateOf(initialKickConfiguration) }
         var youtubeConfiguration by remember { mutableStateOf(initialYouTubeConfiguration) }
         var facebookConfiguration by remember { mutableStateOf(initialFacebookConfiguration) }
+        var tiktokConfiguration by remember { mutableStateOf(initialTikTokConfiguration) }
         val transientNotes = remember { TransientNoteRepository() }
         val resolvedNoteRepository = noteRepository ?: transientNotes
         val localNotes = remember(resolvedNoteRepository) { LocalNotesState(resolvedNoteRepository) }
@@ -195,18 +204,22 @@ fun RockyWindow(
             onRegisterSessionEnd { workspace.finish(currentTimeLabel()) }
             onDispose { onRegisterSessionEnd { true } }
         }
-        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected || facebook.isConnected
-        val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive
-        val visibleMessages = (twitch.messages + kick.messages + youtube.messages + facebook.messages).sortedBy(ChatMessage::receivedAtMillis)
-        val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages + facebook.totalMessages
+        val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected ||
+            facebook.isConnected || tiktok.isConnected
+        val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive || tiktok.isActive
+        val visibleMessages = (twitch.messages + kick.messages + youtube.messages + facebook.messages + tiktok.messages)
+            .sortedBy(ChatMessage::receivedAtMillis)
+        val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages + facebook.totalMessages +
+            tiktok.totalMessages
         fun recentMessages() = (
             twitch.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
                 kick.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
                 youtube.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
-                + facebook.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
+                + facebook.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
+                tiktok.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
             ).sortedBy(ChatMessage::receivedAtMillis)
         LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId,
-            facebook.phase, facebook.sessionId) {
+            facebook.phase, facebook.sessionId, tiktok.phase, tiktok.sessionId) {
             when {
                 twitch.phase == TwitchConnectionPhase.Connected -> workspace.start(
                     twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}",
@@ -220,17 +233,21 @@ fun RockyWindow(
                 facebook.isConnected -> workspace.start(
                     facebook.sessionId, "${facebook.page?.name} · ${currentTimeLabel()}",
                     facebook.startedAtMillis ?: currentTimeMillis())
+                tiktok.isConnected -> workspace.start(
+                    tiktok.sessionId, "@${tiktok.account?.username} · ${currentTimeLabel()}",
+                    tiktok.startedAtMillis ?: currentTimeMillis())
                 !liveActive -> workspace.finish(currentTimeLabel())
             }
         }
         val sessionStatus = when {
             liveConnected -> LiveSessionStatus.Running
             twitch.phase == TwitchConnectionPhase.Failed || kick.phase == KickConnectionPhase.Failed ||
-                youtube.phase == YouTubeConnectionPhase.Failed || facebook.phase == FacebookConnectionPhase.Failed -> LiveSessionStatus.Ended
+                youtube.phase == YouTubeConnectionPhase.Failed || facebook.phase == FacebookConnectionPhase.Failed ||
+                tiktok.phase == TikTokConnectionPhase.Failed -> LiveSessionStatus.Ended
             else -> LiveSessionStatus.Stopped
         }
         val visibleSuggestion = ai.suggestion
-        val visiblePlatforms = platformStatuses(twitch, kick, youtube, facebook)
+        val visiblePlatforms = platformStatuses(twitch, kick, youtube, facebook, tiktok)
 
         LaunchedEffect(
             twitch.phase,
@@ -241,6 +258,8 @@ fun RockyWindow(
             youtube.totalMessages,
             facebook.phase,
             facebook.totalMessages,
+            tiktok.phase,
+            tiktok.totalMessages,
             ai.automaticAnalysis,
             ai.analysisRevision,
             ai.profile,
@@ -257,17 +276,19 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, facebook.phase) {
+        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, facebook.phase, tiktok.phase) {
             while (liveActive) {
                 delay(METRICS_REFRESH_MILLIS)
                 twitch.refreshMetrics()
                 kick.refreshMetrics()
                 youtube.refreshMetrics()
                 facebook.refreshMetrics()
+                tiktok.refreshMetrics()
             }
         }
 
         LaunchedEffect(twitch.totalMessages, kick.totalMessages, youtube.totalMessages, facebook.totalMessages,
+            tiktok.totalMessages,
             ai.filters, workspace.sessionId) {
             if (workspace.sessionId.isNotBlank()) {
                 workspace.questions.collect(dev.rocky.core.live.filterChat(visibleMessages, ai.filters).messages,
@@ -332,7 +353,8 @@ fun RockyWindow(
         fun saveRecord(note: LiveNote): Boolean = localNotes.save(workspace.decorate(note, currentTimeMillis()))
         fun finishLive(): Boolean {
             if (!workspace.finish(currentTimeLabel())) return false
-            turns.reset(); voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect(); facebook.disconnect()
+            turns.reset(); voice.resetSession(); ai.resetSession(); twitch.disconnect(); kick.disconnect(); youtube.disconnect()
+            facebook.disconnect(); tiktok.disconnect()
             return true
         }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
@@ -418,7 +440,7 @@ fun RockyWindow(
             }
         }
 
-        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, facebook.phase, voice.transcriptionReady) {
+        LaunchedEffect(twitch.phase, kick.phase, youtube.phase, facebook.phase, tiktok.phase, voice.transcriptionReady) {
             if (liveConnected && voice.transcriptionReady) {
                 voice.enableListener(aiScope, handleVoiceRequest)
             }
@@ -432,7 +454,7 @@ fun RockyWindow(
                 text = { Text(text, modifier = Modifier.verticalScroll(rememberScrollState())) },
                 confirmButton = { androidx.compose.material.TextButton(onClick = { workspace.summary = null }) { Text("OK") } })
         }
-        if (preflightOpen) PreflightDialog(aiScope, twitch, kick, youtube, facebook, ai, voice, agent.displayName,
+        if (preflightOpen) PreflightDialog(aiScope, twitch, kick, youtube, facebook, tiktok, ai, voice, agent.displayName,
             onConfigure = { section ->
                 preflightOpen = false; settingsOpen = true; settingsSection = section
                 onSettingsVisibilityChanged(true)
@@ -526,12 +548,14 @@ fun RockyWindow(
                                     onBackup = onBackup, onChooseImport = onChooseImport,
                                     updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
                                     updateDownload = updateDownload,
-                                    updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive || liveConnected,
+                                    updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive ||
+                                        tiktok.isActive || liveConnected,
                                     checkUpdatesOnStart = checkUpdatesOnStart,
                                     onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
                                     diagnosticReport = {
                                         listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "Kick: ${kick.phase}",
-                                            "YouTube: ${youtube.phase}", "Facebook: ${facebook.phase}", "AI: ${ai.configuration.provider}",
+                                            "YouTube: ${youtube.phase}", "Facebook: ${facebook.phase}", "TikTok: ${tiktok.phase}",
+                                            "AI: ${ai.configuration.provider}",
                                             "AI configured: ${ai.isReady}", "Completed requests: ${ai.completedRequests}",
                                             "Last request ms: ${ai.lastDurationMillis}", "Filtered messages: ${ai.filteredCount}",
                                             "Voice ready: ${voice.transcriptionReady}", "Microphone active: ${voice.capturing}",
@@ -620,6 +644,20 @@ fun RockyWindow(
                                         finishLive()
                                     },
                                     onOpenFacebookBrowser = onOpenFacebookAuthorization,
+                                    tiktokConfiguration = tiktokConfiguration,
+                                    tiktok = tiktok,
+                                    onConnectTikTok = { configuration ->
+                                        if (finishLive()) {
+                                            silenced = false
+                                            tiktokConfiguration = configuration
+                                            onTikTokConfigurationChange(configuration)
+                                            tiktok.connect(configuration)
+                                        }
+                                    },
+                                    onDisconnectTikTok = {
+                                        silenced = false
+                                        finishLive()
+                                    },
                                 )
                             }
                         }
@@ -663,6 +701,7 @@ fun RockyWindow(
                                 PlatformColor.Kick -> kick.isActive
                                 PlatformColor.YouTube -> youtube.isActive
                                 PlatformColor.Facebook -> facebook.isActive
+                                PlatformColor.TikTok -> tiktok.isActive
                                 else -> false
                             }
                             if (active) {
@@ -771,6 +810,7 @@ fun RockyWindow(
                                 )
                                 MainSection.Pulse -> PulseContent(
                                     samples = when {
+                                        tiktok.isActive -> tiktok.pulse.toList()
                                         facebook.isActive -> facebook.pulse.toList()
                                         youtube.isActive -> youtube.pulse.toList()
                                         kick.isActive -> kick.pulse.toList()
@@ -788,9 +828,11 @@ fun RockyWindow(
                             inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
-                            viewerCount = listOfNotNull(twitch.viewerCount, kick.viewerCount, youtube.viewerCount, facebook.viewerCount)
+                            viewerCount = listOfNotNull(twitch.viewerCount, kick.viewerCount, youtube.viewerCount,
+                                facebook.viewerCount, tiktok.viewerCount)
                                 .takeIf { it.isNotEmpty() }?.sum(),
-                            messagesPerMinute = twitch.messagesPerMinute + kick.messagesPerMinute + youtube.messagesPerMinute + facebook.messagesPerMinute,
+                            messagesPerMinute = twitch.messagesPerMinute + kick.messagesPerMinute + youtube.messagesPerMinute +
+                                facebook.messagesPerMinute + tiktok.messagesPerMinute,
                             onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
                         )
                     }
@@ -834,6 +876,12 @@ private object InactiveYouTubeChatClient : YouTubeChatClient {
 
 private object InactiveFacebookChatClient : FacebookChatClient {
     override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) = Unit
+    override fun disconnect() = Unit
+    override fun close() = Unit
+}
+
+private object InactiveTikTokChatClient : TikTokChatClient {
+    override fun connect(configuration: TikTokConfiguration, listener: TikTokConnectionListener) = Unit
     override fun disconnect() = Unit
     override fun close() = Unit
 }
@@ -882,7 +930,7 @@ internal fun CompactContent(
 }
 
 internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): String = suggestion ?: when (status) {
-    LiveSessionStatus.Stopped -> "Conecte Twitch, Kick, YouTube ou Facebook"
+    LiveSessionStatus.Stopped -> "Conecte Twitch, Kick, YouTube, Facebook ou TikTok"
     LiveSessionStatus.Running -> "Chat da live conectado"
     LiveSessionStatus.Ended -> "Conexão da live encerrada"
 }
@@ -892,6 +940,7 @@ private fun platformStatuses(
     kick: KickLiveState,
     youtube: YouTubeLiveState,
     facebook: FacebookLiveState,
+    tiktok: TikTokLiveState,
 ): List<PlatformStatus> =
     listOf(
         PlatformStatus(
@@ -929,6 +978,15 @@ private fun platformStatuses(
             colorKey = PlatformColor.Facebook,
             enabled = facebook.phase != FacebookConnectionPhase.Failed,
             connected = facebook.isActive,
+        ),
+        PlatformStatus(
+            name = "TikTok",
+            account = tiktok.account?.let { "@${it.username}" } ?: "Não conectada",
+            audience = tiktok.viewerCount?.toString() ?: "—",
+            messagesPerMinute = tiktok.messagesPerMinute,
+            colorKey = PlatformColor.TikTok,
+            enabled = tiktok.phase != TikTokConnectionPhase.Failed,
+            connected = tiktok.isActive,
         ),
     )
 

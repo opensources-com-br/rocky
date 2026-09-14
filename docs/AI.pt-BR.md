@@ -1,6 +1,6 @@
 # Provedores de IA
 
-O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube, Facebook ou TikTok LIVE usando Ollama local, a Responses API da OpenAI, a Messages API da Anthropic, a API Gemini do Google ou OpenRouter.
+O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube, Facebook ou TikTok LIVE usando Ollama local, a Responses API da OpenAI, a Messages API da Anthropic, a API Gemini do Google, a Responses API do xAI Grok ou OpenRouter.
 
 ## Ollama
 
@@ -46,6 +46,15 @@ O Rocky usa a [Messages API](https://docs.anthropic.com/en/api/messages) com a c
 4. Cole a API key e selecione **Testar conexão**.
 
 O Rocky usa `generateContent` da [API Gemini](https://ai.google.dev/api/generate-content) com a chave informada. As mensagens selecionadas do chat e o pedido são enviados ao Google; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
+
+## API xAI Grok
+
+1. Crie uma API key no [Console xAI](https://console.x.ai/).
+2. Em **Configurações → IA**, selecione **xAI Grok API**.
+3. Mantenha `https://api.x.ai` como endereço e use `grok-4.6` ou outro modelo disponível na sua conta.
+4. Cole a API key e selecione **Testar conexão**.
+
+O Rocky usa a [Responses API do xAI](https://docs.x.ai/developers/rest-api-reference/inference/responses) com autenticação Bearer e saída estruturada. Uma assinatura Grok não fornece credenciais nem créditos de uso da API. As mensagens selecionadas do chat e o pedido são enviados ao xAI; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
 
 ## Comportamento das sugestões
 

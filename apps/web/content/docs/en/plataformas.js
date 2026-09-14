@@ -1,7 +1,7 @@
 const content = {
   group: "Configuration",
   title: "Platforms",
-  lead: "Twitch, Kick, YouTube, and Facebook provide new messages and the current viewer count for the authenticated channel.",
+  lead: "Twitch, Kick, YouTube, Facebook, and TikTok LIVE provide new messages and the current viewer count for the connected channel.",
   blocks: [
     { type: "h2", text: "Connect Twitch" },
     { type: "list", items: [
@@ -27,12 +27,18 @@ const content = {
       "Request pages_show_list, pages_read_engagement, and pages_read_user_content. Enter the App ID and App Secret in Rocky and authorize the account that manages the Page.",
       "Start a Page live video before connecting. Rocky selects the first authorized Page with an active broadcast and follows new comments."
     ] },
+    { type: "h2", text: "Connect TikTok LIVE" },
+    { type: "list", items: [
+      "Start a public TikTok live and copy the channel username, with or without @.",
+      "In Rocky, open Settings → Platforms → TikTok LIVE, enter the username, and choose Connect TikTok.",
+      "The connection does not request a password or cookies. It uses the unofficial WebCast protocol through TikTokLiveJava and the Eulerstream service; TikTok changes may interrupt the feature."
+    ] },
     { type: "h2", text: "Data and permissions" },
-    { type: "para", text: "Twitch uses Device Code Flow and EventSub WebSocket. Kick uses OAuth 2.1 and signed webhooks. YouTube and Facebook use OAuth and periodically poll chat. Client Secrets and App Secrets use the system vault; tokens remain in memory only." },
+    { type: "para", text: "Twitch uses Device Code Flow and EventSub WebSocket. Kick uses OAuth 2.1 and signed webhooks. YouTube and Facebook use OAuth and periodically poll chat. TikTok uses the public channel username and unofficial WebCast through Eulerstream. Client Secrets and App Secrets use the system vault; tokens remain in memory only." },
     { type: "h2", text: "What is not integrated" },
     { type: "para", text: "The chips show status and open the disconnect action. Rocky does not send chat messages and does not receive subs, bits, raids, channel points, gifts, Stars, or Super Chats as support events." },
     { type: "h2", text: "Reconnection" },
-    { type: "para", text: "Twitch tries to reconnect automatically. For Kick, keep the HTTPS webhook forwarding to the open app. YouTube and Facebook keep polling while the live video is available. No connector loads the complete history; messages can be lost during downtime." }
+    { type: "para", text: "Twitch and TikTok try to reconnect automatically. For Kick, keep the HTTPS webhook forwarding to the open app. YouTube and Facebook keep polling while the live video is available. No connector loads the complete history; messages can be lost during downtime." }
   ]
 };
 

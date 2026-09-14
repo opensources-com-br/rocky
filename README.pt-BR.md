@@ -19,7 +19,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - OAuth de Páginas, descoberta de live ativa e consulta do chat do Facebook;
 - chat do TikTok LIVE por conexão desktop com o nome de usuário público;
 - conexões simultâneas com Twitch, Kick, YouTube, Facebook e TikTok, com audiência por plataforma, total agregado e mensagens por minuto;
-- sugestões fundamentadas no chat usando modelos locais do Ollama, as APIs da OpenAI ou Anthropic, ou OpenRouter;
+- sugestões fundamentadas no chat usando modelos locais do Ollama, as APIs da OpenAI, Anthropic ou Google Gemini, ou OpenRouter;
 - leitura pelas vozes do macOS/Windows ou ElevenLabs, com chave própria, streaming e alternativa local opcional;
 - comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
 - notas locais em SQLite, com criação, edição, exclusão, recuperação e exportação em Markdown;
@@ -59,7 +59,7 @@ A web é validada separadamente: em `apps/web`, execute `npm ci`, `npm test`, `n
 ## Configurar uma sessão real
 
 1. Siga os guias das plataformas que deseja conectar: [Twitch](docs/TWITCH.pt-BR.md), [Kick](docs/KICK.pt-BR.md), [YouTube](docs/YOUTUBE.pt-BR.md), [Facebook](docs/FACEBOOK.pt-BR.md) e [TikTok](docs/TIKTOK.pt-BR.md). É possível manter mais de uma conexão ativa; a Kick exige uma URL HTTPS pública que encaminhe os webhooks assinados ao Rocky.
-2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API, Anthropic API ou OpenRouter.
+2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API, Anthropic API, Google Gemini API ou OpenRouter.
 3. Siga o [guia de voz](docs/VOICE.pt-BR.md) para preparar a transcrição local e testar a conversa por áudio.
 4. Inicie uma live, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 

@@ -139,6 +139,9 @@ internal class AiSuggestionState(
             AiProviderKind.Gemini -> configuration.copy(
                 provider = provider, endpoint = DEFAULT_GEMINI_ENDPOINT, model = DEFAULT_GEMINI_MODEL,
             )
+            AiProviderKind.Grok -> configuration.copy(
+                provider = provider, endpoint = DEFAULT_GROK_ENDPOINT, model = DEFAULT_GROK_MODEL,
+            )
         }
         saveConfiguration()
     }
@@ -330,6 +333,8 @@ internal class AiSuggestionState(
         const val DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
         const val DEFAULT_GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com"
         const val DEFAULT_GEMINI_MODEL = "gemini-3.8-flash"
+        const val DEFAULT_GROK_ENDPOINT = "https://api.x.ai"
+        const val DEFAULT_GROK_MODEL = "grok-4.6"
 
         private const val AUTOMATIC_BATCH_SIZE = 3
         private const val MAX_ANALYSIS_MESSAGES = 200

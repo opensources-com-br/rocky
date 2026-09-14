@@ -12,7 +12,7 @@
 
 ## Validação manual desta etapa
 
-1. Conecte Twitch, Kick, YouTube ou Facebook (uma plataforma por sessão) e envie perguntas semelhantes de usuários diferentes, um comando e uma mensagem de bot configurado. Compare chat, fila e contexto da IA.
+1. Conecte Twitch, Kick, YouTube, Facebook ou TikTok LIVE (uma plataforma por sessão) e envie perguntas semelhantes de usuários diferentes, um comando e uma mensagem de bot configurado. Compare chat, fila e contexto da IA.
 2. Use as três ações rápidas e faça um pedido direto durante análise automática.
 3. Marque uma pergunta respondida, salve uma ideia, marque realizada, busque e filtre por live.
 4. Dite um marcador com título; confira seu tempo. Encerre e confira resumo e pendências.

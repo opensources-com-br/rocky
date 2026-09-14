@@ -26,7 +26,7 @@ jobs:
               apps/desktop/build/compose/binaries/main/exe/*.exe
     runs-on: ${{ matrix.os }}
     env:
-      ROCKY_MAC_KEYCHAIN: ${{ runner.temp }}/rocky-signing.keychain-db
+      ROCKY_MAC_KEYCHAIN: ${{ github.workspace }}/rocky-signing.keychain-db
       ROCKY_NOTARY_PROFILE: rocky-ci-notary
     steps:
       - uses: actions/checkout@v6

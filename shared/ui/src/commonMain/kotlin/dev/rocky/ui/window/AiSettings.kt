@@ -37,6 +37,7 @@ internal fun AiSettings(ai: AiSuggestionState) {
         AiProviderKind.OpenRouter -> "OpenRouter"
         AiProviderKind.Anthropic -> "Anthropic API"
         AiProviderKind.Gemini -> "Google Gemini API"
+        AiProviderKind.Grok -> "xAI Grok API"
     }
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
@@ -46,13 +47,14 @@ internal fun AiSettings(ai: AiSuggestionState) {
             "Escolha processamento local ou uma API configurada por você.",
             providerLabel,
         )
-        ChoiceRow(listOf("Ollama local", "OpenAI API", "Anthropic API", "Google Gemini API", "OpenRouter"), providerLabel) { selected ->
+        ChoiceRow(listOf("Ollama local", "OpenAI API", "Anthropic API", "Google Gemini API", "xAI Grok API", "OpenRouter"), providerLabel) { selected ->
             ai.updateProvider(
                 when (selected) {
                     "Ollama local" -> AiProviderKind.Ollama
                     "OpenRouter" -> AiProviderKind.OpenRouter
                     "Anthropic API" -> AiProviderKind.Anthropic
                     "Google Gemini API" -> AiProviderKind.Gemini
+                    "xAI Grok API" -> AiProviderKind.Grok
                     else -> AiProviderKind.OpenAI
                 },
             )
@@ -105,6 +107,7 @@ internal fun AiSettings(ai: AiSuggestionState) {
                         AiProviderKind.OpenRouter -> "sk-or-v1-…"
                         AiProviderKind.Anthropic -> "sk-ant-…"
                         AiProviderKind.Gemini -> "AIza…"
+                        AiProviderKind.Grok -> "xai-…"
                         else -> "sk-…"
                     })
                 },
@@ -152,6 +155,17 @@ internal fun AiSettings(ai: AiSuggestionState) {
                 tr(
                     "Create a Gemini API key in Google AI Studio; it is separate from a Gemini app subscription.",
                     "Crie uma chave da API Gemini no Google AI Studio; ela é separada de uma assinatura do app Gemini.",
+                ),
+                modifier = Modifier.padding(top = 5.dp),
+                color = RockyColors.TextMuted,
+                style = MaterialTheme.typography.caption,
+            )
+        }
+        if (ai.configuration.provider == AiProviderKind.Grok) {
+            Text(
+                tr(
+                    "Create an xAI API key in the xAI Console; it is separate from a Grok subscription.",
+                    "Crie uma chave da API xAI no Console xAI; ela é separada de uma assinatura Grok.",
                 ),
                 modifier = Modifier.padding(top = 5.dp),
                 color = RockyColors.TextMuted,

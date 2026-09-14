@@ -80,6 +80,7 @@ internal fun AssistantFooter(
     messagesPerMinute: Int = 0,
     onTalk: () -> Unit,
 ) {
+    val language = LocalRockyLanguage.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,9 +112,12 @@ internal fun AssistantFooter(
                 style = MaterialTheme.typography.caption,
             )
         }
-        FooterMetric(value = viewerCount?.toString() ?: "—", label = "assistindo")
+        FooterMetric(
+            value = viewerCount?.let { compactMetric(it, language) } ?: "—",
+            label = tr("total watching", "assistindo no total"),
+        )
         Box(Modifier.padding(horizontal = 8.dp).size(1.dp, 28.dp).background(RockyColors.Border))
-        FooterMetric(value = messagesPerMinute.toString(), label = "msg/min")
+        FooterMetric(value = compactMetric(messagesPerMinute, language), label = "msg/min")
     }
 }
 

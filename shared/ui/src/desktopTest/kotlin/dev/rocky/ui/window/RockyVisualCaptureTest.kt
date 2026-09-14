@@ -735,6 +735,16 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun configuresGrokFromAiSettings() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+
+        rule.onNodeWithText("xAI Grok API").performClick()
+
+        rule.onNodeWithText("grok-4.6").assertExists()
+        rule.onNodeWithTag("ai-api-key").assertExists()
+    }
+
+    @Test
     fun togglesTwitchClientIdVisibility() {
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms, twitchClientId = "client-id")
 

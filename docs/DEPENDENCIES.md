@@ -8,4 +8,6 @@ The managed Whisper model is `ggml-base.bin` from [ggerganov/whisper.cpp, revisi
 
 The existing Kotlin, Compose, SQLDelight, SQLite driver and serialization dependencies remain Gradle-managed. Run `./gradlew :apps:desktop:dependencies` to inspect the resolved graph. This note is not a full dependency vulnerability audit or a substitute for the licenses of externally installed models and voices.
 
+TikTok LIVE support uses the MIT-licensed `TikTokLiveJava` 1.11.18 community library, resolved from JitPack. It connects to TikTok's non-public WebCast protocol and uses Eulerstream to obtain WebSocket connection credentials. The dependency does not make this an official TikTok API integration; protocol compatibility and service availability require validation before each release.
+
 Global shortcuts use the existing JNA dependency: Carbon event hotkeys on macOS and RegisterHotKey on Windows. Only the three configured chords are registered; no global keystroke log is collected. No new third-party hotkey library is bundled.

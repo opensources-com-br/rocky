@@ -18,7 +18,7 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - OAuth para desktop, descoberta de live ativa e consulta do chat do YouTube;
 - OAuth de Páginas, descoberta de live ativa e consulta do chat do Facebook;
 - chat do TikTok LIVE por conexão desktop com o nome de usuário público;
-- contagem de espectadores e mensagens por minuto da live atual na Twitch, Kick, YouTube, Facebook e TikTok;
+- conexões simultâneas com Twitch, Kick, YouTube, Facebook e TikTok, com audiência por plataforma, total agregado e mensagens por minuto;
 - sugestões fundamentadas no chat usando modelos locais do Ollama, a API da OpenAI ou OpenRouter;
 - leitura pelas vozes do macOS/Windows ou ElevenLabs, com chave própria, streaming e alternativa local opcional;
 - comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
@@ -58,12 +58,12 @@ A web é validada separadamente: em `apps/web`, execute `npm ci`, `npm test`, `n
 
 ## Configurar uma sessão real
 
-1. Siga o guia de conexão com a [Twitch](docs/TWITCH.pt-BR.md), [Kick](docs/KICK.pt-BR.md), [YouTube](docs/YOUTUBE.pt-BR.md), [Facebook](docs/FACEBOOK.pt-BR.md) ou [TikTok](docs/TIKTOK.pt-BR.md). A Kick exige uma URL HTTPS pública que encaminhe os webhooks assinados ao Rocky.
+1. Siga os guias das plataformas que deseja conectar: [Twitch](docs/TWITCH.pt-BR.md), [Kick](docs/KICK.pt-BR.md), [YouTube](docs/YOUTUBE.pt-BR.md), [Facebook](docs/FACEBOOK.pt-BR.md) e [TikTok](docs/TIKTOK.pt-BR.md). É possível manter mais de uma conexão ativa; a Kick exige uma URL HTTPS pública que encaminhe os webhooks assinados ao Rocky.
 2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API ou OpenRouter.
 3. Siga o [guia de voz](docs/VOICE.pt-BR.md) para preparar a transcrição local e testar a conversa por áudio.
 4. Inicie uma live, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 
-Os conectores da Twitch, Kick, YouTube, Facebook e TikTok leem novas mensagens e a contagem atual de espectadores. Eventos de apoio, pontos do canal, Stars, Super Chats, presentes e mensagens anteriores ainda não estão integrados. O Facebook exige um app Business e uma live ativa em uma Página autorizada. O TikTok depende do protocolo WebCast não oficial e do serviço de conexão Eulerstream.
+Os conectores da Twitch, Kick, YouTube, Facebook e TikTok leem novas mensagens e a contagem atual de espectadores. Quando há várias conexões, o app identifica quantas estão online, mostra a audiência compactada em cada plataforma e soma esses valores no total do rodapé. Eventos de apoio, pontos do canal, Stars, Super Chats, presentes e mensagens anteriores ainda não estão integrados. O Facebook exige um app Business e uma live ativa em uma Página autorizada. O TikTok depende do protocolo WebCast não oficial e do serviço de conexão Eulerstream.
 
 ## Gerar instaladores
 

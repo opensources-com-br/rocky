@@ -1,6 +1,6 @@
 const content = {
   "group": "Começando",
-  "lead": "Rocky é um assistente desktop para macOS e Windows. A versão atual acompanha novas mensagens do seu canal na Twitch, Kick, YouTube ou Facebook e ajuda a consultar o chat, organizar perguntas e salvar registros.",
+  "lead": "Rocky é um assistente desktop para macOS e Windows. A versão atual acompanha novas mensagens do seu canal na Twitch, Kick, YouTube, Facebook ou TikTok LIVE e ajuda a consultar o chat, organizar perguntas e salvar registros.",
   "blocks": [
     {
       "type": "h2",
@@ -21,7 +21,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "É uma versão alpha com instaladores de desenvolvimento não assinados. Super Chats, Estrelas, envio de mensagens e plugins não estão integrados. A Kick exige um webhook HTTPS público; o Facebook exige um app Business e uma Página com live ativa. O app não modera o chat nem grava a transmissão."
+      "text": "É uma versão alpha com instaladores de desenvolvimento não assinados. Super Chats, Estrelas, presentes, envio de mensagens e plugins não estão integrados. A Kick exige um webhook HTTPS público; o Facebook exige um app Business e uma Página com live ativa; o TikTok usa WebCast não oficial via Eulerstream. O app não modera o chat nem grava a transmissão."
     },
     {
       "type": "h2",

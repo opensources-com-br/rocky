@@ -16,7 +16,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "No macOS, os dados ficam em ~/Library/Application Support/Rocky; no Windows, em %APPDATA%/Rocky. Preferências não secretas usam o namespace dev/rocky. Chaves de IA e ElevenLabs e os Client Secrets da Kick e do YouTube usam o cofre do sistema; tokens das plataformas ficam na memória. SQLite não é criptografado pelo Rocky."
+      "text": "No macOS, os dados ficam em ~/Library/Application Support/Rocky; no Windows, em %APPDATA%/Rocky. Preferências não secretas, incluindo o nome do canal do TikTok, usam o namespace dev/rocky. Chaves de IA e ElevenLabs e os Client Secrets da Kick e do YouTube usam o cofre do sistema; tokens das plataformas ficam na memória. SQLite não é criptografado pelo Rocky."
     },
     {
       "type": "h2",

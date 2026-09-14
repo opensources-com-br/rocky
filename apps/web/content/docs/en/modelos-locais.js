@@ -10,7 +10,7 @@ const content = {
     { type: "h2", text: "Machine resources" },
     { type: "para", text: "Memory use and response time depend on the model and hardware. Test alongside the game and encoder before streaming. The documentation does not guarantee performance for a model size at a specific amount of RAM." },
     { type: "h2", text: "What stays local" },
-    { type: "para", text: "Use a local Ollama model to keep analysis on your computer; a loopback address alone does not guarantee local execution. Transcription and system voices can also be local after setup. Twitch, Kick, YouTube, Facebook, ElevenLabs, and downloads require internet access; Kick chat requires HTTPS forwarding." }
+    { type: "para", text: "Use a local Ollama model to keep analysis on your computer; a loopback address alone does not guarantee local execution. Transcription and system voices can also be local after setup. Twitch, Kick, YouTube, Facebook, TikTok LIVE, ElevenLabs, and downloads require internet access; Kick chat requires HTTPS forwarding and TikTok uses the Eulerstream service." }
   ]
 };
 

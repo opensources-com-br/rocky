@@ -19,7 +19,7 @@ The supplied screenshots are visual and behavioural references. They do not guar
 | Rocky account | None; access is protected by the operating-system account |
 | Data | Local SQLite; credentials in the system credential store |
 | Initial AI | Local Ollama and user-provided OpenAI API key |
-| Provider adapters | OpenAI, Anthropic, Gemini, OpenRouter and local Ollama; Grok and compatible endpoints remain later work |
+| Provider adapters | OpenAI, Anthropic, Gemini, Grok, OpenRouter and local Ollama; compatible endpoints remain later work |
 | First live chat | Twitch, then YouTube with Super Chat validation |
 | Voice | Push-to-talk/shortcut, local transcription, and local synthesis in the MVP |
 | Distribution | Direct download first; Mac App Store and Microsoft Store later |
@@ -85,9 +85,9 @@ OpenAI documents application requests using API credentials; that does not estab
 | --- | --- | --- |
 | Ollama | Local endpoint and available local model; capability test | MVP |
 | OpenAI | User API key and model through Responses API | MVP |
-| Claude | User key and its official API | After MVP |
+| Claude | User key and its official API | Available |
 | Gemini | Google AI Studio API key and official Gemini API | Available |
-| Grok | User key and official provider API | After MVP |
+| Grok | xAI API key and official Responses API | Available |
 | OpenAI-compatible | Base URL, optional key, and tested capabilities | After MVP |
 
 Do not force Claude and Gemini through an OpenAI-shaped API. Each adapter owns streaming, cancellation, limits, error handling, and structured-output translation for its provider. [Claude](https://platform.claude.com/docs/en/api/overview), [Gemini](https://ai.google.dev/gemini-api/docs/api-key), [Grok](https://docs.x.ai/overview).

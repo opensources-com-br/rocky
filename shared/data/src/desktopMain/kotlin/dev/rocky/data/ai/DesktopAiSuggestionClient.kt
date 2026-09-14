@@ -19,13 +19,20 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
         .build()
     private val ollama = OllamaAiClient(httpClient)
     private val openAi = OpenAiSuggestionClient(httpClient)
+    private val anthropic = AnthropicSuggestionClient(httpClient)
 
     override fun availableModels(configuration: AiProviderConfiguration): List<String> {
         configuration.copy(model = "list").validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
         val path = if (configuration.provider == AiProviderKind.Ollama) "/api/tags" else "/v1/models"
         val request = java.net.http.HttpRequest.newBuilder(java.net.URI(configuration.endpoint.trimEnd('/') + path))
             .timeout(Duration.ofSeconds(15)).GET()
-        if (configuration.provider != AiProviderKind.Ollama) request.header("Authorization", "Bearer ${configuration.apiKey}")
+        when (configuration.provider) {
+            AiProviderKind.Ollama -> Unit
+            AiProviderKind.Anthropic -> request
+                .header("x-api-key", configuration.apiKey.trim())
+                .header("anthropic-version", "2023-06-01")
+            else -> request.header("Authorization", "Bearer ${configuration.apiKey}")
+        }
         val response = httpClient.send(request.build(), java.net.http.HttpResponse.BodyHandlers.ofString())
         require(response.statusCode() in 200..299) { "Não foi possível listar modelos. Verifique a conexão e a chave." }
         return if (configuration.provider == AiProviderKind.Ollama) AiSuggestionPayloads.ollamaModels(response.body()).sorted()
@@ -49,6 +56,10 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 configuration.model,
                 "/v1/model/${configuration.model}",
                 "OpenRouter",
+            )
+            AiProviderKind.Anthropic -> anthropic.testConnection(
+                configuration.endpoint,
+                configuration.apiKey,
             )
         }
         if (!connection.successful) return connection
@@ -84,6 +95,14 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 agent,
             )
             AiProviderKind.OpenRouter -> openAi.generateOpenRouter(
+                configuration.endpoint,
+                configuration.apiKey,
+                configuration.model,
+                messages,
+                streamerRequest,
+                agent,
+            )
+            AiProviderKind.Anthropic -> anthropic.generate(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,

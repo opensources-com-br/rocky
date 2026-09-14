@@ -99,9 +99,15 @@ internal fun Throwable.userMessage(fallback: String): String = when (this) {
     else -> fallback
 }
 
-internal fun reportedTokenCount(body: String, input: String, output: String, nested: Boolean = false): Long? = runCatching {
+internal fun reportedTokenCount(
+    body: String,
+    input: String,
+    output: String,
+    nested: Boolean = false,
+    usageKey: String = "usage",
+): Long? = runCatching {
     val root = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonObject
-    val usage = if (nested) root["usage"]?.jsonObject ?: return null else root
+    val usage = if (nested) root[usageKey]?.jsonObject ?: return null else root
     val first = usage[input]?.jsonPrimitive?.content?.toLongOrNull() ?: return null
     val second = usage[output]?.jsonPrimitive?.content?.toLongOrNull() ?: return null
     (first + second).takeIf { first >= 0 && second >= 0 }

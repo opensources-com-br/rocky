@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Use um modelo local no Ollama para manter a análise no computador; apenas o endereço loopback não garante execução local. Transcrição e vozes do sistema também podem ser locais após preparação. Twitch, Kick, YouTube, Facebook, ElevenLabs e downloads exigem internet; o chat da Kick exige encaminhamento HTTPS."
+      "text": "Use um modelo local no Ollama para manter a análise no computador; apenas o endereço loopback não garante execução local. Transcrição e vozes do sistema também podem ser locais após preparação. Twitch, Kick, YouTube, Facebook, TikTok LIVE, ElevenLabs e downloads exigem internet; o chat da Kick exige encaminhamento HTTPS e o TikTok usa o serviço Eulerstream."
     }
   ]
 };

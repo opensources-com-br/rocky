@@ -19,7 +19,7 @@ As nove imagens fornecidas são referências visuais e de comportamento, não in
 | Conta Rocky | Nenhuma; acesso protegido pela conta do sistema operacional |
 | Dados | SQLite local; credenciais no cofre do sistema |
 | IA inicial | Ollama local e OpenAI por chave do próprio usuário |
-| Adaptadores de provedores | OpenAI, Anthropic, Gemini, OpenRouter e Ollama local; Grok e endpoints compatíveis seguem como trabalho futuro |
+| Adaptadores de provedores | OpenAI, Anthropic, Gemini, Grok, OpenRouter e Ollama local; endpoints compatíveis seguem como trabalho futuro |
 | Primeiro chat real | Twitch; YouTube em seguida, obrigatório para validar Super Chat |
 | Voz | Entrada por botão/atalho; transcrição local e síntese local no MVP |
 | Distribuição | Download direto primeiro; Mac App Store e Microsoft Store depois |
@@ -85,9 +85,9 @@ A API OpenAI documenta credenciais próprias para chamadas da aplicação. Isso 
 | --- | --- | --- |
 | Ollama | Endpoint local, modelo local disponível, teste de capacidade | MVP |
 | OpenAI | Chave do usuário e modelo; Responses API | MVP |
-| Claude | Chave e API oficial própria | Após MVP |
+| Claude | Chave e API oficial própria | Disponível |
 | Gemini | Chave de API do Google AI Studio e API Gemini oficial | Disponível |
-| Grok | Chave e API oficial do provedor | Após MVP |
+| Grok | Chave de API xAI e Responses API oficial | Disponível |
 | Compatível com OpenAI | Base URL, chave opcional e capacidades detectadas/testadas | Após MVP |
 
 Claude e Gemini não serão tratados como se fossem a mesma API da OpenAI. Cada adaptador implementa streaming, cancelamento, limites, erros e tradução de saída estruturada conforme sua API. [Claude](https://platform.claude.com/docs/en/api/overview), [Gemini](https://ai.google.dev/gemini-api/docs/api-key), [Grok](https://docs.x.ai/overview).

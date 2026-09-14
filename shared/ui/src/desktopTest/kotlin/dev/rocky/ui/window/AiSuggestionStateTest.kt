@@ -92,6 +92,17 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun configuresGrokDefaultsWhenTheProviderChanges() {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+
+        state.updateProvider(AiProviderKind.Grok)
+
+        assertEquals("https://api.x.ai", state.configuration.endpoint)
+        assertEquals("grok-4.6", state.configuration.model)
+        assertEquals("", state.configuration.apiKey)
+    }
+
+    @Test
     fun cancelInterruptsBlockingProviderAndAllowsAnotherRequest() = runBlocking {
         val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
         val state = AiSuggestionState(client, ollamaConfiguration) {}

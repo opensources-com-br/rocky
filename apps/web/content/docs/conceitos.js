@@ -11,7 +11,7 @@ const content = {
       "items": [
         {
           "key": "chat",
-          "text": "Novas mensagens da Twitch, Kick, YouTube ou Facebook recebidas enquanto conectado. Não é um arquivo completo da transmissão."
+          "text": "Novas mensagens da Twitch, Kick, YouTube, Facebook ou TikTok LIVE recebidas enquanto conectado. Não é um arquivo completo da transmissão."
         },
         {
           "key": "sugestão",

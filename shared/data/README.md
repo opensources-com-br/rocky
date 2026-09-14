@@ -1,6 +1,6 @@
 # Shared data
 
-Implements core contracts for Twitch EventSub, Kick webhooks, YouTube and Facebook live-chat polling, TikTok Live WebCast, Ollama/OpenAI/OpenRouter, ElevenLabs streaming, updates and local SQLite records.
+Implements core contracts for Twitch EventSub, Kick webhooks, YouTube and Facebook live-chat polling, TikTok Live WebCast, Ollama/OpenAI/Anthropic/Gemini/Grok/OpenRouter, ElevenLabs streaming, updates and local SQLite records.
 
 Depends on `shared/core`. SQLDelight schema and portable repository code live in `commonMain`; JVM HTTP, SQLite drivers and provider adapters live in `desktopMain`. Native audio playback and system services are injected through core contracts.
 

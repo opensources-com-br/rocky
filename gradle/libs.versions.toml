@@ -4,6 +4,7 @@ compose = "1.12.0"
 compose-icons = "1.7.3"
 sqldelight = "2.3.2"
 serialization = "1.11.0"
+tiktok-live = "1.11.18-Release"
 
 [libraries]
 jna-platform = { module = "net.java.dev.jna:jna-platform", version = "5.19.1" }
@@ -16,6 +17,7 @@ compose-ui-test-junit = { module = "org.jetbrains.compose.ui:ui-test-junit4", ve
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+tiktok-live = { module = "com.github.jwdeveloper.TikTok-Live-Java:Client", version.ref = "tiktok-live" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

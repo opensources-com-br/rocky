@@ -33,6 +33,7 @@ object RockyColors {
     val Kick = Color(0xFF53FC18)
     val YouTube = Color(0xFFFF164A)
     val Facebook = Color(0xFF1877F2)
+    val TikTok = Color(0xFF25F4EE)
     val Offline = Color(0xFF4D4D51)
     val WindowClose = Color(0xFFFF5F57)
     val WindowMinimize = Color(0xFFFFBD2E)

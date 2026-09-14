@@ -81,6 +81,17 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun configuresGeminiDefaultsWhenTheProviderChanges() {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+
+        state.updateProvider(AiProviderKind.Gemini)
+
+        assertEquals("https://generativelanguage.googleapis.com", state.configuration.endpoint)
+        assertEquals("gemini-3.8-flash", state.configuration.model)
+        assertEquals("", state.configuration.apiKey)
+    }
+
+    @Test
     fun cancelInterruptsBlockingProviderAndAllowsAnotherRequest() = runBlocking {
         val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
         val state = AiSuggestionState(client, ollamaConfiguration) {}

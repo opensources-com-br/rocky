@@ -21,7 +21,7 @@ export default function HeroContent({ locale }) {
 {localized(locale, "And it talks with you.", "E ela fala com você.")}
 </h1>
 <p style={{"margin": "0", "maxWidth": "540px", "fontSize": "16.5px", "lineHeight": "1.6", "color": "rgba(255,255,255,.5)", "textWrap": "pretty"}}>
-{localized(locale, "Rocky follows Twitch, Kick, YouTube, or Facebook, groups questions, and helps you check chat through quick actions or voice. Save notes and ideas using local Ollama or your OpenAI/OpenRouter key.", "Rocky acompanha Twitch, Kick, YouTube ou Facebook, agrupa perguntas e ajuda você a consultar o chat por ações rápidas ou voz. Salve notas e ideias usando Ollama local ou sua chave de OpenAI/OpenRouter.")}
+{localized(locale, "Rocky follows Twitch, Kick, YouTube, Facebook, or TikTok LIVE, groups questions, and helps you check chat through quick actions or voice. Save notes and ideas using local Ollama or your OpenAI/OpenRouter key.", "Rocky acompanha Twitch, Kick, YouTube, Facebook ou TikTok LIVE, agrupa perguntas e ajuda você a consultar o chat por ações rápidas ou voz. Salve notas e ideias usando Ollama local ou sua chave de OpenAI/OpenRouter.")}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px", "marginTop": "4px"}}>
 <DownloadButton locale={locale} style={{"padding": "11px 20px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}} />

@@ -70,6 +70,17 @@ class AiSuggestionStateTest {
     }
 
     @Test
+    fun configuresAnthropicDefaultsWhenTheProviderChanges() {
+        val state = AiSuggestionState(FakeAiSuggestionClient(), ollamaConfiguration) {}
+
+        state.updateProvider(AiProviderKind.Anthropic)
+
+        assertEquals("https://api.anthropic.com", state.configuration.endpoint)
+        assertEquals("claude-haiku-4-5-20251001", state.configuration.model)
+        assertEquals("", state.configuration.apiKey)
+    }
+
+    @Test
     fun cancelInterruptsBlockingProviderAndAllowsAnotherRequest() = runBlocking {
         val client = FakeAiSuggestionClient().apply { responseGate = CountDownLatch(1) }
         val state = AiSuggestionState(client, ollamaConfiguration) {}

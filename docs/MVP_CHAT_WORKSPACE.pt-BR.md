@@ -7,12 +7,13 @@
 - **Notas e ideias:** busca por texto/tag, filtro por live e marcação de ideias realizadas. Registros antigos aparecem em “Sem live”. Exportar Markdown exporta a categoria inteira, mesmo com busca ativa.
 - **Encerramento:** desconectar ou fechar salva um resumo local com notas, ideias, momentos e perguntas pendentes. Ele reaparece em Notas. Não é um resumo de toda a transmissão. Uma falha de salvamento impede o encerramento normal para permitir nova tentativa.
 - **Momento por voz:** “Rocky, marca esse momento” ou “Rocky, marca esse momento: vitória”. Salva em Notas com o tempo desde a conexão do Rocky; não cria clipe nem usa o início oficial da transmissão.
-- **Pulso:** curvas de mensagens/minuto e espectadores medidos, amostradas a cada cinco segundos, até 120 amostras. Sem audiência disponível, não inventa valores; lacunas de conexão interrompem a curva. O histórico reinicia a cada conexão.
+- **Plataformas e métricas:** Twitch, Kick, YouTube, Facebook e TikTok podem permanecer conectados ao mesmo tempo. A faixa superior conta somente as conexões online e mostra a audiência de cada plataforma em formato compacto. O rodapé soma as audiências disponíveis e identifica o resultado como total; mensagens por minuto também são agregadas.
+- **Pulso:** curvas de mensagens/minuto e espectadores medidos, amostradas a cada cinco segundos, até 120 amostras. A lista detalha os valores por plataforma conectada. Sem audiência disponível, não inventa valores; lacunas de conexão interrompem a curva. O histórico reinicia a cada conexão.
 - **Dados:** backup JSON/importação com confirmação, diagnóstico com prévia e exportação local, consulta de releases oficiais, aviso opcional na inicialização e download verificado com progresso; instalação e reinício são manuais. Veja [privacidade](PRIVACY.md).
 
 ## Validação manual desta etapa
 
-1. Conecte Twitch, Kick, YouTube, Facebook ou TikTok LIVE (uma plataforma por sessão) e envie perguntas semelhantes de usuários diferentes, um comando e uma mensagem de bot configurado. Compare chat, fila e contexto da IA.
+1. Conecte uma ou mais entre Twitch, Kick, YouTube, Facebook e TikTok LIVE e envie perguntas semelhantes de usuários diferentes, um comando e uma mensagem de bot configurado. Compare o número de plataformas online, as audiências individuais, o total do rodapé, o chat, a fila e o contexto da IA.
 2. Use as três ações rápidas e faça um pedido direto durante análise automática.
 3. Marque uma pergunta respondida, salve uma ideia, marque realizada, busque e filtre por live.
 4. Dite um marcador com título; confira seu tempo. Encerre e confira resumo e pendências.

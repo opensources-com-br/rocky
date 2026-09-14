@@ -1,7 +1,7 @@
 const content = {
   group: "Features",
   title: "Chat and questions",
-  lead: "The Conversation tab displays chat received from Twitch, Kick, YouTube, Facebook, or TikTok LIVE. The question queue organizes part of that content; the app uses one platform connection per session.",
+  lead: "The Conversation tab combines chat from active Twitch, Kick, YouTube, Facebook, and TikTok LIVE connections. The question queue organizes part of that content.",
   blocks: [
     { type: "h2", text: "Grouped questions" },
     { type: "para", text: "Questions detected by text rules are grouped by similarity and saved by stream. Use the queue to inspect sources and mark them pending or answered. Detection may miss questions; it does not guarantee semantic equivalence or automatically identify everything answered out loud." },
@@ -15,7 +15,7 @@ const content = {
     { type: "h2", text: "Question shortcuts" },
     { type: "para", text: "Top questions, What did I miss?, and Chat ideas send prepared requests to AI. Results use the same recent sample; they do not reconstruct missing periods or the entire stream." },
     { type: "h2", text: "Pulse" },
-    { type: "para", text: "The Pulse tab shows trends calculated from received samples: messages per minute and viewers for the connected Twitch, Kick, YouTube, Facebook, or TikTok LIVE account. Connection drops or missing data limit the reading." }
+    { type: "para", text: "The top strip counts only online platforms and shows a compact audience value for each connection. The footer sums available audiences and labels the value as a total. Pulse shows trends and per-platform values; connection drops or missing data limit the reading." }
   ]
 };
 

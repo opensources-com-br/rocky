@@ -6,7 +6,7 @@ const content = {
     { type: "h2", text: "Prepare the session" },
     { type: "list", items: [
       "Under Platforms, connect Twitch, Kick, YouTube, Facebook, or TikTok LIVE. TikTok only needs the username and an active public live; Kick requires forwarding through a public HTTPS webhook; YouTube and Facebook require app credentials and an active stream with chat.",
-      "Under AI, choose Ollama, OpenAI API, Anthropic API, Google Gemini API, or OpenRouter, enter the model, and test the connection. Explicitly save the configuration and key when applicable.",
+      "Under AI, choose Ollama, OpenAI API, Anthropic API, Google Gemini API, the xAI Grok API, or OpenRouter, enter the model, and test the connection. Explicitly save the configuration and key when applicable.",
       "Receive new messages on the authenticated channel. Use Analyze now or Top questions, What did I miss?, and Chat ideas on the Conversation tab. The typed question field is hidden in the current layout.",
       "If you want voice, configure whisper-cli, the transcription model, and the microphone; then test the voice conversation.",
       "Open Before stream to check the platform, AI, and optional audio. Make a test recording in OBS to verify what the audience will hear and see."

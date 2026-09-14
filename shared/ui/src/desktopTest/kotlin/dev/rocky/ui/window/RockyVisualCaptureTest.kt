@@ -715,6 +715,16 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun configuresAnthropicFromAiSettings() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai)
+
+        rule.onNodeWithText("Anthropic API").performClick()
+
+        rule.onNodeWithText("claude-haiku-4-5-20251001").assertExists()
+        rule.onNodeWithTag("ai-api-key").assertExists()
+    }
+
+    @Test
     fun togglesTwitchClientIdVisibility() {
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms, twitchClientId = "client-id")
 

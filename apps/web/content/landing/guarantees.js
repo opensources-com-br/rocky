@@ -1,11 +1,11 @@
 const portuguese = [
   {
     "title": "Sem conta Rocky",
-    "text": "Você autoriza Twitch, Kick, YouTube ou Facebook e configura a IA. Não existe cadastro ou assinatura do Rocky."
+    "text": "Você conecta Twitch, Kick, YouTube, Facebook ou TikTok LIVE e configura a IA. Não existe cadastro ou assinatura do Rocky."
   },
   {
     "title": "Sem backend próprio",
-    "text": "O app usa as APIs oficiais das plataformas e do provedor escolhido. A Kick entrega o chat por webhook HTTPS."
+    "text": "Twitch, Kick, YouTube e Facebook usam integrações oficiais. O TikTok usa WebCast não oficial via Eulerstream; a Kick entrega o chat por webhook HTTPS."
   },
   {
     "title": "MIT",
@@ -20,11 +20,11 @@ const portuguese = [
 const english = [
   {
     "title": "No Rocky account",
-    "text": "Authorize Twitch, Kick, YouTube, or Facebook and configure AI. Rocky has no registration or subscription."
+    "text": "Connect Twitch, Kick, YouTube, Facebook, or TikTok LIVE and configure AI. Rocky has no registration or subscription."
   },
   {
     "title": "No proprietary backend",
-    "text": "The app uses official platform and provider APIs. Kick delivers chat through an HTTPS webhook."
+    "text": "Twitch, Kick, YouTube, and Facebook use official integrations. TikTok uses unofficial WebCast through Eulerstream; Kick delivers chat through an HTTPS webhook."
   },
   {
     "title": "MIT",

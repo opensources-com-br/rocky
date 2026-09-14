@@ -1,6 +1,6 @@
 # Provedores de IA
 
-O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube, Facebook ou TikTok LIVE usando Ollama local, a Responses API da OpenAI ou OpenRouter.
+O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube, Facebook ou TikTok LIVE usando Ollama local, a Responses API da OpenAI, a Messages API da Anthropic ou OpenRouter.
 
 ## Ollama
 
@@ -29,13 +29,22 @@ Use **Salvar configuração e chave** para persistir a chave no Keychain (macOS)
 
 `openrouter/free` escolhe automaticamente um modelo gratuito compatível. A disponibilidade, o modelo escolhido e os limites podem variar. As mensagens selecionadas são processadas pelo OpenRouter e pelo provedor do modelo escolhido. A persistência usa o mesmo cofre descrito acima.
 
+## API da Anthropic
+
+1. Crie uma API key no [Console da Anthropic](https://console.anthropic.com/settings/keys). Uma assinatura Claude não fornece uma API key nem créditos de uso da API.
+2. Em **Configurações → IA**, selecione **Anthropic API**.
+3. Mantenha `https://api.anthropic.com` como endereço e use `claude-haiku-4-5-20251001` ou outro modelo disponível na sua conta.
+4. Cole a API key e selecione **Testar conexão**.
+
+O Rocky usa a [Messages API](https://docs.anthropic.com/en/api/messages) com a chave informada. As mensagens selecionadas do chat e o pedido são enviados à Anthropic; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
+
 ## Comportamento das sugestões
 
 - **Analisar agora** funciona depois que pelo menos uma mensagem real da Twitch, Kick, YouTube, Facebook ou TikTok LIVE chega.
 - A análise automática começa desativada. Quando ativada, segue o perfil escolhido em IA (Discreto: cinco minutos; Proativo: dois minutos) e só envia um novo lote após mais três mensagens.
 - Cada chamada usa até 200 mensagens recebidas nos últimos dois minutos e até 300 caracteres de cada mensagem. É uma amostra limitada; quedas podem causar lacunas.
 - O chat é marcado como conteúdo não confiável. Com mensagens na amostra, uma sugestão precisa citar ao menos um ID válido. Pedidos diretos sem mensagens podem responder sem fontes.
-- Somente uma análise roda por vez. O Rocky nunca troca automaticamente do Ollama para a OpenAI.
+- Somente uma análise roda por vez. O Rocky nunca troca automaticamente de provedor.
 - Sugestões salvas usam as notas locais em SQLite e a exportação para Markdown já existentes.
 
 As ações Dúvidas principais, O que perdi? e Ideias do chat dispensam microfone e whisper.cpp. O campo de pergunta digitada está oculto no layout atual; use voz para pedidos livres. Uma análise em andamento pode ser cancelada. O teste de conexão gera uma resposta curta com dados fictícios para verificar também a capacidade de geração; provedores por API podem cobrar essa chamada.

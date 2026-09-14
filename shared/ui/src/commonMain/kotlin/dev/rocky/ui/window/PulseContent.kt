@@ -21,6 +21,7 @@ internal fun PulseContent(
     platforms: List<PlatformStatus>,
     samples: List<dev.rocky.core.live.PulseSample> = emptyList(),
 ) {
+    val language = LocalRockyLanguage.current
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 3.dp)) {
         PulseTrend(samples, audience = false)
         PulseTrend(samples, audience = true)
@@ -29,19 +30,21 @@ internal fun PulseContent(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = platform.name,
-                    color = if (platform.enabled) RockyColors.TextSecondary else RockyColors.TextMuted,
+                    color = if (platform.connected) RockyColors.TextSecondary else RockyColors.TextMuted,
                     style = MaterialTheme.typography.body2,
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = if (platform.enabled) {
-                        if (platform.audience == "—") {
-                            "audiência indisponível · ${platform.messagesPerMinute} msg/min"
-                        } else {
-                            "${platform.audience} assistindo · ${platform.messagesPerMinute} msg/min"
-                        }
-                    } else {
-                        "em breve"
+                    text = when {
+                        !platform.connected -> tr("Offline", "Desconectada")
+                        platform.audience == null -> tr(
+                            "Audience unavailable · ${compactMetric(platform.messagesPerMinute, language)} msg/min",
+                            "Audiência indisponível · ${compactMetric(platform.messagesPerMinute, language)} msg/min",
+                        )
+                        else -> tr(
+                            "${compactMetric(platform.audience, language)} watching · ${compactMetric(platform.messagesPerMinute, language)} msg/min",
+                            "${compactMetric(platform.audience, language)} assistindo · ${compactMetric(platform.messagesPerMinute, language)} msg/min",
+                        )
                     },
                     color = RockyColors.TextSecondary,
                     style = MaterialTheme.typography.caption,

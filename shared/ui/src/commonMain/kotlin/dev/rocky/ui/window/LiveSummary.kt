@@ -161,7 +161,7 @@ internal fun LiveSummary(
         Text(
             text = suggestion?.text ?: run {
                 if (!sessionAvailable) {
-                    "Conecte Twitch, Kick, YouTube ou Facebook nas configurações para acompanhar uma live."
+                    "Conecte Twitch, Kick, YouTube, Facebook ou TikTok nas configurações para acompanhar uma live."
                 } else if (generatingSuggestion) {
                     "Estou analisando o chat para encontrar uma resposta ou ideia útil."
                 } else if (sessionStatus != LiveSessionStatus.Running) {
@@ -270,6 +270,7 @@ internal fun PlatformStatus.color(): Color {
         PlatformColor.Kick -> RockyColors.Kick
         PlatformColor.YouTube -> RockyColors.YouTube
         PlatformColor.Facebook -> RockyColors.Facebook
+        PlatformColor.TikTok -> RockyColors.TikTok
         PlatformColor.Offline -> RockyColors.Offline
     }
 }

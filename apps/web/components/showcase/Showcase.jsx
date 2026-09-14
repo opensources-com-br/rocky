@@ -13,7 +13,7 @@ export default function Showcase() {
   const [open, setOpen] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copiar o arquivo");
-  const [form, setForm] = useState({ name: "", category: "Programação", desc: "", quote: "", platforms: ["Twitch"], urls: { Twitch: "", Kick: "", YouTube: "", Facebook: "" }, provider: "ollama", model: "", voice: "system", story: "", changes: "" });
+  const [form, setForm] = useState({ name: "", category: "Programação", desc: "", quote: "", platforms: ["Twitch"], urls: { Twitch: "", Kick: "", YouTube: "", Facebook: "", TikTok: "" }, provider: "ollama", model: "", voice: "system", story: "", changes: "" });
   const update = (key, value) => { setForm(current => ({ ...current, [key]: value })); setCopyLabel("Copiar o arquivo"); };
   const setUrl = (name, value) => { setForm(current => ({ ...current, urls: { ...current.urls, [name]: value } })); setCopyLabel("Copiar o arquivo"); };
   const toggle = name => { setForm(current => ({ ...current, platforms: current.platforms.includes(name) ? current.platforms.filter(p => p !== name) : [...current.platforms, name] })); setCopyLabel("Copiar o arquivo"); };

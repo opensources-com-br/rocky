@@ -19,7 +19,7 @@ internal enum class SettingsSection(val label: String) {
 internal data class PlatformStatus(
     val name: String,
     val account: String,
-    val audience: String,
+    val audience: Int?,
     val messagesPerMinute: Int,
     val colorKey: PlatformColor,
     val enabled: Boolean = true,

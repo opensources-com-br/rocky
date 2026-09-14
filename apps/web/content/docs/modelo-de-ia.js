@@ -1,6 +1,6 @@
 const content = {
   "group": "Configuração",
-  "lead": "Escolha o provedor em Configurações → IA. A integração atual oferece Ollama local, OpenAI API, Anthropic API, Google Gemini API e OpenRouter.",
+  "lead": "Escolha o provedor em Configurações → IA. A integração atual oferece Ollama local, OpenAI API, Anthropic API, Google Gemini API, xAI Grok API e OpenRouter.",
   "blocks": [
     {
       "type": "h2",
@@ -16,7 +16,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "OpenAI usa https://api.openai.com e a API Responses. Anthropic usa https://api.anthropic.com e a Messages API; o modelo inicial é claude-haiku-4-5-20251001. Google Gemini usa https://generativelanguage.googleapis.com e generateContent; o modelo inicial é gemini-3.8-flash. OpenRouter usa https://openrouter.ai/api; o modelo padrão é openrouter/free, cuja disponibilidade varia. Informe uma chave e um modelo disponível na sua conta. Não há integração genérica OpenAI-compatible."
+      "text": "OpenAI usa https://api.openai.com e a API Responses. Anthropic usa https://api.anthropic.com e a Messages API; o modelo inicial é claude-haiku-4-5-20251001. Google Gemini usa https://generativelanguage.googleapis.com e generateContent; o modelo inicial é gemini-3.8-flash. xAI Grok usa https://api.x.ai e a Responses API; o modelo inicial é grok-4.6. OpenRouter usa https://openrouter.ai/api; o modelo padrão é openrouter/free, cuja disponibilidade varia. Informe uma chave e um modelo disponível na sua conta. Não há integração genérica OpenAI-compatible."
     },
     {
       "type": "h2",
@@ -40,7 +40,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Para processamento local, selecione um modelo local no Ollama; um endereço loopback, sozinho, não comprova onde o servidor executa o modelo. OpenAI, Anthropic, Google Gemini e OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Totais de tokens são parciais, não uma estimativa de cobrança. Cancelar não desfaz consumo já ocorrido."
+      "text": "Para processamento local, selecione um modelo local no Ollama; um endereço loopback, sozinho, não comprova onde o servidor executa o modelo. OpenAI, Anthropic, Google Gemini, xAI Grok e OpenRouter recebem o pedido e a amostra de chat; OpenRouter também encaminha ao provedor do modelo. Totais de tokens são parciais, não uma estimativa de cobrança. Cancelar não desfaz consumo já ocorrido."
     }
   ]
 };

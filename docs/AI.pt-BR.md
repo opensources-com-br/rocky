@@ -1,6 +1,6 @@
 # Provedores de IA
 
-O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube, Facebook ou TikTok LIVE usando Ollama local, a Responses API da OpenAI, a Messages API da Anthropic ou OpenRouter.
+O Rocky pode gerar sugestões fundamentadas no chat da Twitch, Kick, YouTube, Facebook ou TikTok LIVE usando Ollama local, a Responses API da OpenAI, a Messages API da Anthropic, a API Gemini do Google ou OpenRouter.
 
 ## Ollama
 
@@ -37,6 +37,15 @@ Use **Salvar configuração e chave** para persistir a chave no Keychain (macOS)
 4. Cole a API key e selecione **Testar conexão**.
 
 O Rocky usa a [Messages API](https://docs.anthropic.com/en/api/messages) com a chave informada. As mensagens selecionadas do chat e o pedido são enviados à Anthropic; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
+
+## API Google Gemini
+
+1. Crie uma API key no [Google AI Studio](https://aistudio.google.com/app/apikey). Uma assinatura do app Gemini não fornece uma API key nem créditos de uso da API.
+2. Em **Configurações → IA**, selecione **Google Gemini API**.
+3. Mantenha `https://generativelanguage.googleapis.com` como endereço e use `gemini-3.8-flash` ou outro modelo disponível na sua conta.
+4. Cole a API key e selecione **Testar conexão**.
+
+O Rocky usa `generateContent` da [API Gemini](https://ai.google.dev/api/generate-content) com a chave informada. As mensagens selecionadas do chat e o pedido são enviados ao Google; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
 
 ## Comportamento das sugestões
 

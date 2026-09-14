@@ -133,6 +133,9 @@ internal class AiSuggestionState(
             AiProviderKind.OpenRouter -> configuration.copy(
                 provider = provider, endpoint = DEFAULT_OPENROUTER_ENDPOINT, model = DEFAULT_OPENROUTER_MODEL,
             )
+            AiProviderKind.Anthropic -> configuration.copy(
+                provider = provider, endpoint = DEFAULT_ANTHROPIC_ENDPOINT, model = DEFAULT_ANTHROPIC_MODEL,
+            )
         }
         saveConfiguration()
     }
@@ -320,6 +323,8 @@ internal class AiSuggestionState(
         const val DEFAULT_OPENAI_MODEL = ""
         const val DEFAULT_OPENROUTER_ENDPOINT = "https://openrouter.ai/api"
         const val DEFAULT_OPENROUTER_MODEL = "openrouter/free"
+        const val DEFAULT_ANTHROPIC_ENDPOINT = "https://api.anthropic.com"
+        const val DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
 
         private const val AUTOMATIC_BATCH_SIZE = 3
         private const val MAX_ANALYSIS_MESSAGES = 200

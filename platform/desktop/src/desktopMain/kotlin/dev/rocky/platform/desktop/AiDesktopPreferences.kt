@@ -89,12 +89,14 @@ internal class SecureAiPreferences(private val preferences: Preferences, private
         AiProviderKind.Ollama -> "http://localhost:11434"
         AiProviderKind.OpenAI -> "https://api.openai.com"
         AiProviderKind.OpenRouter -> "https://openrouter.ai/api"
+        AiProviderKind.Anthropic -> "https://api.anthropic.com"
     }
 
     private fun defaultModel(provider: AiProviderKind): String = when (provider) {
         AiProviderKind.Ollama -> "llama3.2"
         AiProviderKind.OpenAI -> ""
         AiProviderKind.OpenRouter -> "openrouter/free"
+        AiProviderKind.Anthropic -> "claude-haiku-4-5-20251001"
     }
 
     private val PROVIDER_KEY = "provider"

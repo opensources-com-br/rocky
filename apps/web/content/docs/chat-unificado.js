@@ -1,6 +1,6 @@
 const content = {
   "group": "Recursos",
-  "lead": "A aba Conversa exibe o chat recebido da Twitch, Kick, YouTube, Facebook ou TikTok LIVE. A fila de perguntas organiza uma parte desse conteúdo; o app usa uma conexão de plataforma por sessão.",
+  "lead": "A aba Conversa reúne o chat recebido das conexões ativas da Twitch, Kick, YouTube, Facebook e TikTok LIVE. A fila de perguntas organiza uma parte desse conteúdo.",
   "blocks": [
     {
       "type": "h2",
@@ -37,7 +37,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A aba Pulso mostra tendências calculadas das amostras recebidas: mensagens por minuto e espectadores da Twitch, Kick, YouTube, Facebook ou TikTok LIVE conectado. Quedas de conexão ou ausência de dados limitam a leitura."
+      "text": "A faixa superior conta somente as plataformas online e mostra a audiência de cada conexão em formato compacto. O rodapé soma as audiências disponíveis e identifica o valor como total. A aba Pulso mostra as tendências e os valores por plataforma; quedas de conexão ou ausência de dados limitam a leitura."
     }
   ]
 };

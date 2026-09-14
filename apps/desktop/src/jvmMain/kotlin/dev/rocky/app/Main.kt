@@ -18,6 +18,7 @@ import dev.rocky.data.kick.DesktopKickChatClient
 import dev.rocky.data.twitch.DesktopTwitchChatClient
 import dev.rocky.data.youtube.DesktopYouTubeChatClient
 import dev.rocky.data.facebook.DesktopFacebookChatClient
+import dev.rocky.data.tiktok.DesktopTikTokChatClient
 import dev.rocky.platform.desktop.RockyDesktopPaths
 import dev.rocky.platform.desktop.AgentDesktopPreferences
 import dev.rocky.platform.desktop.AiDesktopPreferences
@@ -29,6 +30,7 @@ import dev.rocky.platform.desktop.KickDesktopPreferences
 import dev.rocky.platform.desktop.VoiceDesktopPreferences
 import dev.rocky.platform.desktop.YouTubeDesktopPreferences
 import dev.rocky.platform.desktop.FacebookDesktopPreferences
+import dev.rocky.platform.desktop.TikTokDesktopPreferences
 import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
@@ -74,6 +76,7 @@ fun main() = application {
     val kickClient = remember { DesktopKickChatClient() }
     val youtubeClient = remember { DesktopYouTubeChatClient() }
     val facebookClient = remember { DesktopFacebookChatClient() }
+    val tiktokClient = remember { DesktopTikTokChatClient() }
     val aiClient = remember { DesktopAiSuggestionClient() }
     val voiceService = remember { dev.rocky.data.voice.ProviderVoiceService(
         DesktopVoiceService(), dev.rocky.platform.desktop.DesktopPcmPlayback(),
@@ -82,7 +85,7 @@ fun main() = application {
         dev.rocky.data.updates.DesktopUpdateInstaller(RockyDesktopPaths.notesDatabase.parent.resolve("updates"))
     }
 
-    DisposableEffect(noteRepository, twitchClient, kickClient, youtubeClient, facebookClient, aiClient, voiceService) {
+    DisposableEffect(noteRepository, twitchClient, kickClient, youtubeClient, facebookClient, tiktokClient, aiClient, voiceService) {
         onDispose {
             voiceService.close()
             aiClient.close()
@@ -90,6 +93,7 @@ fun main() = application {
             kickClient.close()
             youtubeClient.close()
             facebookClient.close()
+            tiktokClient.close()
             noteRepository.close()
         }
     }
@@ -150,6 +154,7 @@ fun main() = application {
             kickChatClient = kickClient,
             youtubeChatClient = youtubeClient,
             facebookChatClient = facebookClient,
+            tiktokChatClient = tiktokClient,
             aiSuggestionClient = aiClient,
             voiceService = voiceService,
             initialAgentConfiguration = AgentDesktopPreferences.configuration,
@@ -200,6 +205,8 @@ fun main() = application {
             initialFacebookConfiguration = FacebookDesktopPreferences.configuration,
             onFacebookConfigurationChange = { FacebookDesktopPreferences.configuration = it },
             onOpenFacebookAuthorization = { openInBrowser(it) },
+            initialTikTokConfiguration = TikTokDesktopPreferences.configuration,
+            onTikTokConfigurationChange = { TikTokDesktopPreferences.configuration = it },
             onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },
             onExportIdeas = { ideas -> exportIdeasAsMarkdown(window, ideas) },
             initialFirstUseOpen = !FirstUseDesktopPreferences.completed,

@@ -215,6 +215,7 @@ private val StreamPlatform.label: String
         StreamPlatform.Kick -> "Kick"
         StreamPlatform.YouTube -> "YouTube"
         StreamPlatform.Facebook -> "Facebook"
+        StreamPlatform.TikTok -> "TikTok"
     }
 
 private fun StreamPlatform.color(): Color = when (this) {
@@ -222,4 +223,5 @@ private fun StreamPlatform.color(): Color = when (this) {
     StreamPlatform.Kick -> RockyColors.Kick
     StreamPlatform.YouTube -> RockyColors.YouTube
     StreamPlatform.Facebook -> RockyColors.Facebook
+    StreamPlatform.TikTok -> RockyColors.TikTok
 }

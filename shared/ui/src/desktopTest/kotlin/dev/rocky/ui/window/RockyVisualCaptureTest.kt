@@ -111,8 +111,28 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("321").assertIsDisplayed()
         rule.onNodeWithText("18").assertIsDisplayed()
-        rule.onNodeWithText("assistindo").assertIsDisplayed()
+        rule.onNodeWithText("total watching").assertIsDisplayed()
         rule.onNodeWithText("msg/min").assertIsDisplayed()
+    }
+
+    @Test
+    fun showsFiveOnlinePlatformsWithCompactAudiences() {
+        rule.setContent {
+            PlatformStrip(
+                platforms = listOf(
+                    PlatformStatus("Twitch", "@twitch", 100_900, 18, PlatformColor.Twitch, connected = true),
+                    PlatformStatus("Kick", "@kick", 10_900, 12, PlatformColor.Kick, connected = true),
+                    PlatformStatus("YouTube", "YouTube", 1_100, 10, PlatformColor.YouTube, connected = true),
+                    PlatformStatus("Facebook", "Facebook", 52, 6, PlatformColor.Facebook, connected = true),
+                    PlatformStatus("TikTok", "@tiktok", 88, 9, PlatformColor.TikTok, connected = true),
+                ),
+            )
+        }
+
+        rule.onNodeWithText("5 PLATFORMS ONLINE").assertIsDisplayed()
+        rule.onNodeWithText("100.9K").assertIsDisplayed()
+        rule.onNodeWithText("10.9K").assertIsDisplayed()
+        rule.onNodeWithText("1.1K").assertIsDisplayed()
     }
 
     @Test

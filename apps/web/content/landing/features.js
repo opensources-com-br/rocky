@@ -22,7 +22,7 @@ const portuguese = [
   {
     "tag": "PULSO",
     "title": "Acompanhe o ritmo",
-    "text": "Veja espectadores e mensagens por minuto da Twitch, Kick, YouTube ou Facebook, com tendências calculadas das amostras recebidas."
+    "text": "Veja espectadores e mensagens por minuto da Twitch, Kick, YouTube, Facebook ou TikTok LIVE, com tendências calculadas das amostras recebidas."
   },
   {
     "tag": "RESUMO",
@@ -55,7 +55,7 @@ const english = [
   {
     "tag": "PULSE",
     "title": "Track the pace",
-    "text": "See viewers and messages per minute from Twitch, Kick, YouTube, or Facebook, with trends calculated from received samples."
+    "text": "See viewers and messages per minute from Twitch, Kick, YouTube, Facebook, or TikTok LIVE, with trends calculated from received samples."
   },
   {
     "tag": "SUMMARY",

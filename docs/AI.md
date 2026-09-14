@@ -1,6 +1,6 @@
 # AI providers
 
-Rocky can generate grounded suggestions from Twitch, Kick, YouTube, Facebook, or TikTok LIVE chat with local Ollama, the OpenAI Responses API, or OpenRouter.
+Rocky can generate grounded suggestions from Twitch, Kick, YouTube, Facebook, or TikTok LIVE chat with local Ollama, the OpenAI Responses API, the Anthropic Messages API, or OpenRouter.
 
 ## Ollama
 
@@ -29,13 +29,22 @@ Use **Save configuration and key** to save the key in macOS Keychain or with use
 
 `openrouter/free` automatically selects a compatible free model. Availability, the selected model, and limits may vary. Selected messages are processed by OpenRouter and the chosen model provider. The same secure storage controls apply to OpenRouter.
 
+## Anthropic API
+
+1. Create an API key in the [Anthropic Console](https://console.anthropic.com/settings/keys). A Claude subscription does not provide an API key or API usage credits.
+2. In **Settings → AI**, select **Anthropic API**.
+3. Keep `https://api.anthropic.com` as the endpoint and use `claude-haiku-4-5-20251001` or another model available to your account.
+4. Paste the API key and select **Test connection**.
+
+Rocky uses the [Messages API](https://docs.anthropic.com/en/api/messages) with the supplied key. Selected chat messages and the request are sent to Anthropic; a connection test also generates a short response and may incur charges. The key uses the same system credential vault described above.
+
 ## Suggestion behavior
 
 - **Analyze now** works after at least one real Twitch, Kick, YouTube, Facebook, or TikTok LIVE message arrives.
 - Automatic analysis starts disabled. Once enabled, it follows the AI profile (Discreet: five minutes; Proactive: two minutes) and requires three additional messages.
 - All chat requests use up to 200 received messages from the last two minutes, with up to 300 characters per message. This is a limited sample, not a complete stream history. Connection gaps are shown in Conversation.
 - Chat is labeled as untrusted content. When the sample contains messages, a suggestion must cite at least one valid ID. Direct requests with no messages can answer without sources.
-- Only one analysis runs at a time. Rocky never falls back from Ollama to OpenAI automatically.
+- Only one analysis runs at a time. Rocky never falls back between providers automatically.
 - Quick analysis actions require no microphone. The free-text input is hidden in the current layout; use configured voice recognition for free-form requests. In-progress analysis can be cancelled. Testing a connection also generates a short response using synthetic messages; API providers may charge for this request.
 - Saving a generated suggestion uses the existing local SQLite notes and Markdown export.
 

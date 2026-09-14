@@ -4,7 +4,7 @@ Rocky é um assistente local para transmissões ao vivo no macOS e Windows. Ele 
 
 O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Multiplatform, SQLDelight e Gradle.
 
-> Rocky está atualmente em uma versão inicial do protótipo desktop. Os instaladores são builds de desenvolvimento sem assinatura. A integração de chat real está disponível para Twitch, Kick e YouTube; a Kick exige encaminhamento por webhook HTTPS público.
+> Rocky está atualmente em uma versão inicial do protótipo desktop. A integração de chat real está disponível para Twitch, Kick, YouTube, Facebook e TikTok LIVE; a Kick exige encaminhamento por webhook HTTPS público e o TikTok usa uma conexão WebCast não oficial.
 
 [Read in English](README.md).
 
@@ -16,7 +16,9 @@ O projeto é desenvolvido como um monorepo com Kotlin Multiplatform, Compose Mul
 - autenticação da Twitch pelo Device Code Flow, chat ao vivo pelo EventSub e reconexão automática;
 - OAuth da Kick, webhooks de chat assinados e assinatura de eventos;
 - OAuth para desktop, descoberta de live ativa e consulta do chat do YouTube;
-- contagem de espectadores e mensagens por minuto da live atual na Twitch, Kick e YouTube;
+- OAuth de Páginas, descoberta de live ativa e consulta do chat do Facebook;
+- chat do TikTok LIVE por conexão desktop com o nome de usuário público;
+- contagem de espectadores e mensagens por minuto da live atual na Twitch, Kick, YouTube, Facebook e TikTok;
 - sugestões fundamentadas no chat usando modelos locais do Ollama, a API da OpenAI ou OpenRouter;
 - leitura pelas vozes do macOS/Windows ou ElevenLabs, com chave própria, streaming e alternativa local opcional;
 - comandos por voz com palavra de ativação e transcrição local pelo `whisper.cpp`;
@@ -56,12 +58,12 @@ A web é validada separadamente: em `apps/web`, execute `npm ci`, `npm test`, `n
 
 ## Configurar uma sessão real
 
-1. Siga o guia de conexão com a [Twitch](docs/TWITCH.pt-BR.md), [Kick](docs/KICK.pt-BR.md) ou [YouTube](docs/YOUTUBE.pt-BR.md). A Kick exige uma URL HTTPS pública que encaminhe os webhooks assinados ao Rocky.
+1. Siga o guia de conexão com a [Twitch](docs/TWITCH.pt-BR.md), [Kick](docs/KICK.pt-BR.md), [YouTube](docs/YOUTUBE.pt-BR.md), [Facebook](docs/FACEBOOK.pt-BR.md) ou [TikTok](docs/TIKTOK.pt-BR.md). A Kick exige uma URL HTTPS pública que encaminhe os webhooks assinados ao Rocky.
 2. Siga o [guia de provedores de IA](docs/AI.pt-BR.md) para usar Ollama local, OpenAI API ou OpenRouter.
 3. Siga o [guia de voz](docs/VOICE.pt-BR.md) para preparar a transcrição local e testar a conversa por áudio.
 4. Inicie uma live, conecte o Rocky e envie uma mensagem por outra conta. As novas mensagens aparecerão na aba Conversa.
 
-Os conectores da Twitch, Kick e YouTube leem novas mensagens e a contagem atual de espectadores. Eventos de apoio, pontos do canal, Super Chats, mensagens anteriores e Facebook ainda não estão integrados.
+Os conectores da Twitch, Kick, YouTube, Facebook e TikTok leem novas mensagens e a contagem atual de espectadores. Eventos de apoio, pontos do canal, Stars, Super Chats, presentes e mensagens anteriores ainda não estão integrados. O Facebook exige um app Business e uma live ativa em uma Página autorizada. O TikTok depende do protocolo WebCast não oficial e do serviço de conexão Eulerstream.
 
 ## Gerar instaladores
 
@@ -86,7 +88,7 @@ Antes de promover uma alpha, siga o [protocolo de teste com streamers](docs/STRE
 | [apps/desktop](apps/desktop/) | Ponto de entrada, empacotamento e ciclo de vida do aplicativo desktop |
 | [apps/web](apps/web/) | Landing, documentação e showcase do Rocky em Next.js |
 | [shared/core](shared/core/) | Modelos de domínio, contratos e regras de exportação |
-| [shared/data](shared/data/) | Implementações da Twitch, Kick, YouTube, IA e SQLite |
+| [shared/data](shared/data/) | Implementações da Twitch, Kick, YouTube, Facebook, TikTok, IA e SQLite |
 | [shared/ui](shared/ui/) | Interface Compose e estado de apresentação |
 | [platform/desktop](platform/desktop/) | Arquivos, navegador, preferências, áudio e transcrição nativos |
 | [docs/adr](docs/adr/) | Registros de decisões de arquitetura |
@@ -97,4 +99,4 @@ O [plano de implementação](docs/PLAN.pt-BR.md) descreve a direção do produto
 
 Rocky é um software de código aberto disponibilizado sob a [Licença MIT](LICENSE).
 
-O código atual cobre Twitch, Kick, YouTube, IA, voz opcional, perguntas agrupadas, notas, ideias, momentos e resumo dos registros locais ao desconectar ou fechar o app. Kick e YouTube ainda precisam de validação com credenciais reais antes do lançamento; a Kick também precisa de webhook público. Super Chats e geração automática de ideias ficam fora deste candidato. Consulte [preparação de lançamento](docs/RELEASE_PREPARATION.md) e [dados e privacidade](docs/PRIVACY.md).
+O código atual cobre Twitch, Kick, YouTube, Facebook, TikTok, IA, voz opcional, perguntas agrupadas, notas, ideias, momentos e resumo dos registros locais ao desconectar ou fechar o app. Kick, YouTube, Facebook e TikTok ainda precisam de validação em lives reais antes do lançamento; a Kick também precisa de webhook público. Super Chats, Stars, presentes e geração automática de ideias ficam fora deste candidato. Consulte [preparação de lançamento](docs/RELEASE_PREPARATION.md) e [dados e privacidade](docs/PRIVACY.md).

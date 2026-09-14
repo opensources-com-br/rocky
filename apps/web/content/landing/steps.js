@@ -2,7 +2,7 @@ const portuguese = [
   {
     "n": "01",
     "title": "Acompanha sua live",
-    "text": "Recebe novas mensagens da Twitch, Kick, YouTube ou Facebook e agrupa perguntas. A Kick exige um webhook HTTPS público."
+    "text": "Recebe novas mensagens da Twitch, Kick, YouTube, Facebook ou TikTok LIVE e agrupa perguntas. A Kick exige um webhook HTTPS público; o TikTok usa uma conexão WebCast não oficial."
   },
   {
     "n": "02",
@@ -20,7 +20,7 @@ const english = [
   {
     "n": "01",
     "title": "Follows your stream",
-    "text": "Receives new Twitch, Kick, YouTube, or Facebook messages and groups questions. Kick requires a public HTTPS webhook."
+    "text": "Receives new Twitch, Kick, YouTube, Facebook, or TikTok LIVE messages and groups questions. Kick requires a public HTTPS webhook; TikTok uses an unofficial WebCast connection."
   },
   {
     "n": "02",

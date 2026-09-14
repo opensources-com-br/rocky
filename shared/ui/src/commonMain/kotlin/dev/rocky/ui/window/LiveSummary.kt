@@ -52,49 +52,79 @@ internal fun PlatformStrip(
 ) {
     var selectedPlatform by remember { mutableStateOf<PlatformColor?>(null) }
     val activeSelection = platforms.firstOrNull { it.colorKey == selectedPlatform && it.connected }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 18.dp, vertical = 11.dp),
-        horizontalArrangement = Arrangement.spacedBy(7.dp),
-    ) {
-        platforms.forEach { platform ->
+    val connectedCount = platforms.count { it.connected }
+    val language = LocalRockyLanguage.current
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        if (connectedCount > 0) {
             Row(
-                modifier = Modifier
-                    .border(1.dp, RockyColors.Border, RoundedCornerShape(18.dp))
-                    .background(RockyColors.SurfaceElevated, RoundedCornerShape(18.dp))
-                    .testTag("platform-${platform.name.lowercase()}")
-                    .clickable(enabled = platform.connected) {
-                        selectedPlatform = platform.colorKey.takeUnless { it == selectedPlatform }
-                    }
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(
-                    Modifier
-                        .size(8.dp)
-                        .background(platform.color(), CircleShape),
-                )
-                Spacer(Modifier.width(6.dp))
+                Box(Modifier.size(6.dp).background(RockyColors.WindowExpand, CircleShape))
+                Spacer(Modifier.width(5.dp))
                 Text(
-                    text = platform.name,
-                    color = if (platform.enabled) RockyColors.TextPrimary else RockyColors.TextMuted,
-                    style = MaterialTheme.typography.body2,
+                    text = if (connectedCount == 1) {
+                        tr("1 PLATFORM ONLINE", "1 PLATAFORMA ONLINE")
+                    } else {
+                        tr("$connectedCount PLATFORMS ONLINE", "$connectedCount PLATAFORMAS ONLINE")
+                    },
+                    color = RockyColors.TextSecondary,
+                    fontSize = 10.sp,
+                    letterSpacing = 1.sp,
                 )
             }
         }
-        activeSelection?.let { platform ->
-            OutlinedButton(
-                onClick = {
-                    selectedPlatform = null
-                    onDisconnect(platform.colorKey)
-                },
-                shape = RoundedCornerShape(18.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, RockyColors.Border),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
-            ) {
-                Text(tr("Disconnect", "Desconectar"))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 18.dp, vertical = 3.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            platforms.forEach { platform ->
+                Row(
+                    modifier = Modifier
+                        .border(1.dp, RockyColors.Border, RoundedCornerShape(15.dp))
+                        .background(RockyColors.SurfaceElevated, RoundedCornerShape(15.dp))
+                        .testTag("platform-${platform.name.lowercase()}")
+                        .clickable(enabled = platform.connected) {
+                            selectedPlatform = platform.colorKey.takeUnless { it == selectedPlatform }
+                        }
+                        .padding(horizontal = 7.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(6.dp).background(platform.color(), CircleShape))
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = platform.name,
+                        color = if (platform.connected) RockyColors.TextPrimary else RockyColors.TextMuted,
+                        fontSize = 11.sp,
+                        maxLines = 1,
+                    )
+                    platform.audience?.takeIf { platform.connected }?.let { audience ->
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = compactMetric(audience, language),
+                            color = RockyColors.TextSecondary,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
+            activeSelection?.let { platform ->
+                OutlinedButton(
+                    onClick = {
+                        selectedPlatform = null
+                        onDisconnect(platform.colorKey)
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, RockyColors.Border),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = RockyColors.TextPrimary),
+                ) {
+                    Text(tr("Disconnect", "Desconectar"))
+                }
             }
         }
     }
@@ -190,6 +220,7 @@ internal fun LiveSummary(
                 Triple(StreamPlatform.Kick, "Kick", RockyColors.Kick),
                 Triple(StreamPlatform.YouTube, "YouTube", RockyColors.YouTube),
                 Triple(StreamPlatform.Facebook, "Facebook", RockyColors.Facebook),
+                Triple(StreamPlatform.TikTok, "TikTok", RockyColors.TikTok),
             ).forEach { (platform, label, color) ->
                 val count = sourceCounts[platform] ?: 0
                 if (count > 0) SourceCount(count, label, color)
@@ -264,7 +295,7 @@ private fun PromptAction(label: String, onClick: () -> Unit, enabled: Boolean = 
 }
 
 internal fun PlatformStatus.color(): Color {
-    if (!enabled) return RockyColors.Offline
+    if (!enabled || !connected) return RockyColors.Offline
     return when (colorKey) {
         PlatformColor.Twitch -> RockyColors.Twitch
         PlatformColor.Kick -> RockyColors.Kick

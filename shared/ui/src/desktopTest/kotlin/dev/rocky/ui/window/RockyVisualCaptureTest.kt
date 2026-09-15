@@ -877,11 +877,15 @@ class RockyVisualCaptureTest {
     fun rendersSettingsInAnExternalWindowHost() {
         render(
             settingsOpen = true,
+            mainWindow = { content ->
+                Box(Modifier.testTag("main-window")) { content() }
+            },
             settingsWindow = { visible, _, content ->
                 if (visible) Box(Modifier.testTag("settings-window")) { content() }
             },
         )
 
+        rule.onNodeWithTag("main-window").assertExists()
         rule.onNodeWithTag("settings-window").assertExists()
         rule.onNodeWithText("Configurações").assertExists()
         rule.onNodeWithText("Conversa").assertExists()
@@ -978,6 +982,7 @@ class RockyVisualCaptureTest {
         onFirstUseFinished: () -> Unit = {},
         onLanguageChange: (RockyLanguage) -> Unit = {},
         language: RockyLanguage = RockyLanguage.PortugueseBrazil,
+        mainWindow: RockyMainWindowHost? = null,
         settingsWindow: RockySettingsWindowHost? = null,
     ) {
         rule.setContent {
@@ -1014,6 +1019,7 @@ class RockyVisualCaptureTest {
                         onFirstUseFinished = onFirstUseFinished,
                         initialLanguage = language,
                         onLanguageChange = onLanguageChange,
+                        mainWindow = mainWindow,
                         settingsWindow = settingsWindow,
                     )
                 }

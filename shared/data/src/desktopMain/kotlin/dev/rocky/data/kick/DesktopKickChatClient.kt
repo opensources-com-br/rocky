@@ -88,23 +88,28 @@ class DesktopKickChatClient internal constructor(
         if (!isCurrent(run) || authorizationCompleted) return
         authorizationCompleted = true
         emit(KickConnectionPhase.Connecting, "Conectando ao chat da Kick")
-        ioExecutor.execute {
+        val current = configuration
+        pendingRequest = ioExecutor.submit {
+            if (!isCurrent(run)) return@submit
             runCatching {
-                val current = configuration
                 val newTokens = api.exchangeCode(current.clientId, current.clientSecret,
                     current.redirectUri, verifier, code)
                 val newAccount = api.account(newTokens.accessToken)
                 val newSubscriptionIds = subscriptions.subscribeToChat(newTokens.accessToken)
                 Triple(newTokens, newAccount, newSubscriptionIds)
-            }.onSuccess { (newTokens, newAccount, newSubscriptionIds) ->
+            }.onSuccess { (newTokens, newAccount, newSubscriptionIds) -> synchronized(this) {
                 if (isCurrent(run)) {
                     tokens = newTokens
                     account = newAccount
                     subscriptionIds = newSubscriptionIds
                     listener.onEvent(KickConnectionEvent.Connected(newAccount))
                     refreshAudience()
+                } else {
+                    ioExecutor.execute { runCatching {
+                        subscriptions.unsubscribe(newTokens.accessToken, newSubscriptionIds)
+                    } }
                 }
-            }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+            } }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
         }
     }
 

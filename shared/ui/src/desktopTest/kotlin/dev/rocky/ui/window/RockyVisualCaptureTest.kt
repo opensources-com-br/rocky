@@ -228,7 +228,7 @@ class RockyVisualCaptureTest {
             }
             "settings-openrouter" -> {
                 render(settingsOpen = true, settingsSection = SettingsSection.Ai)
-                rule.onNodeWithText("OpenRouter").performClick()
+                selectAiProvider("OpenRouter")
                 capture("implementation-settings-openrouter.png")
                 return
             }
@@ -733,7 +733,7 @@ class RockyVisualCaptureTest {
     fun configuresOpenRouterFromAiSettings() {
         render(settingsOpen = true, settingsSection = SettingsSection.Ai)
 
-        rule.onNodeWithText("OpenRouter").performClick()
+        selectAiProvider("OpenRouter")
 
         rule.onNodeWithText("https://openrouter.ai/api").assertDoesNotExist()
         rule.onNodeWithText("Configuração avançada da conexão").performClick()
@@ -746,7 +746,7 @@ class RockyVisualCaptureTest {
     fun configuresAnthropicFromAiSettings() {
         render(settingsOpen = true, settingsSection = SettingsSection.Ai)
 
-        rule.onNodeWithText("Anthropic API").performClick()
+        selectAiProvider("Anthropic API")
 
         rule.onNodeWithText("claude-haiku-4-5-20251001").assertExists()
         rule.onNodeWithTag("ai-api-key").assertExists()
@@ -756,7 +756,7 @@ class RockyVisualCaptureTest {
     fun configuresGeminiFromAiSettings() {
         render(settingsOpen = true, settingsSection = SettingsSection.Ai)
 
-        rule.onNodeWithText("Google Gemini API").performClick()
+        selectAiProvider("Google Gemini API")
 
         rule.onNodeWithText("gemini-3.8-flash").assertExists()
         rule.onNodeWithTag("ai-api-key").assertExists()
@@ -766,7 +766,7 @@ class RockyVisualCaptureTest {
     fun configuresGrokFromAiSettings() {
         render(settingsOpen = true, settingsSection = SettingsSection.Ai)
 
-        rule.onNodeWithText("xAI Grok API").performClick()
+        selectAiProvider("xAI Grok API")
 
         rule.onNodeWithText("grok-4.6").assertExists()
         rule.onNodeWithTag("ai-api-key").assertExists()
@@ -784,9 +784,9 @@ class RockyVisualCaptureTest {
     @Test
     fun togglesAiApiKeyVisibility() {
         render(settingsOpen = true, settingsSection = SettingsSection.Ai)
-        rule.onNodeWithText("OpenRouter").performClick()
+        selectAiProvider("OpenRouter")
 
-        rule.onNodeWithContentDescription("Mostrar valor").performClick()
+        rule.onNodeWithContentDescription("Mostrar valor").performScrollTo().performClick()
         rule.onNodeWithContentDescription("Ocultar valor").assertExists()
     }
 
@@ -1019,6 +1019,64 @@ class RockyVisualCaptureTest {
         }
     }
 
+
+    private fun selectAiProvider(label: String) {
+        rule.onNodeWithTag("ai-provider-menu").performScrollTo().performClick()
+        rule.onNodeWithText(label).performClick()
+    }
+
+    @Test
+    fun capturesAndConfiguresGroupedAiSettings() {
+        val client = FakeAiSuggestionClient().apply { availableModelNames = listOf("demo-model") }
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Ai,
+            windowWidth = 780.dp,
+            windowHeight = 680.dp,
+            mainWindow = {},
+            settingsWindow = { visible, _, content -> if (visible) content() },
+            aiSuggestionClient = client,
+        )
+        rule.onNodeWithTag("ai-provider-menu").assertIsDisplayed()
+        rule.onNodeWithTag("ai-model").assertIsDisplayed()
+        capture("implementation-ai-local.png", "rocky-settings-window")
+
+        rule.onNodeWithText("Buscar modelos").performClick()
+        rule.waitUntil(timeoutMillis = 5_000) {
+            rule.onAllNodesWithText("Escolher modelo").fetchSemanticsNodes().isNotEmpty()
+        }
+        rule.onNodeWithText("Escolher modelo").performClick()
+        rule.onNodeWithText("demo-model").performClick()
+        rule.onNodeWithText("demo-model").assertExists()
+        rule.onNodeWithTag("ai-test-connection").performScrollTo().performClick()
+        rule.waitUntil(timeoutMillis = 5_000) {
+            rule.onAllNodesWithText("Conectado").fetchSemanticsNodes().isNotEmpty()
+        }
+        capture("implementation-ai-verified.png", "rocky-settings-window")
+
+        selectAiProvider("OpenRouter")
+        rule.onNodeWithTag("ai-api-key").performScrollTo().performTextReplacement("test-only-key")
+        rule.onNodeWithContentDescription("Mostrar valor").performClick()
+        rule.onNodeWithContentDescription("Ocultar valor").assertExists()
+        rule.onNodeWithTag("ai-api-key").performTextReplacement("")
+        rule.onNodeWithText("Salvar configuração e chave").performScrollTo()
+        capture("implementation-ai-credentials.png", "rocky-settings-window")
+
+        rule.onNodeWithTag("ai-advanced-connection").performScrollTo().performClick()
+        rule.onNodeWithTag("ai-endpoint").performScrollTo().assertIsDisplayed()
+        capture("implementation-ai-advanced.png", "rocky-settings-window")
+
+        rule.onNodeWithTag("ai-profile-menu").performScrollTo().performClick()
+        rule.onNodeWithText("Proativo").performClick()
+        rule.onNodeWithTag("ai-context-filters").performScrollTo().performClick()
+        rule.onNodeWithTag("ai-ignored-bots").performScrollTo().performTextReplacement("bot1,bot2")
+        rule.onNodeWithText("Os filtros afetam IA e fila de perguntas; o chat exibido permanece intacto.").performScrollTo()
+        capture("implementation-ai-context.png", "rocky-settings-window")
+        rule.onNodeWithTag("automatic-analysis").performScrollTo()
+        rule.onNodeWithText("Analisa o chat em lotes de três mensagens. Ao usar uma API, as mensagens selecionadas são enviadas ao provedor.").performScrollTo()
+        capture("implementation-ai-automatic.png", "rocky-settings-window")
+    }
+
     private fun prepareAutomaticSession(twitch: FakeTwitchChatClient, ai: FakeAiSuggestionClient) {
         render(
             settingsOpen = true,
@@ -1178,6 +1236,8 @@ class RockyVisualCaptureTest {
     }
 
     private class FakeAiSuggestionClient : AiSuggestionClient {
+        var availableModelNames = emptyList<String>()
+        override fun availableModels(configuration: AiProviderConfiguration) = availableModelNames
         @Volatile var lastRequest: String? = null
         @Volatile var responseGate: java.util.concurrent.CountDownLatch? = null
         @Volatile var interrupted = false

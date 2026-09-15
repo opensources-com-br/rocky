@@ -287,12 +287,12 @@ class DesktopTwitchChatClient : TwitchChatClient {
         val delaySeconds = twitchReconnectDelaySeconds(reconnectAttempt)
         emit(TwitchConnectionPhase.Reconnecting, "Reconectando em $delaySeconds s")
         reconnectTask = scheduler.schedule(
-            {
+            { synchronized(this) {
                 if (isCurrent(run)) {
                     reconnectScheduled = false
                     openSocket(DEFAULT_WEBSOCKET_URL, run)
                 }
-            },
+            } },
             delaySeconds,
             TimeUnit.SECONDS,
         )
@@ -398,6 +398,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         reconnectTask?.cancel(false)
         welcomeTask?.cancel(false)
         reconnectScheduled = false
+        reconnectTask?.cancel(false)
         keepaliveTimeoutMillis = 0
         lastValidationAt = 0
         validationRunning = false

@@ -6,6 +6,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class FacebookRetryTest {
+    @Test fun respectsServerRetryDelay() {
+        assertEquals(60_000L, facebookRetryDelay(FacebookRequestFailure(true, 60_000), 1))
+    }
+
     @Test fun neverRetriesPermanentOrInterruptedFailures() {
         assertNull(facebookRetryDelay(FacebookRequestFailure(false), 1))
         assertNull(facebookRetryDelay(InterruptedException(), 1))

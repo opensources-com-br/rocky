@@ -17,4 +17,11 @@ internal class YouTubeApiException(
     @Suppress("UNUSED_PARAMETER") youtubeMessage: String?,
     val reasons: Set<String> = emptySet(),
     val retryAfterMillis: Long = 0,
-) : Exception("Não foi possível consultar o YouTube (HTTP $statusCode). Verifique a conexão e a autorização.")
+) : Exception(when {
+    "liveChatEnded" in reasons -> "A live do YouTube foi encerrada."
+    "liveChatDisabled" in reasons -> "O chat desta live do YouTube está desativado."
+    reasons.any { it == "quotaExceeded" || it == "dailyLimitExceeded" } ->
+        "A cota da API do YouTube foi esgotada. Aguarde a renovação da cota."
+    statusCode == 401 -> "Reconecte o YouTube para renovar a autorização."
+    else -> "Não foi possível consultar o YouTube (HTTP $statusCode). Verifique a conexão e a autorização."
+})

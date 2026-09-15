@@ -105,6 +105,20 @@ class DesktopTikTokChatClientTest {
         assertFalse(f.transports.last().connected)
     }
 
+    @Test
+    fun disconnectAndCloseCancelScheduledRetries() {
+        for (close in listOf(false, true)) fixture(delays = listOf(200)).use { f ->
+            f.connect()
+            f.transports.first().emit(TikTokTransportEvent.Failed("temporary"))
+            waitFor { f.phase() == TikTokConnectionPhase.Reconnecting }
+            if (close) f.client.close() else f.client.disconnect()
+            waitFor { !f.transports.first().connected }
+            Thread.sleep(250)
+            assertEquals(1, f.transports.size)
+            if (!close) assertEquals(TikTokConnectionPhase.Disconnected, f.phase())
+        }
+    }
+
     }
 }
 

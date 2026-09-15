@@ -36,6 +36,7 @@ import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.platform.desktop.chooseDesktopFile
+import dev.rocky.ui.window.RockyMainWindowHost
 import dev.rocky.ui.window.RockySettingsWindowHost
 import dev.rocky.ui.window.RockyWindow
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -50,6 +51,7 @@ import java.awt.Taskbar
 import java.awt.SystemTray
 import javax.imageio.ImageIO
 import java.awt.Dimension
+import java.awt.Frame
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicReference
@@ -82,8 +84,8 @@ private fun runRockyApplication() = application {
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
     var windowVisible by remember { mutableStateOf(!usesMenuBar) }
     var settingsRequestRevision by remember { mutableStateOf(0) }
-    val desktopWindow = remember { AtomicReference<java.awt.Window?>(null) }
-    val settingsDesktopWindow = remember { AtomicReference<java.awt.Window?>(null) }
+    val desktopWindow = remember { AtomicReference<Frame?>(null) }
+    val settingsDesktopWindow = remember { AtomicReference<Frame?>(null) }
     val settingsWindowState = rememberWindowState(size = SettingsSize)
     var shortcutConfiguration by remember { mutableStateOf(ShortcutPreferences.configuration) }
     var shortcutStatus by remember { mutableStateOf<Boolean?>(null) }
@@ -138,6 +140,56 @@ private fun runRockyApplication() = application {
         if (finishSession()) exitApplication()
     }
 
+    fun activeWindow(): Frame = settingsDesktopWindow.get()?.takeIf { it.isActive }
+        ?: desktopWindow.get()
+        ?: error("Rocky window is not ready")
+
+    val mainWindowHost: RockyMainWindowHost = { content ->
+        Window(
+            onCloseRequest = { if (usesMenuBar) windowVisible = false else quitRocky() },
+            state = windowState,
+            visible = windowVisible,
+            title = "Rocky",
+            icon = BitmapPainter(appIcon.toComposeImageBitmap()),
+            resizable = true,
+            alwaysOnTop = pinned,
+        ) {
+            LaunchedEffect(window) {
+                desktopWindow.set(window)
+                window.minimumSize = Dimension(340, 180)
+            }
+            val persistBounds by rememberUpdatedState(!compact)
+            DisposableEffect(window) {
+                window.bounds = DesktopWindowPreferences.restore()
+                val timer = javax.swing.Timer(350) {
+                    if (persistBounds && windowState.placement == WindowPlacement.Floating) DesktopWindowPreferences.save(window.bounds)
+                }.apply { isRepeats = false }
+                val listener = object : java.awt.event.ComponentAdapter() {
+                    override fun componentMoved(event: java.awt.event.ComponentEvent) { timer.restart() }
+                    override fun componentResized(event: java.awt.event.ComponentEvent) { timer.restart() }
+                }
+                window.addComponentListener(listener)
+                onDispose {
+                    timer.stop()
+                    if (persistBounds && windowState.placement == WindowPlacement.Floating) DesktopWindowPreferences.save(window.bounds)
+                    window.removeComponentListener(listener)
+                }
+            }
+            DisposableEffect(shortcutConfiguration) {
+                shortcutStatus = null
+                val shortcuts = DesktopShortcuts(shortcutConfiguration, onAction = { action ->
+                    if (action == 2) {
+                        windowVisible = !windowVisible
+                        if (windowVisible) { windowState.isMinimized = false; window.toFront() }
+                    } else { shortcutAction = action; shortcutRevision += 1 }
+                }, onStatus = { shortcutStatus = it })
+                shortcuts.start()
+                onDispose { shortcuts.close() }
+            }
+            content()
+        }
+    }
+
     val settingsWindowHost: RockySettingsWindowHost? = if (usesMenuBar) {
         { visible, onCloseRequest, content ->
             Window(
@@ -173,48 +225,7 @@ private fun runRockyApplication() = application {
         )
     }
 
-    Window(
-        onCloseRequest = { if (usesMenuBar) windowVisible = false else quitRocky() },
-        state = windowState,
-        visible = windowVisible,
-        title = "Rocky",
-        icon = BitmapPainter(appIcon.toComposeImageBitmap()),
-        resizable = true,
-        alwaysOnTop = pinned,
-    ) {
-        LaunchedEffect(window) {
-            desktopWindow.set(window)
-            window.minimumSize = Dimension(340, 180)
-        }
-        val persistBounds by rememberUpdatedState(!compact)
-        DisposableEffect(window) {
-            window.bounds = DesktopWindowPreferences.restore()
-            val timer = javax.swing.Timer(350) {
-                if (persistBounds && windowState.placement == WindowPlacement.Floating) DesktopWindowPreferences.save(window.bounds)
-            }.apply { isRepeats = false }
-            val listener = object : java.awt.event.ComponentAdapter() {
-                override fun componentMoved(event: java.awt.event.ComponentEvent) { timer.restart() }
-                override fun componentResized(event: java.awt.event.ComponentEvent) { timer.restart() }
-            }
-            window.addComponentListener(listener)
-            onDispose {
-                timer.stop()
-                if (persistBounds && windowState.placement == WindowPlacement.Floating) DesktopWindowPreferences.save(window.bounds)
-                window.removeComponentListener(listener)
-            }
-        }
-        DisposableEffect(shortcutConfiguration) {
-            shortcutStatus = null
-            val shortcuts = DesktopShortcuts(shortcutConfiguration, onAction = { action ->
-                if (action == 2) {
-                    windowVisible = !windowVisible
-                    if (windowVisible) { windowState.isMinimized = false; window.toFront() }
-                } else { shortcutAction = action; shortcutRevision += 1 }
-            }, onStatus = { shortcutStatus = it })
-            shortcuts.start()
-            onDispose { shortcuts.close() }
-        }
-        RockyWindow(
+    RockyWindow(
             shortcutKeys = shortcutConfiguration.keys,
             shortcutStatus = shortcutStatus,
             onShortcutKeysChange = { keys ->
@@ -237,12 +248,12 @@ private fun runRockyApplication() = application {
             onAgentConfigurationChange = { AgentDesktopPreferences.configuration = it },
             initialAiConfiguration = AiDesktopPreferences.configuration,
             initialStorageNotice = AiDesktopPreferences.storageNotice,
-            onBackup = { notes -> dev.rocky.platform.desktop.exportRecordFile(window,
+            onBackup = { notes -> dev.rocky.platform.desktop.exportRecordFile(activeWindow(),
                 dev.rocky.data.notes.RecordBackup.encode(notes), "rocky-backup.json") },
-            onChooseImport = { dev.rocky.platform.desktop.chooseRecordBackup(window)?.let(dev.rocky.data.notes.RecordBackup::decode) },
+            onChooseImport = { dev.rocky.platform.desktop.chooseRecordBackup(activeWindow())?.let(dev.rocky.data.notes.RecordBackup::decode) },
             onCheckUpdate = { dev.rocky.data.updates.ReleaseChecker().check(System.getProperty("rocky.version", "development")) },
             updateInstaller = updateInstaller,
-            onExportDiagnostic = { report -> dev.rocky.platform.desktop.exportRecordFile(window, report, "rocky-diagnostics.txt") },
+            onExportDiagnostic = { report -> dev.rocky.platform.desktop.exportRecordFile(activeWindow(), report, "rocky-diagnostics.txt") },
             initialCheckUpdatesOnStart = dev.rocky.platform.desktop.ExperiencePreferences.checkUpdatesOnStart,
             onCheckUpdatesOnStartChange = { dev.rocky.platform.desktop.ExperiencePreferences.checkUpdatesOnStart = it },
             onRegisterSessionEnd = { finishSession = it },
@@ -262,10 +273,10 @@ private fun runRockyApplication() = application {
             initialVoiceConfiguration = VoiceDesktopPreferences.configuration,
             onVoiceConfigurationChange = { VoiceDesktopPreferences.configuration = it },
             onChooseWhisperExecutable = {
-                chooseDesktopFile(window, "Selecione o executável whisper-cli")
+                chooseDesktopFile(activeWindow(), "Selecione o executável whisper-cli")
             },
             onChooseWhisperModel = {
-                chooseDesktopFile(window, "Selecione o modelo GGML", setOf("bin"))
+                chooseDesktopFile(activeWindow(), "Selecione o modelo GGML", setOf("bin"))
             },
             initialTwitchClientId = TwitchDesktopPreferences.clientId.ifBlank {
                 System.getProperty("rocky.twitch.clientId").orEmpty()
@@ -283,8 +294,8 @@ private fun runRockyApplication() = application {
             onOpenFacebookAuthorization = { openInBrowser(it) },
             initialTikTokConfiguration = TikTokDesktopPreferences.configuration,
             onTikTokConfigurationChange = { TikTokDesktopPreferences.configuration = it },
-            onExportNotes = { notes -> exportNotesAsMarkdown(window, notes) },
-            onExportIdeas = { ideas -> exportIdeasAsMarkdown(window, ideas) },
+            onExportNotes = { notes -> exportNotesAsMarkdown(activeWindow(), notes) },
+            onExportIdeas = { ideas -> exportIdeasAsMarkdown(activeWindow(), ideas) },
             initialFirstUseOpen = !FirstUseDesktopPreferences.completed,
             onFirstUseFinished = { FirstUseDesktopPreferences.completed = true },
             initialLanguage = LanguageDesktopPreferences.language,
@@ -292,6 +303,7 @@ private fun runRockyApplication() = application {
             currentTimeLabel = { OffsetDateTime.now().format(TimeFormatter) },
             currentTimeMillis = System::currentTimeMillis,
             settingsRequestRevision = settingsRequestRevision,
+            mainWindow = mainWindowHost,
             settingsWindow = settingsWindowHost,
             onTogglePinned = { pinned = !pinned; DesktopWindowPreferences.pinned = pinned },
             onToggleCompact = {
@@ -305,7 +317,6 @@ private fun runRockyApplication() = application {
                 compact = !compact
             },
         )
-    }
 }
 
 private val ExpandedSize = DpSize(462.dp, 900.dp)

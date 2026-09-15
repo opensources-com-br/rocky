@@ -18,6 +18,22 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopKickChatClientTest {
+    private fun authorize(client: DesktopKickChatClient) {
+        val port = ServerSocket(0).use { it.localPort }
+        client.connect(KickConfiguration("client", "secret", "http://localhost:$port/oauth/kick/callback"), events::add)
+        await { events.any { it is KickConnectionEvent.AuthorizationRequired } }
+        val uri = events.filterIsInstance<KickConnectionEvent.AuthorizationRequired>().single().authorizationUri
+        val state = URI.create(uri).rawQuery.split("&").single { it.startsWith("state=") }
+        val request = HttpRequest.newBuilder(URI.create("http://localhost:$port/oauth/kick/callback?code=auth&$state"))
+            .GET().build()
+        assertEquals(200, HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
+        await { events.any { it is KickConnectionEvent.Connected } }
+    }
+    private fun await(condition: () -> Boolean) {
+        repeat(600) { if (condition()) return; Thread.sleep(10) }
+        error("Timed out waiting for Kick event")
+    }
+
     private val requests = CopyOnWriteArrayList<String>()
     private val events = CopyOnWriteArrayList<KickConnectionEvent>()
     private fun withClient(test: (DesktopKickChatClient) -> Unit) {

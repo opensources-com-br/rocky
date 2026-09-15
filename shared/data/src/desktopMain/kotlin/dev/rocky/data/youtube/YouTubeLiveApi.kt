@@ -26,9 +26,12 @@ internal class YouTubeLiveApi(
 
     fun chatPage(accessToken: String, liveChatId: String, pageToken: String?): YouTubeChatPage {
         val page = pageToken?.let { "&pageToken=${it.youtubeUrlEncode()}" }.orEmpty()
+        val fields = "nextPageToken,pollingIntervalMillis,offlineAt,items(id," +
+            "snippet(displayMessage,publishedAt),authorDetails(displayName,channelId))"
         return YouTubePayloads.chatPage(
             get(
-                "/liveChat/messages?part=id%2Csnippet%2CauthorDetails&liveChatId=${liveChatId.youtubeUrlEncode()}&maxResults=200$page",
+                "/liveChat/messages?part=id%2Csnippet%2CauthorDetails&liveChatId=${liveChatId.youtubeUrlEncode()}" +
+                    "&maxResults=500&fields=${fields.youtubeUrlEncode()}$page",
                 accessToken,
             ),
         )

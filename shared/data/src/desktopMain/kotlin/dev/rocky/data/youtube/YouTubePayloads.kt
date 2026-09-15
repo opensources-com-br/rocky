@@ -20,6 +20,7 @@ internal data class YouTubeChatPage(
     val messages: List<ChatMessage>,
     val nextPageToken: String?,
     val pollingIntervalMillis: Long,
+    val offline: Boolean = false,
 )
 
 internal object YouTubePayloads {
@@ -66,6 +67,7 @@ internal object YouTubePayloads {
             messages = messages,
             nextPageToken = payload.optionalString("nextPageToken"),
             pollingIntervalMillis = payload.optionalString("pollingIntervalMillis")?.toLongOrNull() ?: 5000,
+            offline = !payload.optionalString("offlineAt").isNullOrBlank(),
         )
     }
 

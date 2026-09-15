@@ -298,9 +298,10 @@ class DesktopTwitchChatClient : TwitchChatClient {
         if (!isCurrent(run) || audienceRefreshRunning || now - lastAudienceRefreshAt < TWITCH_AUDIENCE_REFRESH_INTERVAL_MILLIS) return
         audienceRefreshRunning = true
         lastAudienceRefreshAt = now
-        ioExecutor.execute {
+        val audienceClientId = clientId
+        submitIo(run) {
             runCatching {
-                api.viewerCount(clientId, currentTokens.accessToken, currentAccount.userId)
+                api.viewerCount(audienceClientId, currentTokens.accessToken, currentAccount.userId)
             }.onSuccess { viewerCount ->
                 if (isCurrent(run)) listener.onEvent(TwitchConnectionEvent.AudienceUpdated(viewerCount))
             }
@@ -319,8 +320,8 @@ class DesktopTwitchChatClient : TwitchChatClient {
         validationRunning = true
         val validationClientId = clientId
         val validationTokens = tokens ?: return
-        ioExecutor.execute {
-            if (!isCurrent(run)) return@execute
+        submitIo(run) {
+            if (!isCurrent(run)) return@submitIo
             runCatching {
                 validateTwitchTokens(
                     validationTokens,
@@ -359,9 +360,14 @@ class DesktopTwitchChatClient : TwitchChatClient {
         emit(TwitchConnectionPhase.Failed, message)
     }
 
+    @Synchronized
     private fun stopConnection(notify: Boolean) {
         active = false
         generation.incrementAndGet()
+        ioTasks.forEach { it.cancel(true) }
+        ioTasks.clear()
+        reconnectTask?.cancel(false)
+        welcomeTask?.cancel(false)
         reconnectScheduled = false
         keepaliveTimeoutMillis = 0
         lastValidationAt = 0

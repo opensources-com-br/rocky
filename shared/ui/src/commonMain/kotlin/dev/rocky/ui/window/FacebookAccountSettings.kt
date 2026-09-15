@@ -1,19 +1,13 @@
 package dev.rocky.ui.window
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -41,71 +35,54 @@ internal fun FacebookAccountSettings(
 ) {
     var draft by remember(initialConfiguration) { mutableStateOf(initialConfiguration) }
     var secretVisible by remember { mutableStateOf(false) }
-    Surface(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-        color = RockyColors.SurfaceElevated,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, RockyColors.Border),
-    ) {
-        Column(Modifier.padding(13.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.size(9.dp).background(RockyColors.Facebook, CircleShape))
-                Column(Modifier.padding(start = 11.dp).weight(1f)) {
-                    Text("Facebook", color = RockyColors.TextPrimary)
-                    Text(
-                        facebook.statusText,
-                        color = facebook.statusColor,
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier.testTag("facebook-status"),
-                    )
+    PlatformPreferenceGroup("Facebook", facebook.statusText, facebook.statusColor, "facebook-status",
+        onCreateApp = { onOpenBrowser(FACEBOOK_APPS_URL) }) {
+        Text(
+            "Crie um app Business, adicione Login do Facebook e permita leitura das Páginas.",
+            color = RockyColors.TextSecondary,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        OutlinedTextField(
+            draft.appId,
+            { draft = draft.copy(appId = it) },
+            Modifier.fillMaxWidth().padding(top = 10.dp).testTag("facebook-app-id"),
+            label = { Text("App ID") },
+            singleLine = true, shape = PlatformFieldShape,
+            textStyle = MaterialTheme.typography.body2, colors = platformFieldColors(),
+            enabled = !facebook.phase.isConnecting,
+        )
+        OutlinedTextField(
+            draft.appSecret,
+            { draft = draft.copy(appSecret = it) },
+            Modifier.fillMaxWidth().padding(top = 8.dp).testTag("facebook-app-secret"),
+            label = { Text("App Secret") },
+            singleLine = true, shape = PlatformFieldShape,
+            textStyle = MaterialTheme.typography.body2, colors = platformFieldColors(),
+            enabled = !facebook.phase.isConnecting,
+            visualTransformation = if (secretVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = { CredentialVisibilityButton(secretVisible) { secretVisible = !secretVisible } },
+        )
+        Text(
+            "Callback local: ${draft.redirectUri}",
+            color = RockyColors.TextMuted,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (facebook.phase in setOf(FacebookConnectionPhase.Disconnected, FacebookConnectionPhase.Failed)) {
+                PrimaryButton("Conectar Facebook", draft.isValid) { onConnect(draft) }
+            } else {
+                OutlinedButton(onClick = onDisconnect, border = BorderStroke(1.dp, RockyColors.Border)) {
+                    Text("Desconectar")
                 }
-                TextButton(onClick = { onOpenBrowser(FACEBOOK_APPS_URL) }) { Text("Criar app") }
             }
-            Text(
-                "Crie um app Business, adicione Login do Facebook e permita leitura das Páginas.",
-                color = RockyColors.TextSecondary,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-            OutlinedTextField(
-                draft.appId,
-                { draft = draft.copy(appId = it) },
-                Modifier.fillMaxWidth().padding(top = 10.dp).testTag("facebook-app-id"),
-                label = { Text("App ID") },
-                singleLine = true,
-                enabled = !facebook.phase.isConnecting,
-            )
-            OutlinedTextField(
-                draft.appSecret,
-                { draft = draft.copy(appSecret = it) },
-                Modifier.fillMaxWidth().padding(top = 8.dp).testTag("facebook-app-secret"),
-                label = { Text("App Secret") },
-                singleLine = true,
-                enabled = !facebook.phase.isConnecting,
-                visualTransformation = if (secretVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = { CredentialVisibilityButton(secretVisible) { secretVisible = !secretVisible } },
-            )
-            Text(
-                "Callback local: ${draft.redirectUri}",
-                color = RockyColors.TextMuted,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-            Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (facebook.phase in setOf(FacebookConnectionPhase.Disconnected, FacebookConnectionPhase.Failed)) {
-                    PrimaryButton("Conectar Facebook", draft.isValid) { onConnect(draft) }
-                } else {
-                    OutlinedButton(onClick = onDisconnect, border = BorderStroke(1.dp, RockyColors.Border)) {
-                        Text("Desconectar")
-                    }
-                }
-                facebook.authorizationUri?.let { uri ->
-                    OutlinedButton(
-                        onClick = { onOpenBrowser(uri) },
-                        modifier = Modifier.padding(start = 8.dp).testTag("facebook-open-browser"),
-                        border = BorderStroke(1.dp, RockyColors.AccentMuted),
-                    ) { Text("Abrir Facebook") }
-                }
+            facebook.authorizationUri?.let { uri ->
+                OutlinedButton(
+                    onClick = { onOpenBrowser(uri) },
+                    modifier = Modifier.padding(start = 8.dp).testTag("facebook-open-browser"),
+                    border = BorderStroke(1.dp, RockyColors.AccentMuted),
+                ) { Text("Abrir Facebook") }
             }
         }
     }

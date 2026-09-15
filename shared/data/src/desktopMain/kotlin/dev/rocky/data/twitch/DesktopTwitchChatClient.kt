@@ -172,9 +172,9 @@ class DesktopTwitchChatClient : TwitchChatClient {
                 }
             } },
             onEvent = { opened, event -> handleSocketEvent(opened, event, run, transferFrom) },
-            onClosed = { closed, _ ->
-                if (isCurrent(run) && socket === closed) scheduleReconnect(run)
-            },
+            onClosed = { closed, _ -> synchronized(this) {
+                if (isCurrent(run) && (socket === closed || pendingSocket === closed)) scheduleReconnect(run)
+            } },
         )
         socketOpening = httpClient.newWebSocketBuilder()
             .connectTimeout(Duration.ofSeconds(20))
@@ -210,6 +210,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
             TwitchSocketEvent.Keepalive,
             TwitchSocketEvent.Unknown -> Unit
             is TwitchSocketEvent.Reconnect -> {
+                if (pendingSocket != null || socket !== webSocket) return
                 emit(TwitchConnectionPhase.Reconnecting, "A Twitch solicitou uma nova conexão")
                 openSocket(event.url, run, transferFrom = webSocket)
             }

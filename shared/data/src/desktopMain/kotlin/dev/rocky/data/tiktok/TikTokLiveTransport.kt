@@ -96,5 +96,20 @@ internal class JwTikTokLiveTransport(
         }
     }
 
-    override fun disconnect() = client.disconnect()
+    override fun disconnect() {
+        stopped.set(true)
+        client.disconnect()
+    }
+}
+
+internal fun connectionFailure(error: Throwable): TikTokTransportEvent.Failed? {
+    val causes = generateSequence(error) { it.cause }.take(16).toList()
+    return when {
+        causes.any { it is TikTokLiveOfflineHostException } ->
+            TikTokTransportEvent.Failed("Esta conta não está ao vivo no TikTok.", retryable = false)
+        causes.any { it is TikTokLiveUnknownHostException } ->
+            TikTokTransportEvent.Failed("Conta TikTok não encontrada. Confira o @usuário.", retryable = false)
+        causes.any { it is TikTokMessageMappingException || it is TikTokProtocolBufferException } -> null
+        else -> TikTokTransportEvent.Failed("Falha temporária na conexão com o TikTok ou serviço de assinatura.")
+    }
 }

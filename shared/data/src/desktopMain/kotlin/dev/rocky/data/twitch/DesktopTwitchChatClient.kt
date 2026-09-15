@@ -179,9 +179,9 @@ class DesktopTwitchChatClient : TwitchChatClient {
         socketOpening = httpClient.newWebSocketBuilder()
             .connectTimeout(Duration.ofSeconds(20))
             .buildAsync(URI.create(url), webSocketListener)
-            .whenComplete { _, error ->
-                if (error != null && isCurrent(run)) scheduleReconnect(run)
-            }
+            .whenComplete { _, error -> synchronized(this) {
+                if (error != null && isCurrent(run) && attempt == socketAttempt) scheduleReconnect(run)
+            } }
     }
 
     @Synchronized
@@ -191,10 +191,14 @@ class DesktopTwitchChatClient : TwitchChatClient {
         run: Long,
         transferFrom: WebSocket?,
     ) {
-        if (!isCurrent(run)) return
+        if (!isCurrent(run) || (socket !== webSocket && pendingSocket !== webSocket)) return
         lastEventAt = System.currentTimeMillis()
         when (event) {
             is TwitchSocketEvent.Welcome -> {
+                if (pendingSocket !== webSocket) return
+                socket = webSocket
+                pendingSocket = null
+                welcomeTask?.cancel(false)
                 keepaliveTimeoutMillis = event.keepaliveTimeoutSeconds * 1_000
                 if (transferFrom != null) {
                     transferFrom.sendClose(WebSocket.NORMAL_CLOSURE, "reconnected")

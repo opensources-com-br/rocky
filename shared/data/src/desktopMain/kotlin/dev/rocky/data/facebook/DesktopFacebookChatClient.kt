@@ -50,7 +50,9 @@ class DesktopFacebookChatClient internal constructor(
         ioExecutor.execute { if (isCurrent(run)) prepareAuthorization(run) }
     }
 
+    @Synchronized
     private fun prepareAuthorization(run: Long) {
+        if (!isCurrent(run)) return
         runCatching {
             val authorization = createFacebookAuthorization(configuration.appId, configuration.redirectUri)
             receiver = FacebookAuthorizationReceiver(configuration.redirectUri, authorization.state) { code ->
@@ -65,12 +67,15 @@ class DesktopFacebookChatClient internal constructor(
         }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
     }
 
+    @Synchronized
     private fun completeAuthorization(run: Long, code: String) {
         if (!isCurrent(run)) return
         receiver?.close()
         receiver = null
         emit(FacebookConnectionPhase.FindingLive, "Procurando uma live ativa nas suas Páginas")
+        val configuration = this.configuration
         ioExecutor.execute {
+            if (!isCurrent(run)) return@execute
             runCatching {
                 val userToken = api.exchangeCode(
                     configuration.appId,
@@ -81,7 +86,7 @@ class DesktopFacebookChatClient internal constructor(
                 api.pages(userToken).firstNotNullOfOrNull { access ->
                     api.activeLiveVideo(access.page.id, access.accessToken)?.let { live -> access to live }
                 } ?: error("Nenhuma live ativa foi encontrada nas Páginas autorizadas do Facebook.")
-            }.onSuccess { (access, live) ->
+            }.onSuccess { (access, live) -> synchronized(this) {
                 if (isCurrent(run)) {
                     poller = FacebookChatPoller(
                         api,
@@ -93,7 +98,7 @@ class DesktopFacebookChatClient internal constructor(
                     listener.onEvent(FacebookConnectionEvent.Connected(access.page, live))
                     schedulePoll(run, 0)
                 }
-            }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+            } }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
         }
     }
 

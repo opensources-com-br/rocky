@@ -181,11 +181,10 @@ class DesktopKickChatClient internal constructor(
         if (notify) emit(KickConnectionPhase.Disconnected)
     }
 
+    @Synchronized
     private fun fail(run: Long, message: String) {
         if (!isCurrent(run)) return
-        active = false
-        receiver?.close()
-        receiver = null
+        stop(notify = false)
         emit(KickConnectionPhase.Failed, message)
     }
 

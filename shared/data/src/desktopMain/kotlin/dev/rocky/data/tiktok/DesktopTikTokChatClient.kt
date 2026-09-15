@@ -84,17 +84,6 @@ class DesktopTikTokChatClient internal constructor(
         true
     }
 
-    override fun disconnect() = stop(notify = true)
-
-    override fun close() = stop(notify = false)
-
-    private fun stop(notify: Boolean) {
-        active = false
-        generation.incrementAndGet()
-        transport?.disconnect()
-        transport = null
-        seenMessageIds.clear()
-        if (notify) emit(TikTokConnectionPhase.Disconnected)
     }
 
     override fun close() {
@@ -117,6 +106,11 @@ class DesktopTikTokChatClient internal constructor(
         pending = null
         val previous = transport
         transport = null
+        runCatching { previous?.disconnect() }
+    }
+
+    private fun isCurrent(run: Long) = !closed.get() && generation.get() == run
+    private fun valid(run: Long, token: Long) = isCurrent(run) && active && attempt == token
     private fun emit(phase: TikTokConnectionPhase, detail: String? = null) =
         listener.onEvent(TikTokConnectionEvent.PhaseChanged(phase, detail))
 

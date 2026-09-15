@@ -9,6 +9,8 @@ import java.net.http.HttpClient
 import java.net.http.WebSocket
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -102,12 +104,14 @@ class DesktopTwitchChatClientTest {
     private val events = CopyOnWriteArrayList<TwitchConnectionEvent>()
     private val requests = CopyOnWriteArrayList<String>()
     private val urls = CopyOnWriteArrayList<String>()
+    private var authentication: TwitchAuthenticator =
+        { _, _, _ -> TwitchAuthentication(TwitchTokens("access", "refresh"), TwitchAccount("42", "rocky")) }
     private fun withClient(test: (DesktopTwitchChatClient) -> Unit) {
         val server = server()
         val base = "http://127.0.0.1:${server.address.port}"
         val client = DesktopTwitchChatClient(HttpClient.newHttpClient(),
             api = TwitchApi(eventsubEndpoint = base, streamsEndpoint = base),
-            authenticate = { _, _, _ -> TwitchAuthentication(TwitchTokens("access", "refresh"), TwitchAccount("42", "rocky")) },
+            authenticate = authentication,
             socketConnector = { url, listener ->
                 val socket = FakeTwitchSocket()
                 urls += url

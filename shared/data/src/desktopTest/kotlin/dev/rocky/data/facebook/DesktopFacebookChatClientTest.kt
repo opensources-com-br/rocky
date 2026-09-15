@@ -61,6 +61,7 @@ class DesktopFacebookChatClientTest {
             assertEquals(200, HttpClient.newHttpClient().send(callback, HttpResponse.BodyHandlers.ofString()).statusCode())
 
             await { events.any { it is FacebookConnectionEvent.MessageReceived } }
+            await { events.any { it is FacebookConnectionEvent.AudienceUpdated } }
             assertTrue(events.any { it is FacebookConnectionEvent.Connected && it.page.name == "Rocky" })
             assertTrue(events.any { it is FacebookConnectionEvent.AudienceUpdated && it.viewerCount == 42 })
             assertEquals("Olá do Facebook", events.filterIsInstance<FacebookConnectionEvent.MessageReceived>().single().message.text)

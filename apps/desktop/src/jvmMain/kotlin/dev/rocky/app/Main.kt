@@ -36,6 +36,7 @@ import dev.rocky.platform.desktop.exportIdeasAsMarkdown
 import dev.rocky.platform.desktop.exportNotesAsMarkdown
 import dev.rocky.platform.desktop.openInBrowser
 import dev.rocky.platform.desktop.chooseDesktopFile
+import dev.rocky.ui.window.RockySettingsWindowHost
 import dev.rocky.ui.window.RockyWindow
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -79,17 +80,16 @@ private fun runRockyApplication() = application {
     val windowState = rememberWindowState(size = ExpandedSize)
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
-    var settingsVisible by remember { mutableStateOf(false) }
     var windowVisible by remember { mutableStateOf(!usesMenuBar) }
     var settingsRequestRevision by remember { mutableStateOf(0) }
-    var mainRequestRevision by remember { mutableStateOf(0) }
     val desktopWindow = remember { AtomicReference<java.awt.Window?>(null) }
+    val settingsDesktopWindow = remember { AtomicReference<java.awt.Window?>(null) }
+    val settingsWindowState = rememberWindowState(size = SettingsSize)
     var shortcutConfiguration by remember { mutableStateOf(ShortcutPreferences.configuration) }
     var shortcutStatus by remember { mutableStateOf<Boolean?>(null) }
     var shortcutAction by remember { mutableStateOf(-1) }
     var shortcutRevision by remember { mutableStateOf(0) }
     var previousSize by remember { mutableStateOf(ExpandedSize) }
-    var mainSizeBeforeSettings by remember { mutableStateOf(ExpandedSize) }
     val noteRepository = remember { RecoverableNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
     val kickClient = remember { DesktopKickChatClient() }
@@ -118,7 +118,6 @@ private fun runRockyApplication() = application {
     }
 
     fun showRocky() {
-        mainRequestRevision += 1
         windowVisible = true
         desktopWindow.get()?.apply {
             isVisible = true
@@ -129,9 +128,7 @@ private fun runRockyApplication() = application {
 
     fun showSettings() {
         settingsRequestRevision += 1
-        windowVisible = true
-        desktopWindow.get()?.apply {
-            isVisible = true
+        settingsDesktopWindow.get()?.takeIf { it.isVisible }?.apply {
             toFront()
             requestFocus()
         }
@@ -139,6 +136,27 @@ private fun runRockyApplication() = application {
 
     fun quitRocky() {
         if (finishSession()) exitApplication()
+    }
+
+    val settingsWindowHost: RockySettingsWindowHost? = if (usesMenuBar) {
+        { visible, onCloseRequest, content ->
+            Window(
+                onCloseRequest = onCloseRequest,
+                state = settingsWindowState,
+                visible = visible,
+                title = "Rocky Settings",
+                icon = BitmapPainter(appIcon.toComposeImageBitmap()),
+                resizable = true,
+            ) {
+                LaunchedEffect(window) {
+                    settingsDesktopWindow.set(window)
+                    window.minimumSize = Dimension(420, 560)
+                }
+                content()
+            }
+        }
+    } else {
+        null
     }
 
     if (usesMenuBar) {
@@ -168,7 +186,7 @@ private fun runRockyApplication() = application {
             desktopWindow.set(window)
             window.minimumSize = Dimension(340, 180)
         }
-        val persistBounds by rememberUpdatedState(!compact && !settingsVisible)
+        val persistBounds by rememberUpdatedState(!compact)
         DisposableEffect(window) {
             window.bounds = DesktopWindowPreferences.restore()
             val timer = javax.swing.Timer(350) {
@@ -274,7 +292,7 @@ private fun runRockyApplication() = application {
             currentTimeLabel = { OffsetDateTime.now().format(TimeFormatter) },
             currentTimeMillis = System::currentTimeMillis,
             settingsRequestRevision = settingsRequestRevision,
-            mainRequestRevision = mainRequestRevision,
+            settingsWindow = settingsWindowHost,
             onTogglePinned = { pinned = !pinned; DesktopWindowPreferences.pinned = pinned },
             onToggleCompact = {
                 if (compact) {
@@ -285,21 +303,6 @@ private fun runRockyApplication() = application {
                     windowState.size = CompactSize
                 }
                 compact = !compact
-            },
-            onSettingsVisibilityChanged = { open ->
-                settingsVisible = open
-                if (open && compact) {
-                    compact = false
-                    windowState.size = previousSize
-                }
-                if (!compact) {
-                    if (open) {
-                        mainSizeBeforeSettings = windowState.size
-                        windowState.size = SettingsSize
-                    } else {
-                        windowState.size = mainSizeBeforeSettings
-                    }
-                }
             },
         )
     }

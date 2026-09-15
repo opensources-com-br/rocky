@@ -106,9 +106,9 @@ class DesktopFacebookChatClient internal constructor(
     private fun schedulePoll(run: Long, delayMillis: Long) {
         if (!isCurrent(run) || scheduler.isShutdown) return
         pendingPoll?.cancel(false)
-        pendingPoll = scheduler.schedule({
+        pendingPoll = scheduler.schedule({ synchronized(this) {
             if (isCurrent(run) && !ioExecutor.isShutdown) ioExecutor.execute { poll(run) }
-        }, delayMillis, TimeUnit.MILLISECONDS)
+        } }, delayMillis, TimeUnit.MILLISECONDS)
     }
 
     private fun poll(run: Long) {

@@ -71,12 +71,15 @@ class DesktopYouTubeChatClient internal constructor(
         }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
     }
 
+    @Synchronized
     private fun completeAuthorization(run: Long, verifier: String, code: String) {
         if (!isCurrent(run)) return
         receiver?.close()
         receiver = null
         emit(YouTubeConnectionPhase.FindingBroadcast, "Procurando uma live ativa no canal")
-        ioExecutor.execute {
+        val configuration = this.configuration
+        pendingRequest = ioExecutor.submit {
+            if (!isCurrent(run)) return@submit
             runCatching {
                 val tokens = tokenApi.exchangeCode(
                     configuration.clientId,
@@ -91,7 +94,7 @@ class DesktopYouTubeChatClient internal constructor(
                     "Nenhuma live ativa com chat foi encontrada no canal do YouTube."
                 }
                 Triple(access, account, broadcast)
-            }.onSuccess { (access, account, broadcast) ->
+            }.onSuccess { (access, account, broadcast) -> synchronized(this) {
                 if (isCurrent(run)) {
                     poller = YouTubeChatPoller(
                         liveApi,
@@ -104,7 +107,7 @@ class DesktopYouTubeChatClient internal constructor(
                     listener.onEvent(YouTubeConnectionEvent.Connected(account, broadcast))
                     schedulePoll(run, 0)
                 }
-            }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+            } }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
         }
     }
 

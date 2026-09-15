@@ -1,5 +1,13 @@
 # Conectar o YouTube
 
+## Recuperação e consultas
+
+O conector mantém consultas HTTP paginadas, usando apenas os campos necessários e até 500 mensagens por resposta. O intervalo informado pelo YouTube é respeitado integralmente, inclusive quando ultrapassa 30 segundos. A audiência é consultada a cada 30 segundos; falhas mantêm o último valor recebido.
+
+Falhas temporárias durante a consulta do chat têm até 5 novas tentativas, com esperas de 2, 4, 8, 16 e 30 segundos, nunca menores que o intervalo da API. O `Retry-After` em segundos é respeitado até 5 minutos. Uma consulta bem-sucedida reinicia esse limite, mantendo o cursor e a deduplicação da sessão.
+
+Cota esgotada, falta de permissão, chat desativado ou live encerrada interrompem as consultas. Desconectar cancela tarefas agendadas e interrompe requisições em andamento; eventos antigos não são enviados para uma nova sessão.
+
 O Rocky lê novas mensagens do chat ao vivo e a contagem atual de espectadores de uma transmissão ativa do canal autorizado. Ele não envia mensagens e ainda não transforma Super Chats ou Super Stickers em eventos da aba de apoios.
 
 ## Preparar as credenciais

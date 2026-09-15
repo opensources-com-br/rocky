@@ -38,6 +38,7 @@ internal class KickLocalReceiver(
     }
 
     private fun handleCallback(exchange: HttpExchange) {
+        if (exchange.requestURI.path != redirect.path) return exchange.respond(404, "Não encontrado")
         if (exchange.requestMethod != "GET") return exchange.respond(405, "Método não permitido")
         val query = parseQuery(exchange.requestURI.rawQuery.orEmpty())
         if (query["state"] != expectedState || query["code"].isNullOrBlank()) {
@@ -48,6 +49,7 @@ internal class KickLocalReceiver(
     }
 
     private fun handleWebhook(exchange: HttpExchange) {
+        if (exchange.requestURI.path != WEBHOOK_PATH) return exchange.respond(404, "Não encontrado")
         if (exchange.requestMethod != "POST") return exchange.respond(405, "Método não permitido")
         val body = exchange.requestBody.use { it.readNBytes(MAX_WEBHOOK_BYTES + 1) }
         if (body.size > MAX_WEBHOOK_BYTES) return exchange.respond(413, "Webhook muito grande")

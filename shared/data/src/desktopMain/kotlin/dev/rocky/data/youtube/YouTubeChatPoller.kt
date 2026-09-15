@@ -25,6 +25,7 @@ internal class YouTubeChatPoller(
         page.messages.forEach { message ->
             if (remember(message.id)) onMessage(message)
         }
+        if (page.offline) throw YouTubeApiException(403, null, setOf("liveChatEnded"))
         refreshAudienceIfNeeded()
         return minimumPollDelayMillis
     }

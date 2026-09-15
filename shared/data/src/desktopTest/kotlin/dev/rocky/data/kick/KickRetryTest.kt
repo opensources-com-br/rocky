@@ -6,6 +6,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class KickRetryTest {
+    @Test fun respectsServerDelayAndSanitizesErrors() {
+        assertEquals(60_000L, kickRetryDelay(KickApiException(429, "secret", 60_000), 1))
+        assertEquals(false, KickApiException(401, "secret").message.orEmpty().contains("secret"))
+        assertNull(kickRetryDelay(IllegalArgumentException(), 1))
+    }
+
     @Test fun retriesServiceAndRateLimitFailuresButNotPermissions() {
         assertEquals(2000L, kickRetryDelay(KickApiException(503, null), 1))
         assertEquals(2000L, kickRetryDelay(KickApiException(429, null), 1))

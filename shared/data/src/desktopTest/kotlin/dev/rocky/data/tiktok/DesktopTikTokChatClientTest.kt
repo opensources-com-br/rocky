@@ -9,6 +9,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.test.assertNull
+import io.github.jwdeveloper.tiktok.exceptions.TikTokLiveOfflineHostException
+import io.github.jwdeveloper.tiktok.exceptions.TikTokMessageMappingException
+import java.util.concurrent.CopyOnWriteArrayList
 
 class DesktopTikTokChatClientTest {
     @Test
@@ -20,9 +24,10 @@ class DesktopTikTokChatClientTest {
             transport.onEvent = onEvent
             transport
         })
-        val events = mutableListOf<TikTokConnectionEvent>()
+        val events = CopyOnWriteArrayList<TikTokConnectionEvent>()
 
         client.connect(TikTokConfiguration(" @rocky_live "), events::add)
+        waitFor { transport.connected }
         transport.emit(TikTokTransportEvent.Connected(TikTokTransportRoom(
             "room-1", "Minha live", "rocky_live", "Rocky", 42,
         )))
@@ -30,6 +35,7 @@ class DesktopTikTokChatClientTest {
             "message-1", "viewer-1", "Ana", "Olá do TikTok", "room-1", "2026-09-14T12:00:00Z",
         )))
         transport.emit(TikTokTransportEvent.AudienceUpdated(51))
+        waitFor { events.filterIsInstance<TikTokConnectionEvent.AudienceUpdated>().lastOrNull()?.viewerCount == 51 }
 
         assertEquals("rocky_live", requestedUsername)
         assertTrue(transport.connected)
@@ -42,6 +48,7 @@ class DesktopTikTokChatClientTest {
         assertEquals(StreamPlatform.TikTok, message.platform)
         assertEquals("Olá do TikTok", message.text)
         assertEquals(51, events.filterIsInstance<TikTokConnectionEvent.AudienceUpdated>().last().viewerCount)
+        client.close()
     }
 
     @Test
@@ -51,14 +58,16 @@ class DesktopTikTokChatClientTest {
             transport.onEvent = onEvent
             transport
         })
-        val events = mutableListOf<TikTokConnectionEvent>()
+        val events = CopyOnWriteArrayList<TikTokConnectionEvent>()
         val comment = TikTokTransportEvent.CommentReceived(TikTokTransportComment(
             "message-1", "viewer-1", "Ana", "Olá", "room-1", null,
         ))
 
         client.connect(TikTokConfiguration("rocky_live"), events::add)
+        waitFor { transport.connected }
         transport.emit(comment)
         transport.emit(comment)
+        waitFor { events.filterIsInstance<TikTokConnectionEvent.MessageReceived>().size == 1 }
         client.disconnect()
         waitFor { events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().lastOrNull()?.phase == TikTokConnectionPhase.Disconnected }
         transport.emit(TikTokTransportEvent.AudienceUpdated(99))

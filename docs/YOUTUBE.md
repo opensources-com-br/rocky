@@ -1,5 +1,13 @@
 # Connect YouTube
 
+## Recovery and polling
+
+The connector retains paginated HTTP polling, requesting only needed fields and up to 500 messages per response. YouTube's polling interval is respected in full, including values above 30 seconds. Audience refreshes run every 30 seconds; failed refreshes keep the last successful value.
+
+Transient chat-polling failures allow up to 5 retries, delayed by 2, 4, 8, 16 and 30 seconds, never less than the API polling interval. Numeric `Retry-After` values are respected up to 5 minutes. Success resets the budget while preserving the session's cursor and message deduplication.
+
+Exhausted quota, missing permissions, disabled chat or an ended stream stop polling. Disconnect cancels scheduled tasks and interrupts ongoing requests; old events cannot reach a replacement session.
+
 Rocky reads new live-chat messages and the current viewer count from an active broadcast on the authorized channel. It does not send messages, and Super Chats or Super Stickers are not yet added to the Support tab.
 
 ## Prepare credentials

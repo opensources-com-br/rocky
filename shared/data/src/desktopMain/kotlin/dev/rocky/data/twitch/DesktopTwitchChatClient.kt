@@ -266,14 +266,27 @@ class DesktopTwitchChatClient : TwitchChatClient {
         listener.onEvent(TwitchConnectionEvent.Connected(currentAccount))
     }
 
+    private fun releaseSockets() {
+        socketAttempt++
+        welcomeTask?.cancel(false)
+        socketOpening?.cancel(true)
+        socketOpening = null
+        pendingSocket?.abort()
+        pendingSocket = null
+        socket?.abort()
+        socket = null
+        keepaliveTimeoutMillis = 0
+    }
+
     @Synchronized
     private fun scheduleReconnect(run: Long) {
         if (!isCurrent(run) || reconnectScheduled) return
         reconnectScheduled = true
+        releaseSockets()
         reconnectAttempt += 1
         val delaySeconds = twitchReconnectDelaySeconds(reconnectAttempt)
         emit(TwitchConnectionPhase.Reconnecting, "Reconectando em $delaySeconds s")
-        scheduler.schedule(
+        reconnectTask = scheduler.schedule(
             {
                 if (isCurrent(run)) {
                     reconnectScheduled = false
@@ -391,8 +404,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         audienceRefreshRunning = false
         lastAudienceRefreshAt = 0
         validationRetryAttempt = 0
-        socket?.sendClose(WebSocket.NORMAL_CLOSURE, "disconnected")
-        socket = null
+        releaseSockets()
         tokens = null
         account = null
         if (notify) emit(TwitchConnectionPhase.Disconnected)

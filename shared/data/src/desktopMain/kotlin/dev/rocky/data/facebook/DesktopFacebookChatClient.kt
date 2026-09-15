@@ -7,6 +7,7 @@ import dev.rocky.core.facebook.FacebookConnectionListener
 import dev.rocky.core.facebook.FacebookConnectionPhase
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -27,8 +28,13 @@ class DesktopFacebookChatClient internal constructor(
     @Volatile private var configuration = FacebookConfiguration()
     @Volatile private var receiver: FacebookAuthorizationReceiver? = null
     @Volatile private var poller: FacebookChatPoller? = null
+    private var pendingPoll: ScheduledFuture<*>? = null
+    private var retryAttempt = 0
+    @Volatile private var closed = false
 
+    @Synchronized
     override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) {
+        check(!closed) { "O cliente do Facebook já foi encerrado." }
         stop(notify = false)
         require(configuration.appId.isNotBlank()) { "Informe o App ID do Facebook." }
         require(configuration.appSecret.isNotBlank()) { "Informe o App Secret do Facebook." }
@@ -41,7 +47,7 @@ class DesktopFacebookChatClient internal constructor(
         this.listener = listener
         active = true
         emit(FacebookConnectionPhase.Authenticating, "Preparando autorização do Facebook")
-        ioExecutor.execute { prepareAuthorization(run) }
+        ioExecutor.execute { if (isCurrent(run)) prepareAuthorization(run) }
     }
 
     private fun prepareAuthorization(run: Long) {

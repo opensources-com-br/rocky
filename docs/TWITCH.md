@@ -30,3 +30,11 @@ The connector requests only `user:read:chat`. The Client ID is saved in the oper
 This first connector listens to the authenticated user's own channel and reads its current viewer count. It does not load earlier messages, channel points, subscriptions, or paid support events yet.
 
 References: [Twitch OAuth](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/), [token validation](https://dev.twitch.tv/docs/authentication/validate-tokens/), and [EventSub WebSockets](https://dev.twitch.tv/docs/eventsub/handling-websocket-events/).
+
+## Recovery and connection lifecycle
+
+Twitch-requested migration keeps the old socket until the new socket receives its welcome, without creating another chat subscription. Duplicate messages are filtered within the session; events from retired sockets are ignored. An opened socket that receives no welcome within 20 seconds enters progressive-backoff reconnection.
+
+Disconnect cancels authentication tasks, network requests, scheduled reconnects and socket-opening attempts. Close is idempotent and rejects further connections. Failed audience refreshes retain the last successful value. Fragmented WebSocket messages are limited to 1,048,576 characters.
+
+Deduplication does not restore lost messages: network interruptions can still leave gaps in chat because Twitch does not replay events from that period.

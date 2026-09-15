@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.rocky.data.notes.RecoverableNoteRepository
@@ -44,17 +45,25 @@ import dev.rocky.platform.desktop.ShortcutPreferences
 import dev.rocky.platform.desktop.ShortcutConfiguration
 import androidx.compose.runtime.rememberUpdatedState
 import java.awt.Taskbar
+import java.awt.SystemTray
 import javax.imageio.ImageIO
 import java.awt.Dimension
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.atomic.AtomicReference
 
-fun main() = application {
+fun main() {
+    if (isMacOs()) System.setProperty("apple.awt.UIElement", "true")
+    runRockyApplication()
+}
+
+private fun runRockyApplication() = application {
+    val usesMenuBar = isMacOs() && SystemTray.isSupported()
     val appIcon = remember {
         ImageIO.read(requireNotNull(Thread.currentThread().contextClassLoader.getResource("rocky.png")))
     }
     LaunchedEffect(Unit) {
-        if (Taskbar.isTaskbarSupported()) {
+        if (!usesMenuBar && Taskbar.isTaskbarSupported()) {
             val taskbar = Taskbar.getTaskbar()
             if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) taskbar.iconImage = appIcon
         }
@@ -64,7 +73,10 @@ fun main() = application {
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
     var settingsVisible by remember { mutableStateOf(false) }
-    var windowVisible by remember { mutableStateOf(true) }
+    var windowVisible by remember { mutableStateOf(!usesMenuBar) }
+    var settingsRequestRevision by remember { mutableStateOf(0) }
+    var mainRequestRevision by remember { mutableStateOf(0) }
+    val desktopWindow = remember { AtomicReference<java.awt.Window?>(null) }
     var shortcutConfiguration by remember { mutableStateOf(ShortcutPreferences.configuration) }
     var shortcutStatus by remember { mutableStateOf<Boolean?>(null) }
     var shortcutAction by remember { mutableStateOf(-1) }
@@ -98,8 +110,46 @@ fun main() = application {
         }
     }
 
+    fun showRocky() {
+        mainRequestRevision += 1
+        windowVisible = true
+        desktopWindow.get()?.apply {
+            isVisible = true
+            toFront()
+            requestFocus()
+        }
+    }
+
+    fun showSettings() {
+        settingsRequestRevision += 1
+        windowVisible = true
+        desktopWindow.get()?.apply {
+            isVisible = true
+            toFront()
+            requestFocus()
+        }
+    }
+
+    fun quitRocky() {
+        if (finishSession()) exitApplication()
+    }
+
+    if (usesMenuBar) {
+        Tray(
+            icon = BitmapPainter(appIcon.toComposeImageBitmap()),
+            tooltip = "Rocky",
+            onAction = ::showRocky,
+            menu = {
+                Item("Rocky", onClick = ::showRocky)
+                Item("Settings", onClick = ::showSettings)
+                Separator()
+                Item("Quit", onClick = ::quitRocky)
+            },
+        )
+    }
+
     Window(
-        onCloseRequest = { if (finishSession()) exitApplication() },
+        onCloseRequest = { if (usesMenuBar) windowVisible = false else quitRocky() },
         state = windowState,
         visible = windowVisible,
         title = "Rocky",
@@ -108,6 +158,7 @@ fun main() = application {
         alwaysOnTop = pinned,
     ) {
         LaunchedEffect(window) {
+            desktopWindow.set(window)
             window.minimumSize = Dimension(340, 180)
         }
         val persistBounds by rememberUpdatedState(!compact && !settingsVisible)
@@ -215,6 +266,8 @@ fun main() = application {
             onLanguageChange = { LanguageDesktopPreferences.language = it },
             currentTimeLabel = { OffsetDateTime.now().format(TimeFormatter) },
             currentTimeMillis = System::currentTimeMillis,
+            settingsRequestRevision = settingsRequestRevision,
+            mainRequestRevision = mainRequestRevision,
             onTogglePinned = { pinned = !pinned; DesktopWindowPreferences.pinned = pinned },
             onToggleCompact = {
                 if (compact) {
@@ -249,3 +302,4 @@ private val ExpandedSize = DpSize(462.dp, 900.dp)
 private val SettingsSize = DpSize(462.dp, 820.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
 private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")
+private fun isMacOs(): Boolean = System.getProperty("os.name").startsWith("Mac", ignoreCase = true)

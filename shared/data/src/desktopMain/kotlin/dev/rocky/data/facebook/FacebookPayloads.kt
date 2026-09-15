@@ -6,6 +6,7 @@ import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -53,6 +54,15 @@ internal object FacebookPayloads {
 
     fun error(body: String): String? = runCatching {
         body.objectValue()["error"]?.jsonObject?.optionalString("message")
+    }.getOrNull()
+
+    fun retryableError(body: String): Boolean? = runCatching {
+        val error = body.objectValue()["error"]?.jsonObject ?: return@runCatching null
+        when (error.optionalInt("code")) {
+            10, 190, 200 -> false
+            4, 17, 32, 613 -> true
+            else -> error["is_transient"]?.jsonPrimitive?.booleanOrNull
+        }
     }.getOrNull()
 
     private fun String.objectValue() = json.parseToJsonElement(this).jsonObject

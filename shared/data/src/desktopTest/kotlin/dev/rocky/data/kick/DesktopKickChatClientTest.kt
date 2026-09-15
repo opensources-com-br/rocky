@@ -18,6 +18,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopKickChatClientTest {
+    @Test fun rejectedRefreshTokenStopsSessionInsteadOfRetryingForever() {
+        audienceFailure = 401
+        refreshFailure = 400
+        withClient { client ->
+            authorize(client)
+            await { events.any { it is KickConnectionEvent.PhaseChanged && it.phase == KickConnectionPhase.Failed } }
+            await { requests.any { it == "DELETE /subscriptions" } }
+            assertEquals(2, requests.count { it == "POST /token" })
+        }
+    }
+
     @Test fun closingTwiceIsSafeAndRejectsNewConnections() {
         val client = DesktopKickChatClient()
         client.close()

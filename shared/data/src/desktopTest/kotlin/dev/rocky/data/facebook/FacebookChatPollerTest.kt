@@ -6,6 +6,7 @@ import dev.rocky.core.live.ChatMessage
 import java.net.InetSocketAddress
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class FacebookChatPollerTest {
     @Test fun refreshesAudienceEveryThirtySecondsAndKeepsLastSuccessfulCount() = withPoller { poller ->
@@ -33,6 +34,7 @@ class FacebookChatPollerTest {
 
     private var body = """{"data":[]}"""
     private var audienceStatus = 200
+    private var commentStatus = 200
     private var now = 0L
     private val messages = mutableListOf<ChatMessage>()
     private val audience = mutableListOf<Int?>()
@@ -41,7 +43,7 @@ class FacebookChatPollerTest {
         server.createContext("/") { exchange ->
             val isAudience = exchange.requestURI.path == "/live"
             val bytes = (if (isAudience) """{"live_views":42}""" else body).toByteArray()
-            exchange.sendResponseHeaders(if (isAudience) audienceStatus else 200, bytes.size.toLong())
+            exchange.sendResponseHeaders(if (isAudience) audienceStatus else commentStatus, bytes.size.toLong())
             exchange.responseBody.use { it.write(bytes) }
         }
         server.start()

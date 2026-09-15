@@ -9,6 +9,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class YouTubeChatPollerTest {
+    @Test fun keepsCursorAndDeduplicatesAfterFailedPoll() = withPoller { poller ->
+        body = """{"nextPageToken":"next","items":[{"id":"m1","snippet":{"displayMessage":"Olá"},"authorDetails":{"displayName":"Ana"}}]}"""
+        poller.poll()
+        status = 503
+        assertFailsWith<YouTubeApiException> { poller.poll() }
+        status = 200
+        poller.poll()
+        assertEquals(listOf("m1"), messages)
+        assertEquals(2, requests.count { it.contains("pageToken=next") })
+    }
+
     @Test fun respectsLongPollingIntervalsAndContinuesFromNextPage() = withPoller { poller ->
         assertEquals(45_000L, poller.poll())
         assertEquals(45_000L, poller.poll())

@@ -114,8 +114,11 @@ class DesktopFacebookChatClient internal constructor(
     }
 
     private fun poll(run: Long) {
-        if (!isCurrent(run)) return
-        runCatching { requireNotNull(poller).poll() }
+        val currentPoller = synchronized(this) {
+            if (!isCurrent(run)) return
+            requireNotNull(poller)
+        }
+        runCatching { currentPoller.poll() }
             .onSuccess { synchronized(this) {
                 if (isCurrent(run)) { retryAttempt = 0; schedulePoll(run, it) }
             } }

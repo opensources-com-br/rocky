@@ -14,6 +14,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun duplicateReconnectDoesNotOpenMoreSockets() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        welcome(0)
+        await { events.any { it is TwitchConnectionEvent.Connected } }
+        reconnect()
+        reconnect()
+        assertEquals(2, sockets.size)
+        welcome(1)
+    }
+
     @Test fun transfersOnlyAfterWelcomeWithoutCreatingAnotherSubscription() = withClient { client ->
         client.connect("client", events::add)
         await { sockets.size == 1 }

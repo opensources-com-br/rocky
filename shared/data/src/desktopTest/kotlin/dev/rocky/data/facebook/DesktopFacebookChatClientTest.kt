@@ -31,6 +31,7 @@ class DesktopFacebookChatClientTest {
 
     @Test fun connectsToTheActivePageAndReceivesComments() = connectAndReceive()
     @Test fun recoversAfterTemporaryCommentFailureWithoutReauthorizing() = connectAndReceive(true)
+    @Test fun disconnectCancelsPendingRetriesAndSuppressesMessages() = connectAndReceive(true, true)
 
     private fun connectAndReceive(failFirstComment: Boolean = false, stopBeforeRetry: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }

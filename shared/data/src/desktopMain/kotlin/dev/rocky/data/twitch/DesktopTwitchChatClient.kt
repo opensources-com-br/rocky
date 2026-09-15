@@ -22,6 +22,11 @@ class DesktopTwitchChatClient internal constructor(
     private val httpClient: HttpClient,
     private val api: TwitchApi = TwitchApi(httpClient),
     private val authenticate: TwitchAuthenticator = TwitchDeviceFlow(api)::authenticate,
+    private val socketConnector: TwitchSocketConnector = { url, listener ->
+        httpClient.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(20))
+            .buildAsync(URI.create(url), listener)
+    },
+    private val welcomeTimeoutSeconds: Long = 20,
 ) : TwitchChatClient {
     constructor() : this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build())
     private val generation = AtomicLong()
@@ -170,7 +175,7 @@ class DesktopTwitchChatClient internal constructor(
                     welcomeTask?.cancel(false)
                     welcomeTask = scheduler.schedule({ synchronized(this) {
                         if (isCurrent(run) && pendingSocket === opened) scheduleReconnect(run)
-                    } }, 20, TimeUnit.SECONDS)
+                    } }, welcomeTimeoutSeconds, TimeUnit.SECONDS)
                 } else {
                     opened.abort()
                 }
@@ -180,9 +185,7 @@ class DesktopTwitchChatClient internal constructor(
                 if (isCurrent(run) && (socket === closed || pendingSocket === closed)) scheduleReconnect(run)
             } },
         )
-        socketOpening = httpClient.newWebSocketBuilder()
-            .connectTimeout(Duration.ofSeconds(20))
-            .buildAsync(URI.create(url), webSocketListener)
+        socketOpening = socketConnector(url, webSocketListener)
             .whenComplete { _, error -> synchronized(this) {
                 if (error != null && isCurrent(run) && attempt == socketAttempt) scheduleReconnect(run)
             } }

@@ -136,6 +136,13 @@ class DesktopTwitchChatClient : TwitchChatClient {
     }
 
     @Synchronized
+    private fun submitIo(run: Long, task: () -> Unit) {
+        if (!isCurrent(run) || ioExecutor.isShutdown) return
+        ioTasks.removeAll { it.isDone }
+        ioTasks += ioExecutor.submit { if (isCurrent(run)) task() }
+    }
+
+    @Synchronized
     override fun close() {
         if (closed) return
         closed = true

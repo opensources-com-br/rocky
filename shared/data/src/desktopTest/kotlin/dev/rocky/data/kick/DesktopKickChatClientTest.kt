@@ -17,4 +17,18 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class DesktopKickChatClientTest {}
+class DesktopKickChatClientTest {
+    private val requests = CopyOnWriteArrayList<String>()
+    private val events = CopyOnWriteArrayList<KickConnectionEvent>()
+    private var audienceFailure = 0
+    private val keyPem = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
+        .public.encoded.let { "-----BEGIN PUBLIC KEY-----\\n${Base64.getEncoder().encodeToString(it)}\\n-----END PUBLIC KEY-----" }
+    private fun response(path: String) = when (path) {
+        "/key" -> """{"data":{"public_key":"$keyPem"}}"""
+        "/token" -> """{"access_token":"access","refresh_token":"refresh"}"""
+        "/users" -> """{"data":[{"user_id":42,"name":"Rocky"}]}"""
+        "/channels" -> """{"data":[{"stream":{"viewer_count":42}}]}"""
+        "/subscriptions" -> """{"data":[{"subscription_id":"sub"}]}"""
+        else -> error("Unexpected path: $path")
+    }
+}

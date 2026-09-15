@@ -78,3 +78,23 @@ private class FakeTikTokTransport : TikTokLiveTransport {
     override fun disconnect() { connected = false }
     fun emit(event: TikTokTransportEvent) = onEvent(event)
 }
+
+private class Fixture(delays: List<Long>, timeout: Long) : AutoCloseable {
+    val transports = CopyOnWriteArrayList<FakeTikTokTransport>()
+    val events = CopyOnWriteArrayList<TikTokConnectionEvent>()
+    val client = DesktopTikTokChatClient(TikTokLiveTransportFactory { _, callback ->
+        FakeTikTokTransport().also { it.onEvent = callback; transports.add(it) }
+    }, delays, timeout)
+    fun connect() {
+        client.connect(TikTokConfiguration("rocky_live"), events::add)
+        waitFor { transports.firstOrNull()?.connected == true }
+    }
+    fun phase() = events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().lastOrNull()?.phase
+    fun messages() = events.filterIsInstance<TikTokConnectionEvent.MessageReceived>()
+    override fun close() = client.close()
+}
+
+private fun connected() = TikTokTransportEvent.Connected(TikTokTransportRoom("room", "Live", "rocky_live", "Rocky", 42))
+private fun comment(id: String = "message") = TikTokTransportEvent.CommentReceived(
+    TikTokTransportComment(id, "viewer", "Ana", "Olá", "room", null))
+private fun waitFor(condition: () -> Boolean) {

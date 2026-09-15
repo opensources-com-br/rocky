@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicLong
 class DesktopTwitchChatClient internal constructor(
     private val httpClient: HttpClient,
     private val api: TwitchApi = TwitchApi(httpClient),
+    private val authenticate: TwitchAuthenticator = TwitchDeviceFlow(api)::authenticate,
 ) : TwitchChatClient {
     constructor() : this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build())
-    private val deviceFlow = TwitchDeviceFlow(api)
     private val generation = AtomicLong()
     private val ioExecutor = Executors.newSingleThreadExecutor { task ->
         Thread(task, "rocky-twitch-io").apply { isDaemon = true }
@@ -103,10 +103,10 @@ class DesktopTwitchChatClient internal constructor(
         val authenticationClientId = this.clientId
         submitIo(run) {
             runCatching {
-                deviceFlow.authenticate(
-                    clientId = authenticationClientId,
-                    isActive = { isCurrent(run) },
-                    onAuthorization = { authorization ->
+                authenticate(
+                    authenticationClientId,
+                    { isCurrent(run) },
+                    { authorization ->
                         if (isCurrent(run)) {
                             emitForRun(run,
                                 TwitchConnectionEvent.AuthorizationRequired(

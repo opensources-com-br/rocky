@@ -14,6 +14,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun missingWelcomeSchedulesRetryWhichDisconnectCancels() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        await { events.any { it is TwitchConnectionEvent.PhaseChanged && it.phase == TwitchConnectionPhase.Reconnecting } }
+        assertEquals(true, sockets[0].first.aborted)
+        client.disconnect()
+        Thread.sleep(2_200)
+        assertEquals(1, sockets.size)
+    }
+
     @Test fun disconnectAbortsSocketAndRejectsLateOpen() = withClient { client ->
         client.connect("client", events::add)
         await { sockets.size == 1 }

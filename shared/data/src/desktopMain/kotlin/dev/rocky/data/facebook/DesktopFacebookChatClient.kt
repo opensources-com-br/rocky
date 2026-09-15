@@ -8,6 +8,7 @@ import dev.rocky.core.facebook.FacebookConnectionPhase
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -29,6 +30,7 @@ class DesktopFacebookChatClient internal constructor(
     @Volatile private var receiver: FacebookAuthorizationReceiver? = null
     @Volatile private var poller: FacebookChatPoller? = null
     private var pendingPoll: ScheduledFuture<*>? = null
+    private var pendingRequest: Future<*>? = null
     private var retryAttempt = 0
     @Volatile private var closed = false
 
@@ -47,7 +49,7 @@ class DesktopFacebookChatClient internal constructor(
         this.listener = listener
         active = true
         emit(FacebookConnectionPhase.Authenticating, "Preparando autorização do Facebook")
-        ioExecutor.execute { if (isCurrent(run)) prepareAuthorization(run) }
+        pendingRequest = ioExecutor.submit { if (isCurrent(run)) prepareAuthorization(run) }
     }
 
     @Synchronized
@@ -74,8 +76,8 @@ class DesktopFacebookChatClient internal constructor(
         receiver = null
         emit(FacebookConnectionPhase.FindingLive, "Procurando uma live ativa nas suas Páginas")
         val configuration = this.configuration
-        ioExecutor.execute {
-            if (!isCurrent(run)) return@execute
+        pendingRequest = ioExecutor.submit {
+            if (!isCurrent(run)) return@submit
             runCatching {
                 val userToken = api.exchangeCode(
                     configuration.appId,
@@ -107,7 +109,7 @@ class DesktopFacebookChatClient internal constructor(
         if (!isCurrent(run) || scheduler.isShutdown) return
         pendingPoll?.cancel(false)
         pendingPoll = scheduler.schedule({ synchronized(this) {
-            if (isCurrent(run) && !ioExecutor.isShutdown) ioExecutor.execute { poll(run) }
+            if (isCurrent(run) && !ioExecutor.isShutdown) pendingRequest = ioExecutor.submit { poll(run) }
         } }, delayMillis, TimeUnit.MILLISECONDS)
     }
 
@@ -141,6 +143,8 @@ class DesktopFacebookChatClient internal constructor(
         pendingPoll?.cancel(false)
         pendingPoll = null
         retryAttempt = 0
+        pendingRequest?.cancel(true)
+        pendingRequest = null
         receiver?.close()
         receiver = null
         poller = null

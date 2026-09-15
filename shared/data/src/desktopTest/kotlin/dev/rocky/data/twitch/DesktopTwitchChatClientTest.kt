@@ -16,6 +16,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun revocationDuringTransferAbortsBothSockets() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        welcome(0)
+        await { events.any { it is TwitchConnectionEvent.Connected } }
+        reconnect()
+        send(0, "revocation", """{"subscription":{"status":"authorization_revoked"}}""")
+        assertEquals(true, sockets.all { it.first.aborted })
+        assertEquals(true, events.any { it is TwitchConnectionEvent.PhaseChanged && it.phase == TwitchConnectionPhase.Failed })
+    }
+
     @Test fun disconnectInterruptsAuthorizationWithoutOpeningSocket() {
         val started = CountDownLatch(1)
         val interrupted = CountDownLatch(1)

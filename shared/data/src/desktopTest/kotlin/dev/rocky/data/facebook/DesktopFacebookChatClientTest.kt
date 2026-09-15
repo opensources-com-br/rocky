@@ -19,12 +19,16 @@ import kotlin.test.assertTrue
 class DesktopFacebookChatClientTest {
     private val requests = CopyOnWriteArrayList<String>()
 
-    @Test fun connectsToTheActivePageAndReceivesComments() {
+    @Test fun connectsToTheActivePageAndReceivesComments() = connectAndReceive()
+
+    private fun connectAndReceive(failFirstComment: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
         val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
             createContext("/") { exchange ->
                 requests += "${exchange.requestMethod} ${exchange.requestURI}"
-                exchange.respond(apiResponse(exchange.requestURI.path))
+                val firstComment = requests.count { "/live/comments" in it } == 1
+                val status = if (failFirstComment && firstComment && "/live/comments" in exchange.requestURI.path) 503 else 200
+                exchange.respond(apiResponse(exchange.requestURI.path), status)
             }
             start()
         }
@@ -66,9 +70,9 @@ class DesktopFacebookChatClientTest {
         else -> error("Unexpected API path: $path")
     }
 
-    private fun HttpExchange.respond(body: String) {
+    private fun HttpExchange.respond(body: String, status: Int = 200) {
         val bytes = body.toByteArray()
-        sendResponseHeaders(200, bytes.size.toLong())
+        sendResponseHeaders(status, bytes.size.toLong())
         responseBody.use { it.write(bytes) }
     }
 
@@ -78,7 +82,7 @@ class DesktopFacebookChatClientTest {
     }
 
     private fun await(condition: () -> Boolean) {
-        repeat(200) {
+        repeat(500) {
             if (condition()) return
             Thread.sleep(10)
         }

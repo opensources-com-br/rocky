@@ -22,6 +22,7 @@ class KickLocalReceiverTest {
         }
 
     @Test fun acceptsCallbackAndSignedChatOnce() = receiveSignedChat()
+    @Test fun acceptsCorrectedPayloadWithSameIdAfterMalformedWebhook() = receiveSignedChat(true)
 
     private fun receiveSignedChat(invalidFirst: Boolean = false) {
         val port = ServerSocket(0).use { it.localPort }

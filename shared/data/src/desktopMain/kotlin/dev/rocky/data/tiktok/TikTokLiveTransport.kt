@@ -2,8 +2,9 @@ package dev.rocky.data.tiktok
 
 import io.github.jwdeveloper.tiktok.TikTokLive
 import io.github.jwdeveloper.tiktok.live.LiveClient
-import java.time.Duration
+import io.github.jwdeveloper.tiktok.exceptions.*
 import java.time.Instant
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
 
 internal data class TikTokTransportRoom(
@@ -29,7 +30,8 @@ internal sealed interface TikTokTransportEvent {
     data class AudienceUpdated(val viewerCount: Int) : TikTokTransportEvent
     data class CommentReceived(val comment: TikTokTransportComment) : TikTokTransportEvent
     data class Disconnected(val reason: String?) : TikTokTransportEvent
-    data class Failed(val message: String) : TikTokTransportEvent
+    data class Failed(val message: String, val retryable: Boolean = true) : TikTokTransportEvent
+    data object LiveEnded : TikTokTransportEvent
 }
 
 internal fun interface TikTokLiveTransportFactory {
@@ -45,13 +47,14 @@ internal class JwTikTokLiveTransport(
     username: String,
     private val onEvent: (TikTokTransportEvent) -> Unit,
 ) : TikTokLiveTransport {
+    private val stopped = AtomicBoolean()
     private val client: LiveClient = TikTokLive.newClient(username)
         .configure { settings ->
             settings.clientLanguage = "pt"
             settings.logLevel = Level.OFF
             settings.isPrintToConsole = false
-            settings.isRetryOnConnectionFailure = true
-            settings.retryConnectionTimeout = Duration.ofSeconds(5)
+            // Rocky owns retry/backoff, avoiding competing reconnection loops.
+            settings.isRetryOnConnectionFailure = false
             settings.isFetchGifts = false
         }
         .onConnected { liveClient, _ ->

@@ -109,8 +109,15 @@ class DesktopFacebookChatClient internal constructor(
     private fun poll(run: Long) {
         if (!isCurrent(run)) return
         runCatching { requireNotNull(poller).poll() }
-            .onSuccess { if (isCurrent(run)) schedulePoll(run, it) }
-            .onFailure { if (isCurrent(run)) fail(run, it.userMessage()) }
+            .onSuccess { synchronized(this) {
+                if (isCurrent(run)) { retryAttempt = 0; schedulePoll(run, it) }
+            } }
+            .onFailure { error -> synchronized(this) {
+                if (isCurrent(run)) {
+                    val delay = facebookRetryDelay(error, ++retryAttempt)
+                    if (delay == null) fail(run, error.userMessage()) else schedulePoll(run, delay)
+                }
+            } }
     }
     override fun disconnect() = stop(notify = true)
     override fun close() {

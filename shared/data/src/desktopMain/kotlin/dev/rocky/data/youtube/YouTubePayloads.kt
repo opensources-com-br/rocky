@@ -73,6 +73,11 @@ internal object YouTubePayloads {
         body.objectValue()["error"]?.jsonObject?.optionalString("message")
     }.getOrNull()
 
+    fun errorReasons(body: String): Set<String> = runCatching {
+        body.objectValue()["error"]?.jsonObject?.get("errors")?.jsonArray.orEmpty()
+            .mapNotNull { it.jsonObject.optionalString("reason") }.toSet()
+    }.getOrDefault(emptySet())
+
     private fun String.objectValue() = json.parseToJsonElement(this).jsonObject
     private fun String.items() = objectValue().items()
     private fun JsonObject.items() = this["items"]?.jsonArray.orEmpty().map { it.jsonObject }

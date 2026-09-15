@@ -1,19 +1,13 @@
 package dev.rocky.ui.window
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,48 +30,30 @@ internal fun TikTokAccountSettings(
     onDisconnect: () -> Unit,
 ) {
     var draft by remember(initialConfiguration) { mutableStateOf(initialConfiguration) }
-    Surface(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-        color = RockyColors.SurfaceElevated,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, RockyColors.Border),
-    ) {
-        Column(Modifier.padding(13.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.size(9.dp).background(RockyColors.TikTok, CircleShape))
-                Column(Modifier.padding(start = 11.dp).weight(1f)) {
-                    Text("TikTok LIVE", color = RockyColors.TextPrimary)
-                    Text(
-                        tiktok.statusText,
-                        color = tiktok.statusColor,
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier.testTag("tiktok-status"),
-                    )
+    PlatformPreferenceGroup("TikTok LIVE", tiktok.statusText, tiktok.statusColor, "tiktok-status") {
+        Text(
+            "Informe o @usuário que está ao vivo. A leitura não pede senha ou cookie e usa o WebCast público por meio do serviço de conexão Eulerstream.",
+            color = RockyColors.TextSecondary,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        OutlinedTextField(
+            draft.username,
+            { draft = draft.copy(username = it) },
+            Modifier.fillMaxWidth().padding(top = 10.dp).testTag("tiktok-username"),
+            label = { Text("@usuário") },
+            singleLine = true, shape = PlatformFieldShape,
+            textStyle = MaterialTheme.typography.body2, colors = platformFieldColors(),
+            enabled = !tiktok.phase.isConnecting,
+        )
+        Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (tiktok.phase in setOf(TikTokConnectionPhase.Disconnected, TikTokConnectionPhase.Failed)) {
+                PrimaryButton("Conectar TikTok", draft.username.trim().removePrefix("@").isNotBlank()) {
+                    onConnect(draft.copy(username = draft.username.trim().removePrefix("@").trim()))
                 }
-            }
-            Text(
-                "Informe o @usuário que está ao vivo. A leitura não pede senha ou cookie e usa o WebCast público por meio do serviço de conexão Eulerstream.",
-                color = RockyColors.TextSecondary,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-            OutlinedTextField(
-                draft.username,
-                { draft = draft.copy(username = it) },
-                Modifier.fillMaxWidth().padding(top = 10.dp).testTag("tiktok-username"),
-                label = { Text("@usuário") },
-                singleLine = true,
-                enabled = !tiktok.phase.isConnecting,
-            )
-            Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (tiktok.phase in setOf(TikTokConnectionPhase.Disconnected, TikTokConnectionPhase.Failed)) {
-                    PrimaryButton("Conectar TikTok", draft.username.trim().removePrefix("@").isNotBlank()) {
-                        onConnect(draft.copy(username = draft.username.trim().removePrefix("@").trim()))
-                    }
-                } else {
-                    OutlinedButton(onClick = onDisconnect, border = BorderStroke(1.dp, RockyColors.Border)) {
-                        Text("Desconectar")
-                    }
+            } else {
+                OutlinedButton(onClick = onDisconnect, border = BorderStroke(1.dp, RockyColors.Border)) {
+                    Text("Desconectar")
                 }
             }
         }

@@ -20,3 +20,11 @@ O App Secret é salvo no Keychain do macOS ou protegido pelo DPAPI do usuário n
 4. O Rocky procura a primeira Página autorizada com live ativa e começa a consultar novos comentários.
 
 O conector não recupera o histórico completo, não publica no chat e não processa Estrelas ou outras contribuições pagas. Se nenhuma Página autorizada estiver ao vivo, a conexão informa a falha e pode ser refeita depois que a transmissão começar.
+
+## Recuperação e consultas
+
+Comentários são consultados a cada 2 segundos quando chegam mensagens novas; sem novidades, o intervalo sobe gradualmente até 5 segundos. A audiência é consultada a cada 30 segundos e mantém o último valor recebido se uma consulta falhar.
+
+Falhas temporárias de rede ou da API durante a consulta de comentários têm até 5 novas tentativas, com esperas de 2, 4, 8, 16 e 30 segundos. O `Retry-After` em segundos é respeitado até 5 minutos. Uma consulta bem-sucedida reinicia esse limite. Erros de token ou permissão encerram a conexão e exigem uma nova autorização.
+
+Desconectar cancela consultas agendadas e interrompe requisições em andamento. Eventos de sessões anteriores são descartados. A consulta continua limitada aos 100 comentários mais recentes: chats muito movimentados podem ultrapassar essa janela entre consultas.

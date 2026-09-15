@@ -11,9 +11,11 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-class DesktopKickChatClient : KickChatClient {
-    private val api = KickApi()
-    private val subscriptions = KickEventSubscriptions()
+class DesktopKickChatClient internal constructor(
+    private val api: KickApi,
+    private val subscriptions: KickEventSubscriptions,
+) : KickChatClient {
+    constructor() : this(KickApi(), KickEventSubscriptions())
     private val generation = AtomicLong()
     private val ioExecutor = Executors.newSingleThreadExecutor { task ->
         Thread(task, "rocky-kick-io").apply { isDaemon = true }

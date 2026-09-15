@@ -6,6 +6,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class YouTubeRetryTest {
+    @Test fun respectsRetryAfterAndRetriesServiceFailures() {
+        assertEquals(60_000L, youtubeRetryDelay(YouTubeApiException(503, null, retryAfterMillis = 60_000), 1))
+        assertEquals(2000L, youtubeRetryDelay(YouTubeApiException(429, null), 1))
+        assertNull(youtubeRetryDelay(IllegalArgumentException(), 1))
+    }
+
     @Test fun retriesRateLimitsButNotQuotaOrPermissionFailures() {
         assertEquals(2000L, youtubeRetryDelay(YouTubeApiException(403, null, setOf("rateLimitExceeded")), 1))
         for (reason in listOf("quotaExceeded", "dailyLimitExceeded", "forbidden", "liveChatEnded")) {

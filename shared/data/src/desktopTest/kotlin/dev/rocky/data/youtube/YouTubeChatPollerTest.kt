@@ -9,6 +9,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class YouTubeChatPollerTest {
+    @Test fun respectsLongPollingIntervalsAndContinuesFromNextPage() = withPoller { poller ->
+        assertEquals(45_000L, poller.poll())
+        assertEquals(45_000L, poller.poll())
+        val chatRequests = requests.filter { it.startsWith("/liveChat/messages") }
+        assertEquals(false, chatRequests.first().contains("pageToken="))
+        assertEquals(true, chatRequests.last().contains("pageToken=next"))
+        assertEquals(true, chatRequests.first().contains("fields="))
+        assertEquals(true, chatRequests.first().contains("maxResults=500"))
+    }
+
     private var body = """{"items":[],"nextPageToken":"next","pollingIntervalMillis":45000}"""
     private var now = 0L
     private var status = 200

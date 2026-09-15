@@ -78,12 +78,25 @@ class DesktopTikTokChatClient internal constructor(
         )))
     }
 
-    private fun remember(id: String): Boolean = synchronized(seenMessageIds) {
-        if (!seenMessageIds.add(id)) return@synchronized false
+    private fun receiveComment(comment: TikTokTransportComment) {
+        val id = comment.id.takeUnless { it.isBlank() || it == "0" } ?: "local-${++fallbackMessageId}"
+        if (!seenMessageIds.add(id)) return
         while (seenMessageIds.size > MAX_SEEN_MESSAGES) seenMessageIds.remove(seenMessageIds.first())
-        true
+        listener.onEvent(TikTokConnectionEvent.MessageReceived(ChatMessage(
+            id = id, author = comment.author, text = comment.text, platform = StreamPlatform.TikTok,
+            authorId = comment.authorId.ifBlank { null }, channelId = comment.roomId.ifBlank { null },
+            sourceTimestamp = comment.timestamp)))
     }
 
+    override fun disconnect() {
+        val run = generation.incrementAndGet()
+        dispatch {
+            if (!isCurrent(run)) return@dispatch
+            active = false
+            cleanup()
+            seenMessageIds.clear()
+            emit(TikTokConnectionPhase.Disconnected)
+        }
     }
 
     override fun close() {

@@ -143,6 +143,8 @@ fun RockyWindow(
     initialMainSectionIndex: Int = 0,
     initialSettingsOpen: Boolean = false,
     initialSettingsSectionIndex: Int = 0,
+    settingsRequestRevision: Int = 0,
+    mainRequestRevision: Int = 0,
 ) {
     RockyTheme {
         var settingsOpen by remember { mutableStateOf(initialSettingsOpen) }
@@ -157,6 +159,18 @@ fun RockyWindow(
         var preflightOpen by remember { mutableStateOf(false) }
         var historyOpen by remember { mutableStateOf(false) }
         var silenced by remember { mutableStateOf(false) }
+        LaunchedEffect(settingsRequestRevision) {
+            if (settingsRequestRevision > 0) {
+                settingsOpen = true
+                onSettingsVisibilityChanged(true)
+            }
+        }
+        LaunchedEffect(mainRequestRevision) {
+            if (mainRequestRevision > 0) {
+                settingsOpen = false
+                onSettingsVisibilityChanged(false)
+            }
+        }
         val turns = remember {
             val origin = kotlin.time.TimeSource.Monotonic.markNow()
             ConversationTurns { origin.elapsedNow().inWholeMilliseconds }

@@ -14,6 +14,18 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun disconnectAbortsSocketAndRejectsLateOpen() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        client.disconnect()
+        val lateSocket = FakeTwitchSocket()
+        sockets[0].second.onOpen(lateSocket)
+        welcome(0)
+        assertEquals(true, sockets[0].first.aborted)
+        assertEquals(true, lateSocket.aborted)
+        assertEquals(0, requests.size)
+    }
+
     @Test fun duplicateReconnectDoesNotOpenMoreSockets() = withClient { client ->
         client.connect("client", events::add)
         await { sockets.size == 1 }

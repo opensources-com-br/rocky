@@ -14,6 +14,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun closeTwiceRejectsFurtherConnections() {
+        val client = DesktopTwitchChatClient()
+        client.close()
+        client.close()
+        assertFailsWith<IllegalStateException> { client.connect("client", {}) }
+    }
+
     @Test fun missingWelcomeSchedulesRetryWhichDisconnectCancels() = withClient { client ->
         client.connect("client", events::add)
         await { sockets.size == 1 }

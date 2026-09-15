@@ -18,8 +18,20 @@ class DesktopTikTokChatClient internal constructor(
     constructor() : this(TikTokLiveTransportFactory(::JwTikTokLiveTransport))
 
     private val generation = AtomicLong()
-    private val fallbackMessageId = AtomicLong()
     private val seenMessageIds = LinkedHashSet<String>()
+    private var fallbackMessageId = 0L
+    private var active = false
+    private var listener = TikTokConnectionListener {}
+    private var transport: TikTokLiveTransport? = null
+    private var pending: ScheduledFuture<*>? = null
+    private var attempt = 0L
+    private var retries = 0
+    private var roomId: String? = null
+
+    init {
+        require(connectionTimeoutMillis > 0)
+        require(retryDelaysMillis.all { it > 0 })
+    }
 
     override fun connect(configuration: TikTokConfiguration, listener: TikTokConnectionListener) {
         check(!closed.get()) { "O cliente TikTok já foi encerrado." }

@@ -204,6 +204,11 @@ class RockyVisualCaptureTest {
     @Test
     fun captureMainInterface() {
         when (System.getenv("ROCKY_CAPTURE_STATE")) {
+            "settings-agent-compact" -> {
+                render(settingsOpen = true, settingsSection = SettingsSection.Agent)
+                capture("implementation-agent-compact.png")
+                return
+            }
             "settings-macos" -> {
                 render(
                     settingsOpen = true,
@@ -849,6 +854,36 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun updatesAgentPreferencesInAWideWindow() {
+        var savedAgent = AgentConfiguration()
+        var savedLanguage = RockyLanguage.PortugueseBrazil
+        render(
+            settingsOpen = true,
+            windowWidth = 780.dp,
+            windowHeight = 680.dp,
+            mainWindow = {},
+            settingsWindow = { visible, _, content -> if (visible) content() },
+            onAgentConfigurationChange = { savedAgent = it },
+            onLanguageChange = { savedLanguage = it },
+        )
+
+        rule.onNodeWithTag("agent-name-field").performTextReplacement("Acorde")
+        rule.onNodeWithTag("agent-tone-menu").performClick()
+        rule.onNodeWithText("Analítico").performClick()
+        rule.onNodeWithTag("agent-language-menu").performClick()
+        rule.onNodeWithText("English").performClick()
+
+        rule.onNodeWithText("Agent name").assertIsDisplayed()
+        rule.onNodeWithText("Thoughtful responses with context and careful reasoning.").assertIsDisplayed()
+        rule.runOnIdle {
+            assertEquals("Acorde", savedAgent.name)
+            assertEquals(AgentTone.Analytical, savedAgent.tone)
+            assertEquals(RockyLanguage.English, savedLanguage)
+        }
+        capture("implementation-agent-english.png", "rocky-settings-window")
+    }
+
+    @Test
     fun updatesAgentNameAndTone() {
         var saved = AgentConfiguration()
         render(
@@ -858,7 +893,9 @@ class RockyVisualCaptureTest {
         )
 
         rule.onNodeWithTag("agent-name-field").performTextReplacement("Acorde")
+        rule.onNodeWithTag("agent-tone-menu").performClick()
         rule.onNodeWithText("Analítico").performClick()
+        rule.onNodeWithText("Respostas ponderadas, com contexto e raciocínio cuidadoso.").assertExists()
         rule.runOnIdle {
             assertEquals("Acorde", saved.name)
             assertEquals(AgentTone.Analytical, saved.tone)
@@ -937,6 +974,7 @@ class RockyVisualCaptureTest {
             onLanguageChange = { savedLanguage = it },
         )
 
+        rule.onNodeWithTag("agent-language-menu").performClick()
         rule.onNodeWithText("English").performClick()
 
         rule.onNodeWithText("Settings").assertExists()

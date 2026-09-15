@@ -55,6 +55,10 @@ internal class JwTikTokLiveTransport(
             settings.isFetchGifts = false
         }
         .onConnected { liveClient, _ ->
+            if (stopped.get()) {
+                liveClient.disconnect()
+                return@onConnected
+            }
             val room = liveClient.roomInfo
             onEvent(TikTokTransportEvent.Connected(TikTokTransportRoom(
                 id = room.roomId,
@@ -79,20 +83,19 @@ internal class JwTikTokLiveTransport(
             )))
         }
         .onReconnecting { _, _ -> onEvent(TikTokTransportEvent.Reconnecting) }
+        .onLiveEnded { _, _ -> onEvent(TikTokTransportEvent.LiveEnded) }
         .onDisconnected { _, event -> onEvent(TikTokTransportEvent.Disconnected(event.reason)) }
         .onError { _, event ->
-            onEvent(TikTokTransportEvent.Failed(
-                event.exception.message?.takeIf(String::isNotBlank) ?: "Falha na conexão com o TikTok.",
-            ))
+            connectionFailure(event.exception)?.let(onEvent)
         }
         .build()
 
     override fun connect() {
-        client.connectAsync().exceptionally { error ->
-            onEvent(TikTokTransportEvent.Failed(
-                error.cause?.message ?: error.message ?: "Falha na conexão com o TikTok.",
-            ))
-            null
+        if (stopped.get()) return
+        client.connectAsync().whenComplete { _, error ->
+            // disconnect() may race with an in-flight HTTP handshake. Close any late socket.
+            if (stopped.get()) client.disconnect()
+            else if (error != null) connectionFailure(error)?.let(onEvent)
         }
     }
 

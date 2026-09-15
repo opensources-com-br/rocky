@@ -120,11 +120,13 @@ class DesktopFacebookChatClient internal constructor(
             } }
     }
     override fun disconnect() = stop(notify = true)
+    @Synchronized
     override fun close() {
+        if (closed) return
+        closed = true
         stop(notify = false)
         scheduler.shutdownNow()
         ioExecutor.shutdownNow()
-        ioExecutor.awaitTermination(3, TimeUnit.SECONDS)
     }
 
     @Synchronized
@@ -143,16 +145,19 @@ class DesktopFacebookChatClient internal constructor(
     private fun emit(phase: FacebookConnectionPhase, detail: String? = null) =
         listener.onEvent(FacebookConnectionEvent.PhaseChanged(phase, detail))
 
+    @Synchronized
     private fun fail(run: Long, message: String) {
         if (!isCurrent(run)) return
         active = false
+        pendingPoll?.cancel(false)
+        pendingPoll = null
         receiver?.close()
         receiver = null
         poller = null
         emit(FacebookConnectionPhase.Failed, message)
     }
 
-    private fun isCurrent(run: Long) = active && generation.get() == run
+    private fun isCurrent(run: Long) = !closed && active && generation.get() == run
     private fun Throwable.userMessage() = message?.takeIf { it.isNotBlank() }
         ?: "Não foi possível conectar com o Facebook."
 }

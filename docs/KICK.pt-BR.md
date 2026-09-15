@@ -1,5 +1,13 @@
 # Conexão com a Kick
 
+## Recuperação e consultas
+
+A audiência é consultada 30 segundos após a consulta anterior terminar, somente enquanto houver conexão. Falhas temporárias permitem até 5 tentativas com esperas de 2, 4, 8, 16 e 30 segundos; o `Retry-After` em segundos é respeitado até 5 minutos. Depois desse ciclo, as consultas voltam ao intervalo normal. Falhas mantêm o último valor recebido, sem interromper o chat.
+
+Uma resposta HTTP 401 na consulta de audiência tenta renovar o token uma vez. Falta de permissão ou autorização inválida após a renovação encerra a sessão. Desconectar cancela consultas, interrompe requisições em andamento e remove assinaturas em segundo plano, sem bloquear a próxima conexão.
+
+O receptor usa 2 threads e aceita corpos de webhook de até 1 MiB. Assinaturas RSA continuam obrigatórias; payloads inválidos não entram na deduplicação. A criação da assinatura do chat não é repetida automaticamente após falhas ambíguas, para evitar assinaturas duplicadas. A remoção é uma tentativa: indisponibilidade da API pode impedir a limpeza.
+
 O Rocky conecta o canal autenticado usando as APIs oficiais OAuth 2.1 e Events da Kick. Ele recebe novos eventos `chat.message.sent` e a contagem atual de espectadores. Não recupera histórico nem envia mensagens.
 
 ## Requisitos

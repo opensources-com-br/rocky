@@ -20,7 +20,7 @@ internal class KickLocalReceiver(
     private val redirect = URI.create(redirectUri)
     private val verifier = KickWebhookVerifier(publicKeyPem)
     private val seen = LinkedHashSet<String>()
-    private val executor = Executors.newCachedThreadPool { task ->
+    private val executor = Executors.newFixedThreadPool(2) { task ->
         Thread(task, "rocky-kick-callback").apply { isDaemon = true }
     }
     private val server: HttpServer
@@ -49,7 +49,8 @@ internal class KickLocalReceiver(
 
     private fun handleWebhook(exchange: HttpExchange) {
         if (exchange.requestMethod != "POST") return exchange.respond(405, "Método não permitido")
-        val body = exchange.requestBody.use { it.readBytes() }
+        val body = exchange.requestBody.use { it.readNBytes(MAX_WEBHOOK_BYTES + 1) }
+        if (body.size > MAX_WEBHOOK_BYTES) return exchange.respond(413, "Webhook muito grande")
         val messageId = exchange.requestHeaders.getFirst("Kick-Event-Message-Id").orEmpty()
         val timestamp = exchange.requestHeaders.getFirst("Kick-Event-Message-Timestamp").orEmpty()
         val signature = exchange.requestHeaders.getFirst("Kick-Event-Signature").orEmpty()
@@ -87,5 +88,8 @@ internal class KickLocalReceiver(
         .mapNotNull { part -> part.split("=", limit = 2).takeIf { it.size == 2 } }
         .associate { (key, value) -> URLDecoder.decode(key, Charsets.UTF_8) to URLDecoder.decode(value, Charsets.UTF_8) }
 
-    companion object { const val WEBHOOK_PATH = "/webhooks/kick" }
+    companion object {
+        const val WEBHOOK_PATH = "/webhooks/kick"
+        private const val MAX_WEBHOOK_BYTES = 1_048_576
+    }
 }

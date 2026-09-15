@@ -63,19 +63,6 @@ class DesktopTikTokChatClient internal constructor(
         }
     }
 
-    private fun receiveComment(comment: TikTokTransportComment) {
-        val id = comment.id.takeUnless { it.isBlank() || it == "0" }
-            ?: "local-${fallbackMessageId.incrementAndGet()}"
-        if (!remember(id)) return
-        listener.onEvent(TikTokConnectionEvent.MessageReceived(ChatMessage(
-            id = id,
-            author = comment.author,
-            text = comment.text,
-            platform = StreamPlatform.TikTok,
-            authorId = comment.authorId.ifBlank { null },
-            channelId = comment.roomId.ifBlank { null },
-            sourceTimestamp = comment.timestamp,
-        )))
     }
 
     private fun receiveComment(comment: TikTokTransportComment) {

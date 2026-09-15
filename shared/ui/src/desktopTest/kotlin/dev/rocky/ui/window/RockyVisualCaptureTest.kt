@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asSkiaBitmap
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -873,6 +874,20 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun rendersSettingsInAnExternalWindowHost() {
+        render(
+            settingsOpen = true,
+            settingsWindow = { visible, _, content ->
+                if (visible) Box(Modifier.testTag("settings-window")) { content() }
+            },
+        )
+
+        rule.onNodeWithTag("settings-window").assertExists()
+        rule.onNodeWithText("Configurações").assertExists()
+        rule.onNodeWithText("Conversa").assertExists()
+    }
+
+    @Test
     fun changesInterfaceLanguage() {
         var savedLanguage = RockyLanguage.PortugueseBrazil
         render(
@@ -963,6 +978,7 @@ class RockyVisualCaptureTest {
         onFirstUseFinished: () -> Unit = {},
         onLanguageChange: (RockyLanguage) -> Unit = {},
         language: RockyLanguage = RockyLanguage.PortugueseBrazil,
+        settingsWindow: RockySettingsWindowHost? = null,
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
@@ -998,6 +1014,7 @@ class RockyVisualCaptureTest {
                         onFirstUseFinished = onFirstUseFinished,
                         initialLanguage = language,
                         onLanguageChange = onLanguageChange,
+                        settingsWindow = settingsWindow,
                     )
                 }
             }

@@ -126,8 +126,16 @@ class DesktopYouTubeChatClient internal constructor(
             requireNotNull(poller)
         }
         runCatching { currentPoller.poll() }
-            .onSuccess { if (isCurrent(run)) schedulePoll(run, it) }
-            .onFailure { if (isCurrent(run)) fail(run, it.userMessage()) }
+            .onSuccess { synchronized(this) {
+                if (isCurrent(run)) { retryAttempt = 0; schedulePoll(run, it) }
+            } }
+            .onFailure { error -> synchronized(this) {
+                if (isCurrent(run)) {
+                    val delay = youtubeRetryDelay(error, ++retryAttempt)
+                    if (delay == null) fail(run, error.userMessage())
+                    else schedulePoll(run, maxOf(delay, currentPoller.minimumPollDelayMillis))
+                }
+            } }
     }
 
     override fun disconnect() = stop(notify = true)
@@ -159,9 +167,12 @@ class DesktopYouTubeChatClient internal constructor(
     private fun emit(phase: YouTubeConnectionPhase, detail: String? = null) =
         listener.onEvent(YouTubeConnectionEvent.PhaseChanged(phase, detail))
 
+    @Synchronized
     private fun fail(run: Long, message: String) {
         if (!isCurrent(run)) return
         active = false
+        pendingPoll?.cancel(false)
+        pendingPoll = null
         receiver?.close()
         receiver = null
         poller = null

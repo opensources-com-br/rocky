@@ -41,18 +41,19 @@ class DesktopTikTokChatClient internal constructor(
         }.onFailure { fail(run, it.userMessage()) }
     }
 
-    private fun receive(run: Long, event: TikTokTransportEvent) {
-        if (!isCurrent(run)) return
         when (event) {
             TikTokTransportEvent.Reconnecting ->
                 emit(TikTokConnectionPhase.Reconnecting, "Reconectando ao chat do TikTok")
             is TikTokTransportEvent.Connected -> {
+                pending?.cancel(false)
+                pending = null
+                retries = 0
+                if (roomId != null && roomId != event.room.id) seenMessageIds.clear()
+                roomId = event.room.id
                 val room = event.room
                 listener.onEvent(TikTokConnectionEvent.Connected(
-                    TikTokAccount(room.username, room.displayName),
-                    TikTokLiveRoom(room.id, room.title),
-                ))
-                listener.onEvent(TikTokConnectionEvent.AudienceUpdated(room.viewerCount))
+                    TikTokAccount(room.username, room.displayName), TikTokLiveRoom(room.id, room.title)))
+                if (isCurrent(run) && active) listener.onEvent(TikTokConnectionEvent.AudienceUpdated(room.viewerCount))
             }
             is TikTokTransportEvent.AudienceUpdated ->
                 listener.onEvent(TikTokConnectionEvent.AudienceUpdated(event.viewerCount))

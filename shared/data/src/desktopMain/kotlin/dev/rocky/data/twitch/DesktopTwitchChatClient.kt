@@ -167,6 +167,10 @@ class DesktopTwitchChatClient : TwitchChatClient {
             onOpened = { opened -> synchronized(this) {
                 if (isCurrent(run) && attempt == socketAttempt) {
                     pendingSocket = opened
+                    welcomeTask?.cancel(false)
+                    welcomeTask = scheduler.schedule({ synchronized(this) {
+                        if (isCurrent(run) && pendingSocket === opened) scheduleReconnect(run)
+                    } }, 20, TimeUnit.SECONDS)
                 } else {
                     opened.abort()
                 }

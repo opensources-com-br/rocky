@@ -113,9 +113,7 @@ class DesktopKickChatClient internal constructor(
                     listener.onEvent(KickConnectionEvent.Connected(newAccount))
                     refreshAudience()
                 } else {
-                    cleanupExecutor.execute { runCatching {
-                        subscriptions.unsubscribe(newTokens.accessToken, newSubscriptionIds)
-                    } }
+                    cleanupSubscriptions(newTokens, newSubscriptionIds)
                 }
             } }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
         }
@@ -188,7 +186,7 @@ class DesktopKickChatClient internal constructor(
         subscriptionIds = emptyList()
         authorizationCompleted = false
         if (oldTokens != null && oldSubscriptions.isNotEmpty() && !cleanupExecutor.isShutdown) {
-            cleanupExecutor.execute { runCatching { subscriptions.unsubscribe(oldTokens.accessToken, oldSubscriptions) } }
+            cleanupSubscriptions(oldTokens, oldSubscriptions)
         }
         if (notify) emit(KickConnectionPhase.Disconnected)
     }
@@ -202,6 +200,11 @@ class DesktopKickChatClient internal constructor(
 
     private fun emit(phase: KickConnectionPhase, detail: String? = null) =
         listener.onEvent(KickConnectionEvent.PhaseChanged(phase, detail))
+
+    private fun cleanupSubscriptions(oldTokens: KickTokens, ids: List<String>) {
+        val cleanup = Runnable { runCatching { subscriptions.unsubscribe(oldTokens.accessToken, ids) } }
+        if (cleanupExecutor.isShutdown) cleanup.run() else cleanupExecutor.execute(cleanup)
+    }
 
     @Synchronized
     private fun emitForRun(run: Long, event: KickConnectionEvent) {

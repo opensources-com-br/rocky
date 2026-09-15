@@ -15,6 +15,8 @@ internal class TwitchApi(
     private val httpClient: HttpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(15))
         .build(),
+    private val eventsubEndpoint: String = EVENTSUB_ENDPOINT,
+    private val streamsEndpoint: String = STREAMS_ENDPOINT,
 ) {
     fun startDeviceAuthorization(clientId: String): DeviceAuthorization {
         val response = postForm(
@@ -64,7 +66,7 @@ internal class TwitchApi(
     }
 
     fun viewerCount(clientId: String, accessToken: String, userId: String): Int {
-        val request = HttpRequest.newBuilder(URI.create("$STREAMS_ENDPOINT?user_id=${userId.urlEncode()}"))
+        val request = HttpRequest.newBuilder(URI.create("$streamsEndpoint?user_id=${userId.urlEncode()}"))
             .timeout(Duration.ofSeconds(20))
             .header("Authorization", "Bearer $accessToken")
             .header("Client-Id", clientId)
@@ -95,7 +97,7 @@ internal class TwitchApi(
             put("condition", condition)
             put("transport", transport)
         }.toString()
-        val request = HttpRequest.newBuilder(URI.create(EVENTSUB_ENDPOINT))
+        val request = HttpRequest.newBuilder(URI.create(eventsubEndpoint))
             .timeout(Duration.ofSeconds(20))
             .header("Authorization", "Bearer $accessToken")
             .header("Client-Id", clientId)

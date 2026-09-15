@@ -9,6 +9,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class FacebookChatPollerTest {
+    @Test fun unauthorizedHttpResponseIsNeverRetried() = withPoller { poller ->
+        commentStatus = 401
+        body = """{"error":{"message":"secret-token","is_transient":true}}"""
+        val failure = assertFailsWith<FacebookRequestFailure> { poller.poll() }
+        assertEquals(false, failure.retryable)
+        assertEquals(false, failure.message.orEmpty().contains("secret-token"))
+    }
+
     @Test fun refreshesAudienceEveryThirtySecondsAndKeepsLastSuccessfulCount() = withPoller { poller ->
         poller.poll()
         now = 29_999

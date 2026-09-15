@@ -67,14 +67,18 @@ class DesktopTikTokChatClientTest {
         assertEquals(TikTokConnectionPhase.Disconnected,
             events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().last().phase)
         assertTrue(events.none { it is TikTokConnectionEvent.AudienceUpdated && it.viewerCount == 99 })
+        client.close()
+    }
+
     }
 }
 
 private class FakeTikTokTransport : TikTokLiveTransport {
-    var connected = false
-    var onEvent: (TikTokTransportEvent) -> Unit = {}
+    @Volatile var connected = false
+    @Volatile var onEvent: (TikTokTransportEvent) -> Unit = {}
+    @Volatile var connectCalls = 0
 
-    override fun connect() { connected = true }
+    override fun connect() { connectCalls++; connected = true }
     override fun disconnect() { connected = false }
     fun emit(event: TikTokTransportEvent) = onEvent(event)
 }
@@ -98,3 +102,9 @@ private fun connected() = TikTokTransportEvent.Connected(TikTokTransportRoom("ro
 private fun comment(id: String = "message") = TikTokTransportEvent.CommentReceived(
     TikTokTransportComment(id, "viewer", "Ana", "Olá", "room", null))
 private fun waitFor(condition: () -> Boolean) {
+    val deadline = System.nanoTime() + 5_000_000_000L
+    while (!condition()) {
+        check(System.nanoTime() < deadline) { "Timed out waiting for TikTok client" }
+        Thread.sleep(5)
+    }
+}

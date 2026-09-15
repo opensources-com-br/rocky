@@ -14,6 +14,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    private fun send(index: Int, type: String, payload: String) {
+        val (socket, listener) = sockets[index]
+        listener.onText(socket, """{"metadata":{"message_type":"$type"},"payload":$payload}""", true)
+    }
+    private fun welcome(index: Int) = send(index, "session_welcome",
+        """{"session":{"id":"session-$index","keepalive_timeout_seconds":30}}""")
+    private fun reconnect() = send(0, "session_reconnect",
+        """{"session":{"reconnect_url":"wss://eventsub.wss.twitch.tv/ws?transfer=exact"}}""")
+    private fun await(condition: () -> Boolean) {
+        repeat(500) { if (condition()) return; Thread.sleep(10) }
+        error("Timed out waiting for Twitch event")
+    }
+
     private val sockets = CopyOnWriteArrayList<Pair<FakeTwitchSocket, WebSocket.Listener>>()
     private val events = CopyOnWriteArrayList<TwitchConnectionEvent>()
     private val requests = CopyOnWriteArrayList<String>()

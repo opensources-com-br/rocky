@@ -18,6 +18,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopKickChatClientTest {
+    @Test fun permissionFailureStopsSessionAndRemovesSubscription() {
+        audienceFailure = 403
+        withClient { client ->
+            authorize(client)
+            await { events.any { it is KickConnectionEvent.PhaseChanged && it.phase == KickConnectionPhase.Failed } }
+            await { requests.any { it == "DELETE /subscriptions" } }
+            assertEquals(1, requests.count { it == "GET /channels" })
+        }
+    }
+
     @Test fun renewsAccessTokenAfterUnauthorizedAudienceRequest() {
         audienceFailure = 401
         withClient { client ->

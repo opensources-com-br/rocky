@@ -161,3 +161,40 @@ No actionable P0/P1/P2 visual issues were found in the comparison pass.
 Follow-up gaps: real-device microphone/audio verification, catalog loading against ElevenLabs, keyboard-only operation, VoiceOver, larger text scaling, English screenshots, and native desktop click-through were not exercised. This is not a full accessibility audit. Other tabs and menu-bar behavior are outside scope.
 
 final result: passed
+
+# Platform settings — grouped macOS-style layout (2026-09-15)
+
+## Source and evidence
+
+- Source pattern: `/tmp/rocky-voice-qa-20260915/implementation-voice-local.png` (780 × 680 px) and `implementation-settings-voice.png` (462 × 820 px), continuing the Apple-inspired Agent/AI settings layout.
+- Implementation: `/tmp/rocky-platforms-qa-20260915/implementation-platforms-wide.png` (780 × 680 px) and `implementation-platforms-compact.png` (462 × 820 px).
+- Additional checkpoints in the same directory: `implementation-platforms-twitch-advanced.png`, `implementation-platforms-authorization.png`, `implementation-platforms-kick.png`, `implementation-platforms-youtube.png`, `implementation-platforms-facebook.png`, `implementation-platforms-tiktok.png` (780 × 680 px); `implementation-platforms-compact-kick.png`, `implementation-platforms-compact-facebook.png`, `implementation-platforms-compact-tiktok.png`, `implementation-platforms-after-tab-change.png` (462 × 820 px).
+- Native Compose viewports at 1× density, dark theme, Portuguese. No downsampling; CSS viewport and web-browser capture are not applicable. These are temporary checkpoint screenshots.
+- Source and implementation were opened together in the same comparison inputs at original resolution. Each platform and the compact credential/authorization states were inspected. Text and icons were readable without further crops.
+- This adapts the established grouped layout to service-specific connection forms, not a content clone. Different card heights and offscreen neighboring content during vertical scrolling are intentional.
+
+## Findings and comparison history
+
+- [P2, corrected] Cross-tab scroll position could hide the Twitch connection button after visiting the bottom of AI settings. Regression tests exposed this after the shorter platform layout. `SettingsContent` now scopes its scroll state to the selected section. `implementation-platforms-after-tab-change.png` shows Twitch's action visible immediately after switching from the scrolled AI tab; the regression test and existing automatic-analysis tests pass.
+- The initial visual comparison found no additional P0/P1/P2 appearance issues. After the scroll fix, the source and freshly captured wide/compact implementations were compared again. No actionable P0/P1/P2 issues remain.
+
+## Required fidelity surfaces
+
+- Fonts/typography: existing Rocky sans-serif hierarchy is retained, with secondary platform group headings/help, readable connection status, and body-sized field values. Long OAuth/webhook guidance wraps at both widths without collisions.
+- Spacing/layout: shared 12 dp elevated cards, 16 dp content padding, inset dividers, and 18 dp group gaps match Voice. Each platform has its own status header, form, and connection actions. Redundant introductory headings and decorative status dots were removed. Twitch setup guidance now stays with its advanced credentials.
+- Colors/tokens: existing surface, border, text, focus, and accent tokens are reused. Connection state colors remain service-specific. Disabled connect actions and masked credential fields retain their behavior.
+- Image quality/assets/icons: no raster imagery is required. Existing Material credential-visibility and settings-navigation icons remain; no imitation logos, generated assets, or text-glyph icons were added.
+- Copy/content: app-registration links, OAuth callback/webhook guidance, YouTube/Facebook setup guidance, Twitch token lifecycle notice, and TikTok's public-connection explanation remain represented. All five service names remain clearly visible as group titles.
+
+## Interaction verification and checklist
+
+- [x] Preserve Twitch, Kick, YouTube, Facebook, and TikTok connection/disconnection callbacks and validation.
+- [x] Preserve secret masking/reveal and Twitch advanced expansion/authorization code/browser action.
+- [x] Verify edited Kick credentials reach its client using a fake service.
+- [x] Inspect wide and compact cards, empty/disabled fields, and authorization state.
+- [x] Correct cross-tab scrolling and test the initial visible connection action.
+- [x] Pass the complete UI test suite, additional capture/regression tests, and desktop compilation.
+
+The first full-suite run found one stale heading assertion and the two cross-tab-scroll regressions described above; both causes were corrected before the passing run. No production authentication requests or real credentials were used. Follow-up gaps: live OAuth/browser click-through, real platform APIs, keyboard-only operation, VoiceOver, enlarged text, and English screenshots. This is not a full accessibility audit. Menu-bar behavior and other settings layouts are outside this design change.
+
+final result: passed

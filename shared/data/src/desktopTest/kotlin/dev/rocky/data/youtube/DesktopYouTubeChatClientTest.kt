@@ -19,6 +19,7 @@ import kotlin.test.assertTrue
 class DesktopYouTubeChatClientTest {
     @Test fun connectsToTheActiveBroadcastAndReceivesChat() = connectAndReceive()
     @Test fun recoversAfterTemporaryFailureWithoutReauthorizing() = connectAndReceive(true)
+    @Test fun disconnectCancelsRetryAndSuppressesMessages() = connectAndReceive(true, true)
 
     private fun connectAndReceive(failFirstComment: Boolean = false, stopBeforeRetry: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }

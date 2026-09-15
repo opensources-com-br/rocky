@@ -32,7 +32,7 @@ class DesktopFacebookChatClientTest {
     @Test fun connectsToTheActivePageAndReceivesComments() = connectAndReceive()
     @Test fun recoversAfterTemporaryCommentFailureWithoutReauthorizing() = connectAndReceive(true)
 
-    private fun connectAndReceive(failFirstComment: Boolean = false) {
+    private fun connectAndReceive(failFirstComment: Boolean = false, stopBeforeRetry: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
         val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
             createContext("/") { exchange ->
@@ -59,6 +59,15 @@ class DesktopFacebookChatClientTest {
                 URI.create("http://127.0.0.1:$callbackPort/oauth/facebook/callback?code=code&state=$state"),
             ).GET().build()
             assertEquals(200, HttpClient.newHttpClient().send(callback, HttpResponse.BodyHandlers.ofString()).statusCode())
+
+            if (stopBeforeRetry) {
+                await { requests.any { "/live/comments" in it } }
+                client.disconnect()
+                Thread.sleep(2_200)
+                assertEquals(1, requests.count { "/live/comments" in it })
+                assertTrue(events.none { it is FacebookConnectionEvent.MessageReceived })
+                return
+            }
 
             await { events.any { it is FacebookConnectionEvent.MessageReceived } }
             await { events.any { it is FacebookConnectionEvent.AudienceUpdated } }

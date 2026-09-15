@@ -41,6 +41,25 @@ class DesktopTikTokChatClient internal constructor(
         }.onFailure { fail(run, it.userMessage()) }
     }
 
+    private fun startAttempt(run: Long, username: String) {
+        if (!isCurrent(run) || !active) return
+        val token = ++attempt
+        pending = worker.schedule({
+            if (valid(run, token)) retry(run, username, "A conexão com o TikTok excedeu o tempo de espera.")
+        }, connectionTimeoutMillis, TimeUnit.MILLISECONDS)
+        runCatching {
+            transport = transportFactory.create(username) { event ->
+                dispatch { if (valid(run, token)) receive(run, username, event) }
+            }
+            if (!valid(run, token)) {
+                cleanup()
+                return
+            }
+            transport?.connect()
+        }.onFailure { retry(run, username, "Não foi possível abrir a conexão com o TikTok.") }
+    }
+
+    private fun receive(run: Long, username: String, event: TikTokTransportEvent) {
         when (event) {
             TikTokTransportEvent.Reconnecting ->
                 emit(TikTokConnectionPhase.Reconnecting, "Reconectando ao chat do TikTok")

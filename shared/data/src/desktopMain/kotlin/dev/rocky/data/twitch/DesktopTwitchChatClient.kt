@@ -231,19 +231,21 @@ class DesktopTwitchChatClient internal constructor(
     }
 
     private fun subscribeToChat(webSocket: WebSocket, sessionId: String, run: Long) {
+        val subscriptionClientId = clientId
+        val currentAccount = account ?: return
+        val subscriptionTokens = tokens ?: return
         submitIo(run) {
             if (!isCurrent(run) || socket !== webSocket) return@submitIo
             runCatching {
-                val currentAccount = requireNotNull(account)
-                var currentTokens = requireNotNull(tokens)
+                var currentTokens = subscriptionTokens
                 try {
-                    api.subscribeToChat(clientId, currentTokens.accessToken, currentAccount, sessionId)
+                    api.subscribeToChat(subscriptionClientId, currentTokens.accessToken, currentAccount, sessionId)
                 } catch (error: TwitchApiException) {
                     if (error.statusCode != 401) throw error
-                    currentTokens = api.refreshTokens(clientId, currentTokens.refreshToken)
+                    currentTokens = api.refreshTokens(subscriptionClientId, currentTokens.refreshToken)
                     if (!isCurrent(run)) return@submitIo
                     synchronized(this) { if (isCurrent(run)) tokens = currentTokens }
-                    api.subscribeToChat(clientId, currentTokens.accessToken, currentAccount, sessionId)
+                    api.subscribeToChat(subscriptionClientId, currentTokens.accessToken, currentAccount, sessionId)
                 }
             }.onSuccess { synchronized(this) {
                 if (isCurrent(run) && socket === webSocket) markConnected(run)

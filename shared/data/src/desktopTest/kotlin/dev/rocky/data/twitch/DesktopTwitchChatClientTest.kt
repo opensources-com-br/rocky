@@ -14,6 +14,20 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun transfersOnlyAfterWelcomeWithoutCreatingAnotherSubscription() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        welcome(0)
+        await { events.any { it is TwitchConnectionEvent.Connected } }
+        reconnect()
+        assertEquals(2, sockets.size)
+        assertEquals(false, sockets[0].first.closed)
+        assertEquals("wss://eventsub.wss.twitch.tv/ws?transfer=exact", urls.last())
+        welcome(1)
+        assertEquals(true, sockets[0].first.closed)
+        assertEquals(1, requests.count { it == "POST" })
+    }
+
     private fun send(index: Int, type: String, payload: String) {
         val (socket, listener) = sockets[index]
         listener.onText(socket, """{"metadata":{"message_type":"$type"},"payload":$payload}""", true)

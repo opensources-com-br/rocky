@@ -6,6 +6,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class FacebookRetryTest {
+    @Test fun classifiesGraphErrorsWithoutRetryingExpiredTokens() {
+        assertEquals(true, FacebookPayloads.retryableError("""{"error":{"is_transient":true}}"""))
+        assertEquals(true, FacebookPayloads.retryableError("""{"error":{"code":4}}"""))
+        assertEquals(false, FacebookPayloads.retryableError("""{"error":{"code":190,"is_transient":true}}"""))
+        assertEquals(false, FacebookPayloads.retryableError("""{"error":{"code":200}}"""))
+        assertNull(FacebookPayloads.retryableError("unavailable"))
+    }
+
     @Test fun respectsServerRetryDelay() {
         assertEquals(60_000L, facebookRetryDelay(FacebookRequestFailure(true, 60_000), 1))
     }

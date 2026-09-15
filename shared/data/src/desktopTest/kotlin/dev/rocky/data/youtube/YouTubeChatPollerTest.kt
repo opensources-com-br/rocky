@@ -9,6 +9,21 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class YouTubeChatPollerTest {
+    @Test fun retainsAudienceAfterFailureAndRefreshesEveryThirtySeconds() = withPoller { poller ->
+        poller.poll()
+        now = 29_999
+        poller.poll()
+        assertEquals(listOf<Int?>(42), audience)
+        now = 30_000
+        audienceStatus = 503
+        poller.poll()
+        assertEquals(listOf<Int?>(42), audience)
+        now = 60_000
+        audienceStatus = 200
+        poller.poll()
+        assertEquals(listOf<Int?>(42, 42), audience)
+    }
+
     @Test fun stopsOnOfflineResponseAfterDeliveringFinalMessages() = withPoller { poller ->
         body = """{"offlineAt":"2026-09-15T22:00:00Z","items":[{"id":"last","snippet":{"displayMessage":"Tchau"},"authorDetails":{"displayName":"Ana"}}]}"""
         val failure = assertFailsWith<YouTubeApiException> { poller.poll() }

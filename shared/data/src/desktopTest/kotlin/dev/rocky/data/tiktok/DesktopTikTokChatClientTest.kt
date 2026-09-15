@@ -70,6 +70,26 @@ class DesktopTikTokChatClientTest {
         client.close()
     }
 
+    @Test
+    fun reconnectsWithFreshTransportAndPreservesDeduplication() = fixture().use { f ->
+        f.connect()
+        val first = f.transports.first()
+        val lateCallback = first.onEvent
+        first.emit(connected())
+        first.emit(comment())
+        waitFor { f.messages().size == 1 }
+        first.emit(TikTokTransportEvent.Disconnected("network"))
+        first.emit(TikTokTransportEvent.Failed("duplicate error"))
+        waitFor { f.transports.size == 2 && f.transports.last().connected }
+        assertFalse(first.connected)
+        f.transports.last().emit(connected())
+        f.transports.last().emit(comment())
+        f.transports.last().emit(comment("new-message"))
+        lateCallback(comment("stale-message"))
+        waitFor { f.messages().size == 2 }
+        assertEquals(listOf("message", "new-message"), f.messages().map { it.message.id })
+        assertEquals(1, f.events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().count { it.phase == TikTokConnectionPhase.Reconnecting })
+    }
     }
 }
 

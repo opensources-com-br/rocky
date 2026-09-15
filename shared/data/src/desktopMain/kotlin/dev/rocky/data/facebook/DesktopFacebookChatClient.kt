@@ -97,14 +97,17 @@ class DesktopFacebookChatClient internal constructor(
         }
     }
 
+    @Synchronized
     private fun schedulePoll(run: Long, delayMillis: Long) {
         if (!isCurrent(run) || scheduler.isShutdown) return
-        scheduler.schedule({
+        pendingPoll?.cancel(false)
+        pendingPoll = scheduler.schedule({
             if (isCurrent(run) && !ioExecutor.isShutdown) ioExecutor.execute { poll(run) }
         }, delayMillis, TimeUnit.MILLISECONDS)
     }
 
     private fun poll(run: Long) {
+        if (!isCurrent(run)) return
         runCatching { requireNotNull(poller).poll() }
             .onSuccess { if (isCurrent(run)) schedulePoll(run, it) }
             .onFailure { if (isCurrent(run)) fail(run, it.userMessage()) }
@@ -117,9 +120,13 @@ class DesktopFacebookChatClient internal constructor(
         ioExecutor.awaitTermination(3, TimeUnit.SECONDS)
     }
 
+    @Synchronized
     private fun stop(notify: Boolean) {
         active = false
         generation.incrementAndGet()
+        pendingPoll?.cancel(false)
+        pendingPoll = null
+        retryAttempt = 0
         receiver?.close()
         receiver = null
         poller = null

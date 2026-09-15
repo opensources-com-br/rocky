@@ -8,11 +8,12 @@ import java.time.Duration
 
 internal class KickEventSubscriptions(
     private val httpClient: HttpClient = HttpClient.newHttpClient(),
+    private val endpoint: String = ENDPOINT,
 ) {
     fun subscribeToChat(accessToken: String): List<String> {
         val response = send(
             accessToken = accessToken,
-            request = HttpRequest.newBuilder(URI.create(ENDPOINT))
+            request = HttpRequest.newBuilder(URI.create(endpoint))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(
                     """{"events":[{"name":"chat.message.sent","version":1}],"method":"webhook"}""",
@@ -28,7 +29,7 @@ internal class KickEventSubscriptions(
     fun unsubscribe(accessToken: String, subscriptionIds: List<String>) {
         if (subscriptionIds.isEmpty()) return
         val query = subscriptionIds.joinToString("&") { "id=${it.urlEncode()}" }
-        send(accessToken, HttpRequest.newBuilder(URI.create("$ENDPOINT?$query")).DELETE())
+        send(accessToken, HttpRequest.newBuilder(URI.create("$endpoint?$query")).DELETE())
     }
 
     private fun send(accessToken: String, request: HttpRequest.Builder): String {

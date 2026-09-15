@@ -45,6 +45,13 @@ class KickLocalReceiverTest {
                 .header("Kick-Event-Signature", signature)
                 .header("Kick-Event-Type", "chat.message.sent")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
+            if (invalidFirst) {
+                val invalid = "{}"
+                val bad = builder.setHeader("Kick-Event-Signature", sign(keys.private, timestamp, invalid))
+                    .POST(HttpRequest.BodyPublishers.ofString(invalid)).build()
+                assertEquals(400, client.send(bad, HttpResponse.BodyHandlers.ofString()).statusCode())
+                builder.setHeader("Kick-Event-Signature", signature).POST(HttpRequest.BodyPublishers.ofString(body))
+            }
             val request = builder.build()
             assertEquals(204, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
             assertEquals(204, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())

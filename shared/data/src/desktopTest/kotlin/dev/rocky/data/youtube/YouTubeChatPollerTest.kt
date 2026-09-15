@@ -40,6 +40,7 @@ class YouTubeChatPollerTest {
     private var body = """{"items":[],"nextPageToken":"next","pollingIntervalMillis":45000}"""
     private var now = 0L
     private var status = 200
+    private var audienceStatus = 200
     private val requests = mutableListOf<String>()
     private val messages = mutableListOf<String>()
     private val audience = mutableListOf<Int?>()
@@ -49,7 +50,8 @@ class YouTubeChatPollerTest {
             requests += exchange.requestURI.toString()
             val bytes = (if (exchange.requestURI.path == "/videos")
                 """{"items":[{"liveStreamingDetails":{"concurrentViewers":"42"}}]}""" else body).toByteArray()
-            exchange.sendResponseHeaders(status, bytes.size.toLong())
+            exchange.sendResponseHeaders(if (exchange.requestURI.path == "/videos") audienceStatus else status,
+                bytes.size.toLong())
             exchange.responseBody.use { it.write(bytes) }
         }
         server.start()

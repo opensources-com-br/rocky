@@ -6,6 +6,7 @@ import dev.rocky.core.youtube.YouTubeAccount
 import dev.rocky.core.youtube.YouTubeBroadcast
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -86,5 +87,5 @@ internal object YouTubePayloads {
     private fun String.firstItem() = items().first()
     private fun JsonObject.objectAt(name: String) = requireNotNull(this[name]) { "Missing YouTube object: $name" }.jsonObject
     private fun JsonObject.string(name: String) = requireNotNull(optionalString(name)) { "Missing YouTube field: $name" }
-    private fun JsonObject.optionalString(name: String) = this[name]?.jsonPrimitive?.content
+    private fun JsonObject.optionalString(name: String) = this[name]?.jsonPrimitive?.contentOrNull
 }

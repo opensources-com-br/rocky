@@ -14,12 +14,15 @@ internal class FacebookChatPoller(
 ) {
     private val seenMessageIds = LinkedHashSet<String>()
     private var lastAudienceRefreshAt = Long.MIN_VALUE
+    private var idlePolls = 0
 
     fun poll(): Long {
         val page = api.comments(liveVideo.id, pageAccessToken)
-        page.messages.forEach { message -> if (remember(message.id)) onMessage(message) }
+        val messages = page.messages.filter { remember(it.id) }
+        messages.forEach(onMessage)
+        idlePolls = if (messages.isEmpty()) (idlePolls + 1).coerceAtMost(3) else 0
         refreshAudienceIfNeeded()
-        return POLL_INTERVAL_MILLIS
+        return POLL_INTERVAL_MILLIS + idlePolls * 1_000L
     }
 
     private fun refreshAudienceIfNeeded() {
@@ -28,7 +31,6 @@ internal class FacebookChatPoller(
         lastAudienceRefreshAt = now
         runCatching { api.viewerCount(liveVideo.id, pageAccessToken) }
             .onSuccess(onAudience)
-            .onFailure { onAudience(null) }
     }
 
     private fun remember(id: String): Boolean {

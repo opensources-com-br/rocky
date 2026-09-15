@@ -100,20 +100,11 @@ class DesktopTikTokChatClient internal constructor(
     private fun emit(phase: TikTokConnectionPhase, detail: String? = null) =
         listener.onEvent(TikTokConnectionEvent.PhaseChanged(phase, detail))
 
-    private fun fail(run: Long, message: String) {
-        if (!isCurrent(run)) return
-        active = false
-        transport?.disconnect()
-        transport = null
-        emit(TikTokConnectionPhase.Failed, message)
+    private fun dispatch(action: () -> Unit) {
+        try { worker.execute(action) } catch (_: RejectedExecutionException) {
+            // Late library callbacks after close are deliberately ignored.
+        }
     }
 
-    private fun isCurrent(run: Long) = active && generation.get() == run
-
-    private fun Throwable.userMessage() = message?.takeIf(String::isNotBlank)
-        ?: "Não foi possível conectar com o TikTok."
-
-    private companion object {
-        const val MAX_SEEN_MESSAGES = 1_000
-    }
+    private companion object { const val MAX_SEEN_MESSAGES = 1_000 }
 }

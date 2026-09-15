@@ -6,6 +6,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class YouTubeRetryTest {
+    @Test fun parsesErrorReasonsAndSanitizesMessages() {
+        val body = """{"error":{"errors":[{"reason":"rateLimitExceeded"}],"message":"secret"}}"""
+        assertEquals(setOf("rateLimitExceeded"), YouTubePayloads.errorReasons(body))
+        assertEquals(emptySet(), YouTubePayloads.errorReasons("unavailable"))
+        assertEquals(false, YouTubeApiException(403, "secret").message.orEmpty().contains("secret"))
+    }
+
     @Test fun respectsRetryAfterAndRetriesServiceFailures() {
         assertEquals(60_000L, youtubeRetryDelay(YouTubeApiException(503, null, retryAfterMillis = 60_000), 1))
         assertEquals(2000L, youtubeRetryDelay(YouTubeApiException(429, null), 1))

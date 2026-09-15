@@ -333,12 +333,9 @@ class DesktopTwitchChatClient : TwitchChatClient {
             runCatching {
                 api.viewerCount(audienceClientId, currentTokens.accessToken, currentAccount.userId)
             }.onSuccess { viewerCount ->
-                if (isCurrent(run)) listener.onEvent(TwitchConnectionEvent.AudienceUpdated(viewerCount))
+                emitForRun(run, TwitchConnectionEvent.AudienceUpdated(viewerCount))
             }
-            .onFailure {
-                if (isCurrent(run)) listener.onEvent(TwitchConnectionEvent.AudienceUpdated(null))
-            }
-            if (isCurrent(run)) audienceRefreshRunning = false
+            synchronized(this) { if (isCurrent(run)) audienceRefreshRunning = false }
         }
     }
 
@@ -358,14 +355,14 @@ class DesktopTwitchChatClient : TwitchChatClient {
                     validate = { api.validate(it) },
                     refresh = { api.refreshTokens(validationClientId, it) },
                 )
-            }.onSuccess { refreshed ->
+            }.onSuccess { refreshed -> synchronized(this) {
                 if (isCurrent(run)) {
                     tokens = refreshed
                     lastValidationAt = System.currentTimeMillis()
                     validationRetryAttempt = 0
                     validationRunning = false
                 }
-            }.onFailure { error ->
+            } }.onFailure { error -> synchronized(this) {
                 if (isCurrent(run)) {
                     validationRunning = false
                     if (error.requiresNewTwitchAuthorization()) {
@@ -378,7 +375,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                         )
                     }
                 }
-            }
+            } }
         }
     }
 

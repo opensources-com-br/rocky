@@ -21,7 +21,9 @@ class KickLocalReceiverTest {
             Base64.getEncoder().encodeToString(sign())
         }
 
-    @Test fun acceptsCallbackAndSignedChatOnce() {
+    @Test fun acceptsCallbackAndSignedChatOnce() = receiveSignedChat()
+
+    private fun receiveSignedChat(invalidFirst: Boolean = false) {
         val port = ServerSocket(0).use { it.localPort }
         val keys = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
         val pem = "-----BEGIN PUBLIC KEY-----\n${Base64.getMimeEncoder().encodeToString(keys.public.encoded)}\n-----END PUBLIC KEY-----"
@@ -37,12 +39,13 @@ class KickLocalReceiverTest {
             val body = """{"message_id":"01ABC","broadcaster":{"user_id":42},"sender":{"user_id":9,"username":"viewer"},"content":"Olá","created_at":"2026-09-12T12:00:00Z"}"""
             val timestamp = Instant.now().toString()
             val signature = sign(keys.private, timestamp, body)
-            val request = HttpRequest.newBuilder(URI.create("http://localhost:$port/webhooks/kick"))
+            val builder = HttpRequest.newBuilder(URI.create("http://localhost:$port/webhooks/kick"))
                 .header("Kick-Event-Message-Id", "01ABC")
                 .header("Kick-Event-Message-Timestamp", timestamp)
                 .header("Kick-Event-Signature", signature)
                 .header("Kick-Event-Type", "chat.message.sent")
-                .POST(HttpRequest.BodyPublishers.ofString(body)).build()
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+            val request = builder.build()
             assertEquals(204, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
             assertEquals(204, client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode())
         }

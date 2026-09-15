@@ -41,7 +41,12 @@ class DesktopKickChatClient internal constructor(
     private var audienceRetryAttempt = 0
     @Volatile private var closed = false
 
-    init { scheduler.scheduleAtFixedRate(::refreshAudience, 30, 30, TimeUnit.SECONDS) }
+    @Synchronized
+    private fun scheduleAudience(run: Long, delayMillis: Long) {
+        if (!isCurrent(run) || scheduler.isShutdown) return
+        pendingAudience?.cancel(false)
+        pendingAudience = scheduler.schedule({ refreshAudience(run) }, delayMillis, TimeUnit.MILLISECONDS)
+    }
 
     @Synchronized
     override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
@@ -117,15 +122,15 @@ class DesktopKickChatClient internal constructor(
     }
 
     @Synchronized
-    private fun refreshAudience() {
-        val run = generation.get()
+    private fun refreshAudience(run: Long = generation.get()) {
         val currentTokens = tokens ?: return
         if (!isCurrent(run) || account == null) return
-        ioExecutor.execute {
+        val current = configuration
+        pendingRequest = ioExecutor.submit {
+            if (!isCurrent(run)) return@submit
             runCatching { api.viewerCount(currentTokens.accessToken) }
                 .recoverCatching { error ->
                     if (error !is KickApiException || error.statusCode != 401) throw error
-                    val current = configuration
                     val refreshed = api.refresh(current.clientId, current.clientSecret, currentTokens.refreshToken)
                     if (isCurrent(run)) tokens = refreshed
                     api.viewerCount(refreshed.accessToken)

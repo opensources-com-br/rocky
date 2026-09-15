@@ -64,7 +64,7 @@ class DesktopFacebookChatClient internal constructor(
         }.onSuccess { uri ->
             if (isCurrent(run)) {
                 emit(FacebookConnectionPhase.AwaitingAuthorization, "Autorize a Página no navegador")
-                listener.onEvent(FacebookConnectionEvent.AuthorizationRequired(uri))
+                emitForRun(run, FacebookConnectionEvent.AuthorizationRequired(uri))
             }
         }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
     }
@@ -94,8 +94,8 @@ class DesktopFacebookChatClient internal constructor(
                         api,
                         access.accessToken,
                         live,
-                        onMessage = { if (isCurrent(run)) listener.onEvent(FacebookConnectionEvent.MessageReceived(it)) },
-                        onAudience = { if (isCurrent(run)) listener.onEvent(FacebookConnectionEvent.AudienceUpdated(it)) },
+                        onMessage = { emitForRun(run, FacebookConnectionEvent.MessageReceived(it)) },
+                        onAudience = { emitForRun(run, FacebookConnectionEvent.AudienceUpdated(it)) },
                     )
                     listener.onEvent(FacebookConnectionEvent.Connected(access.page, live))
                     schedulePoll(run, 0)
@@ -156,6 +156,11 @@ class DesktopFacebookChatClient internal constructor(
 
     private fun emit(phase: FacebookConnectionPhase, detail: String? = null) =
         listener.onEvent(FacebookConnectionEvent.PhaseChanged(phase, detail))
+
+    @Synchronized
+    private fun emitForRun(run: Long, event: FacebookConnectionEvent) {
+        if (isCurrent(run)) listener.onEvent(event)
+    }
 
     @Synchronized
     private fun fail(run: Long, message: String) {

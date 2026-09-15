@@ -14,4 +14,6 @@ From the repository root:
 ./gradlew :apps:desktop:run
 ```
 
-The current window uses native decorations for dragging, resizing, and system minimize controls. Use the native title bar for minimizing and closing. Rocky provides always-on-top and compact controls, plus a global shortcut to show/hide the window. Expanded bounds are persisted; initial expanded size is 462 × 900 dp, settings 462 × 820 dp and compact 340 × 180 dp, subject to the available display area.
+On macOS, Rocky starts as a menu bar app without a Dock icon. Its menu provides `Rocky` to open the main window, `Settings` to open configuration, and `Quit` to finish the session and exit. Closing the window keeps Rocky running in the menu bar.
+
+On Windows, the app keeps its existing window lifecycle for now. The window uses native decorations for dragging, resizing, and system minimize controls. Rocky provides always-on-top and compact controls, plus a global shortcut to show/hide the window. Expanded bounds are persisted; initial expanded size is 462 × 900 dp, settings 462 × 820 dp and compact 340 × 180 dp, subject to the available display area.

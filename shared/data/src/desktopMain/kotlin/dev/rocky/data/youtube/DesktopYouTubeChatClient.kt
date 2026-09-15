@@ -132,16 +132,24 @@ class DesktopYouTubeChatClient internal constructor(
 
     override fun disconnect() = stop(notify = true)
 
+    @Synchronized
     override fun close() {
+        if (closed) return
+        closed = true
         stop(notify = false)
         scheduler.shutdownNow()
         ioExecutor.shutdownNow()
-        ioExecutor.awaitTermination(3, TimeUnit.SECONDS)
     }
 
+    @Synchronized
     private fun stop(notify: Boolean) {
         active = false
         generation.incrementAndGet()
+        pendingPoll?.cancel(false)
+        pendingPoll = null
+        pendingRequest?.cancel(true)
+        pendingRequest = null
+        retryAttempt = 0
         receiver?.close()
         receiver = null
         poller = null
@@ -160,7 +168,7 @@ class DesktopYouTubeChatClient internal constructor(
         emit(YouTubeConnectionPhase.Failed, message)
     }
 
-    private fun isCurrent(run: Long) = active && generation.get() == run
+    private fun isCurrent(run: Long) = !closed && active && generation.get() == run
     private fun Throwable.userMessage() = message?.takeIf { it.isNotBlank() }
         ?: "Não foi possível conectar com o YouTube."
 }

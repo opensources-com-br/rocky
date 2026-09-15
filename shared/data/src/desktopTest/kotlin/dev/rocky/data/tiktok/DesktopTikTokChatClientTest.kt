@@ -181,6 +181,17 @@ class DesktopTikTokChatClientTest {
         }
     }
 
+    @Test
+    fun classifiesLibraryErrorsWithoutExposingPrivateDetails() {
+        val offline = connectionFailure(RuntimeException(TikTokLiveOfflineHostException("private payload", null, null)))!!
+        assertFalse(offline.retryable)
+        assertFalse(offline.message.contains("private"))
+        assertNull(connectionFailure(TikTokMessageMappingException("malformed message", RuntimeException())))
+        val network = connectionFailure(java.io.IOException("secret URL or response"))!!
+        assertTrue(network.retryable)
+        assertFalse(network.message.contains("secret"))
+    }
+
     }
 }
 

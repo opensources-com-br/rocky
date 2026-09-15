@@ -2,6 +2,7 @@ package dev.rocky.ui.window
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,6 +65,12 @@ import dev.rocky.ui.theme.RockyColors
 import dev.rocky.ui.theme.RockyTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+typealias RockySettingsWindowHost = @Composable (
+    visible: Boolean,
+    onCloseRequest: () -> Unit,
+    content: @Composable () -> Unit,
+) -> Unit
 
 @Composable
 fun RockyWindow(
@@ -145,6 +152,7 @@ fun RockyWindow(
     initialSettingsSectionIndex: Int = 0,
     settingsRequestRevision: Int = 0,
     mainRequestRevision: Int = 0,
+    settingsWindow: RockySettingsWindowHost? = null,
 ) {
     RockyTheme {
         var settingsOpen by remember { mutableStateOf(initialSettingsOpen) }
@@ -460,7 +468,155 @@ fun RockyWindow(
             }
         }
 
+        val closeSettings = {
+            settingsOpen = false
+            onSettingsVisibilityChanged(false)
+        }
+
+        @Composable
+        fun ColumnScope.SettingsPanel() {
+            SettingsHeading(onDone = closeSettings)
+            SettingsNavigation(settingsSection) { settingsSection = it }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                when (settingsSection) {
+                    SettingsSection.Agent -> AgentSettings(
+                        agent = agent,
+                        language = language,
+                        onLanguageChange = {
+                            language = it
+                            onLanguageChange(it)
+                        },
+                    )
+                    SettingsSection.Data -> DataSettings(
+                        localNotes, dataDirectoryLabel, buildLabel,
+                        onBackup = onBackup, onChooseImport = onChooseImport,
+                        updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
+                        updateDownload = updateDownload,
+                        updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive ||
+                            tiktok.isActive || liveConnected,
+                        checkUpdatesOnStart = checkUpdatesOnStart,
+                        onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
+                        diagnosticReport = {
+                            listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "Kick: ${kick.phase}",
+                                "YouTube: ${youtube.phase}", "Facebook: ${facebook.phase}", "TikTok: ${tiktok.phase}",
+                                "AI: ${ai.configuration.provider}",
+                                "AI configured: ${ai.isReady}", "Completed requests: ${ai.completedRequests}",
+                                "Last request ms: ${ai.lastDurationMillis}", "Filtered messages: ${ai.filteredCount}",
+                                "Voice ready: ${voice.transcriptionReady}", "Microphone active: ${voice.capturing}",
+                                "Saved records: ${localNotes.notes.size}", "Database load failed: ${localNotes.loadFailed}",
+                                "No keys, channel names, paths or message contents included.").joinToString("\n")
+                        },
+                        onOpenDataDirectory = onOpenDataDirectory,
+                        onExportNotes = { localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) } },
+                        onResetSettings = {
+                            if (finishLive()) {
+                                onResetSettings()
+                                ai.updateApiKey("")
+                            }
+                        },
+                        onRemoveModel = {
+                            voice.disableListener(); voice.cancelTranscriptionSetup(); voice.cancelCapture()
+                            onRemoveManagedVoiceModel()
+                            voice.updateWhisperModel("")
+                        },
+                    )
+                    SettingsSection.Ai -> AiSettings(ai)
+                    SettingsSection.Voice -> Column {
+                        ShortcutSettings(shortcutKeys, shortcutStatus, onShortcutKeysChange)
+                        VoiceSettings(voice, agent.displayName, onChooseWhisperExecutable, onChooseWhisperModel)
+                    }
+                    SettingsSection.Platforms -> PlatformSettings(
+                        clientId = twitchClientId,
+                        onClientIdChange = { value ->
+                            twitchClientId = value
+                            onTwitchClientIdChange(value)
+                        },
+                        twitch = twitch,
+                        onConnect = {
+                            if (finishLive()) {
+                                silenced = false
+                                twitch.connect(twitchClientId)
+                            }
+                        },
+                        onDisconnect = {
+                            silenced = false
+                            finishLive()
+                        },
+                        onOpenBrowser = onOpenTwitchAuthorization,
+                        kickConfiguration = kickConfiguration,
+                        kick = kick,
+                        onConnectKick = { configuration ->
+                            if (finishLive()) {
+                                silenced = false
+                                kickConfiguration = configuration
+                                onKickConfigurationChange(configuration)
+                                kick.connect(configuration)
+                            }
+                        },
+                        onDisconnectKick = {
+                            silenced = false
+                            finishLive()
+                        },
+                        onOpenKickBrowser = onOpenKickAuthorization,
+                        youtubeConfiguration = youtubeConfiguration,
+                        youtube = youtube,
+                        onConnectYouTube = { configuration ->
+                            if (finishLive()) {
+                                silenced = false
+                                youtubeConfiguration = configuration
+                                onYouTubeConfigurationChange(configuration)
+                                youtube.connect(configuration)
+                            }
+                        },
+                        onDisconnectYouTube = {
+                            silenced = false
+                            finishLive()
+                        },
+                        onOpenYouTubeBrowser = onOpenYouTubeAuthorization,
+                        facebookConfiguration = facebookConfiguration,
+                        facebook = facebook,
+                        onConnectFacebook = { configuration ->
+                            if (finishLive()) {
+                                silenced = false
+                                facebookConfiguration = configuration
+                                onFacebookConfigurationChange(configuration)
+                                facebook.connect(configuration)
+                            }
+                        },
+                        onDisconnectFacebook = {
+                            silenced = false
+                            finishLive()
+                        },
+                        onOpenFacebookBrowser = onOpenFacebookAuthorization,
+                        tiktokConfiguration = tiktokConfiguration,
+                        tiktok = tiktok,
+                        onConnectTikTok = { configuration ->
+                            if (finishLive()) {
+                                silenced = false
+                                tiktokConfiguration = configuration
+                                onTikTokConfigurationChange(configuration)
+                                tiktok.connect(configuration)
+                            }
+                        },
+                        onDisconnectTikTok = {
+                            silenced = false
+                            finishLive()
+                        },
+                    )
+                }
+            }
+        }
+
         CompositionLocalProvider(LocalRockyLanguage provides language) {
+        settingsWindow?.invoke(settingsOpen, closeSettings) {
+            Surface(modifier = Modifier.fillMaxSize(), color = RockyColors.Background) {
+                Column { SettingsPanel() }
+            }
+        }
         if (queueOpen) QuestionQueueDialog(localNotes, workspace.sessionId, { queueOpen = false })
         workspace.summary?.let { text ->
             androidx.compose.material.AlertDialog(onDismissRequest = { workspace.summary = null },
@@ -525,7 +681,7 @@ fun RockyWindow(
                     }
                 }
                 when {
-                    compact && !settingsOpen -> CompactContent(
+                    compact && (!settingsOpen || settingsWindow != null) -> CompactContent(
                         status = sessionStatus,
                         messageCount = visibleMessageCount,
                         suggestion = visibleSuggestion?.text,
@@ -535,147 +691,7 @@ fun RockyWindow(
                             if (silenced) voice.interruptSpeech()
                         },
                     )
-                    settingsOpen -> {
-                        SettingsHeading(
-                            onDone = {
-                                settingsOpen = false
-                                onSettingsVisibilityChanged(false)
-                            },
-                        )
-                        SettingsNavigation(settingsSection) { settingsSection = it }
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState()),
-                        ) {
-                            when (settingsSection) {
-                                SettingsSection.Agent -> AgentSettings(
-                                    agent = agent,
-                                    language = language,
-                                    onLanguageChange = {
-                                        language = it
-                                        onLanguageChange(it)
-                                    },
-                                )
-                                SettingsSection.Data -> DataSettings(
-                                    localNotes, dataDirectoryLabel, buildLabel,
-                                    onBackup = onBackup, onChooseImport = onChooseImport,
-                                    updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
-                                    updateDownload = updateDownload,
-                                    updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive ||
-                                        tiktok.isActive || liveConnected,
-                                    checkUpdatesOnStart = checkUpdatesOnStart,
-                                    onCheckUpdatesOnStart = { checkUpdatesOnStart = it; onCheckUpdatesOnStartChange(it) },
-                                    diagnosticReport = {
-                                        listOf("Rocky $buildLabel", "Twitch: ${twitch.phase}", "Kick: ${kick.phase}",
-                                            "YouTube: ${youtube.phase}", "Facebook: ${facebook.phase}", "TikTok: ${tiktok.phase}",
-                                            "AI: ${ai.configuration.provider}",
-                                            "AI configured: ${ai.isReady}", "Completed requests: ${ai.completedRequests}",
-                                            "Last request ms: ${ai.lastDurationMillis}", "Filtered messages: ${ai.filteredCount}",
-                                            "Voice ready: ${voice.transcriptionReady}", "Microphone active: ${voice.capturing}",
-                                            "Saved records: ${localNotes.notes.size}", "Database load failed: ${localNotes.loadFailed}",
-                                            "No keys, channel names, paths or message contents included.").joinToString("\n")
-                                    },
-                                    onOpenDataDirectory = onOpenDataDirectory,
-                                    onExportNotes = { localNotes.export { notes -> onExportNotes(notes.filter { it.tag != IDEA_TAG }) } },
-                                    onResetSettings = {
-                                        if (finishLive()) {
-                                            onResetSettings()
-                                            ai.updateApiKey("")
-                                        }
-                                    },
-                                    onRemoveModel = {
-                                        voice.disableListener(); voice.cancelTranscriptionSetup(); voice.cancelCapture()
-                                        onRemoveManagedVoiceModel()
-                                        voice.updateWhisperModel("")
-                                    },
-                                )
-                                SettingsSection.Ai -> AiSettings(ai)
-                                SettingsSection.Voice -> Column {
-                                    ShortcutSettings(shortcutKeys, shortcutStatus, onShortcutKeysChange)
-                                    VoiceSettings(voice, agent.displayName, onChooseWhisperExecutable, onChooseWhisperModel)
-                                }
-                                SettingsSection.Platforms -> PlatformSettings(
-                                    clientId = twitchClientId,
-                                    onClientIdChange = { value ->
-                                        twitchClientId = value
-                                        onTwitchClientIdChange(value)
-                                    },
-                                    twitch = twitch,
-                                    onConnect = {
-                                        if (finishLive()) {
-                                            silenced = false
-                                            twitch.connect(twitchClientId)
-                                        }
-                                    },
-                                    onDisconnect = {
-                                        silenced = false
-                                        finishLive()
-                                    },
-                                    onOpenBrowser = onOpenTwitchAuthorization,
-                                    kickConfiguration = kickConfiguration,
-                                    kick = kick,
-                                    onConnectKick = { configuration ->
-                                        if (finishLive()) {
-                                            silenced = false
-                                            kickConfiguration = configuration
-                                            onKickConfigurationChange(configuration)
-                                            kick.connect(configuration)
-                                        }
-                                    },
-                                    onDisconnectKick = {
-                                        silenced = false
-                                        finishLive()
-                                    },
-                                    onOpenKickBrowser = onOpenKickAuthorization,
-                                    youtubeConfiguration = youtubeConfiguration,
-                                    youtube = youtube,
-                                    onConnectYouTube = { configuration ->
-                                        if (finishLive()) {
-                                            silenced = false
-                                            youtubeConfiguration = configuration
-                                            onYouTubeConfigurationChange(configuration)
-                                            youtube.connect(configuration)
-                                        }
-                                    },
-                                    onDisconnectYouTube = {
-                                        silenced = false
-                                        finishLive()
-                                    },
-                                    onOpenYouTubeBrowser = onOpenYouTubeAuthorization,
-                                    facebookConfiguration = facebookConfiguration,
-                                    facebook = facebook,
-                                    onConnectFacebook = { configuration ->
-                                        if (finishLive()) {
-                                            silenced = false
-                                            facebookConfiguration = configuration
-                                            onFacebookConfigurationChange(configuration)
-                                            facebook.connect(configuration)
-                                        }
-                                    },
-                                    onDisconnectFacebook = {
-                                        silenced = false
-                                        finishLive()
-                                    },
-                                    onOpenFacebookBrowser = onOpenFacebookAuthorization,
-                                    tiktokConfiguration = tiktokConfiguration,
-                                    tiktok = tiktok,
-                                    onConnectTikTok = { configuration ->
-                                        if (finishLive()) {
-                                            silenced = false
-                                            tiktokConfiguration = configuration
-                                            onTikTokConfigurationChange(configuration)
-                                            tiktok.connect(configuration)
-                                        }
-                                    },
-                                    onDisconnectTikTok = {
-                                        silenced = false
-                                        finishLive()
-                                    },
-                                )
-                            }
-                        }
-                    }
+                    settingsOpen && settingsWindow == null -> SettingsPanel()
                     firstUseOpen -> {
                         Box(
                             modifier = Modifier

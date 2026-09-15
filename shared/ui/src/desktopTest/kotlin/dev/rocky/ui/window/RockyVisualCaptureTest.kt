@@ -968,7 +968,7 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Buscar").performTextReplacement("Dados")
         assertEquals(1, rule.onAllNodesWithText("Agente").fetchSemanticsNodes().size)
         rule.onAllNodesWithText("Dados")[1].performClick()
-        rule.onNodeWithText("Dados e privacidade").assertExists()
+        rule.onNodeWithText("Privacidade e armazenamento").assertExists()
     }
 
     @Test
@@ -1210,6 +1210,76 @@ class RockyVisualCaptureTest {
         capture("implementation-platforms-after-tab-change.png")
     }
 
+    @Test
+    fun capturesAndExercisesGroupedDataSettings() {
+        val repository = TransientNoteRepository()
+        repository.save(LiveNote("existing", "Registro salvo", "now", "test"))
+        var backup = emptyList<LiveNote>()
+        var diagnostics = ""
+        var startupUpdates = false
+        var resetCount = 0
+        var removeCount = 0
+        var openedDirectory = false
+        render(settingsOpen = true, settingsSection = SettingsSection.Data, noteRepository = repository,
+            onBackup = { backup = it; true },
+            onChooseImport = { listOf(LiveNote("incoming", "Registro importado", "now", "test")) },
+            onExportDiagnostic = { diagnostics = it; true },
+            onCheckUpdatesOnStartChange = { startupUpdates = it },
+            onResetSettings = { resetCount++ }, onRemoveManagedVoiceModel = { removeCount++ },
+            onOpenDataDirectory = { openedDirectory = true },
+            windowWidth = 780.dp, windowHeight = 680.dp, mainWindow = {},
+            settingsWindow = { visible, _, content -> if (visible) content() })
+        capture("implementation-data-wide.png", "rocky-settings-window")
+        rule.onNodeWithText("Abrir pasta de dados").performClick()
+        assertTrue(openedDirectory)
+        rule.onNodeWithText("Exportar backup").performScrollTo().performClick()
+        assertEquals("existing", backup.single().id)
+        rule.onNodeWithText("Backup salvo.").assertExists()
+        rule.onNodeWithText("Importar backup").performScrollTo().performClick()
+        rule.onNodeWithText("Cancelar").performClick()
+        assertEquals(1, repository.getAll().size)
+        rule.onNodeWithText("Importar backup").performScrollTo().performClick()
+        rule.onNodeWithText("Importar").performClick()
+        assertEquals(2, repository.getAll().size)
+        rule.onNodeWithText("Verificar atualizações").performScrollTo().performClick()
+        rule.waitUntil(5_000) { rule.onAllNodesWithText("Nenhuma versão mais recente no seu canal.").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("data-startup-updates").performScrollTo().performClick()
+        assertTrue(startupUpdates)
+        capture("implementation-data-updates.png", "rocky-settings-window")
+        rule.onNodeWithText("Prévia do diagnóstico").performScrollTo().performClick()
+        rule.onNodeWithText("Diagnóstico local").assertIsDisplayed()
+        rule.onNodeWithText("Exportar").performClick()
+        assertTrue(diagnostics.contains("Saved records: 2"))
+        rule.onNodeWithText("Diagnóstico salvo.").assertExists()
+        rule.onNodeWithText("Gerenciamento de dados").performScrollTo()
+        rule.onNodeWithText("Remover modelo de voz").performScrollTo()
+        capture("implementation-data-management.png", "rocky-settings-window")
+        rule.onNodeWithText("Redefinir configurações").performScrollTo().performClick()
+        capture("implementation-data-confirmation.png", "data-confirmation")
+        rule.onNodeWithText("Cancelar").performClick()
+        assertEquals(0, resetCount)
+        rule.onNodeWithText("Remover modelo de voz").performScrollTo().performClick()
+        rule.onNodeWithText("Cancelar").performClick()
+        assertEquals(0, removeCount)
+        rule.onNodeWithText("Remover modelo de voz").performScrollTo().performClick()
+        rule.onNodeWithText("Confirmar").performClick()
+        assertEquals(1, removeCount)
+        assertEquals(2, repository.getAll().size)
+        rule.onNodeWithText("Redefinir configurações").performScrollTo().performClick()
+        rule.onNodeWithText("Confirmar").performClick()
+        assertEquals(1, resetCount)
+        assertEquals(2, repository.getAll().size)
+    }
+
+    @Test
+    fun capturesCompactDataSettingsAndDisabledDeletion() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Data)
+        capture("implementation-data-compact.png")
+        rule.onNodeWithText("Apagar notas").performScrollTo().assertIsNotEnabled()
+        rule.onNodeWithText("Remover modelo de voz").performScrollTo()
+        capture("implementation-data-compact-management.png")
+    }
+
     private fun render(
         compact: Boolean = false,
         mainSection: MainSection = MainSection.Conversation,
@@ -1231,6 +1301,13 @@ class RockyVisualCaptureTest {
         aiSuggestionClient: AiSuggestionClient? = null,
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
+        onBackup: (List<LiveNote>) -> Boolean = { false },
+        onChooseImport: () -> List<LiveNote>? = { null },
+        onExportDiagnostic: (String) -> Boolean = { false },
+        onCheckUpdatesOnStartChange: (Boolean) -> Unit = {},
+        onResetSettings: () -> Unit = {},
+        onRemoveManagedVoiceModel: () -> Unit = {},
+        onOpenDataDirectory: () -> Unit = {},
         onVoiceConfigurationChange: (VoiceConfiguration) -> Unit = {},
         onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
         firstUseOpen: Boolean = false,
@@ -1269,6 +1346,14 @@ class RockyVisualCaptureTest {
                         initialTikTokConfiguration = tiktokConfiguration,
                         onExportNotes = onExportNotes,
                         onExportIdeas = onExportIdeas,
+                        onBackup = onBackup,
+                        onChooseImport = onChooseImport,
+                        onExportDiagnostic = onExportDiagnostic,
+                        onCheckUpdatesOnStartChange = onCheckUpdatesOnStartChange,
+                        onResetSettings = onResetSettings,
+                        onRemoveManagedVoiceModel = onRemoveManagedVoiceModel,
+                        onOpenDataDirectory = onOpenDataDirectory,
+                        dataDirectoryLabel = "/Users/example/Library/Application Support/Rocky",
                         initialMainSectionIndex = mainSection.ordinal,
                         initialSettingsOpen = settingsOpen,
                         onSettingsVisibilityChanged = { showingSettings = it },

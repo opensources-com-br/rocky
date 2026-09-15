@@ -198,3 +198,39 @@ final result: passed
 The first full-suite run found one stale heading assertion and the two cross-tab-scroll regressions described above; both causes were corrected before the passing run. No production authentication requests or real credentials were used. Follow-up gaps: live OAuth/browser click-through, real platform APIs, keyboard-only operation, VoiceOver, enlarged text, and English screenshots. This is not a full accessibility audit. Menu-bar behavior and other settings layouts are outside this design change.
 
 final result: passed
+
+# Data settings — grouped macOS-style layout (2026-09-15)
+
+## Source and evidence
+
+- Selected source pattern: `/tmp/rocky-platforms-qa-20260915/implementation-platforms-wide.png` (780 × 680 px) and `implementation-platforms-compact.png` (462 × 820 px), continuing the Apple-inspired grouped settings layout.
+- Implementation: `/tmp/rocky-data-qa-20260915/implementation-data-wide.png` (780 × 680 px) and `implementation-data-compact.png` (462 × 820 px).
+- Additional checkpoints: `implementation-data-updates.png`, `implementation-data-management.png` (780 × 680 px), `implementation-data-compact-management.png` (462 × 820 px), and content-only `implementation-data-confirmation.png` (580 × 178 px) in the same directory.
+- Native Compose viewports at 1× density, Portuguese, dark theme. No downsampling; CSS sizes/browser capture do not apply. Paths are temporary checkpoint captures and may not persist.
+- Reference and implementation were opened together in the same comparison inputs, including compact and scrolled management/update states. Text and controls were readable at original resolution, so further detail crops were unnecessary. The confirmation is an additional interaction checkpoint, not a full-window reference comparison.
+- This is a visual-pattern adaptation, not a content clone of Platforms. Privacy explanations, backups, updates, diagnostics, and data management naturally have different card heights. Scrolling and partially visible neighboring cards are intentional.
+
+## Findings and required fidelity surfaces
+
+No actionable P0/P1/P2 visual issues were found; the initial comparison required no visual corrections.
+
+- Fonts/typography: Rocky's existing sans-serif hierarchy is retained. Group captions, body-sized labels/values, and secondary explanations are consistent with Platforms. Long explanatory copy wraps without overlapping actions; the longer note-export button intentionally wraps in the wide 190 dp action column.
+- Spacing/layout: shared 12 dp cards, 16 dp internal padding, inset dividers, 20 dp page margins, and 18 dp group gaps match the source pattern. Management actions align in wide rows and stack at compact width; privacy and the data-directory action are grouped, and update download/install controls remain inside Updates.
+- Colors/tokens: existing elevated/background/border/text/accent tokens are reused. Destructive actions and their confirmation use the existing red close/action token; disabled note actions retain disabled styling. Their descriptions and confirmation remain explicit, so color is not the sole warning.
+- Image quality/assets/icons: the form requires no raster assets. Existing settings-navigation Material icons remain; no generated assets, replacement artwork, or imitation icons were added.
+- Copy/content: local SQLite/chat lifetime, selected AI context, Keychain/DPAPI and Twitch token guidance, backup credential exclusion, installer behavior, and deletion limitations remain available. New headings distinguish routine transfer from destructive management. Existing action labels and confirmation consequences remain intact.
+
+## Interaction verification and checklist
+
+- [x] Verify folder-open and backup-export callbacks, including success feedback.
+- [x] Verify import cancellation preserves records and confirmed import adds records.
+- [x] Verify update check and startup-update preference with fake/no-network callbacks.
+- [x] Verify diagnostic preview/export and its success feedback.
+- [x] Verify cancellation prevents settings/model actions; confirmed reset/model removal invoke the correct callbacks and preserve notes.
+- [x] Preserve the existing delete-notes confirmation test and disabled deletion when there are no notes.
+- [x] Inspect wide/compact, scrolled management, and destructive confirmation captures.
+- [x] Pass complete `:shared:ui:desktopTest` suite and `:apps:desktop:compileKotlinJvm`.
+
+The first complete run exposed one stale sidebar-test heading assertion, updated to the new privacy group. The final complete suite passes. Tests use transient records and mock maintenance callbacks: no real user data, model, credentials, or filesystem was deleted. Existing installer-state tests also pass; actual downloads/installers, OS file dialogs, external backup files, VoiceOver, keyboard-only operation, larger text, and English captures were not exercised. This is not a full accessibility audit.
+
+final result: passed

@@ -90,6 +90,21 @@ class DesktopTikTokChatClientTest {
         assertEquals(listOf("message", "new-message"), f.messages().map { it.message.id })
         assertEquals(1, f.events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().count { it.phase == TikTokConnectionPhase.Reconnecting })
     }
+
+    @Test
+    fun stopsAfterBoundedRetriesAndIgnoresLateEvents() = fixture(delays = listOf(10, 20)).use { f ->
+        f.connect()
+        repeat(3) { index ->
+            waitFor { f.transports.size == index + 1 && f.transports[index].connected }
+            f.transports[index].emit(TikTokTransportEvent.Failed("temporary"))
+        }
+        waitFor { f.phase() == TikTokConnectionPhase.Failed }
+        f.transports.last().emit(comment())
+        assertTrue(f.messages().isEmpty())
+        assertEquals(3, f.transports.size)
+        assertFalse(f.transports.last().connected)
+    }
+
     }
 }
 

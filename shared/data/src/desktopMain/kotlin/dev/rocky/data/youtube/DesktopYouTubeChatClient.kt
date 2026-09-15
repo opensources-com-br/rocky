@@ -111,15 +111,21 @@ class DesktopYouTubeChatClient internal constructor(
         }
     }
 
+    @Synchronized
     private fun schedulePoll(run: Long, delayMillis: Long) {
         if (!isCurrent(run) || scheduler.isShutdown) return
-        scheduler.schedule({
-            if (isCurrent(run) && !ioExecutor.isShutdown) ioExecutor.execute { poll(run) }
-        }, delayMillis, TimeUnit.MILLISECONDS)
+        pendingPoll?.cancel(false)
+        pendingPoll = scheduler.schedule({ synchronized(this) {
+            if (isCurrent(run) && !ioExecutor.isShutdown) pendingRequest = ioExecutor.submit { poll(run) }
+        } }, delayMillis, TimeUnit.MILLISECONDS)
     }
 
     private fun poll(run: Long) {
-        runCatching { requireNotNull(poller).poll() }
+        val currentPoller = synchronized(this) {
+            if (!isCurrent(run)) return
+            requireNotNull(poller)
+        }
+        runCatching { currentPoller.poll() }
             .onSuccess { if (isCurrent(run)) schedulePoll(run, it) }
             .onFailure { if (isCurrent(run)) fail(run, it.userMessage()) }
     }

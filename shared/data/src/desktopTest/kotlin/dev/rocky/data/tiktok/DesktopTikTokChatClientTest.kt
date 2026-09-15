@@ -132,6 +132,14 @@ class DesktopTikTokChatClientTest {
         }
     }
 
+    @Test
+    fun timesOutAnAttemptThatNeverConnects() = fixture(delays = listOf(10), timeout = 40).use { f ->
+        f.connect()
+        waitFor { f.phase() == TikTokConnectionPhase.Failed }
+        assertEquals(2, f.transports.size)
+        assertTrue(f.transports.none { it.connected })
+    }
+
     }
 }
 

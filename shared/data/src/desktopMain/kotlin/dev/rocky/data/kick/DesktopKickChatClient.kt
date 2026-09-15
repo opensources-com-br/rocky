@@ -132,11 +132,17 @@ class DesktopKickChatClient internal constructor(
                 .recoverCatching { error ->
                     if (error !is KickApiException || error.statusCode != 401) throw error
                     val refreshed = api.refresh(current.clientId, current.clientSecret, currentTokens.refreshToken)
-                    if (isCurrent(run)) tokens = refreshed
+                    synchronized(this) { if (isCurrent(run)) tokens = refreshed }
                     api.viewerCount(refreshed.accessToken)
                 }
-                .onSuccess { if (isCurrent(run)) listener.onEvent(KickConnectionEvent.AudienceUpdated(it)) }
-                .onFailure { if (isCurrent(run)) listener.onEvent(KickConnectionEvent.AudienceUpdated(null)) }
+                .onSuccess { count -> synchronized(this) {
+                    if (isCurrent(run)) {
+                        audienceRetryAttempt = 0
+                        emitForRun(run, KickConnectionEvent.AudienceUpdated(count))
+                        scheduleAudience(run, 30_000)
+                    }
+                } }
+                .onFailure { handleAudienceFailure(run, it) }
         }
     }
 

@@ -66,7 +66,7 @@ class DesktopYouTubeChatClient internal constructor(
         }.onSuccess { uri ->
             if (isCurrent(run)) {
                 emit(YouTubeConnectionPhase.AwaitingAuthorization, "Autorize o canal no navegador")
-                listener.onEvent(YouTubeConnectionEvent.AuthorizationRequired(uri))
+                emitForRun(run, YouTubeConnectionEvent.AuthorizationRequired(uri))
             }
         }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
     }
@@ -100,8 +100,8 @@ class DesktopYouTubeChatClient internal constructor(
                         liveApi,
                         access,
                         broadcast,
-                        onMessage = { if (isCurrent(run)) listener.onEvent(YouTubeConnectionEvent.MessageReceived(it)) },
-                        onAudience = { if (isCurrent(run)) listener.onEvent(YouTubeConnectionEvent.AudienceUpdated(it)) },
+                        onMessage = { emitForRun(run, YouTubeConnectionEvent.MessageReceived(it)) },
+                        onAudience = { emitForRun(run, YouTubeConnectionEvent.AudienceUpdated(it)) },
                         currentTimeMillis = currentTimeMillis,
                     )
                     listener.onEvent(YouTubeConnectionEvent.Connected(account, broadcast))
@@ -166,6 +166,11 @@ class DesktopYouTubeChatClient internal constructor(
 
     private fun emit(phase: YouTubeConnectionPhase, detail: String? = null) =
         listener.onEvent(YouTubeConnectionEvent.PhaseChanged(phase, detail))
+
+    @Synchronized
+    private fun emitForRun(run: Long, event: YouTubeConnectionEvent) {
+        if (isCurrent(run)) listener.onEvent(event)
+    }
 
     @Synchronized
     private fun fail(run: Long, message: String) {

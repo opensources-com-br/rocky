@@ -128,3 +128,36 @@ No actionable P0/P1/P2 visual issues remain for this layout adaptation.
 Follow-up test gaps: keyboard-only navigation, VoiceOver, larger text scaling, native desktop click-through, and English AI screenshots were not part of this pass. This is not a full accessibility audit. Window chrome, other tabs, and menu-bar translucency are outside this change.
 
 final result: passed
+
+# Voice settings — grouped macOS-style layout (2026-09-15)
+
+## Source and evidence
+
+- Selected source pattern: AI captures `/tmp/rocky-ai-qa-20260915/implementation-ai-local.png` (780 × 680 px) and `implementation-settings-ai.png` (462 × 820 px), continuing the Apple-inspired Agent layout.
+- Implementation checkpoints: `/tmp/rocky-voice-qa-20260915/implementation-voice-local.png` (780 × 680 px) and `implementation-settings-voice.png` (462 × 820 px).
+- Expanded states in the same directory: `implementation-voice-recognition.png`, `implementation-voice-detection.png`, `implementation-voice-diagnostics.png`, `implementation-voice-cloud.png` (780 × 680 px); `implementation-voice-compact-recognition.png` and `implementation-voice-compact-diagnostics.png` (462 × 820 px).
+- Native Compose viewports at 1× density, Portuguese, dark theme. CSS viewport and web-browser QA do not apply. Temporary checkpoint files may not persist.
+- Source and implementation images were opened together in the same comparison inputs, including compact and expanded states. Text, fields, chevrons, sliders, and switches were readable at original resolution without extra crops.
+- This adapts the established grouping and visual hierarchy to Voice rather than cloning AI's content. Vertical scrolling and partially visible neighboring cards in scrolled captures are intentional; the wide sidebar/header and compact tab bar remain fixed.
+
+## Findings and required fidelity surfaces
+
+No actionable P0/P1/P2 visual issues were found in the comparison pass.
+
+- Fonts/typography: existing Rocky sans-serif styling is retained, with secondary group headings/help, medium row labels, and right-aligned slider values. Long recognition and volume descriptions wrap without colliding with controls at either width.
+- Spacing/layout: shared 12 dp group surfaces, 16 dp internal padding, inset dividers, and 190 dp menus match AI. Playback, microphone input, detection, conversation testing, and diagnostics are separated. Whisper paths and audio timings are collapsed initially to reduce density. Advanced path fields and browse buttons fit the compact width.
+- Colors/tokens: existing background, elevated surface, border, text, and accent tokens are reused. Fields use dark backgrounds and accent focus borders; disabled conversation/catalog actions retain disabled styling. Existing volume availability behavior is unchanged.
+- Image quality/assets/icons: no raster assets are required. Existing Material chevrons and selected-item checkmarks are used; no generated artwork or imitation icons were added.
+- Copy/content: cloud-processing/credit and OBS notices remain. Recognition describes the agent wake name, silence detection, maximum phrase length, and capture pause. System fallback, local setup, manual model paths, and telemetry remain accessible. Shortcut settings remain absent.
+
+## Interaction verification
+
+- New tests exercise system voice and microphone selection, suggestion reading, playback, manual recognition paths, detection toggle, expanded diagnostics, ElevenLabs selection, editable voice/model IDs, and local fallback.
+- Compact tests open recognition and diagnostics; existing tests still cover automatic recognition setup and a complete transcribe/respond conversation.
+- Fake devices/services are used; no real microphone capture, cloud requests, account credits, or secrets are involved in this QA.
+- Complete `:shared:ui:desktopTest` suite and `:apps:desktop:compileKotlinJvm` pass.
+- Initial visual comparison required no P0/P1/P2 code corrections. Additional scrolled checkpoints exposed lower/expanded content at both supported sizes.
+
+Follow-up gaps: real-device microphone/audio verification, catalog loading against ElevenLabs, keyboard-only operation, VoiceOver, larger text scaling, English screenshots, and native desktop click-through were not exercised. This is not a full accessibility audit. Other tabs and menu-bar behavior are outside scope.
+
+final result: passed

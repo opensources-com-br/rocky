@@ -148,18 +148,27 @@ class DesktopKickChatClient internal constructor(
 
     override fun disconnect() = stop(notify = true)
 
+    @Synchronized
     override fun close() {
+        if (closed) return
+        closed = true
         stop(notify = false)
         scheduler.shutdownNow()
-        ioExecutor.shutdown()
-        if (!ioExecutor.awaitTermination(3, TimeUnit.SECONDS)) ioExecutor.shutdownNow()
+        ioExecutor.shutdownNow()
+        cleanupExecutor.shutdown()
     }
 
+    @Synchronized
     private fun stop(notify: Boolean) {
         val oldTokens = tokens
         val oldSubscriptions = subscriptionIds
         active = false
         generation.incrementAndGet()
+        pendingAudience?.cancel(false)
+        pendingAudience = null
+        pendingRequest?.cancel(true)
+        pendingRequest = null
+        audienceRetryAttempt = 0
         receiver?.close()
         receiver = null
         tokens = null
@@ -188,7 +197,7 @@ class DesktopKickChatClient internal constructor(
         if (isCurrent(run)) listener.onEvent(event)
     }
 
-    private fun isCurrent(run: Long) = active && generation.get() == run
+    private fun isCurrent(run: Long) = !closed && active && generation.get() == run
     private fun Throwable.userMessage() = message?.takeIf { it.isNotBlank() }
         ?: "Não foi possível conectar com a Kick."
 }

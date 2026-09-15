@@ -14,9 +14,19 @@ import java.net.http.HttpResponse
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class DesktopYouTubeChatClientTest {
+    @Test fun closingTwiceIsSafeAndRejectsFurtherConnections() {
+        val client = DesktopYouTubeChatClient()
+        client.close()
+        client.close()
+        assertFailsWith<IllegalStateException> {
+            client.connect(YouTubeConfiguration("client", "secret"), {})
+        }
+    }
+
     @Test fun connectsToTheActiveBroadcastAndReceivesChat() = connectAndReceive()
     @Test fun recoversAfterTemporaryFailureWithoutReauthorizing() = connectAndReceive(true)
     @Test fun disconnectCancelsRetryAndSuppressesMessages() = connectAndReceive(true, true)

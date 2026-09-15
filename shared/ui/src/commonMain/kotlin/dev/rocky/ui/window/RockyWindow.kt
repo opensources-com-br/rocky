@@ -1,12 +1,16 @@
 package dev.rocky.ui.window
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -479,12 +483,10 @@ fun RockyWindow(
         }
 
         @Composable
-        fun ColumnScope.SettingsPanel() {
-            SettingsHeading(onDone = closeSettings)
-            SettingsNavigation(settingsSection) { settingsSection = it }
+        fun SettingsContent() {
             Box(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
             ) {
                 when (settingsSection) {
@@ -616,9 +618,40 @@ fun RockyWindow(
             }
         }
 
+        @Composable
+        fun ColumnScope.SettingsPanel() {
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                if (maxWidth >= 680.dp) {
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        SettingsSidebar(
+                            selected = settingsSection,
+                            onSelect = { settingsSection = it },
+                            onDone = closeSettings,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(1.dp)
+                                .background(RockyColors.Border),
+                        )
+                        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                            SettingsSectionHeading(settingsSection)
+                            Box(modifier = Modifier.weight(1f)) { SettingsContent() }
+                        }
+                    }
+                } else {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        SettingsHeading(onDone = closeSettings)
+                        SettingsNavigation(settingsSection) { settingsSection = it }
+                        Box(modifier = Modifier.weight(1f)) { SettingsContent() }
+                    }
+                }
+            }
+        }
+
         CompositionLocalProvider(LocalRockyLanguage provides language) {
         settingsWindow?.invoke(settingsOpen, closeSettings) {
-            Surface(modifier = Modifier.fillMaxSize(), color = RockyColors.Background) {
+            Surface(modifier = Modifier.fillMaxSize().testTag("rocky-settings-window"), color = RockyColors.Background) {
                 Column { SettingsPanel() }
             }
         }

@@ -18,6 +18,7 @@ import kotlin.test.assertTrue
 
 class DesktopYouTubeChatClientTest {
     @Test fun connectsToTheActiveBroadcastAndReceivesChat() = connectAndReceive()
+    @Test fun recoversAfterTemporaryFailureWithoutReauthorizing() = connectAndReceive(true)
 
     private fun connectAndReceive(failFirstComment: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
@@ -57,6 +58,10 @@ class DesktopYouTubeChatClientTest {
             assertTrue(events.any { it is YouTubeConnectionEvent.Connected && it.account.displayName == "Rocky" })
             assertTrue(events.any { it is YouTubeConnectionEvent.AudienceUpdated && it.viewerCount == 42 })
             assertEquals("Olá do YouTube", events.filterIsInstance<YouTubeConnectionEvent.MessageReceived>().single().message.text)
+            if (failFirstComment) {
+                assertEquals(2, requests.count { it == "/liveChat/messages" })
+                assertEquals(1, requests.count { it == "/token" })
+            }
         } finally {
             client.close()
             api.stop(0)
@@ -84,7 +89,7 @@ class DesktopYouTubeChatClientTest {
     }
 
     private fun await(condition: () -> Boolean) {
-        repeat(200) {
+        repeat(800) {
             if (condition()) return
             Thread.sleep(10)
         }

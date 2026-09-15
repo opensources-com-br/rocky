@@ -4,6 +4,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TwitchWebSocketListenerTest {
+    @Test fun malformedPayloadDoesNotPoisonNextMessage() {
+        val events = mutableListOf<TwitchSocketEvent>()
+        val socket = FakeTwitchSocket()
+        val listener = TwitchWebSocketListener({}, { _, event -> events += event }, { _, _ -> })
+        listener.onText(socket, "invalid", true)
+        listener.onText(socket, """{"metadata":{"message_type":"session_keepalive"},"payload":{}}""", true)
+        assertEquals(listOf<TwitchSocketEvent>(TwitchSocketEvent.Keepalive), events)
+    }
+
     @Test fun abortsOversizedFragmentsAndReportsFailure() {
         val socket = FakeTwitchSocket()
         var failures = 0

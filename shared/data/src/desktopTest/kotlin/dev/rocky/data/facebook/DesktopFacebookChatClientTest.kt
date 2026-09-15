@@ -20,6 +20,7 @@ class DesktopFacebookChatClientTest {
     private val requests = CopyOnWriteArrayList<String>()
 
     @Test fun connectsToTheActivePageAndReceivesComments() = connectAndReceive()
+    @Test fun recoversAfterTemporaryCommentFailureWithoutReauthorizing() = connectAndReceive(true)
 
     private fun connectAndReceive(failFirstComment: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
@@ -55,6 +56,10 @@ class DesktopFacebookChatClientTest {
             assertEquals("Olá do Facebook", events.filterIsInstance<FacebookConnectionEvent.MessageReceived>().single().message.text)
             assertTrue(requests.any { it.startsWith("POST /v25.0/oauth/access_token") })
             assertTrue(requests.none { "secret" in it })
+            if (failFirstComment) {
+                assertEquals(2, requests.count { "/live/comments" in it })
+                assertEquals(1, requests.count { "/oauth/access_token" in it })
+            }
         } finally {
             client.close()
             server.stop(0)

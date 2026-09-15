@@ -97,6 +97,26 @@ class DesktopTikTokChatClient internal constructor(
         if (notify) emit(TikTokConnectionPhase.Disconnected)
     }
 
+    override fun close() {
+        if (!closed.compareAndSet(false, true)) return
+        generation.incrementAndGet()
+        dispatch { active = false; cleanup(); seenMessageIds.clear() }
+        worker.shutdown()
+    }
+
+    private fun finish(message: String) {
+        active = false
+        cleanup()
+        emit(TikTokConnectionPhase.Failed, message)
+    }
+
+    private fun cleanup() {
+        // Invalidate callbacks before disconnect(), including synchronous disconnect events.
+        attempt++
+        pending?.cancel(false)
+        pending = null
+        val previous = transport
+        transport = null
     private fun emit(phase: TikTokConnectionPhase, detail: String? = null) =
         listener.onEvent(TikTokConnectionEvent.PhaseChanged(phase, detail))
 

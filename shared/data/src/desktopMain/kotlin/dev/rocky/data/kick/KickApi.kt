@@ -70,7 +70,11 @@ internal class KickApi(
     }
 
     private fun HttpResponse<String>.requireSuccess(): HttpResponse<String> {
-        if (statusCode() !in 200..299) throw KickApiException(statusCode(), KickPayloads.error(body()))
+        if (statusCode() !in 200..299) {
+            val retryAfter = headers().firstValue("Retry-After").orElse("")
+                .toLongOrNull()?.coerceIn(0, 300)?.times(1_000) ?: 0
+            throw KickApiException(statusCode(), KickPayloads.error(body()), retryAfter)
+        }
         return this
     }
 
@@ -82,5 +86,8 @@ internal class KickApi(
     }
 }
 
-internal class KickApiException(val statusCode: Int, kickMessage: String?) :
-    Exception(kickMessage ?: "Kick request failed with HTTP $statusCode")
+internal class KickApiException(
+    val statusCode: Int,
+    @Suppress("UNUSED_PARAMETER") kickMessage: String?,
+    val retryAfterMillis: Long = 0,
+) : Exception("Não foi possível consultar a Kick (HTTP $statusCode). Verifique a conexão e a autorização.")

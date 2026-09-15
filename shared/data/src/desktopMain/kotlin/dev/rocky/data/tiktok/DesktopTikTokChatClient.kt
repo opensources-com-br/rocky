@@ -2,22 +2,28 @@ package dev.rocky.data.tiktok
 
 import dev.rocky.core.live.ChatMessage
 import dev.rocky.core.live.StreamPlatform
-import dev.rocky.core.tiktok.TikTokAccount
-import dev.rocky.core.tiktok.TikTokChatClient
-import dev.rocky.core.tiktok.TikTokConfiguration
-import dev.rocky.core.tiktok.TikTokConnectionEvent
-import dev.rocky.core.tiktok.TikTokConnectionListener
-import dev.rocky.core.tiktok.TikTokConnectionPhase
-import dev.rocky.core.tiktok.TikTokLiveRoom
+import dev.rocky.core.tiktok.*
 import java.util.LinkedHashSet
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 class DesktopTikTokChatClient internal constructor(
     private val transportFactory: TikTokLiveTransportFactory,
+    private val retryDelaysMillis: List<Long> = listOf(2_000, 4_000, 8_000, 16_000, 30_000),
+    private val connectionTimeoutMillis: Long = 20_000,
 ) : TikTokChatClient {
     constructor() : this(TikTokLiveTransportFactory(::JwTikTokLiveTransport))
 
     private val generation = AtomicLong()
+    private val closed = AtomicBoolean()
+    // Lifecycle and callbacks are serialized; library threads never mutate connection state.
+    private val worker = ScheduledThreadPoolExecutor(1) { task ->
+        Thread(task, "rocky-tiktok-connection").apply { isDaemon = true }
+    }.apply {
+        removeOnCancelPolicy = true
+        setExecuteExistingDelayedTasksAfterShutdownPolicy(false)
+    }
     private val seenMessageIds = LinkedHashSet<String>()
     private var fallbackMessageId = 0L
     private var active = false

@@ -22,6 +22,7 @@ kotlin {
             implementation(project(":platform:desktop"))
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
+            implementation(libs.compose.resources)
         }
 
         jvmMain.dependencies {

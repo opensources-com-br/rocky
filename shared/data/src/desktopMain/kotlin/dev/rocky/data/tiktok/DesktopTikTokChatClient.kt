@@ -58,11 +58,25 @@ class DesktopTikTokChatClient internal constructor(
                 listener.onEvent(TikTokConnectionEvent.AudienceUpdated(event.viewerCount))
             is TikTokTransportEvent.CommentReceived -> receiveComment(event.comment)
             is TikTokTransportEvent.Disconnected ->
-                fail(run, event.reason?.takeIf(String::isNotBlank) ?: "O chat do TikTok foi desconectado.")
-            is TikTokTransportEvent.Failed -> fail(run, event.message)
+                retry(run, username, "A conexão com o chat do TikTok foi interrompida.")
+            is TikTokTransportEvent.Failed ->
+                if (event.retryable) retry(run, username, event.message) else finish(event.message)
+            TikTokTransportEvent.LiveEnded -> finish("A live do TikTok foi encerrada.")
         }
     }
 
+    private fun retry(run: Long, username: String, reason: String) {
+        cleanup()
+        if (!isCurrent(run) || !active) return
+        val delay = retryDelaysMillis.getOrNull(retries)
+        if (delay == null) {
+            finish("$reason Tentativas esgotadas; confira a live e tente conectar novamente.")
+            return
+        }
+        retries++
+        emit(TikTokConnectionPhase.Reconnecting,
+            "$reason Nova tentativa $retries/${retryDelaysMillis.size} em ${delay / 1_000} s.")
+        pending = worker.schedule({ startAttempt(run, username) }, delay, TimeUnit.MILLISECONDS)
     }
 
     private fun receiveComment(comment: TikTokTransportComment) {

@@ -152,6 +152,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         scheduler.shutdownNow()
     }
 
+    @Synchronized
     private fun openSocket(
         url: String,
         run: Long,
@@ -179,6 +180,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
             }
     }
 
+    @Synchronized
     private fun handleSocketEvent(
         webSocket: WebSocket,
         event: TwitchSocketEvent,
@@ -242,6 +244,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         }
     }
 
+    @Synchronized
     private fun markConnected(run: Long) {
         if (!isCurrent(run)) return
         reconnectAttempt = 0
@@ -278,6 +281,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         return true
     }
 
+    @Synchronized
     private fun checkKeepalive() {
         checkTokenValidation()
         checkAudience()
@@ -352,11 +356,10 @@ class DesktopTwitchChatClient : TwitchChatClient {
         }
     }
 
+    @Synchronized
     private fun fail(run: Long, message: String) {
         if (!isCurrent(run)) return
-        active = false
-        socket?.sendClose(WebSocket.NORMAL_CLOSURE, "failed")
-        socket = null
+        stopConnection(notify = false)
         emit(TwitchConnectionPhase.Failed, message)
     }
 

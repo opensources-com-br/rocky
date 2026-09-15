@@ -268,7 +268,7 @@ private val SettingsSection.description: String
     @Composable get() = when (this) {
         SettingsSection.Agent -> tr("Name, language, and how Rocky communicates.", "Nome, idioma e como o Rocky se comunica.")
         SettingsSection.Ai -> tr("Provider, model, and response behavior.", "Provedor, modelo e comportamento das respostas.")
-        SettingsSection.Voice -> tr("Microphone, speech, and keyboard shortcuts.", "Microfone, fala e atalhos de teclado.")
+        SettingsSection.Voice -> tr("Microphone and speech preferences.", "Preferências de microfone e fala.")
         SettingsSection.Platforms -> tr("Accounts and live-streaming connections.", "Contas e conexões com plataformas de live.")
         SettingsSection.Data -> tr("Local data, updates, backups, and privacy.", "Dados locais, atualizações, backups e privacidade.")
     }

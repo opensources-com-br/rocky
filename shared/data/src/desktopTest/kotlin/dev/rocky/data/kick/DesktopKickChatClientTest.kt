@@ -18,6 +18,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopKickChatClientTest {
+    @Test fun closingTwiceIsSafeAndRejectsNewConnections() {
+        val client = DesktopKickChatClient()
+        client.close()
+        client.close()
+        assertFailsWith<IllegalStateException> { client.connect(KickConfiguration("client", "secret"), {}) }
+    }
+
     @Test fun disconnectCancelsAudienceRetries() {
         audienceFailure = 503
         withClient { client ->

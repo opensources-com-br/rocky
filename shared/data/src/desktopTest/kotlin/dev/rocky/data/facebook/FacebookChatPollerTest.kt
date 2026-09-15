@@ -8,6 +8,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class FacebookChatPollerTest {
+    @Test fun slowsDownIdlePollingAndResetsForNewComments() = withPoller { poller ->
+        assertEquals(listOf(3000L, 4000L, 5000L, 5000L), (1..4).map { poller.poll() })
+        body = """{"data":[{"id":"1","message":"Olá"}]}"""
+        assertEquals(2000L, poller.poll())
+        assertEquals(3000L, poller.poll())
+        assertEquals(1, messages.size)
+    }
+
     private var body = """{"data":[]}"""
     private var audienceStatus = 200
     private var now = 0L

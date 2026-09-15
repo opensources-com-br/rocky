@@ -74,6 +74,8 @@ class DesktopTwitchChatClientTest {
     }
     private fun welcome(index: Int) = send(index, "session_welcome",
         """{"session":{"id":"session-$index","keepalive_timeout_seconds":30}}""")
+    private fun message(index: Int, id: String) = send(index, "notification",
+        """{"event":{"message_id":"$id","chatter_user_name":"Ana","message":{"text":"Olá"}}}""")
     private fun reconnect() = send(0, "session_reconnect",
         """{"session":{"reconnect_url":"wss://eventsub.wss.twitch.tv/ws?transfer=exact"}}""")
     private fun await(condition: () -> Boolean) {

@@ -72,6 +72,10 @@ typealias RockySettingsWindowHost = @Composable (
     content: @Composable () -> Unit,
 ) -> Unit
 
+typealias RockyMainWindowHost = @Composable (
+    content: @Composable () -> Unit,
+) -> Unit
+
 @Composable
 fun RockyWindow(
     shortcutKeys: List<Int> = listOf(8, 9, 10),
@@ -153,6 +157,7 @@ fun RockyWindow(
     settingsRequestRevision: Int = 0,
     mainRequestRevision: Int = 0,
     settingsWindow: RockySettingsWindowHost? = null,
+    mainWindow: RockyMainWindowHost? = null,
 ) {
     RockyTheme {
         var settingsOpen by remember { mutableStateOf(initialSettingsOpen) }
@@ -642,6 +647,7 @@ fun RockyWindow(
             },
             onSave = { entry, target -> saveAnswer(entry, target) },
         )
+        val mainContent: @Composable () -> Unit = {
         Surface(
             modifier = Modifier.fillMaxSize().testTag("rocky-window"),
             color = RockyColors.Background,
@@ -869,6 +875,8 @@ fun RockyWindow(
                 }
             }
         }
+        }
+        if (mainWindow == null) mainContent() else mainWindow(mainContent)
         }
     }
 }

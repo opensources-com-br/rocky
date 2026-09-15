@@ -249,7 +249,7 @@ class DesktopTwitchChatClient internal constructor(
                 }
             }.onSuccess { synchronized(this) {
                 if (isCurrent(run) && socket === webSocket) markConnected(run)
-            } }.onFailure { error ->
+            } }.onFailure { error -> synchronized(this) {
                 if (isCurrent(run) && socket === webSocket) {
                     if (error.isTransientTwitchFailure()) {
                         webSocket.abort()
@@ -258,7 +258,7 @@ class DesktopTwitchChatClient internal constructor(
                         fail(run, error.twitchUserMessage("Não foi possível assinar o chat da Twitch."))
                     }
                 }
-            }
+            } }
         }
     }
 

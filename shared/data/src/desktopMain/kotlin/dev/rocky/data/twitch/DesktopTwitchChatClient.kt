@@ -13,6 +13,8 @@ import java.time.Duration
 import java.util.LinkedHashSet
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -72,12 +74,19 @@ class DesktopTwitchChatClient : TwitchChatClient {
 
     private var reconnectAttempt = 0
     private var validationRetryAttempt = 0
+    private var closed = false
+    private val ioTasks = mutableListOf<Future<*>>()
+    private var reconnectTask: ScheduledFuture<*>? = null
+    private var welcomeTask: ScheduledFuture<*>? = null
 
     init {
         scheduler.scheduleAtFixedRate(::checkKeepalive, 5, 5, TimeUnit.SECONDS)
     }
 
+    @Synchronized
     override fun connect(clientId: String, listener: TwitchConnectionListener) {
+        check(!closed) { "O cliente da Twitch já foi encerrado." }
+        require(clientId.isNotBlank()) { "Informe o Client ID da Twitch." }
         stopConnection(notify = false)
         val run = generation.incrementAndGet()
         this.clientId = clientId.trim()
@@ -126,7 +135,10 @@ class DesktopTwitchChatClient : TwitchChatClient {
         stopConnection(notify = true)
     }
 
+    @Synchronized
     override fun close() {
+        if (closed) return
+        closed = true
         stopConnection(notify = false)
         ioExecutor.shutdownNow()
         scheduler.shutdownNow()
@@ -360,7 +372,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
         listener.onEvent(TwitchConnectionEvent.PhaseChanged(phase, detail))
     }
 
-    private fun isCurrent(run: Long): Boolean = active && generation.get() == run
+    private fun isCurrent(run: Long): Boolean = !closed && active && generation.get() == run
 
     private companion object {
         const val DEFAULT_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds=30"

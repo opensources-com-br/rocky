@@ -21,7 +21,7 @@ internal class KickEventSubscriptions(
         )
         return KickPayloads.subscriptionIds(response).also { ids ->
             check(ids.isNotEmpty()) {
-                KickPayloads.subscriptionError(response) ?: "A Kick não criou a assinatura do chat."
+                "A Kick não criou a assinatura do chat. Verifique as permissões e o webhook do aplicativo."
             }
         }
     }

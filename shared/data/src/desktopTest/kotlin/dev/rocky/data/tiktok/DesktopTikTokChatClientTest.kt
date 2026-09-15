@@ -166,6 +166,21 @@ class DesktopTikTokChatClientTest {
         assertTrue(f.phase() != TikTokConnectionPhase.Failed)
     }
 
+    @Test
+    fun retriesTransportCreationFailureWithoutHanging() {
+        val creations = java.util.concurrent.atomic.AtomicInteger()
+        val events = CopyOnWriteArrayList<TikTokConnectionEvent>()
+        DesktopTikTokChatClient(TikTokLiveTransportFactory { _, _ ->
+            creations.incrementAndGet()
+            error("private details")
+        }, listOf(10), 5_000).use { client ->
+            client.connect(TikTokConfiguration("rocky_live"), events::add)
+            waitFor { events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().lastOrNull()?.phase == TikTokConnectionPhase.Failed }
+            assertEquals(2, creations.get())
+            assertFalse(events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().any { it.detail.orEmpty().contains("private") })
+        }
+    }
+
     }
 }
 

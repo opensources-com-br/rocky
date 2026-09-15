@@ -58,6 +58,11 @@ internal class FacebookGraphApi(
     private fun send(request: HttpRequest): String {
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         if (response.statusCode() in 200..299) return response.body()
-        error(FacebookPayloads.error(response.body()) ?: "Facebook respondeu com HTTP ${response.statusCode()}.")
+        val status = response.statusCode()
+        val retryable = status !in setOf(401, 403) &&
+            (FacebookPayloads.retryableError(response.body()) ?: (status == 429 || status in 500..599))
+        val retryAfter = response.headers().firstValue("Retry-After").orElse("")
+            .toLongOrNull()?.coerceIn(0, 300)?.times(1_000) ?: 0
+        throw FacebookRequestFailure(retryable, retryAfter)
     }
 }

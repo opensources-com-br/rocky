@@ -78,6 +78,9 @@ class DesktopTwitchChatClient : TwitchChatClient {
     private val ioTasks = mutableListOf<Future<*>>()
     private var reconnectTask: ScheduledFuture<*>? = null
     private var welcomeTask: ScheduledFuture<*>? = null
+    private var pendingSocket: WebSocket? = null
+    private var socketAttempt = 0L
+    private var socketOpening: Future<*>? = null
 
     init {
         scheduler.scheduleAtFixedRate(::checkKeepalive, 5, 5, TimeUnit.SECONDS)
@@ -159,20 +162,21 @@ class DesktopTwitchChatClient : TwitchChatClient {
         transferFrom: WebSocket? = null,
     ) {
         if (!isCurrent(run)) return
+        val attempt = ++socketAttempt
         val webSocketListener = TwitchWebSocketListener(
-            onOpened = { opened ->
-                if (isCurrent(run)) {
-                    socket = opened
+            onOpened = { opened -> synchronized(this) {
+                if (isCurrent(run) && attempt == socketAttempt) {
+                    pendingSocket = opened
                 } else {
-                    opened.sendClose(WebSocket.NORMAL_CLOSURE, "stale connection")
+                    opened.abort()
                 }
-            },
+            } },
             onEvent = { opened, event -> handleSocketEvent(opened, event, run, transferFrom) },
             onClosed = { closed, _ ->
                 if (isCurrent(run) && socket === closed) scheduleReconnect(run)
             },
         )
-        httpClient.newWebSocketBuilder()
+        socketOpening = httpClient.newWebSocketBuilder()
             .connectTimeout(Duration.ofSeconds(20))
             .buildAsync(URI.create(url), webSocketListener)
             .whenComplete { _, error ->

@@ -264,7 +264,7 @@ class RockyVisualCaptureTest {
             SettingsSection.Agent to "Nome do agente",
             SettingsSection.Ai to "Provedor de IA",
             SettingsSection.Voice to "Velocidade",
-            SettingsSection.Platforms to "Conexão com plataformas",
+            SettingsSection.Platforms to "Twitch",
         )
         settingsSections.forEach { (section, visibleText) ->
             render(settingsOpen = true, settingsSection = section)
@@ -930,7 +930,7 @@ class RockyVisualCaptureTest {
 
         rule.onNodeWithText("Configure o Rocky").assertExists()
         rule.onNodeWithText("Configurar plataforma").performClick()
-        rule.onNodeWithText("Conexão com plataformas").assertExists()
+        rule.onNodeWithText("Twitch").assertExists()
         rule.onNodeWithText("concluir").performClick()
         rule.onNodeWithText("Configure o Rocky").assertExists()
 
@@ -1092,7 +1092,7 @@ class RockyVisualCaptureTest {
         )
         rule.onNodeWithTag("automatic-analysis").performScrollTo().performClick()
         rule.onNodeWithText("Plataformas").performClick()
-        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.onNodeWithText("Conectar Twitch").assertIsDisplayed().performClick()
     }
 
     @Test
@@ -1156,6 +1156,58 @@ class RockyVisualCaptureTest {
         rule.onNodeWithTag("voice-audio-timings").performScrollTo().performClick()
         rule.onNodeWithText("Captura: 0 ms · Transcrição: 0 ms").performScrollTo().assertIsDisplayed()
         capture("implementation-voice-compact-diagnostics.png")
+    }
+
+    @Test
+    fun capturesGroupedPlatformSettings() {
+        val twitch = FakeTwitchChatClient()
+        val kick = FakeKickChatClient()
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms,
+            twitchClientId = "client-id", twitchChatClient = twitch, kickChatClient = kick,
+            windowWidth = 780.dp, windowHeight = 680.dp, mainWindow = {},
+            settingsWindow = { visible, _, content -> if (visible) content() })
+        capture("implementation-platforms-wide.png", "rocky-settings-window")
+        rule.onNodeWithText("Avançado · aplicativo Twitch").performClick()
+        rule.onNodeWithTag("twitch-client-id").assertIsDisplayed()
+        capture("implementation-platforms-twitch-advanced.png", "rocky-settings-window")
+        rule.onNodeWithText("Avançado · aplicativo Twitch").performClick()
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle { twitch.emit(TwitchConnectionEvent.AuthorizationRequired("ABCD-1234", "https://example.test")) }
+        rule.onNodeWithTag("twitch-open-browser").assertIsDisplayed()
+        capture("implementation-platforms-authorization.png", "rocky-settings-window")
+        rule.onNodeWithTag("kick-client-id").performScrollTo().performTextReplacement("edited-client")
+        rule.onNodeWithTag("kick-client-secret").performScrollTo().performTextReplacement("edited-secret")
+        rule.onNodeWithText("Conectar Kick").performScrollTo().performClick()
+        assertEquals("edited-client", kick.lastConfiguration?.clientId)
+        assertEquals("edited-secret", kick.lastConfiguration?.clientSecret)
+        capture("implementation-platforms-kick.png", "rocky-settings-window")
+        rule.onNodeWithTag("youtube-client-secret").performScrollTo().assertIsDisplayed()
+        capture("implementation-platforms-youtube.png", "rocky-settings-window")
+        rule.onNodeWithTag("facebook-app-secret").performScrollTo().assertIsDisplayed()
+        capture("implementation-platforms-facebook.png", "rocky-settings-window")
+        rule.onNodeWithText("Conectar TikTok").performScrollTo().assertIsDisplayed()
+        capture("implementation-platforms-tiktok.png", "rocky-settings-window")
+    }
+
+    @Test
+    fun capturesCompactPlatformCredentials() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms)
+        capture("implementation-platforms-compact.png")
+        rule.onNodeWithTag("kick-client-secret").performScrollTo().assertIsDisplayed()
+        capture("implementation-platforms-compact-kick.png")
+        rule.onNodeWithTag("facebook-app-secret").performScrollTo().assertIsDisplayed()
+        capture("implementation-platforms-compact-facebook.png")
+        rule.onNodeWithText("Conectar TikTok").performScrollTo().assertIsDisplayed()
+        capture("implementation-platforms-compact-tiktok.png")
+    }
+
+    @Test
+    fun resetsScrollWhenSwitchingToPlatforms() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Ai, twitchClientId = "client-id")
+        rule.onNodeWithTag("automatic-analysis").performScrollTo()
+        rule.onNodeWithText("Plataformas").performClick()
+        rule.onNodeWithText("Conectar Twitch").assertIsDisplayed()
+        capture("implementation-platforms-after-tab-change.png")
     }
 
     private fun render(
@@ -1267,7 +1319,9 @@ class RockyVisualCaptureTest {
 
     private class FakeKickChatClient : KickChatClient {
         private var listener = KickConnectionListener {}
+        var lastConfiguration: KickConfiguration? = null
         override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
+            lastConfiguration = configuration
             this.listener = listener
         }
         override fun disconnect() = Unit

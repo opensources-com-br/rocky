@@ -60,6 +60,7 @@ class DesktopTikTokChatClientTest {
         transport.emit(comment)
         transport.emit(comment)
         client.disconnect()
+        waitFor { events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().lastOrNull()?.phase == TikTokConnectionPhase.Disconnected }
         transport.emit(TikTokTransportEvent.AudienceUpdated(99))
 
         assertEquals(1, events.filterIsInstance<TikTokConnectionEvent.MessageReceived>().size)
@@ -192,6 +193,25 @@ class DesktopTikTokChatClientTest {
         assertFalse(network.message.contains("secret"))
     }
 
+    @Test
+    fun disconnectDuringTransportCreationDoesNotOpenASocket() {
+        val entered = java.util.concurrent.CountDownLatch(1)
+        val release = java.util.concurrent.CountDownLatch(1)
+        val transport = FakeTikTokTransport()
+        val events = CopyOnWriteArrayList<TikTokConnectionEvent>()
+        DesktopTikTokChatClient(TikTokLiveTransportFactory { _, callback ->
+            entered.countDown()
+            check(release.await(5, java.util.concurrent.TimeUnit.SECONDS))
+            transport.onEvent = callback
+            transport
+        }).use { client ->
+            client.connect(TikTokConfiguration("rocky_live"), events::add)
+            check(entered.await(5, java.util.concurrent.TimeUnit.SECONDS))
+            client.disconnect()
+            release.countDown()
+            waitFor { events.filterIsInstance<TikTokConnectionEvent.PhaseChanged>().lastOrNull()?.phase == TikTokConnectionPhase.Disconnected }
+            assertEquals(0, transport.connectCalls)
+        }
     }
 }
 

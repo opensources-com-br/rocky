@@ -202,7 +202,7 @@ private fun runRockyApplication() = application {
             ) {
                 LaunchedEffect(window) {
                     settingsDesktopWindow.set(window)
-                    window.minimumSize = Dimension(420, 560)
+                    window.minimumSize = Dimension(700, 560)
                 }
                 content()
             }
@@ -320,7 +320,7 @@ private fun runRockyApplication() = application {
 }
 
 private val ExpandedSize = DpSize(462.dp, 900.dp)
-private val SettingsSize = DpSize(462.dp, 820.dp)
+private val SettingsSize = DpSize(780.dp, 680.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
 private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")
 private const val MenuWidthPadding = "\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003"

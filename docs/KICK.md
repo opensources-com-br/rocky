@@ -27,3 +27,10 @@ Rocky verifies every webhook with Kick's published RSA key, timestamp, message I
 If the OAuth callback works but no messages arrive, check the public webhook configuration and HTTPS forwarding first. Rocky cannot recover messages sent while the webhook or app was unavailable.
 
 References: [Kick OAuth](https://github.com/KickEngineering/KickDevDocs/blob/main/getting-started/generating-tokens-oauth2-flow.md), [event subscriptions](https://github.com/KickEngineering/KickDevDocs/blob/main/events/subscribe-to-events.md), and [webhook security](https://github.com/KickEngineering/KickDevDocs/blob/main/events/webhook-security.md).
+## Recovery and polling
+
+Audience requests run 30 seconds after the previous request completes, only while connected. Transient failures allow up to 5 retries delayed by 2, 4, 8, 16 and 30 seconds; numeric `Retry-After` values are respected up to 5 minutes. After that cycle, normal polling resumes. Failed requests preserve the last successful count without interrupting chat.
+
+HTTP 401 during audience retrieval triggers one token refresh. Missing permissions or invalid authorization after refresh end the session. Disconnect cancels scheduled work, interrupts ongoing requests and removes subscriptions in the background without blocking the next connection.
+
+The receiver uses 2 threads and accepts webhook bodies up to 1 MiB. RSA signatures remain mandatory; invalid payloads are not remembered for deduplication. Chat subscription creation is not automatically retried after ambiguous failures, avoiding duplicate subscriptions. Removal is best-effort: API unavailability can prevent cleanup.

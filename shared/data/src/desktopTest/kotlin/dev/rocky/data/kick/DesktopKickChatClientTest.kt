@@ -18,6 +18,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopKickChatClientTest {
+    @Test fun connectsAndRemovesChatSubscriptionOnDisconnect() = withClient { client ->
+        authorize(client)
+        await { events.any { it is KickConnectionEvent.AudienceUpdated } }
+        assertEquals(1, requests.count { it == "POST /subscriptions" })
+        assertEquals(42, events.filterIsInstance<KickConnectionEvent.AudienceUpdated>().single().viewerCount)
+        client.disconnect()
+        await { requests.any { it == "DELETE /subscriptions" } }
+    }
+
     private fun authorize(client: DesktopKickChatClient) {
         val port = ServerSocket(0).use { it.localPort }
         client.connect(KickConfiguration("client", "secret", "http://localhost:$port/oauth/kick/callback"), events::add)

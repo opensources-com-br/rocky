@@ -97,10 +97,11 @@ class DesktopTwitchChatClient : TwitchChatClient {
         seenMessageIds.clear()
         emit(TwitchConnectionPhase.Authenticating, "Solicitando autorização da Twitch")
 
-        ioExecutor.execute {
+        val authenticationClientId = this.clientId
+        submitIo(run) {
             runCatching {
                 deviceFlow.authenticate(
-                    clientId = this.clientId,
+                    clientId = authenticationClientId,
                     isActive = { isCurrent(run) },
                     onAuthorization = { authorization ->
                         if (isCurrent(run)) {
@@ -212,8 +213,8 @@ class DesktopTwitchChatClient : TwitchChatClient {
     }
 
     private fun subscribeToChat(webSocket: WebSocket, sessionId: String, run: Long) {
-        ioExecutor.execute {
-            if (!isCurrent(run) || socket !== webSocket) return@execute
+        submitIo(run) {
+            if (!isCurrent(run) || socket !== webSocket) return@submitIo
             runCatching {
                 val currentAccount = requireNotNull(account)
                 var currentTokens = requireNotNull(tokens)
@@ -222,7 +223,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                 } catch (error: TwitchApiException) {
                     if (error.statusCode != 401) throw error
                     currentTokens = api.refreshTokens(clientId, currentTokens.refreshToken)
-                    if (!isCurrent(run)) return@execute
+                    if (!isCurrent(run)) return@submitIo
                     tokens = currentTokens
                     api.subscribeToChat(clientId, currentTokens.accessToken, currentAccount, sessionId)
                 }

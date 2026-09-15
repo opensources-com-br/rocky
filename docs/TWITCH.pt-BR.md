@@ -30,3 +30,11 @@ O conector solicita apenas `user:read:chat`. O Client ID é salvo nas preferênc
 Este primeiro conector acompanha o canal da própria pessoa autenticada e consulta a contagem atual de espectadores. Ele ainda não recupera mensagens anteriores, pontos do canal, inscrições ou eventos de apoio pago.
 
 Referências: [OAuth da Twitch](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/), [validação de tokens](https://dev.twitch.tv/docs/authentication/validate-tokens/) e [EventSub WebSockets](https://dev.twitch.tv/docs/eventsub/handling-websocket-events/).
+
+## Recuperação e ciclo de conexão
+
+Uma migração solicitada pela Twitch mantém o socket anterior até receber as boas-vindas do novo, sem recriar a assinatura do chat. Mensagens repetidas são filtradas durante a sessão; eventos de sockets aposentados são ignorados. Um socket aberto que não recebe boas-vindas em 20 segundos entra no fluxo de reconexão com espera progressiva.
+
+Desconectar cancela tarefas de autenticação, consultas de rede, reconexões agendadas e tentativas de abertura do socket. Fechar o cliente é idempotente e impede novas conexões. Falhas de audiência mantêm o último valor recebido. Mensagens WebSocket fragmentadas têm limite de 1.048.576 caracteres.
+
+A deduplicação não recupera mensagens perdidas: interrupções de rede ainda podem causar lacunas no chat, pois a Twitch não reproduz os eventos desse período.

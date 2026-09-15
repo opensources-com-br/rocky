@@ -15,15 +15,18 @@ internal class YouTubeChatPoller(
     private val seenMessageIds = LinkedHashSet<String>()
     private var pageToken: String? = null
     private var lastAudienceRefreshAt = Long.MIN_VALUE
+    var minimumPollDelayMillis = 5_000L
+        private set
 
     fun poll(): Long {
         val page = access.request { api.chatPage(it, broadcast.liveChatId, pageToken) }
         pageToken = page.nextPageToken
+        minimumPollDelayMillis = page.pollingIntervalMillis.coerceAtLeast(1_000L)
         page.messages.forEach { message ->
             if (remember(message.id)) onMessage(message)
         }
         refreshAudienceIfNeeded()
-        return page.pollingIntervalMillis.coerceIn(1_000L, 30_000L)
+        return minimumPollDelayMillis
     }
 
     private fun refreshAudienceIfNeeded() {
@@ -32,7 +35,6 @@ internal class YouTubeChatPoller(
         lastAudienceRefreshAt = now
         runCatching { access.request { api.viewerCount(it, broadcast.id) } }
             .onSuccess(onAudience)
-            .onFailure { onAudience(null) }
     }
 
     private fun remember(id: String): Boolean {

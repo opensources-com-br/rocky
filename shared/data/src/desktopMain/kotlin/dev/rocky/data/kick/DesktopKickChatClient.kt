@@ -19,6 +19,9 @@ class DesktopKickChatClient internal constructor(
 ) : KickChatClient {
     constructor() : this(KickApi(), KickEventSubscriptions())
     private val generation = AtomicLong()
+    private val cleanupExecutor = Executors.newSingleThreadExecutor { task ->
+        Thread(task, "rocky-kick-cleanup").apply { isDaemon = true }
+    }
     private val ioExecutor = Executors.newSingleThreadExecutor { task ->
         Thread(task, "rocky-kick-io").apply { isDaemon = true }
     }
@@ -105,7 +108,7 @@ class DesktopKickChatClient internal constructor(
                     listener.onEvent(KickConnectionEvent.Connected(newAccount))
                     refreshAudience()
                 } else {
-                    ioExecutor.execute { runCatching {
+                    cleanupExecutor.execute { runCatching {
                         subscriptions.unsubscribe(newTokens.accessToken, newSubscriptionIds)
                     } }
                 }
@@ -152,8 +155,8 @@ class DesktopKickChatClient internal constructor(
         account = null
         subscriptionIds = emptyList()
         authorizationCompleted = false
-        if (oldTokens != null && oldSubscriptions.isNotEmpty() && !ioExecutor.isShutdown) {
-            ioExecutor.execute { runCatching { subscriptions.unsubscribe(oldTokens.accessToken, oldSubscriptions) } }
+        if (oldTokens != null && oldSubscriptions.isNotEmpty() && !cleanupExecutor.isShutdown) {
+            cleanupExecutor.execute { runCatching { subscriptions.unsubscribe(oldTokens.accessToken, oldSubscriptions) } }
         }
         if (notify) emit(KickConnectionPhase.Disconnected)
     }

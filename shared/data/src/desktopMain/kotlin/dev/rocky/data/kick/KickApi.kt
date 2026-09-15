@@ -10,6 +10,10 @@ import java.time.Duration
 internal class KickApi(
     private val httpClient: HttpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(15)).build(),
+    private val tokenEndpoint: String = TOKEN_ENDPOINT,
+    private val usersEndpoint: String = USERS_ENDPOINT,
+    private val channelsEndpoint: String = CHANNELS_ENDPOINT,
+    private val publicKeyEndpoint: String = PUBLIC_KEY_ENDPOINT,
 ) {
     fun exchangeCode(
         clientId: String,
@@ -34,12 +38,12 @@ internal class KickApi(
             "refresh_token" to refreshToken,
         ))
 
-    fun account(accessToken: String): KickAccount = KickPayloads.account(get(USERS_ENDPOINT, accessToken))
+    fun account(accessToken: String): KickAccount = KickPayloads.account(get(usersEndpoint, accessToken))
 
-    fun viewerCount(accessToken: String): Int? = KickPayloads.viewerCount(get(CHANNELS_ENDPOINT, accessToken))
+    fun viewerCount(accessToken: String): Int? = KickPayloads.viewerCount(get(channelsEndpoint, accessToken))
 
     fun publicKey(): String {
-        val request = HttpRequest.newBuilder(URI.create(PUBLIC_KEY_ENDPOINT))
+        val request = HttpRequest.newBuilder(URI.create(publicKeyEndpoint))
             .timeout(Duration.ofSeconds(20)).GET().build()
         return KickPayloads.publicKey(httpClient.send(request, HttpResponse.BodyHandlers.ofString())
             .requireSuccess().body())
@@ -57,7 +61,7 @@ internal class KickApi(
         val body = fields.entries.joinToString("&") { (key, value) ->
             "${key.urlEncode()}=${value.urlEncode()}"
         }
-        val request = HttpRequest.newBuilder(URI.create(TOKEN_ENDPOINT))
+        val request = HttpRequest.newBuilder(URI.create(tokenEndpoint))
             .timeout(Duration.ofSeconds(20))
             .header("Content-Type", "application/x-www-form-urlencoded")
             .POST(HttpRequest.BodyPublishers.ofString(body)).build()

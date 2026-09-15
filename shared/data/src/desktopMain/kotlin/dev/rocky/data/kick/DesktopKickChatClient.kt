@@ -69,13 +69,16 @@ class DesktopKickChatClient internal constructor(
                             listener.onEvent(KickConnectionEvent.MessageReceived(message))
                         }
                     },
-                ).also { receiver = it.receiver }
-            }.onSuccess { authorization ->
+                ).also { authorization -> synchronized(this) {
+                    if (isCurrent(run)) receiver = authorization.receiver
+                    else authorization.receiver.close()
+                } }
+            }.onSuccess { authorization -> synchronized(this) {
                 if (isCurrent(run)) {
                     emit(KickConnectionPhase.AwaitingAuthorization, "Autorize a conta no navegador")
-                    listener.onEvent(KickConnectionEvent.AuthorizationRequired(authorization.authorizationUri))
+                    emitForRun(run, KickConnectionEvent.AuthorizationRequired(authorization.authorizationUri))
                 }
-            }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
+            } }.onFailure { error -> if (isCurrent(run)) fail(run, error.userMessage()) }
         }
     }
 

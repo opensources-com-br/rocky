@@ -226,6 +226,11 @@ class RockyVisualCaptureTest {
                 capture("implementation-settings-ai.png")
                 return
             }
+            "settings-voice" -> {
+                render(settingsOpen = true, settingsSection = SettingsSection.Voice)
+                capture("implementation-settings-voice.png")
+                return
+            }
             "settings-openrouter" -> {
                 render(settingsOpen = true, settingsSection = SettingsSection.Ai)
                 selectAiProvider("OpenRouter")
@@ -1090,6 +1095,69 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Conectar Twitch").performClick()
     }
 
+    @Test
+    fun configuresGroupedVoiceSettings() {
+        val voice = FakeVoiceService().apply {
+            systemVoices = listOf(SystemVoice("voice-1", "Luciana", "pt-BR"))
+            microphones = listOf(AudioInputDevice("mic-1", "Microfone USB"))
+        }
+        var saved = VoiceConfiguration()
+        render(settingsOpen = true, settingsSection = SettingsSection.Voice,
+            voiceService = voice, onVoiceConfigurationChange = { saved = it },
+            windowWidth = 780.dp, windowHeight = 680.dp, mainWindow = {},
+            settingsWindow = { visible, _, content -> if (visible) content() })
+        rule.waitUntil(5_000) { rule.onAllNodesWithText("Carregando…").fetchSemanticsNodes().isEmpty() }
+        capture("implementation-voice-local.png", "rocky-settings-window")
+        rule.onNodeWithTag("voice-system-menu").performClick()
+        rule.onNodeWithText("Luciana · pt-BR").performClick()
+        assertEquals("voice-1", saved.output.voiceId)
+        rule.onNodeWithTag("voice-read-suggestions").performClick()
+        assertEquals(true, saved.readSuggestions)
+        rule.onNodeWithTag("test-voice").performScrollTo().performClick()
+        rule.waitUntil(5_000) { voice.spoken.isNotEmpty() }
+        rule.onNodeWithTag("voice-microphone-menu").performScrollTo().performClick()
+        rule.onNodeWithText("Microfone USB").performClick()
+        assertEquals("mic-1", saved.transcription.microphoneId)
+        rule.onNodeWithTag("voice-advanced-paths").performScrollTo().performClick()
+        rule.onNodeWithTag("whisper-executable").performScrollTo().performTextReplacement("whisper-cli")
+        rule.onNodeWithTag("whisper-model").performScrollTo().performTextReplacement("model.bin")
+        assertEquals("model.bin", saved.transcription.modelPath)
+        capture("implementation-voice-recognition.png", "rocky-settings-window")
+        rule.onNodeWithTag("voice-end-detection").performScrollTo().performClick()
+        assertEquals(false, saved.detectEndOfSpeech)
+        assertTrue(rule.onAllNodesWithText("Limiar de ruído").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithTag("voice-end-detection").performClick()
+        rule.onNodeWithText("Limiar de ruído").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("voice-calibrate").performScrollTo()
+        capture("implementation-voice-detection.png", "rocky-settings-window")
+        rule.onNodeWithTag("voice-audio-timings").performScrollTo().performClick()
+        rule.onNodeWithText("Captura: 0 ms · Transcrição: 0 ms").assertExists()
+        rule.onNodeWithText("Captura: 0 ms · Transcrição: 0 ms").performScrollTo()
+        capture("implementation-voice-diagnostics.png", "rocky-settings-window")
+        rule.onNodeWithTag("voice-provider-menu").performScrollTo().performClick()
+        rule.onNodeWithText("ElevenLabs").performClick()
+        rule.onNodeWithTag("elevenlabs-api-key").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("elevenlabs-voice-id").performScrollTo().performTextReplacement("custom-voice")
+        assertEquals("custom-voice", saved.output.elevenLabs.voiceId)
+        rule.onNodeWithTag("elevenlabs-model-id").performScrollTo().performTextReplacement("custom-model")
+        assertEquals("custom-model", saved.output.elevenLabs.modelId)
+        rule.onNodeWithTag("elevenlabs-fallback").performScrollTo().performClick()
+        assertEquals(true, saved.output.elevenLabs.fallbackToSystem)
+        rule.onNodeWithText("Provedor e conexão").performScrollTo()
+        capture("implementation-voice-cloud.png", "rocky-settings-window")
+    }
+
+    @Test
+    fun expandsAdvancedVoiceSettingsAtCompactWidth() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Voice)
+        rule.onNodeWithTag("voice-advanced-paths").performScrollTo().performClick()
+        rule.onNodeWithTag("whisper-model").performScrollTo().assertIsDisplayed()
+        capture("implementation-voice-compact-recognition.png")
+        rule.onNodeWithTag("voice-audio-timings").performScrollTo().performClick()
+        rule.onNodeWithText("Captura: 0 ms · Transcrição: 0 ms").performScrollTo().assertIsDisplayed()
+        capture("implementation-voice-compact-diagnostics.png")
+    }
+
     private fun render(
         compact: Boolean = false,
         mainSection: MainSection = MainSection.Conversation,
@@ -1111,6 +1179,7 @@ class RockyVisualCaptureTest {
         aiSuggestionClient: AiSuggestionClient? = null,
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
+        onVoiceConfigurationChange: (VoiceConfiguration) -> Unit = {},
         onAgentConfigurationChange: (AgentConfiguration) -> Unit = {},
         firstUseOpen: Boolean = false,
         onFirstUseFinished: () -> Unit = {},
@@ -1139,6 +1208,7 @@ class RockyVisualCaptureTest {
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
                         voiceService = voiceService,
                         initialVoiceConfiguration = voiceConfiguration,
+                        onVoiceConfigurationChange = onVoiceConfigurationChange,
                         onAgentConfigurationChange = onAgentConfigurationChange,
                         initialTwitchClientId = twitchClientId,
                         initialKickConfiguration = kickConfiguration,
@@ -1270,8 +1340,10 @@ class RockyVisualCaptureTest {
         val spoken = mutableListOf<String>()
         override val automaticTranscriptionSetupSupported: Boolean
             get() = automaticSetupSupported
-        override fun availableVoices(): List<SystemVoice> = emptyList()
-        override fun availableMicrophones(): List<AudioInputDevice> = emptyList()
+        var systemVoices = emptyList<SystemVoice>()
+        var microphones = emptyList<AudioInputDevice>()
+        override fun availableVoices(): List<SystemVoice> = systemVoices
+        override fun availableMicrophones(): List<AudioInputDevice> = microphones
         override fun speak(text: String, configuration: VoiceOutputConfiguration) { spoken += text }
         override fun stopSpeaking() = Unit
         override fun startCapture(microphoneId: String?) { captureStarts += 1 }

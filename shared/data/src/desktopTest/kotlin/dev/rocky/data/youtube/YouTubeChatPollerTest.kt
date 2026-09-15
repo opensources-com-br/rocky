@@ -9,6 +9,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class YouTubeChatPollerTest {
+    @Test fun stopsOnOfflineResponseAfterDeliveringFinalMessages() = withPoller { poller ->
+        body = """{"offlineAt":"2026-09-15T22:00:00Z","items":[{"id":"last","snippet":{"displayMessage":"Tchau"},"authorDetails":{"displayName":"Ana"}}]}"""
+        val failure = assertFailsWith<YouTubeApiException> { poller.poll() }
+        assertEquals(setOf("liveChatEnded"), failure.reasons)
+        assertEquals(listOf("last"), messages)
+    }
+
     @Test fun keepsCursorAndDeduplicatesAfterFailedPoll() = withPoller { poller ->
         body = """{"nextPageToken":"next","items":[{"id":"m1","snippet":{"displayMessage":"Olá"},"authorDetails":{"displayName":"Ana"}}]}"""
         poller.poll()

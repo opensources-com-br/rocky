@@ -18,10 +18,10 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-class DesktopTwitchChatClient : TwitchChatClient {
-    private val httpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(15))
-        .build()
+class DesktopTwitchChatClient internal constructor(
+    private val httpClient: HttpClient,
+) : TwitchChatClient {
+    constructor() : this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build())
     private val api = TwitchApi(httpClient)
     private val deviceFlow = TwitchDeviceFlow(api)
     private val generation = AtomicLong()

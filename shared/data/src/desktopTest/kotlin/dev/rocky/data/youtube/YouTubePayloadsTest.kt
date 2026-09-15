@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class YouTubePayloadsTest {
+    @Test fun treatsNullOfflineStatusAndRefreshTokensAsAbsent() {
+        assertEquals(false, YouTubePayloads.chatPage("""{"items":[],"offlineAt":null}""").offline)
+        assertNull(YouTubePayloads.tokens("""{"access_token":"access","refresh_token":null}""").refreshToken)
+    }
+
     @Test fun parsesAccountBroadcastAndTokens() {
         assertEquals(
             "Canal Rocky",

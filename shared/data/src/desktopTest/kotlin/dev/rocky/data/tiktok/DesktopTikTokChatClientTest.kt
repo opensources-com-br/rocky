@@ -119,6 +119,19 @@ class DesktopTikTokChatClientTest {
         }
     }
 
+    @Test
+    fun offlineAndLiveEndedDoNotRetry() {
+        for (event in listOf(TikTokTransportEvent.Failed("offline", false), TikTokTransportEvent.LiveEnded)) {
+            fixture().use { f ->
+                f.connect()
+                f.transports.first().emit(event)
+                waitFor { f.phase() == TikTokConnectionPhase.Failed }
+                Thread.sleep(50)
+                assertEquals(1, f.transports.size)
+            }
+        }
+    }
+
     }
 }
 

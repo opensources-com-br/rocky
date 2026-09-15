@@ -65,8 +65,9 @@ class DesktopKickChatClient internal constructor(
                     configuration = currentConfiguration,
                     onCode = { verifier, code -> completeAuthorization(run, verifier, code) },
                     onMessage = { message ->
-                        if (isCurrent(run) && message.channelId == account?.userId) {
-                            listener.onEvent(KickConnectionEvent.MessageReceived(message))
+                        synchronized(this) {
+                            if (message.channelId == account?.userId)
+                                emitForRun(run, KickConnectionEvent.MessageReceived(message))
                         }
                     },
                 ).also { authorization -> synchronized(this) {
@@ -162,6 +163,11 @@ class DesktopKickChatClient internal constructor(
 
     private fun emit(phase: KickConnectionPhase, detail: String? = null) =
         listener.onEvent(KickConnectionEvent.PhaseChanged(phase, detail))
+
+    @Synchronized
+    private fun emitForRun(run: Long, event: KickConnectionEvent) {
+        if (isCurrent(run)) listener.onEvent(event)
+    }
 
     private fun isCurrent(run: Long) = active && generation.get() == run
     private fun Throwable.userMessage() = message?.takeIf { it.isNotBlank() }

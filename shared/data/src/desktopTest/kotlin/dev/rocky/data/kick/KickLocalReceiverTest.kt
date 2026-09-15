@@ -7,12 +7,20 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.security.KeyPairGenerator
 import java.security.Signature
+import java.security.PrivateKey
 import java.time.Instant
 import java.util.Base64
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KickLocalReceiverTest {
+    private fun sign(key: PrivateKey, timestamp: String, body: String): String =
+        Signature.getInstance("SHA256withRSA").run {
+            initSign(key)
+            update("01ABC.$timestamp.$body".toByteArray())
+            Base64.getEncoder().encodeToString(sign())
+        }
+
     @Test fun acceptsCallbackAndSignedChatOnce() {
         val port = ServerSocket(0).use { it.localPort }
         val keys = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()

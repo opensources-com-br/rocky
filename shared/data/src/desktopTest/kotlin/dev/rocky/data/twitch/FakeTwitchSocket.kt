@@ -12,4 +12,13 @@ internal class FakeTwitchSocket : WebSocket {
     override fun sendBinary(data: ByteBuffer, last: Boolean) = CompletableFuture.completedFuture<WebSocket>(this)
     override fun sendPing(message: ByteBuffer) = CompletableFuture.completedFuture<WebSocket>(this)
     override fun sendPong(message: ByteBuffer) = CompletableFuture.completedFuture<WebSocket>(this)
+    override fun sendClose(statusCode: Int, reason: String): CompletableFuture<WebSocket> {
+        closed = true
+        return CompletableFuture.completedFuture(this)
+    }
+    override fun request(n: Long) { requested += n }
+    override fun getSubprotocol() = ""
+    override fun isOutputClosed() = closed || aborted
+    override fun isInputClosed() = closed || aborted
+    override fun abort() { aborted = true }
 }

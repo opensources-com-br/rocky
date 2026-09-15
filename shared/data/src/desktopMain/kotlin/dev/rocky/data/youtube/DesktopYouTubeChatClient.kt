@@ -7,6 +7,8 @@ import dev.rocky.core.youtube.YouTubeConnectionListener
 import dev.rocky.core.youtube.YouTubeConnectionPhase
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -29,8 +31,14 @@ class DesktopYouTubeChatClient internal constructor(
     @Volatile private var configuration = YouTubeConfiguration()
     @Volatile private var receiver: YouTubeAuthorizationReceiver? = null
     @Volatile private var poller: YouTubeChatPoller? = null
+    private var pendingPoll: ScheduledFuture<*>? = null
+    private var pendingRequest: Future<*>? = null
+    private var retryAttempt = 0
+    @Volatile private var closed = false
 
+    @Synchronized
     override fun connect(configuration: YouTubeConfiguration, listener: YouTubeConnectionListener) {
+        check(!closed) { "O cliente do YouTube já foi encerrado." }
         stop(notify = false)
         require(configuration.clientId.isNotBlank()) { "Informe o Client ID do YouTube." }
         require(configuration.clientSecret.isNotBlank()) { "Informe o Client Secret do YouTube." }
@@ -43,10 +51,12 @@ class DesktopYouTubeChatClient internal constructor(
         this.listener = listener
         active = true
         emit(YouTubeConnectionPhase.Authenticating, "Preparando autorização do YouTube")
-        ioExecutor.execute { prepareAuthorization(run) }
+        pendingRequest = ioExecutor.submit { if (isCurrent(run)) prepareAuthorization(run) }
     }
 
+    @Synchronized
     private fun prepareAuthorization(run: Long) {
+        if (!isCurrent(run)) return
         runCatching {
             val authorization = createYouTubeAuthorization(configuration.clientId, configuration.redirectUri)
             receiver = YouTubeAuthorizationReceiver(configuration.redirectUri, authorization.state) { code ->

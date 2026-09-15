@@ -14,6 +14,21 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun deduplicatesDuringTransferAndIgnoresRetiredSocketMessages() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        welcome(0)
+        await { events.any { it is TwitchConnectionEvent.Connected } }
+        reconnect()
+        message(0, "same")
+        welcome(1)
+        message(1, "same")
+        message(0, "stale")
+        assertEquals(listOf("same"), events.filterIsInstance<TwitchConnectionEvent.MessageReceived>().map { it.message.id })
+        sockets[0].second.onClose(sockets[0].first, 1000, "")
+        assertEquals(2, sockets.size)
+    }
+
     @Test fun closeTwiceRejectsFurtherConnections() {
         val client = DesktopTwitchChatClient()
         client.close()

@@ -25,6 +25,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import dev.rocky.core.live.LiveIdea
 import dev.rocky.core.live.LiveNote
 import dev.rocky.core.live.LiveSessionStatus
@@ -194,6 +195,18 @@ class RockyVisualCaptureTest {
     @Test
     fun captureMainInterface() {
         when (System.getenv("ROCKY_CAPTURE_STATE")) {
+            "settings-macos" -> {
+                render(
+                    settingsOpen = true,
+                    settingsSection = SettingsSection.Agent,
+                    windowWidth = 780.dp,
+                    windowHeight = 680.dp,
+                    mainWindow = {},
+                    settingsWindow = { visible, _, content -> if (visible) content() },
+                )
+                capture("implementation-settings-macos.png", "rocky-settings-window")
+                return
+            }
             "settings-ai" -> {
                 render(settingsOpen = true, settingsSection = SettingsSection.Ai)
                 capture("implementation-settings-ai.png")
@@ -892,6 +905,22 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun rendersAndFiltersTheMacOsSettingsSidebar() {
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Agent,
+            windowWidth = 780.dp,
+            windowHeight = 680.dp,
+        )
+
+        rule.onNodeWithText("Nome, idioma e como o Rocky se comunica.").assertExists()
+        rule.onNodeWithText("Buscar").performTextReplacement("Dados")
+        assertEquals(1, rule.onAllNodesWithText("Agente").fetchSemanticsNodes().size)
+        rule.onAllNodesWithText("Dados")[1].performClick()
+        rule.onNodeWithText("Dados e privacidade").assertExists()
+    }
+
+    @Test
     fun changesInterfaceLanguage() {
         var savedLanguage = RockyLanguage.PortugueseBrazil
         render(
@@ -984,11 +1013,13 @@ class RockyVisualCaptureTest {
         language: RockyLanguage = RockyLanguage.PortugueseBrazil,
         mainWindow: RockyMainWindowHost? = null,
         settingsWindow: RockySettingsWindowHost? = null,
+        windowWidth: Dp = 462.dp,
+        windowHeight: Dp = 820.dp,
     ) {
         rule.setContent {
             key(mainSection, settingsOpen, settingsSection, firstUseOpen) {
                 var showingSettings by remember { mutableStateOf(settingsOpen) }
-                Box(Modifier.size(462.dp, 820.dp)) {
+                Box(Modifier.size(windowWidth, windowHeight)) {
                     RockyWindow(
                         compact = compact,
                         pinned = false,
@@ -1027,10 +1058,10 @@ class RockyVisualCaptureTest {
         }
     }
 
-    private fun capture(fileName: String) {
+    private fun capture(fileName: String, tag: String = "rocky-window") {
         val outputDirectory = System.getenv("ROCKY_SCREENSHOT_DIR")?.let(Path::of) ?: return
         rule.waitForIdle()
-        val bitmap = rule.onNodeWithTag("rocky-window").captureToImage().asSkiaBitmap()
+        val bitmap = rule.onNodeWithTag(tag).captureToImage().asSkiaBitmap()
         val data = requireNotNull(Image.makeFromBitmap(bitmap).encodeToData(EncodedImageFormat.PNG))
         Files.createDirectories(outputDirectory)
         Files.write(outputDirectory.resolve(fileName), data.bytes)

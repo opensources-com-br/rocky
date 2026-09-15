@@ -117,7 +117,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                         }
                     },
                 )
-            }.onSuccess { authentication ->
+            }.onSuccess { authentication -> synchronized(this) {
                 if (authentication == null) {
                     if (isCurrent(run)) fail(run, "A autorização expirou. Tente novamente.")
                 } else if (isCurrent(run)) {
@@ -127,7 +127,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                     emit(TwitchConnectionPhase.Connecting, "Conectando ao chat")
                     openSocket(DEFAULT_WEBSOCKET_URL, run)
                 }
-            }.onFailure { error ->
+            } }.onFailure { error ->
                 if (error !is InterruptedException && isCurrent(run)) {
                     fail(run, error.twitchUserMessage("Não foi possível autenticar com a Twitch."))
                 }
@@ -413,6 +413,11 @@ class DesktopTwitchChatClient : TwitchChatClient {
 
     private fun emit(phase: TwitchConnectionPhase, detail: String? = null) {
         listener.onEvent(TwitchConnectionEvent.PhaseChanged(phase, detail))
+    }
+
+    @Synchronized
+    private fun emitForRun(run: Long, event: TwitchConnectionEvent) {
+        if (isCurrent(run)) listener.onEvent(event)
     }
 
     private fun isCurrent(run: Long): Boolean = !closed && active && generation.get() == run

@@ -102,8 +102,11 @@ class DesktopKickChatClientTest {
         server.createContext("/") { exchange ->
             val path = exchange.requestURI.path
             requests += "${exchange.requestMethod} $path"
-            val status = if (path == "/channels" && requests.count { it == "GET /channels" } == 1)
-                audienceFailure.takeIf { it != 0 } ?: 200 else 200
+            val status = when {
+                path == "/channels" && requests.count { it == "GET /channels" } == 1 -> audienceFailure
+                path == "/token" && requests.count { it == "POST /token" } > 1 -> refreshFailure
+                else -> 200
+            }.takeIf { it != 0 } ?: 200
             val bytes = response(path).toByteArray()
             exchange.sendResponseHeaders(status, bytes.size.toLong())
             exchange.responseBody.use { it.write(bytes) }
@@ -116,6 +119,7 @@ class DesktopKickChatClientTest {
         try { test(client) } finally { client.close(); server.stop(0) }
     }
     private var audienceFailure = 0
+    private var refreshFailure = 0
     private val keyPem = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
         .public.encoded.let { "-----BEGIN PUBLIC KEY-----\\n${Base64.getEncoder().encodeToString(it)}\\n-----END PUBLIC KEY-----" }
     private fun response(path: String) = when (path) {

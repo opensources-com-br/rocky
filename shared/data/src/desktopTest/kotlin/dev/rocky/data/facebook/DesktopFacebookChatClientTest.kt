@@ -14,9 +14,19 @@ import java.net.http.HttpResponse
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class DesktopFacebookChatClientTest {
+    @Test fun closingTwiceIsSafeAndRejectsNewConnections() {
+        val client = DesktopFacebookChatClient()
+        client.close()
+        client.close()
+        assertFailsWith<IllegalStateException> {
+            client.connect(FacebookConfiguration("app", "secret"), {})
+        }
+    }
+
     private val requests = CopyOnWriteArrayList<String>()
 
     @Test fun connectsToTheActivePageAndReceivesComments() = connectAndReceive()

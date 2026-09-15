@@ -11,6 +11,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KickReceiverBoundsTest {
+    private fun withReceiver(test: (String) -> Unit) {
+        val port = ServerSocket(0).use { it.localPort }
+        val keys = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
+        val pem = "-----BEGIN PUBLIC KEY-----\n${Base64.getEncoder().encodeToString(keys.public.encoded)}\n-----END PUBLIC KEY-----"
+        KickLocalReceiver("http://localhost:$port/oauth/kick/callback", "state", pem, {}, {}).use {
+            test("http://localhost:$port")
+        }
+    }
+
     private fun send(request: HttpRequest): Int =
         HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()).statusCode()
 }

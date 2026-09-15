@@ -148,7 +148,7 @@ private fun runRockyApplication() = application {
             onAction = ::showRocky,
             menu = {
                 Item("Rocky", onClick = ::showRocky)
-                Item("Settings", onClick = ::showSettings)
+                Item("Settings$MenuWidthPadding", onClick = ::showSettings)
                 Separator()
                 Item("Quit", onClick = ::quitRocky)
             },
@@ -309,4 +309,5 @@ private val ExpandedSize = DpSize(462.dp, 900.dp)
 private val SettingsSize = DpSize(462.dp, 820.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
 private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")
+private const val MenuWidthPadding = "\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003"
 private fun isMacOs(): Boolean = System.getProperty("os.name").startsWith("Mac", ignoreCase = true)

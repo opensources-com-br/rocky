@@ -12,15 +12,15 @@ class FacebookChatPollerTest {
         poller.poll()
         now = 29_999
         poller.poll()
-        assertEquals(listOf(42), audience)
+        assertEquals(listOf<Int?>(42), audience)
         now = 30_000
         audienceStatus = 503
         poller.poll()
-        assertEquals(listOf(42), audience)
+        assertEquals(listOf<Int?>(42), audience)
         now = 60_000
         audienceStatus = 200
         poller.poll()
-        assertEquals(listOf(42, 42), audience)
+        assertEquals(listOf<Int?>(42, 42), audience)
     }
 
     @Test fun slowsDownIdlePollingAndResetsForNewComments() = withPoller { poller ->

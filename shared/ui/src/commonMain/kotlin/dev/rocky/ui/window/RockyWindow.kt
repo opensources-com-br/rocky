@@ -532,10 +532,9 @@ fun RockyWindow(
                         },
                     )
                     SettingsSection.Ai -> AiSettings(ai)
-                    SettingsSection.Voice -> Column {
-                        ShortcutSettings(shortcutKeys, shortcutStatus, onShortcutKeysChange)
-                        VoiceSettings(voice, agent.displayName, onChooseWhisperExecutable, onChooseWhisperModel)
-                    }
+                    SettingsSection.Voice -> VoiceSettings(
+                        voice, agent.displayName, onChooseWhisperExecutable, onChooseWhisperModel,
+                    )
                     SettingsSection.Platforms -> PlatformSettings(
                         clientId = twitchClientId,
                         onClientIdChange = { value ->

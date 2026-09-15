@@ -29,16 +29,6 @@ class DesktopTikTokChatClient internal constructor(
         val username = configuration.username.trim().removePrefix("@").trim()
         require(username.isNotBlank()) { "Informe o @usuário do TikTok." }
         val run = generation.incrementAndGet()
-        this.listener = listener
-        active = true
-        seenMessageIds.clear()
-        emit(TikTokConnectionPhase.Connecting, "Procurando a live de @$username")
-        runCatching {
-            transportFactory.create(username) { event -> receive(run, event) }.also {
-                transport = it
-                it.connect()
-            }
-        }.onFailure { fail(run, it.userMessage()) }
     }
 
     private fun startAttempt(run: Long, username: String) {

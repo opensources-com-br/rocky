@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicLong
 
 class DesktopTwitchChatClient internal constructor(
     private val httpClient: HttpClient,
+    private val api: TwitchApi = TwitchApi(httpClient),
 ) : TwitchChatClient {
     constructor() : this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build())
-    private val api = TwitchApi(httpClient)
     private val deviceFlow = TwitchDeviceFlow(api)
     private val generation = AtomicLong()
     private val ioExecutor = Executors.newSingleThreadExecutor { task ->

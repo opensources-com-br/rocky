@@ -11,6 +11,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KickReceiverBoundsTest {
+    @Test fun rejectsOversizedWebhookBodies() = withReceiver { base ->
+        val request = HttpRequest.newBuilder(URI.create("$base/webhooks/kick"))
+            .POST(HttpRequest.BodyPublishers.ofString("x".repeat(1_048_577))).build()
+        assertEquals(413, send(request))
+    }
+
     private fun withReceiver(test: (String) -> Unit) {
         val port = ServerSocket(0).use { it.localPort }
         val keys = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()

@@ -18,10 +18,11 @@ internal class TwitchDeviceFlow(private val api: TwitchApi) {
         }
         onAuthorization(authorization)
         val deadline = System.currentTimeMillis() + authorization.expiresInSeconds * 1_000
-        var intervalMillis = authorization.intervalSeconds * 1_000
+        var intervalMillis = authorization.intervalSeconds.coerceAtLeast(1) * 1_000
 
         while (isActive() && System.currentTimeMillis() < deadline) {
             Thread.sleep(intervalMillis)
+            if (!isActive()) return null
             try {
                 val tokens = api.pollDeviceTokens(clientId, authorization.deviceCode)
                 return TwitchAuthentication(

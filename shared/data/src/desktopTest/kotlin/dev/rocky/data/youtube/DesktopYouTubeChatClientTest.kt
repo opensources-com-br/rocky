@@ -20,7 +20,7 @@ class DesktopYouTubeChatClientTest {
     @Test fun connectsToTheActiveBroadcastAndReceivesChat() = connectAndReceive()
     @Test fun recoversAfterTemporaryFailureWithoutReauthorizing() = connectAndReceive(true)
 
-    private fun connectAndReceive(failFirstComment: Boolean = false) {
+    private fun connectAndReceive(failFirstComment: Boolean = false, stopBeforeRetry: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
         val requests = CopyOnWriteArrayList<String>()
         val api = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
@@ -52,6 +52,15 @@ class DesktopYouTubeChatClientTest {
                 URI.create("http://127.0.0.1:$callbackPort/oauth/youtube/callback?code=code&state=$state"),
             ).GET().build()
             assertEquals(200, HttpClient.newHttpClient().send(callback, HttpResponse.BodyHandlers.ofString()).statusCode())
+
+            if (stopBeforeRetry) {
+                await { requests.any { it == "/liveChat/messages" } }
+                client.disconnect()
+                Thread.sleep(5_200)
+                assertEquals(1, requests.count { it == "/liveChat/messages" })
+                assertTrue(events.none { it is YouTubeConnectionEvent.MessageReceived })
+                return
+            }
 
             await { events.any { it is YouTubeConnectionEvent.MessageReceived } }
             await { events.any { it is YouTubeConnectionEvent.AudienceUpdated && it.viewerCount == 42 } }

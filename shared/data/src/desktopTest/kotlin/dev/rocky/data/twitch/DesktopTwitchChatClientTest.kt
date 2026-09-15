@@ -16,6 +16,23 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class DesktopTwitchChatClientTest {
+    @Test fun disconnectInterruptsAuthorizationWithoutOpeningSocket() {
+        val started = CountDownLatch(1)
+        val interrupted = CountDownLatch(1)
+        authentication = { _, _, _ ->
+            started.countDown()
+            try { Thread.sleep(60_000); null }
+            catch (_: InterruptedException) { interrupted.countDown(); null }
+        }
+        withClient { client ->
+            client.connect("client", events::add)
+            assertEquals(true, started.await(1, TimeUnit.SECONDS))
+            client.disconnect()
+            assertEquals(true, interrupted.await(1, TimeUnit.SECONDS))
+            assertEquals(0, sockets.size)
+        }
+    }
+
     @Test fun deduplicatesDuringTransferAndIgnoresRetiredSocketMessages() = withClient { client ->
         client.connect("client", events::add)
         await { sockets.size == 1 }

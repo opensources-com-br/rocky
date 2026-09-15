@@ -17,10 +17,18 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopYouTubeChatClientTest {
-    @Test fun connectsToTheActiveBroadcastAndReceivesChat() {
+    @Test fun connectsToTheActiveBroadcastAndReceivesChat() = connectAndReceive()
+
+    private fun connectAndReceive(failFirstComment: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
+        val requests = CopyOnWriteArrayList<String>()
         val api = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
-            createContext("/") { exchange -> exchange.respond(apiResponse(exchange.requestURI.path)) }
+            createContext("/") { exchange ->
+                requests += exchange.requestURI.path
+                val status = if (failFirstComment && exchange.requestURI.path == "/liveChat/messages" &&
+                    requests.count { it == "/liveChat/messages" } == 1) 503 else 200
+                exchange.respond(apiResponse(exchange.requestURI.path), status)
+            }
             start()
         }
         val base = "http://127.0.0.1:${api.address.port}"
@@ -64,9 +72,9 @@ class DesktopYouTubeChatClientTest {
         else -> error("Unexpected API path: $path")
     }
 
-    private fun HttpExchange.respond(body: String) {
+    private fun HttpExchange.respond(body: String, status: Int = 200) {
         val bytes = body.toByteArray()
-        sendResponseHeaders(200, bytes.size.toLong())
+        sendResponseHeaders(status, bytes.size.toLong())
         responseBody.use { it.write(bytes) }
     }
 

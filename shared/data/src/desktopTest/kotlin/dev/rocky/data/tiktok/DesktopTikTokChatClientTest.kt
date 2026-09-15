@@ -154,6 +154,18 @@ class DesktopTikTokChatClientTest {
 
     private fun fixture(delays: List<Long> = listOf(20, 40), timeout: Long = 5_000) = Fixture(delays, timeout)
 
+    @Test
+    fun successfulConnectionResetsConsecutiveRetryBudget() = fixture(delays = listOf(10)).use { f ->
+        f.connect()
+        f.transports.first().emit(TikTokTransportEvent.Failed("temporary"))
+        waitFor { f.transports.size == 2 && f.transports.last().connected }
+        f.transports.last().emit(connected())
+        waitFor { f.events.filterIsInstance<TikTokConnectionEvent.Connected>().size == 1 }
+        f.transports.last().emit(TikTokTransportEvent.Failed("another drop"))
+        waitFor { f.transports.size == 3 && f.transports.last().connected }
+        assertTrue(f.phase() != TikTokConnectionPhase.Failed)
+    }
+
     }
 }
 

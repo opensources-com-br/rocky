@@ -140,6 +140,20 @@ class DesktopTikTokChatClientTest {
         assertTrue(f.transports.none { it.connected })
     }
 
+    @Test
+    fun newConnectionSuppressesOldSessionCallbacks() = fixture().use { f ->
+        f.connect()
+        val old = f.transports.first()
+        f.client.connect(TikTokConfiguration("other"), f.events::add)
+        waitFor { f.transports.size == 2 && f.transports.last().connected }
+        old.emit(comment("old-session"))
+        f.transports.last().emit(comment("new-session"))
+        waitFor { f.messages().isNotEmpty() }
+        assertEquals("new-session", f.messages().single().message.id)
+    }
+
+    private fun fixture(delays: List<Long> = listOf(20, 40), timeout: Long = 5_000) = Fixture(delays, timeout)
+
     }
 }
 

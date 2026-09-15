@@ -78,3 +78,53 @@ Focused regions: name input alignment, localized dropdown values, tone help, and
 - Sidebar, section header, other settings tabs, and native window chrome were intentionally outside the redesign scope.
 
 final result: passed
+
+---
+
+# Design QA — AI settings, 2026-09-15
+
+## Source and evidence
+
+- Source visual truth: `/tmp/rocky-agent-after-20260915/implementation-settings-macos.png` (780 × 680 px) and `/tmp/rocky-agent-after-20260915/implementation-agent-compact.png` (462 × 820 px). These are the Agent layouts explicitly selected as the pattern for AI.
+- Implementation: `/tmp/rocky-ai-qa-20260915/implementation-ai-local.png` (780 × 680 px) and `/tmp/rocky-ai-qa-20260915/implementation-settings-ai.png` (462 × 820 px).
+- Focused states in the same evidence directory: `implementation-ai-credentials.png`, `implementation-ai-advanced.png`, `implementation-ai-context.png`, `implementation-ai-automatic.png`, and `implementation-ai-verified.png` (780 × 680 px each).
+- Viewports: native Compose 780 × 680 dp and 462 × 820 dp; screenshots at 1× density, no downsampling. CSS viewport is not applicable.
+- State: Portuguese, dark theme; Ollama/default model; OpenRouter/empty key; advanced endpoint expanded; proactive profile/context filters expanded; model listing and connection test exercised with a fake client.
+- Source and AI captures were opened in the same comparison input at their original dimensions, including compact variants. Expanded connection, credential, and context regions were inspected at full resolution; their text and controls were readable without additional crops.
+- This is an adaptation of Agent's layout to a longer, scrollable settings form, not an exact content clone. Different section titles, provider-specific fields, and offscreen groups during scrolling are intentional. Sidebar and section header remain persistent.
+- Paths refer to temporary checkpoint screenshots and may not persist.
+
+## Findings and required fidelity surfaces
+
+No actionable P0/P1/P2 visual issues remain for this layout adaptation.
+
+- Fonts and typography: existing Rocky sans-serif hierarchy is retained. Group labels, setting labels, values, field labels, and secondary help have distinct weights and sizes. Provider labels and compact controls fit the inspected widths.
+- Spacing and layout: Agent's group, row, and menu components are extracted into shared settings components without visual changes to Agent. AI uses the same 12 dp card radius, 16 dp inner padding, inset dividers, 190 dp selector alignment, and 18 dp group gaps. Editable model/address/key fields use full width to accommodate long values. Groups and controls do not overlap; lower groups are reachable by vertical scrolling.
+- Colors and tokens: existing surface/background/border tokens remain consistent with Agent. Orange is reserved for selected states, actions, and focus; key deletion uses the existing red token. Credential fields retain masked/unmasked states and reset visibility on provider changes.
+- Image quality and assets: the form needs no raster imagery. Existing Material vector chevrons/checkmarks and credential-visibility icons are retained; no generated assets or substitute artwork were introduced.
+- Copy and content: Connection, Credentials, Verification, Behavior/context, and Automatic suggestions explain the grouping. Provider warnings, API cost notices, local processing guidance, system-vault guidance, filter scope, automatic limits, and batch behavior remain represented. New headings and controls use the existing localization mechanism.
+
+## Interaction verification
+
+- All provider configuration tests pass with the dropdown replacing provider chips.
+- Model listing and choosing a returned model are tested using a fake client; no external API requests were made for this QA.
+- Connection test reaches its success status; automatic analysis still uses the original state callback.
+- Advanced endpoint and context filters expand; bot editing and proactive profile selection remain functional.
+- API key is editable and can be revealed/hidden. Test-only key input was cleared before screenshots; no secrets are recorded.
+- The complete UI test suite and desktop compilation pass, including existing Agent tests after shared-component extraction.
+
+## Comparison history and checklist
+
+1. Used Agent's existing wide and compact captures as the selected source pattern.
+2. Applied shared grouped surfaces and compact menus to AI; moved provider configuration first and grouped provider-specific credentials, verification, and context controls.
+3. Inspected wide/compact, local/cloud, expanded endpoint/filter, and final automatic-suggestions captures. No further P0/P1/P2 visual corrections were required after the initial comparison. Additional scrolled captures expose lower card content intentionally outside the initial viewport.
+
+- [x] Reuse Agent's visual primitives without changing Agent's appearance.
+- [x] Preserve provider/model/key configuration and connection actions.
+- [x] Preserve profile, filter, and automatic-analysis controls.
+- [x] Inspect wide/compact and expanded states.
+- [x] Pass UI tests and desktop compilation.
+
+Follow-up test gaps: keyboard-only navigation, VoiceOver, larger text scaling, native desktop click-through, and English AI screenshots were not part of this pass. This is not a full accessibility audit. Window chrome, other tabs, and menu-bar translucency are outside this change.
+
+final result: passed

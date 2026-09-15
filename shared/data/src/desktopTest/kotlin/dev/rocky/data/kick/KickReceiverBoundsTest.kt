@@ -11,6 +11,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KickReceiverBoundsTest {
+    @Test fun requiresExactCallbackAndWebhookPaths() = withReceiver { base ->
+        assertEquals(404, send(HttpRequest.newBuilder(URI.create("$base/oauth/kick/callback/extra"))
+            .GET().build()))
+        assertEquals(404, send(HttpRequest.newBuilder(URI.create("$base/webhooks/kick/extra"))
+            .POST(HttpRequest.BodyPublishers.noBody()).build()))
+    }
+
     @Test fun rejectsOversizedWebhookBodies() = withReceiver { base ->
         val request = HttpRequest.newBuilder(URI.create("$base/webhooks/kick"))
             .POST(HttpRequest.BodyPublishers.ofString("x".repeat(1_048_577))).build()

@@ -39,6 +39,7 @@ import dev.rocky.platform.desktop.chooseDesktopFile
 import dev.rocky.ui.window.RockyWindow
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import org.jetbrains.compose.resources.painterResource
 import dev.rocky.platform.desktop.DesktopWindowPreferences
 import dev.rocky.platform.desktop.DesktopShortcuts
 import dev.rocky.platform.desktop.ShortcutPreferences
@@ -51,9 +52,14 @@ import java.awt.Dimension
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicReference
+import dev.rocky.apps.desktop.generated.resources.Res
+import dev.rocky.apps.desktop.generated.resources.rocky_tray
 
 fun main() {
-    if (isMacOs()) System.setProperty("apple.awt.UIElement", "true")
+    if (isMacOs()) {
+        System.setProperty("apple.awt.UIElement", "true")
+        System.setProperty("apple.awt.enableTemplateImages", "true")
+    }
     runRockyApplication()
 }
 
@@ -62,6 +68,7 @@ private fun runRockyApplication() = application {
     val appIcon = remember {
         ImageIO.read(requireNotNull(Thread.currentThread().contextClassLoader.getResource("rocky.png")))
     }
+    val trayIcon = painterResource(Res.drawable.rocky_tray)
     LaunchedEffect(Unit) {
         if (!usesMenuBar && Taskbar.isTaskbarSupported()) {
             val taskbar = Taskbar.getTaskbar()
@@ -136,7 +143,7 @@ private fun runRockyApplication() = application {
 
     if (usesMenuBar) {
         Tray(
-            icon = BitmapPainter(appIcon.toComposeImageBitmap()),
+            icon = trayIcon,
             tooltip = "Rocky",
             onAction = ::showRocky,
             menu = {

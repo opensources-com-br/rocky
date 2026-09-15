@@ -152,6 +152,15 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun voiceSettingsDoNotShowShortcutControls() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Voice)
+
+        assertTrue(rule.onAllNodesWithText("Atalhos globais · Ctrl + Shift + F1–F12").fetchSemanticsNodes().isEmpty())
+        assertTrue(rule.onAllNodesWithText("Aplicar atalhos").fetchSemanticsNodes().isEmpty())
+        rule.onNodeWithTag("test-conversation").assertExists()
+    }
+
+    @Test
     fun testsAConversationFromVoiceSettings() {
         val voice = FakeVoiceService().apply { transcript = "Rocky, você está me ouvindo?" }
         render(

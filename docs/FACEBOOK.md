@@ -1,5 +1,13 @@
 # Facebook Live
 
+## Recovery and polling
+
+Comments are polled every 2 seconds after new messages, gradually slowing to 5 seconds while idle. Audience refreshes run every 30 seconds and retain the last successful value when a refresh fails.
+
+Transient network/API failures during comment polling allow up to 5 retries, delayed by 2, 4, 8, 16 and 30 seconds. Numeric `Retry-After` values are respected up to 5 minutes. Success resets the retry budget; token and permission errors require reconnecting and authorizing again.
+
+Disconnect cancels scheduled polls and interrupts ongoing requests. Events from previous sessions are discarded. Polling still retrieves only the latest 100 comments, so very busy chats may exceed that window between requests.
+
 Rocky receives new comments and the audience reported by the Graph API for an active live video on a Page managed by the authorized account.
 
 ## Configure the app

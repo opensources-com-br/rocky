@@ -20,15 +20,23 @@ class DesktopTikTokChatClient internal constructor(
     private val generation = AtomicLong()
     private val fallbackMessageId = AtomicLong()
     private val seenMessageIds = LinkedHashSet<String>()
-    @Volatile private var active = false
-    @Volatile private var listener = TikTokConnectionListener {}
-    @Volatile private var transport: TikTokLiveTransport? = null
 
     override fun connect(configuration: TikTokConfiguration, listener: TikTokConnectionListener) {
-        stop(notify = false)
+        check(!closed.get()) { "O cliente TikTok já foi encerrado." }
         val username = configuration.username.trim().removePrefix("@").trim()
         require(username.isNotBlank()) { "Informe o @usuário do TikTok." }
         val run = generation.incrementAndGet()
+        dispatch {
+            if (!isCurrent(run)) return@dispatch
+            cleanup()
+            this.listener = listener
+            active = true
+            retries = 0
+            roomId = null
+            seenMessageIds.clear()
+            emit(TikTokConnectionPhase.Connecting, "Procurando a live de @$username")
+            startAttempt(run, username)
+        }
     }
 
     private fun startAttempt(run: Long, username: String) {

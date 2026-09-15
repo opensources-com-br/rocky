@@ -8,6 +8,8 @@ import dev.rocky.core.kick.KickConnectionListener
 import dev.rocky.core.kick.KickConnectionPhase
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -31,10 +33,16 @@ class DesktopKickChatClient internal constructor(
     @Volatile private var receiver: KickLocalReceiver? = null
     @Volatile private var subscriptionIds = emptyList<String>()
     @Volatile private var authorizationCompleted = false
+    private var pendingRequest: Future<*>? = null
+    private var pendingAudience: ScheduledFuture<*>? = null
+    private var audienceRetryAttempt = 0
+    @Volatile private var closed = false
 
     init { scheduler.scheduleAtFixedRate(::refreshAudience, 30, 30, TimeUnit.SECONDS) }
 
+    @Synchronized
     override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) {
+        check(!closed) { "O cliente da Kick já foi encerrado." }
         stop(notify = false)
         require(configuration.clientId.isNotBlank()) { "Informe o Client ID da Kick." }
         require(configuration.clientSecret.isNotBlank()) { "Informe o Client Secret da Kick." }
@@ -48,11 +56,13 @@ class DesktopKickChatClient internal constructor(
         active = true
         authorizationCompleted = false
         emit(KickConnectionPhase.Authenticating, "Preparando autorização da Kick")
-        ioExecutor.execute {
+        val currentConfiguration = this.configuration
+        pendingRequest = ioExecutor.submit {
+            if (!isCurrent(run)) return@submit
             runCatching {
                 createKickAuthorizationReceiver(
                     api = api,
-                    configuration = this.configuration,
+                    configuration = currentConfiguration,
                     onCode = { verifier, code -> completeAuthorization(run, verifier, code) },
                     onMessage = { message ->
                         if (isCurrent(run) && message.channelId == account?.userId) {

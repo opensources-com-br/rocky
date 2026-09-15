@@ -149,6 +149,18 @@ class DesktopKickChatClient internal constructor(
     override fun disconnect() = stop(notify = true)
 
     @Synchronized
+    private fun handleAudienceFailure(run: Long, error: Throwable) {
+        if (!isCurrent(run)) return
+        if (error is KickApiException && error.statusCode in setOf(401, 403)) {
+            fail(run, error.userMessage())
+            return
+        }
+        val delay = kickRetryDelay(error, ++audienceRetryAttempt)
+        if (delay == null) audienceRetryAttempt = 0
+        scheduleAudience(run, delay ?: 30_000)
+    }
+
+    @Synchronized
     override fun close() {
         if (closed) return
         closed = true

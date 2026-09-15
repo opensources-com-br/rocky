@@ -108,7 +108,7 @@ class DesktopTwitchChatClient : TwitchChatClient {
                     isActive = { isCurrent(run) },
                     onAuthorization = { authorization ->
                         if (isCurrent(run)) {
-                            listener.onEvent(
+                            emitForRun(run,
                                 TwitchConnectionEvent.AuthorizationRequired(
                                     userCode = authorization.userCode,
                                     verificationUri = authorization.verificationUri,
@@ -239,12 +239,12 @@ class DesktopTwitchChatClient : TwitchChatClient {
                     if (error.statusCode != 401) throw error
                     currentTokens = api.refreshTokens(clientId, currentTokens.refreshToken)
                     if (!isCurrent(run)) return@submitIo
-                    tokens = currentTokens
+                    synchronized(this) { if (isCurrent(run)) tokens = currentTokens }
                     api.subscribeToChat(clientId, currentTokens.accessToken, currentAccount, sessionId)
                 }
-            }.onSuccess {
+            }.onSuccess { synchronized(this) {
                 if (isCurrent(run) && socket === webSocket) markConnected(run)
-            }.onFailure { error ->
+            } }.onFailure { error ->
                 if (isCurrent(run) && socket === webSocket) {
                     if (error.isTransientTwitchFailure()) {
                         webSocket.abort()

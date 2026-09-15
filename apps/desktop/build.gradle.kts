@@ -56,6 +56,8 @@ compose.desktop {
                 }
                 infoPlist {
                     extraKeysRawXml = """
+                        <key>LSUIElement</key>
+                        <true/>
                         <key>NSMicrophoneUsageDescription</key>
                         <string>Rocky listens locally for its wake word and transcribes your voice commands.</string>
                     """.trimIndent()

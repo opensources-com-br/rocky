@@ -10,6 +10,11 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TwitchDeviceAuthorizationTest {
+    @Test fun temporaryEndpointFailureStillProducesBrowserAuthorization() {
+        firstFailure = true
+        authorize()
+    }
+
     @Test fun productionFlowEmitsCodeAndBrowserLink() = authorize()
     private fun authorize() {
         val server = server()

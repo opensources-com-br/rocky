@@ -17,10 +17,11 @@ internal class TwitchApi(
         .build(),
     private val eventsubEndpoint: String = EVENTSUB_ENDPOINT,
     private val streamsEndpoint: String = STREAMS_ENDPOINT,
+    private val deviceEndpoint: String = DEVICE_ENDPOINT,
 ) {
     fun startDeviceAuthorization(clientId: String): DeviceAuthorization {
         val response = postForm(
-            DEVICE_ENDPOINT,
+            deviceEndpoint,
             mapOf("client_id" to clientId, "scopes" to CHAT_SCOPE),
         )
         response.requireSuccess()

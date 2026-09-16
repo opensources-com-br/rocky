@@ -61,8 +61,7 @@ internal fun PlatformSettings(
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(18.dp)) {
         TwitchAccount(clientId, onClientIdChange, twitch, onConnect, onDisconnect, onOpenBrowser)
-        kick?.let { KickAccountSettings(kickConfiguration, it, onConnectKick, onDisconnectKick, onOpenKickBrowser) }
-            ?: UpcomingPlatform("Kick", PlatformColor.Kick)
+        UpcomingPlatform("Kick", PlatformColor.Kick)
         youtube?.let {
             YouTubeAccountSettings(youtubeConfiguration, it, onConnectYouTube, onDisconnectYouTube, onOpenYouTubeBrowser)
         } ?: UpcomingPlatform("YouTube", PlatformColor.YouTube)

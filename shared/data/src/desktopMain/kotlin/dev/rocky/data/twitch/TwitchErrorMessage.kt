@@ -6,6 +6,9 @@ import java.net.http.HttpTimeoutException
 import javax.net.ssl.SSLException
 
 internal fun Throwable.twitchUserMessage(fallback: String): String {
+    val timedOut = generateSequence(this) { error -> error.cause?.takeUnless { it === error } }
+        .take(16).any { it is HttpTimeoutException }
+    if (timedOut) return "A Twitch demorou para responder. Tente conectar novamente."
     val cause = rootCause()
     return when (cause) {
         is TwitchApiException -> cause.twitchMessage ?: "$fallback (HTTP ${cause.statusCode})"

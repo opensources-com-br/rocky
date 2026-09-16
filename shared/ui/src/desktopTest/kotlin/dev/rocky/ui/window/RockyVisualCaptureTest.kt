@@ -327,28 +327,12 @@ class RockyVisualCaptureTest {
     }
 
     @Test
-    fun connectsAndDisplaysRealKickChat() {
-        val kick = FakeKickChatClient()
-        render(
-            settingsOpen = true,
-            settingsSection = SettingsSection.Platforms,
-            kickChatClient = kick,
-            kickConfiguration = KickConfiguration("client-id", "client-secret"),
-        )
+    fun showsKickAsAnUpcomingPlatform() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms)
 
-        rule.onNodeWithText("Conectar Kick").performScrollTo().performClick()
-        rule.runOnIdle {
-            kick.emit(KickConnectionEvent.Connected(KickAccount("42", "rocky_kick")))
-            kick.emit(KickConnectionEvent.MessageReceived(
-                ChatMessage("kick-message", "viewer", "Mensagem da Kick", StreamPlatform.Kick, channelId = "42"),
-            ))
-        }
-        rule.onNodeWithText("concluir").performClick()
-
-        assertTrue(rule.onAllNodesWithText("CONEXÃO REAL · KICK").fetchSemanticsNodes().isEmpty())
-        rule.onNodeWithTag("platform-kick").performClick()
-        rule.onNodeWithText("Desconectar").assertExists()
-        rule.onNodeWithText("Mensagem da Kick").assertExists()
+        rule.onNodeWithText("Kick").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Em breve").assertIsDisplayed()
+        assertTrue(rule.onAllNodesWithText("Conectar Kick").fetchSemanticsNodes().isEmpty())
     }
 
     @Test
@@ -1161,9 +1145,8 @@ class RockyVisualCaptureTest {
     @Test
     fun capturesGroupedPlatformSettings() {
         val twitch = FakeTwitchChatClient()
-        val kick = FakeKickChatClient()
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms,
-            twitchClientId = "client-id", twitchChatClient = twitch, kickChatClient = kick,
+            twitchClientId = "client-id", twitchChatClient = twitch,
             windowWidth = 780.dp, windowHeight = 680.dp, mainWindow = {},
             settingsWindow = { visible, _, content -> if (visible) content() })
         capture("implementation-platforms-wide.png", "rocky-settings-window")
@@ -1175,12 +1158,9 @@ class RockyVisualCaptureTest {
         rule.runOnIdle { twitch.emit(TwitchConnectionEvent.AuthorizationRequired("ABCD-1234", "https://example.test")) }
         rule.onNodeWithTag("twitch-open-browser").assertIsDisplayed()
         capture("implementation-platforms-authorization.png", "rocky-settings-window")
-        rule.onNodeWithTag("kick-client-id").performScrollTo().performTextReplacement("edited-client")
-        rule.onNodeWithTag("kick-client-secret").performScrollTo().performTextReplacement("edited-secret")
-        rule.onNodeWithText("Conectar Kick").performScrollTo().performClick()
-        assertEquals("edited-client", kick.lastConfiguration?.clientId)
-        assertEquals("edited-secret", kick.lastConfiguration?.clientSecret)
-        capture("implementation-platforms-kick.png", "rocky-settings-window")
+        rule.onNodeWithText("Kick").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Em breve").assertIsDisplayed()
+        capture("implementation-platforms-kick-upcoming.png", "rocky-settings-window")
         rule.onNodeWithTag("youtube-client-secret").performScrollTo().assertIsDisplayed()
         capture("implementation-platforms-youtube.png", "rocky-settings-window")
         rule.onNodeWithTag("facebook-app-secret").performScrollTo().assertIsDisplayed()
@@ -1193,8 +1173,9 @@ class RockyVisualCaptureTest {
     fun capturesCompactPlatformCredentials() {
         render(settingsOpen = true, settingsSection = SettingsSection.Platforms)
         capture("implementation-platforms-compact.png")
-        rule.onNodeWithTag("kick-client-secret").performScrollTo().assertIsDisplayed()
-        capture("implementation-platforms-compact-kick.png")
+        rule.onNodeWithText("Kick").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Em breve").assertIsDisplayed()
+        capture("implementation-platforms-compact-kick-upcoming.png")
         rule.onNodeWithTag("facebook-app-secret").performScrollTo().assertIsDisplayed()
         capture("implementation-platforms-compact-facebook.png")
         rule.onNodeWithText("Conectar TikTok").performScrollTo().assertIsDisplayed()

@@ -10,6 +10,22 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TwitchDeviceAuthorizationTest {
+    @Test fun productionFlowEmitsCodeAndBrowserLink() = authorize()
+    private fun authorize() {
+        val server = server()
+        val events = CopyOnWriteArrayList<TwitchConnectionEvent>()
+        val client = DesktopTwitchChatClient(HttpClient.newHttpClient(),
+            api = TwitchApi(deviceEndpoint = "http://127.0.0.1:${server.address.port}"))
+        try {
+            client.connect("client", events::add)
+            await { events.any { it is TwitchConnectionEvent.AuthorizationRequired } }
+            val authorization = events.filterIsInstance<TwitchConnectionEvent.AuthorizationRequired>().single()
+            assertEquals("CODE", authorization.userCode)
+            assertEquals("https://www.twitch.tv/activate", authorization.verificationUri)
+            assertEquals(if (firstFailure) 2 else 1, calls.get())
+        } finally { client.close(); server.stop(0) }
+    }
+
     private fun server() = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
         createContext("/") { exchange ->
             val status = if (calls.incrementAndGet() == 1 && firstFailure) 503 else 200

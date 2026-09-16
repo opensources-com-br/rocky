@@ -7,6 +7,13 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class TwitchErrorMessageTest {
+    @Test fun recognizesWrappedConnectTimeoutInsteadOfGenericAccessFailure() {
+        val timeout = java.net.http.HttpConnectTimeoutException("timeout")
+        timeout.initCause(java.net.ConnectException("HTTP connect timed out"))
+        val wrapped = java.util.concurrent.CompletionException(timeout)
+        assertContains(wrapped.twitchUserMessage("Falha"), "demorou")
+    }
+
     @Test
     fun explainsNetworkFailures() {
         assertContains(

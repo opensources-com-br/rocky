@@ -5,6 +5,19 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class LocalNotesStateTest {
+    @Test fun preservesRecordsAcrossProlongedWriteChurn() {
+        val repository = TransientNoteRepository()
+        val state = LocalNotesState(repository)
+
+        repeat(1_000) { index ->
+            assertTrue(state.save(LiveNote("note-$index", "Note $index", "now", "NOTA")))
+        }
+
+        assertEquals(1_000, LocalNotesState(repository).notes.size)
+        assertEquals("note-999", state.notes.first().id)
+        assertEquals("note-0", state.notes.last().id)
+    }
+
     @Test fun reloadsRecordsAfterStorageRecovers() {
         val note = LiveNote("saved", "Recovered", "now", "NOTA")
         val backing = TransientNoteRepository().apply { save(note) }

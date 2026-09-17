@@ -28,6 +28,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
         configuration.copy(model = "list").validationError(allowTestLoopback)?.let { throw IllegalArgumentException(it) }
         val path = when (configuration.provider) {
             AiProviderKind.Ollama -> "/api/tags"
+            AiProviderKind.Anthropic -> "/v1/models?limit=1000"
             AiProviderKind.Gemini -> "/v1beta/models?pageSize=1000"
             AiProviderKind.OpenRouter -> "/v1/models?supported_parameters=response_format"
             AiProviderKind.Grok -> "/v1/language-models"

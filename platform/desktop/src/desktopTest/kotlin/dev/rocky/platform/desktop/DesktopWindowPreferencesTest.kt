@@ -4,6 +4,13 @@ import java.awt.Rectangle
 import kotlin.test.*
 
 class DesktopWindowPreferencesTest {
+    @Test fun keepsAResizedCaptureAtTheMinimumVisibleSize() {
+        val restored = fitWindow(Rectangle(10, 10, 100, 50), listOf(Rectangle(0, 0, 1920, 1080)))
+
+        assertEquals(340, restored.width)
+        assertEquals(180, restored.height)
+    }
+
     @Test fun fitsAWindowAfterItsMonitorIsRemoved() {
         val screen = Rectangle(0, 0, 1280, 720)
         val restored = fitWindow(Rectangle(2000, 900, 462, 820), listOf(screen))

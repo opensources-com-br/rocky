@@ -87,12 +87,14 @@ class OpenAiSuggestionClientTest {
             val endpoint = "http://localhost:${server.address.port}"
             val client = OpenAiSuggestionClient(HttpClient.newHttpClient())
             val connection = client.testConnection(endpoint, "secret-key", "gpt-test")
-            val suggestion = client.generate(endpoint, "secret-key", "gpt-test", listOf(message))
+            val suggestion = client.generate(endpoint, "secret-key", "gpt-test", listOf(message),
+                promptCacheKey = "rocky-suggestion-v1")
 
             assertTrue(connection.successful)
             assertEquals("Bearer secret-key", authorization)
             assertEquals("Responda a dúvida.", suggestion?.text)
             assertTrue("\"store\":false" in requestBody)
+            assertTrue("\"prompt_cache_key\":\"rocky-suggestion-v1\"" in requestBody)
             assertTrue("\"type\":\"json_schema\"" in requestBody)
             assertTrue("secret-key" !in requestBody)
         } finally {

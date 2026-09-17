@@ -17,6 +17,14 @@ dependencies {
     kover(project(":platform:desktop"))
 }
 
+kover {
+    reports {
+        verify {
+            rule { minBound(80) }
+        }
+    }
+}
+
 allprojects {
     group = "dev.rocky"
     version = providers.gradleProperty("rockyVersion").get()

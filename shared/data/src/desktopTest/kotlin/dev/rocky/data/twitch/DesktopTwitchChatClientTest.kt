@@ -99,6 +99,14 @@ class DesktopTwitchChatClientTest {
         welcome(1)
     }
 
+    @Test fun reconnectReplacesActiveConnection() = withClient { client ->
+        client.connect("client", events::add)
+        await { sockets.size == 1 }
+        client.connect("client", events::add)
+        await { sockets.size == 2 }
+        assertEquals(true, sockets.first().first.aborted)
+    }
+
     @Test fun transfersOnlyAfterWelcomeWithoutCreatingAnotherSubscription() = withClient { client ->
         client.connect("client", events::add)
         await { sockets.size == 1 }

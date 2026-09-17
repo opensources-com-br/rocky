@@ -46,6 +46,7 @@ class AnthropicSuggestionClientTest {
             assertEquals("secret-key", apiKey)
             assertEquals("2023-06-01", version)
             assertTrue("\"system\"" in requestBody)
+            assertTrue("\"output_config\":{\"format\":{\"type\":\"json_schema\"" in requestBody)
             assertTrue("\"max_tokens\":300" in requestBody)
             assertTrue("\"model\":\"claude-test\"" in requestBody)
             assertTrue("secret-key" !in requestBody)

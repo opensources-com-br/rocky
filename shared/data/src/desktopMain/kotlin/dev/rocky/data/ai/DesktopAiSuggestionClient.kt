@@ -115,7 +115,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 streamerRequest,
                 agent,
             )
-            AiProviderKind.OpenRouter -> openAi.generateOpenRouter(
+            AiProviderKind.OpenRouter -> openRouter.generate(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,

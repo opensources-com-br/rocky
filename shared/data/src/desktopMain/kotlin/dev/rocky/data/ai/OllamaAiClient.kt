@@ -79,6 +79,9 @@ internal class AiProviderException(
     val providerMessage: String? = null,
 ) : Exception("AI provider returned HTTP $statusCode")
 
+internal class AiResponseIncompleteException(val reason: String) :
+    Exception("AI provider returned an incomplete response: $reason")
+
 private fun HttpResponse<String>.requireSuccess(): HttpResponse<String> {
     if (statusCode() !in 200..299) throw AiProviderException(statusCode())
     return this

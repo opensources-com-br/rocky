@@ -4,6 +4,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun rejectsInvalidProviderUsage() {
+        assertEquals(null, reportedTokenCount("not-json", "input", "output"))
+        assertEquals(null, reportedTokenCount("""{"input":-1,"output":2}""", "input", "output"))
+        assertEquals(null, reportedTotalTokenCount("""{"usage":{"total":-1}}""", "total", "usage"))
+    }
+
     @Test fun doesNotEchoProviderDetails() {
         val message = AiProviderException(401, "sk-secret invalid").userMessage("Falha")
 

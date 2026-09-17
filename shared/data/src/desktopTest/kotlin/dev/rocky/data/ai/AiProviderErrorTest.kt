@@ -4,6 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun explainsProviderUnavailability() {
+        assertEquals(
+            "Falha (HTTP 503): O provedor está indisponível; tente novamente mais tarde.",
+            AiProviderException(503).userMessage("Falha"),
+        )
+    }
+
     @Test fun explainsMissingOrUnavailableModels() {
         assertEquals(
             "Falha (HTTP 404): Confira o modelo e o endereço configurados.",

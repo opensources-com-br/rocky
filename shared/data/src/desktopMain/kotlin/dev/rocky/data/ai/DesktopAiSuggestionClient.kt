@@ -116,6 +116,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 streamerRequest,
                 agent,
                 promptCacheKey = OPENAI_PROMPT_CACHE_KEY,
+                maxOutputTokens = 600,
             )
             AiProviderKind.OpenRouter -> openRouter.generate(
                 configuration.endpoint,

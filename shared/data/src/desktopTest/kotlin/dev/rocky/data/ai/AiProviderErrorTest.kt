@@ -4,6 +4,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun doesNotEchoProviderDetails() {
+        val message = AiProviderException(401, "sk-secret invalid").userMessage("Falha")
+
+        kotlin.test.assertFalse("sk-secret" in message)
+    }
+
     @Test fun explainsProviderTimeouts() {
         assertEquals(
             "Falha: Tempo limite excedido; tente um modelo mais rápido ou tente novamente.",

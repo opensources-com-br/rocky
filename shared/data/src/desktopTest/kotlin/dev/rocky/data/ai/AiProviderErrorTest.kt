@@ -23,5 +23,9 @@ class AiProviderErrorTest {
             "Falha ao gerar: O provedor encerrou a resposta antes de concluir (max_output_tokens).",
             AiResponseIncompleteException("max_output_tokens").userMessage("Falha ao gerar"),
         )
+        assertEquals(
+            "Falha ao gerar: O provedor bloqueou a resposta (SAFETY). Revise o conteúdo enviado.",
+            AiResponseBlockedException("SAFETY").userMessage("Falha ao gerar"),
+        )
     }
 }

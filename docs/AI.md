@@ -70,4 +70,4 @@ API providers receive the selected chat content. Review the provider's data cont
 
 Remote API endpoints require HTTPS. HTTP is accepted only for loopback Ollama. Changing provider or endpoint clears the current key; enter the correct key and save again.
 
-Conversation → Sample · details shows the last request duration and reported token totals. Totals are partial: failed/cancelled requests, connection tests, and unsuccessful retry attempts may not include usage. OpenRouter can try up to three responses when the format is invalid. These counters are not a billing estimate; cancellation does not reverse provider charges.
+Conversation → Sample · details shows the last request duration and reported token totals. Totals are partial: failed/cancelled requests and connection tests may not include usage. OpenRouter makes one generation per analysis. These counters are not a billing estimate; cancellation does not reverse provider charges.

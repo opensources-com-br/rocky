@@ -51,7 +51,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
             put("input", prompt.input)
             put("store", false)
             promptCacheKey?.let { put("prompt_cache_key", it) }
-            put("max_output_tokens", 300)
+            put("max_output_tokens", 600)
             put("text", buildJsonObject {
                 put("format", buildJsonObject {
                     put("type", "json_schema")

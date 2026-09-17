@@ -18,3 +18,16 @@ def verify_asset(root, asset):
         raise ValueError(f"Expected one installer named {asset['file']}")
     if sha256(matches[0]) != asset['sha256']:
         raise ValueError(f"Checksum mismatch for {asset['file']}")
+
+
+def verify_metadata(metadata, properties, commit, system, architecture):
+    expected = {
+        'version': properties['rockyVersion'],
+        'native_version': properties['rockyPackageVersion'],
+        'commit': commit,
+        'os': system,
+        'architecture': architecture,
+    }
+    for key, value in expected.items():
+        if metadata.get(key) != value:
+            raise ValueError(f"Unexpected {key}: {metadata.get(key)}")

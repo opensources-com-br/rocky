@@ -25,6 +25,13 @@ class InstallationVerificationTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Checksum mismatch'):
                 verify_asset(root, {'file': 'Rocky.msi', 'sha256': '0' * 64})
 
+    def test_accepts_matching_package_identity(self):
+        properties = {'rockyVersion': '1.2.3-alpha.1', 'rockyPackageVersion': '1.2.3'}
+        metadata = {'version': '1.2.3-alpha.1', 'native_version': '1.2.3',
+                    'commit': 'abc123', 'os': 'darwin', 'architecture': 'arm64'}
+
+        verify_metadata(metadata, properties, 'abc123', 'darwin', 'arm64')
+
 
 if __name__ == '__main__':
     unittest.main()

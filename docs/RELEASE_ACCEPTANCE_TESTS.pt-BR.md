@@ -15,3 +15,17 @@ Registre tag, versão lógica, versão nativa, commit, SO, arquitetura e respons
 - Feche, reabra, reinicie o computador e confirme inicialização normal.
 - Desinstale e verifique atalhos, processos e entradas restantes.
 - Repita separadamente em macOS e Windows nas arquiteturas publicadas.
+
+## Jornada de ponta a ponta
+
+- Conclua onboarding em português e inglês sem configurar voz obrigatoriamente.
+- Conecte cada plataforma anunciada em uma live real e receba novas mensagens.
+- Teste ao menos um provedor local e cada provedor de nuvem anunciado.
+- Faça pergunta, cancele, reformule, salve nota e ideia e exporte Markdown.
+- Configure microfone, transcrição e voz; interrompa e faça um novo comando.
+- Execute backup, exclusão cancelada/confirmada, importação e recuperação.
+- Use janela compacta, fixação, tray/menu bar, atalhos e Settings separado.
+- Grave OBS nos dois sistemas sem expor chaves nem capturar áudio inesperado.
+- Mantenha uma sessão de duas horas com quedas de rede de 15 e 60 segundos.
+- Atualize a partir do candidato anterior e confirme configurações e registros.
+- Teste instalação limpa novamente após o cenário de upgrade.

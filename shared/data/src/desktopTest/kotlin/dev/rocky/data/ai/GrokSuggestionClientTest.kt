@@ -3,6 +3,8 @@ package dev.rocky.data.ai
 import com.sun.net.httpserver.HttpServer
 import dev.rocky.core.ai.AiProviderConfiguration
 import dev.rocky.core.ai.AiProviderKind
+import dev.rocky.core.live.ChatMessage
+import dev.rocky.core.live.StreamPlatform
 import java.net.InetSocketAddress
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,7 +28,7 @@ class GrokSuggestionClientTest {
                 authorization = exchange.requestHeaders.getFirst("Authorization")
                 requestBody = exchange.requestBody.bufferedReader().readText()
                 exchange.respond(
-                    """{"output":[{"type":"message","content":[{"type":"output_text","text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}]}],"usage":{"input_tokens":11,"output_tokens":7}}""",
+                    """{"output":[{"type":"message","content":[{"type":"output_text","text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}]}],"usage":{"prompt_tokens":11,"completion_tokens":7,"total_tokens":25}}""",
                 )
             }
             start()
@@ -38,9 +40,11 @@ class GrokSuggestionClientTest {
 
             val connection = client.testConnection(config)
             val models = client.availableModels(config)
+            val suggestion = client.generateSuggestion(config, listOf(ChatMessage("m1", "viewer", "Preço?", StreamPlatform.Twitch)))
 
             assertTrue(connection.successful)
             assertEquals(listOf("grok-4.6-test"), models)
+            assertEquals(25L, suggestion?.reportedTokens)
             assertEquals("Bearer xai-key", authorization)
             assertTrue("\"model\":\"grok-4.6-test\"" in requestBody)
             assertTrue("\"text\":{\"format\":{\"type\":\"json_schema\"" in requestBody)

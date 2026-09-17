@@ -36,6 +36,7 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
+      - run: python -m unittest discover -s scripts/tests
       - run: ./gradlew build
       - if: runner.os == 'macOS'
         run: ./gradlew koverVerify koverXmlReport

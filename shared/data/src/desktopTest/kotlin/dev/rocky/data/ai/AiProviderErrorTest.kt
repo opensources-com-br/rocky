@@ -6,6 +6,7 @@ import kotlin.test.assertEquals
 class AiProviderErrorTest {
     @Test fun reportsOnlyUsagePresentInProviderResponse() {
         assertEquals(15L, reportedTokenCount("""{"usage":{"input_tokens":10,"output_tokens":5}}""", "input_tokens", "output_tokens", nested = true))
+        assertEquals(21L, reportedTotalTokenCount("""{"usageMetadata":{"totalTokenCount":21}}""", "totalTokenCount", "usageMetadata"))
         assertEquals(null, reportedTokenCount("{}", "input_tokens", "output_tokens", nested = true))
     }
 

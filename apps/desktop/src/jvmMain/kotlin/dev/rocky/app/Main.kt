@@ -218,7 +218,7 @@ private fun runRockyApplication() = application {
             onAction = ::showRocky,
             menu = {
                 Item("Rocky", onClick = ::showRocky)
-                Item("Settings$MenuWidthPadding", onClick = ::showSettings)
+                Item(traySettingsLabel(System.getProperty("os.name")), onClick = ::showSettings)
                 Separator()
                 Item("Quit", onClick = ::quitRocky)
             },

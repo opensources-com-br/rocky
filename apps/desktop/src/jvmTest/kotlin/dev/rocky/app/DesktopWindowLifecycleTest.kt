@@ -19,4 +19,10 @@ class DesktopWindowLifecycleTest {
         assertFalse(lifecycle.closeMain())
         assertFalse(lifecycle.mainVisible)
     }
+
+    @Test fun trayActionRestoresClosedWindow() {
+        val lifecycle = DesktopWindowLifecycle(usesTray = true)
+        lifecycle.showMain()
+        assertTrue(lifecycle.mainVisible)
+    }
 }

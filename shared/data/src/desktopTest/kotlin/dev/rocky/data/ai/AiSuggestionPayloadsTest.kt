@@ -68,6 +68,13 @@ class AiSuggestionPayloadsTest {
         assertEquals("primeira segunda", AiSuggestionPayloads.openAiText(response))
     }
 
+    @Test fun explainsOpenAiResponseErrors() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            AiSuggestionPayloads.openAiText("""{"error":{"message":"generation failed"}}""")
+        }
+        assertEquals("OpenAI: generation failed", error.message)
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

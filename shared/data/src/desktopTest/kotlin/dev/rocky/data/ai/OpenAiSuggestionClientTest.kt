@@ -16,11 +16,10 @@ class OpenAiSuggestionClientTest {
     fun validatesOpenRouterAndGeneratesWithTheFreeRouter() {
         var requestBody = ""
         var generationAttempts = 0
+        var validatedKey = false
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
-            createContext("/v1/model/openrouter/free") { exchange ->
-                exchange.respond("""{"id":"openrouter/free"}""")
-            }
             createContext("/v1/key") { exchange ->
+                validatedKey = true
                 exchange.respond("""{"data":{"label":"rocky-test"}}""")
             }
             createContext("/v1/chat/completions") { exchange ->
@@ -43,6 +42,7 @@ class OpenAiSuggestionClientTest {
             )
 
             assertTrue(result.successful)
+            assertTrue(validatedKey)
             assertEquals("Conexão e geração verificadas", result.message)
             assertTrue("\"response_format\"" in requestBody)
             assertTrue("\"require_parameters\":true" in requestBody)

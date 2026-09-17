@@ -11,6 +11,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class AnthropicSuggestionClientTest {
+    @Test fun supportsClaude45StructuredOutput() {
+        assertTrue(supportsAnthropicStructuredOutput("claude-haiku-4-5-20251001"))
+    }
+
     @Test
     fun authenticatesAndGeneratesAGroundedSuggestion() {
         var apiKey = ""

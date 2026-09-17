@@ -131,6 +131,7 @@ private fun runRockyApplication() = application {
 
     fun showSettings() {
         settingsRequestRevision += 1
+        settingsWindowState.isMinimized = false
         settingsDesktopWindow.get()?.takeIf { it.isVisible }?.apply {
             toFront()
             requestFocus()

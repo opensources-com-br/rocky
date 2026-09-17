@@ -18,3 +18,17 @@ Execute com credenciais descartáveis e contas de sistema criadas para o teste.
 - [ ] Salvar, ler, editar e apagar uma chave usando DPAPI no Windows.
 - [ ] Migrar uma credencial antiga e remover o valor em plaintext.
 - [ ] Simular cofre indisponível sem persistir a chave em preferências.
+- [ ] Reiniciar após apagar e confirmar que a credencial não retorna.
+- [ ] Trocar provedor ou origem e não reutilizar a chave anterior.
+- [ ] Entrar com outro usuário do sistema e confirmar isolamento.
+- [ ] Fechar o Rocky e confirmar remoção dos tokens temporários.
+
+## Arquivos e diagnósticos
+
+- [ ] Inspecionar preferências, SQLite e pasta de dados por chaves.
+- [ ] Exportar backup e confirmar ausência de credenciais.
+- [ ] Exportar diagnóstico e confirmar ausência de chaves e tokens.
+- [ ] Confirmar que diagnóstico não contém chat, canal ou caminhos locais.
+- [ ] Inspecionar logs após falha de autenticação e de rede.
+- [ ] Verificar permissões da pasta, banco, backups e arquivos DPAPI.
+- [ ] Confirmar que arquivos temporários são removidos após erro.

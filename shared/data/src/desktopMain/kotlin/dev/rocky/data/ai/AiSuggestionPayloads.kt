@@ -48,6 +48,11 @@ internal object AiSuggestionPayloads {
     fun anthropicText(body: String): String {
         val root = body.asObject()
         root.errorMessage()?.let { throw IllegalArgumentException("Anthropic: $it") }
+        when (val reason = root["stop_reason"]?.jsonPrimitive?.content) {
+            null, "end_turn", "stop_sequence" -> Unit
+            "refusal" -> throw AiResponseBlockedException(reason)
+            else -> throw AiResponseIncompleteException(reason)
+        }
         return root.arrayAt("content").asSequence()
             .map { it.jsonObject }
             .firstOrNull { it.stringAt("type") == "text" }

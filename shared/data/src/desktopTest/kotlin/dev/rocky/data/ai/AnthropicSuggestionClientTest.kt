@@ -14,8 +14,10 @@ class AnthropicSuggestionClientTest {
         var apiKey = ""
         var version = ""
         var requestBody = ""
+        var modelsQuery = ""
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
             createContext("/v1/models") { exchange ->
+                modelsQuery = exchange.requestURI.rawQuery.orEmpty()
                 apiKey = exchange.requestHeaders.getFirst("x-api-key")
                 version = exchange.requestHeaders.getFirst("anthropic-version")
                 exchange.respond("""{"data":[{"id":"claude-test"}]}""")
@@ -40,6 +42,7 @@ class AnthropicSuggestionClientTest {
 
             assertTrue(connection.successful)
             assertEquals(listOf("claude-test"), models)
+            assertEquals("limit=1000", modelsQuery)
             assertEquals("secret-key", apiKey)
             assertEquals("2023-06-01", version)
             assertTrue("\"system\"" in requestBody)

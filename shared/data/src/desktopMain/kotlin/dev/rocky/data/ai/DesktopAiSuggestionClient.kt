@@ -29,6 +29,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
         val path = when (configuration.provider) {
             AiProviderKind.Ollama -> "/api/tags"
             AiProviderKind.Gemini -> "/v1beta/models"
+            AiProviderKind.OpenRouter -> "/v1/models?supported_parameters=response_format"
             else -> "/v1/models"
         }
         val request = java.net.http.HttpRequest.newBuilder(java.net.URI(configuration.endpoint.trimEnd('/') + path))

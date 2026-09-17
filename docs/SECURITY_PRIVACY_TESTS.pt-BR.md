@@ -32,3 +32,15 @@ Execute com credenciais descartáveis e contas de sistema criadas para o teste.
 - [ ] Inspecionar logs após falha de autenticação e de rede.
 - [ ] Verificar permissões da pasta, banco, backups e arquivos DPAPI.
 - [ ] Confirmar que arquivos temporários são removidos após erro.
+
+## Conteúdo não confiável
+
+- [ ] Enviar no chat pedidos para ignorar regras e revelar chaves.
+- [ ] Enviar comandos de shell, URLs, Markdown e texto semelhante a JSON.
+- [ ] Confirmar que chat nunca muda configurações ou executa ações locais.
+- [ ] Confirmar que pedidos do streamer permanecem separados do chat.
+- [ ] Rejeitar IDs de fontes inventados pela resposta da IA.
+- [ ] Limitar tamanho, quantidade e intervalo das mensagens enviadas à IA.
+- [ ] Confirmar que erros do provedor não exibem seu payload privado.
+- [ ] Testar nomes, mensagens e arquivos com caracteres especiais.
+- [ ] Repetir os testes com telemetria desativada e rede desconectada.

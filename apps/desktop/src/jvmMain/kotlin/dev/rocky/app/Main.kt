@@ -71,7 +71,7 @@ private fun runRockyApplication() = application {
     val appIcon = remember {
         ImageIO.read(requireNotNull(Thread.currentThread().contextClassLoader.getResource("rocky.png")))
     }
-    val trayIcon = painterResource(Res.drawable.rocky_tray)
+    val trayIcon = if (isWindows()) BitmapPainter(appIcon.toComposeImageBitmap()) else painterResource(Res.drawable.rocky_tray)
     LaunchedEffect(Unit) {
         if (!usesTray && Taskbar.isTaskbarSupported()) {
             val taskbar = Taskbar.getTaskbar()

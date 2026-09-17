@@ -46,6 +46,16 @@ class YouTubeLiveStateTest {
         assertEquals(null, state.broadcast)
     }
 
+    @Test fun keepsOnlyRecentYouTubeMessages() {
+        val client = FakeYouTubeChatClient()
+        val state = YouTubeLiveState(client) { 1L }
+        state.connect(YouTubeConfiguration("client", "secret"))
+        repeat(1_001) { client.emit(YouTubeConnectionEvent.MessageReceived(
+            ChatMessage("m$it", "viewer", "Olá", StreamPlatform.YouTube))) }
+        assertEquals(1_000, state.messages.size)
+        assertEquals("m1", state.messages.first().id)
+    }
+
     private class FakeYouTubeChatClient : YouTubeChatClient {
         private var listener = YouTubeConnectionListener {}
         override fun connect(configuration: YouTubeConfiguration, listener: YouTubeConnectionListener) {

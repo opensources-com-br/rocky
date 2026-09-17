@@ -1,0 +1,4 @@
+56c84b31fd72c729b8577f8fe1ec1ed53c4baa05:shared/data/src/desktopMain/kotlin/dev/rocky/data/ai/GrokSuggestionClient.kt:generic-api-key:28
+d71300264349f4e849bd881f908f5a158b6127f1:shared/data/src/desktopTest/kotlin/dev/rocky/data/ai/OpenAiSuggestionClientTest.kt:generic-api-key:91
+1aea60ee2b571fcb41c34cdfa375a7b1f7ec92f1:shared/data/src/desktopTest/kotlin/dev/rocky/data/ai/OpenAiSuggestionClientTest.kt:generic-api-key:91
+c7d9972bbc6d6c2f7c16542d9d42b81ecfc08378:shared/data/src/desktopMain/kotlin/dev/rocky/data/ai/DesktopAiSuggestionClient.kt:generic-api-key:162

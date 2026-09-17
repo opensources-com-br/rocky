@@ -47,6 +47,12 @@ class FacebookChatPollerTest {
         assertEquals(1, messages.size)
     }
 
+    @Test fun deduplicatesRepeatedComments() = withPoller { poller ->
+        body = """{"data":[{"id":"1","message":"Olá"}]}"""
+        repeat(2) { poller.poll() }
+        assertEquals(listOf("1"), messages.map { it.id })
+    }
+
     private var body = """{"data":[]}"""
     private var audienceStatus = 200
     private var commentStatus = 200

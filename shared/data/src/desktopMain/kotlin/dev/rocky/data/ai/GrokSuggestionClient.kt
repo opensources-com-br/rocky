@@ -23,7 +23,10 @@ internal class GrokSuggestionClient(httpClient: HttpClient) {
         messages: List<ChatMessage>,
         streamerRequest: String? = null,
         agent: AgentConfiguration = AgentConfiguration(),
-    ): AiGeneratedSuggestion? = responses.generate(endpoint, apiKey, model, messages, streamerRequest, agent)
+    ): AiGeneratedSuggestion? = responses.generate(
+        endpoint, apiKey, model, messages, streamerRequest, agent,
+        promptCacheKey = "rocky-grok-suggestion-v1",
+    )
 }
 
 private fun String.urlEncode(): String = java.net.URLEncoder.encode(this, java.nio.charset.StandardCharsets.UTF_8)

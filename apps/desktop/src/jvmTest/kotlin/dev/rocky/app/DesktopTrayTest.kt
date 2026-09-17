@@ -25,4 +25,8 @@ class DesktopTrayTest {
     @Test fun usesCompactWindowsMenuLabel() {
         assertEquals("Settings", traySettingsLabel("Windows 11"))
     }
+
+    @Test fun preservesMacOsMenuWidth() {
+        assertTrue(traySettingsLabel("Mac OS X").length > "Settings".length)
+    }
 }

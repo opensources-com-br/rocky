@@ -5,6 +5,14 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class LocalNotesStateTest {
+    @Test fun explainsAnUnavailableExportDestination() {
+        val state = LocalNotesState(TransientNoteRepository())
+
+        state.export { error("read only") }
+
+        assertEquals("Não foi possível exportar. Escolha uma pasta disponível e tente novamente.", state.notice)
+    }
+
     @Test fun preservesLocalRecordsWhenWritesFail() {
         val note = LiveNote("saved", "Original", "now", "NOTA")
         val repository = object : dev.rocky.core.notes.NoteRepository {

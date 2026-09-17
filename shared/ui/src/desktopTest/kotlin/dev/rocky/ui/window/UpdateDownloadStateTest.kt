@@ -9,13 +9,14 @@ class UpdateDownloadStateTest {
     private class Installer : UpdateInstaller {
         var opened = 0
         var failure = false
+        var openFailure = false
         override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
             if (failure) error("offline")
             onProgress(10, 10)
             return PreparedUpdate(update.version, "package", "hash")
         }
         override fun cancel() {}
-        override fun open(update: PreparedUpdate) { opened++ }
+        override fun open(update: PreparedUpdate) { if (openFailure) error("blocked"); opened++ }
     }
     @Test fun downloadDoesNotInstallAndActiveSessionBlocksOpening() = runBlocking {
         val installer = Installer()

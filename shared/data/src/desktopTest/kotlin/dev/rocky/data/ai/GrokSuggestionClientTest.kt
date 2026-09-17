@@ -46,7 +46,7 @@ class GrokSuggestionClientTest {
             assertTrue("\"text\":{\"format\":{\"type\":\"json_schema\"" in requestBody)
             assertTrue("\"prompt_cache_key\":\"rocky-grok-suggestion-v1\"" in requestBody)
             assertTrue("\"reasoning\":{\"effort\":\"low\"}" in requestBody)
-            assertTrue("\"max_output_tokens\":300" in requestBody)
+            assertTrue("\"max_output_tokens\":600" in requestBody)
             assertTrue("xai-key" !in requestBody)
         } finally {
             server.stop(0)

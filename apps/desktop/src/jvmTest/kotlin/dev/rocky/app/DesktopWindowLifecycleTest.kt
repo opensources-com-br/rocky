@@ -67,4 +67,12 @@ class DesktopWindowLifecycleTest {
         assertEquals(CompactSize, lifecycle.toggle(DpSize(520.dp, 760.dp)))
         assertTrue(lifecycle.compact)
     }
+
+    @Test fun expandedToggleRestoresPreviousSize() {
+        val lifecycle = DesktopLayoutLifecycle()
+        val previous = DpSize(520.dp, 760.dp)
+        lifecycle.toggle(previous)
+        assertEquals(previous, lifecycle.toggle(CompactSize))
+        assertFalse(lifecycle.compact)
+    }
 }

@@ -139,9 +139,13 @@ internal fun suggestionSchema() = buildJsonObject {
     put("type", "object")
     put("additionalProperties", false)
     put("properties", buildJsonObject {
-        put("suggestion", buildJsonObject { put("type", "string") })
+        put("suggestion", buildJsonObject {
+            put("type", "string")
+            put("description", "Sugestão curta e factual para o streamer")
+        })
         put("source_message_ids", buildJsonObject {
             put("type", "array")
+            put("description", "IDs das mensagens do chat usadas como evidência")
             put("items", buildJsonObject { put("type", "string") })
         })
     })

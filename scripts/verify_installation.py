@@ -54,9 +54,15 @@ def main():
     if len(metadata_files) != 1:
         raise ValueError('Expected exactly one BUILDINFO file')
     metadata = json.loads(metadata_files[0].read_text())
+    if not metadata.get('assets'):
+        raise ValueError('No installers were recorded')
     commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(
         ['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     verify_metadata(metadata, properties, commit, system, architecture)
     for asset in metadata.get('assets', []):
         verify_asset(binary_root, asset)
     verify_runtime(binary_root, system)
+
+
+if __name__ == '__main__':
+    main()

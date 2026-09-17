@@ -29,4 +29,10 @@ class DesktopWindowLifecycleTest {
     @Test fun closingFallbackWindowRequestsQuit() {
         assertTrue(DesktopWindowLifecycle(usesTray = false).closeMain())
     }
+
+    @Test fun repeatedSettingsActionsReuseOneRequestChannel() {
+        val lifecycle = DesktopWindowLifecycle(usesTray = true)
+        lifecycle.requestSettings(); lifecycle.requestSettings()
+        assertEquals(2, lifecycle.settingsRevision)
+    }
 }

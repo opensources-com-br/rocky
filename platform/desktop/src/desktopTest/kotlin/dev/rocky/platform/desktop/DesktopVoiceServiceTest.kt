@@ -66,6 +66,7 @@ class DesktopVoiceServiceTest {
         assertTrue(script.contains("System.Speech"))
         assertTrue(!script.contains(text))
         assertTrue(script.contains(java.util.Base64.getEncoder().encodeToString(text.toByteArray(Charsets.UTF_8))))
+        assertTrue(script.contains("Rate = [Math]::Round((120 - 100) / 5)"))
         assertTrue(script.contains("Volume = 70"))
     }
 

@@ -18,7 +18,7 @@ class GeminiSuggestionClientTest {
             createContext("/v1beta/models") { exchange ->
                 modelsQuery = exchange.requestURI.rawQuery.orEmpty()
                 apiKey = exchange.requestHeaders.getFirst("x-goog-api-key")
-                exchange.respond("""{"models":[{"name":"models/gemini-test","supportedGenerationMethods":["generateContent"]}]}""")
+                exchange.respond("""{"models":[{"name":"models/gemini-test","supportedGenerationMethods":["generateContent"]},{"name":"models/gemini-legacy","supportedGenerationMethods":["generateContent"]},{"name":"models/embedding-only","supportedGenerationMethods":["embedContent"]}]}""")
             }
             createContext("/v1beta/models/gemini-test") { exchange ->
                 apiKey = exchange.requestHeaders.getFirst("x-goog-api-key")
@@ -42,7 +42,7 @@ class GeminiSuggestionClientTest {
             val models = client.availableModels(config)
 
             assertTrue(connection.successful)
-            assertEquals(listOf("gemini-test"), models)
+            assertEquals(listOf("gemini-legacy", "gemini-test"), models)
             assertEquals("pageSize=1000", modelsQuery)
             assertEquals("google-key", apiKey)
             assertTrue("\"systemInstruction\"" in requestBody)

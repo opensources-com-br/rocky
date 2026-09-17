@@ -136,7 +136,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
     private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 }
 
-private const val OPENROUTER_RESPONSE_ATTEMPTS = 3
+private const val OPENROUTER_RESPONSE_ATTEMPTS = 1
 
 private fun suggestionSchema() = buildJsonObject {
     put("type", "object")

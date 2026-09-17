@@ -121,6 +121,7 @@ private fun runRockyApplication() = application {
 
     fun showRocky() {
         windowVisible = true
+        windowState.isMinimized = false
         desktopWindow.get()?.apply {
             isVisible = true
             toFront()

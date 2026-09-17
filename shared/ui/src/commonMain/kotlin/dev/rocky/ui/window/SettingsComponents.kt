@@ -3,6 +3,7 @@ package dev.rocky.ui.window
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.rocky.ui.theme.RockyColors
@@ -96,7 +98,7 @@ internal fun SettingsNavigation(
                             if (active) RockyColors.SurfaceSelected else Color.Transparent,
                             RoundedCornerShape(9.dp),
                         )
-                        .clickable { onSelect(section) }
+                        .selectable(active, role = Role.Tab) { onSelect(section) }
                         .padding(vertical = 9.dp),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -193,7 +195,7 @@ private fun SettingsSidebarItem(
                 if (selected) RockyColors.Accent else Color.Transparent,
                 RoundedCornerShape(8.dp),
             )
-            .clickable(onClick = onClick)
+            .selectable(selected, role = Role.Tab, onClick = onClick)
             .padding(horizontal = 9.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

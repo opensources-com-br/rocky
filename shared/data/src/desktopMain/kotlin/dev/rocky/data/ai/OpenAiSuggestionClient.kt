@@ -74,7 +74,8 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         return AiSuggestionPayloads.suggestion(
             AiSuggestionPayloads.openAiText(response.body()),
             prompt.messageIds,
-        )?.copy(reportedTokens = reportedTokenCount(response.body(), "input_tokens", "output_tokens", nested = true))
+        )?.copy(reportedTokens = reportedTotalTokenCount(response.body(), "total_tokens", "usage")
+            ?: reportedTokenCount(response.body(), "input_tokens", "output_tokens", nested = true))
     }
 
     fun generateOpenRouter(

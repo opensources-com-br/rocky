@@ -110,6 +110,12 @@ class AiSuggestionPayloadsTest {
         }
     }
 
+    @Test fun detectsRefusedClaudeResponses() {
+        assertFailsWith<AiResponseBlockedException> {
+            AiSuggestionPayloads.anthropicText("""{"stop_reason":"refusal"}""")
+        }
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

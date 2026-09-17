@@ -90,6 +90,19 @@ class DesktopKickChatClientTest {
         await { requests.any { it == "DELETE /subscriptions" } }
     }
 
+    @Test fun reconnectReplacesPendingAuthorization() = withClient { client ->
+        val first = CopyOnWriteArrayList<KickConnectionEvent>()
+        val second = CopyOnWriteArrayList<KickConnectionEvent>()
+        val ports = List(2) { ServerSocket(0).use { it.localPort } }
+        client.connect(KickConfiguration("client", "secret",
+            "http://localhost:${ports[0]}/oauth/kick/callback"), first::add)
+        await { first.any { it is KickConnectionEvent.AuthorizationRequired } }
+        client.connect(KickConfiguration("client", "secret",
+            "http://localhost:${ports[1]}/oauth/kick/callback"), second::add)
+        await { second.any { it is KickConnectionEvent.AuthorizationRequired } }
+        assertEquals(1, first.filterIsInstance<KickConnectionEvent.AuthorizationRequired>().size)
+    }
+
     private fun authorize(client: DesktopKickChatClient) {
         val port = ServerSocket(0).use { it.localPort }
         client.connect(KickConfiguration("client", "secret", "http://localhost:$port/oauth/kick/callback"), events::add)

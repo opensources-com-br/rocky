@@ -71,6 +71,9 @@ class OpenAiSuggestionClientTest {
         var authorization = ""
         var requestBody = ""
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
+            createContext("/v1/models") { exchange ->
+                exchange.respond("""{"data":[{"id":"gpt-test"},{"id":"gpt-legacy"}]}""")
+            }
             createContext("/v1/models/gpt-test") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
                 exchange.respond("""{"id":"gpt-test"}""")
@@ -88,10 +91,14 @@ class OpenAiSuggestionClientTest {
             val endpoint = "http://localhost:${server.address.port}"
             val client = OpenAiSuggestionClient(HttpClient.newHttpClient())
             val connection = client.testConnection(endpoint, "secret-key", "gpt-test")
+            val models = DesktopAiSuggestionClient(true).availableModels(
+                AiProviderConfiguration(AiProviderKind.OpenAI, endpoint, "list", "secret-key"),
+            )
             val suggestion = client.generate(endpoint, "secret-key", "gpt-test", listOf(message),
                 promptCacheKey = "rocky-suggestion-v1", maxOutputTokens = 600)
 
             assertTrue(connection.successful)
+            assertEquals(listOf("gpt-legacy", "gpt-test"), models)
             assertEquals("Bearer secret-key", authorization)
             assertEquals("Responda a dúvida.", suggestion?.text)
             assertTrue("\"store\":false" in requestBody)

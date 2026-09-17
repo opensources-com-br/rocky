@@ -5,6 +5,14 @@ import java.nio.file.Files
 import kotlin.test.*
 
 class RecordBackupTest {
+    @Test fun backupSchemaHasNoCredentialFields() {
+        val backup = RecordBackup.encode(listOf(note))
+
+        for (field in listOf("apiKey", "clientSecret", "accessToken", "refreshToken")) {
+            assertFalse("\"$field\"" in backup)
+        }
+    }
+
     @Test fun acceptsAnEmptyBackup() {
         assertEquals(emptyList(), RecordBackup.decode(RecordBackup.encode(emptyList())))
     }

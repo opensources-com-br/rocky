@@ -1,6 +1,7 @@
 package dev.rocky.app
 
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DesktopTrayTest {
@@ -10,5 +11,9 @@ class DesktopTrayTest {
 
     @Test fun keepsTrayOnMacOs() {
         assertTrue(shouldUseTray("Mac OS X", systemTraySupported = true))
+    }
+
+    @Test fun keepsWindowLifecycleOnLinux() {
+        assertFalse(shouldUseTray("Linux", systemTraySupported = true))
     }
 }

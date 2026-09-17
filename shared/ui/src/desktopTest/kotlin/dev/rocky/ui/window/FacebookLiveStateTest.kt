@@ -46,6 +46,16 @@ class FacebookLiveStateTest {
         assertEquals(null, state.liveVideo)
     }
 
+    @Test fun keepsOnlyRecentFacebookMessages() {
+        val client = FakeFacebookChatClient()
+        val state = FacebookLiveState(client) { 1L }
+        state.connect(FacebookConfiguration("app", "secret"))
+        repeat(1_001) { client.emit(FacebookConnectionEvent.MessageReceived(
+            ChatMessage("m$it", "viewer", "Olá", StreamPlatform.Facebook))) }
+        assertEquals(1_000, state.messages.size)
+        assertEquals("m1", state.messages.first().id)
+    }
+
     private class FakeFacebookChatClient : FacebookChatClient {
         private var listener = FacebookConnectionListener {}
         override fun connect(configuration: FacebookConfiguration, listener: FacebookConnectionListener) {

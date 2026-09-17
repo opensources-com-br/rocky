@@ -4,6 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun explainsProviderTimeouts() {
+        assertEquals(
+            "Falha: Tempo limite excedido; tente um modelo mais rápido ou tente novamente.",
+            java.net.http.HttpTimeoutException("secret").userMessage("Falha"),
+        )
+    }
+
     @Test fun explainsProviderUnavailability() {
         assertEquals(
             "Falha (HTTP 503): O provedor está indisponível; tente novamente mais tarde.",

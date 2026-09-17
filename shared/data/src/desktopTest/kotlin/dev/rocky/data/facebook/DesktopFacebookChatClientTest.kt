@@ -33,6 +33,20 @@ class DesktopFacebookChatClientTest {
     @Test fun recoversAfterTemporaryCommentFailureWithoutReauthorizing() = connectAndReceive(true)
     @Test fun disconnectCancelsPendingRetriesAndSuppressesMessages() = connectAndReceive(true, true)
 
+    @Test fun reconnectReplacesPendingAuthorization() {
+        val first = CopyOnWriteArrayList<FacebookConnectionEvent>()
+        val second = CopyOnWriteArrayList<FacebookConnectionEvent>()
+        val ports = List(2) { ServerSocket(0).use { it.localPort } }
+        val client = DesktopFacebookChatClient()
+        try {
+            client.connect(FacebookConfiguration("app", "secret", "http://127.0.0.1:${ports[0]}/oauth/facebook/callback"), first::add)
+            await { first.any { it is FacebookConnectionEvent.AuthorizationRequired } }
+            client.connect(FacebookConfiguration("app", "secret", "http://127.0.0.1:${ports[1]}/oauth/facebook/callback"), second::add)
+            await { second.any { it is FacebookConnectionEvent.AuthorizationRequired } }
+            assertEquals(1, first.filterIsInstance<FacebookConnectionEvent.AuthorizationRequired>().size)
+        } finally { client.close() }
+    }
+
     private fun connectAndReceive(failFirstComment: Boolean = false, stopBeforeRetry: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
         val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {

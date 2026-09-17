@@ -58,10 +58,10 @@ internal fun NoteRow(
         }
         Column {
             IconButton(onClick = onEdit) {
-                Icon(Icons.Outlined.Edit, contentDescription = "Editar nota", tint = RockyColors.TextSecondary)
+                Icon(Icons.Outlined.Edit, contentDescription = tr("Edit note", "Editar nota"), tint = RockyColors.TextSecondary)
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Outlined.Delete, contentDescription = "Excluir nota", tint = RockyColors.TextSecondary)
+                Icon(Icons.Outlined.Delete, contentDescription = tr("Delete note", "Excluir nota"), tint = RockyColors.TextSecondary)
             }
         }
     }

@@ -8,6 +8,17 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DesktopWindowLifecycleTest {
+    @Test fun repeatedLayoutChangesPreserveTheExpandedSize() {
+        val lifecycle = DesktopLayoutLifecycle()
+        val expanded = DpSize(640.dp, 720.dp)
+
+        repeat(1_000) { lifecycle.toggle(if (lifecycle.compact) CompactSize else expanded) }
+
+        assertFalse(lifecycle.compact)
+        assertEquals(CompactSize, lifecycle.toggle(expanded))
+        assertEquals(expanded, lifecycle.toggle(CompactSize))
+    }
+
     @Test fun settingsKeepsTheMainCaptureVisible() {
         val lifecycle = DesktopWindowLifecycle(usesTray = true).apply { showMain() }
 

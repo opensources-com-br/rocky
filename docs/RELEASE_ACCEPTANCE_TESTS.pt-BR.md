@@ -29,3 +29,18 @@ Registre tag, versão lógica, versão nativa, commit, SO, arquitetura e respons
 - Mantenha uma sessão de duas horas com quedas de rede de 15 e 60 segundos.
 - Atualize a partir do candidato anterior e confirme configurações e registros.
 - Teste instalação limpa novamente após o cenário de upgrade.
+
+## Porta de liberação
+
+- Exija `build`, `koverVerify`, testes Python e verificações web aprovados.
+- Exija workflows de build e release verdes no commit congelado.
+- Confira dependências, histórico de segredos e checksums sem alertas bloqueadores.
+- Valide documentação, privacidade, limitações e notas contra o comportamento real.
+- Registre três sessões reais com pelo menos dois streamers diferentes.
+- Anexe logs, capturas, gravações, medições e resultado de cada matriz anterior.
+- Bloqueie perda de dados, crash, conexão irrecuperável ou áudio inesperado no OBS.
+- Bloqueie pacote sem runtime, identidade divergente ou checksum inválido.
+- Bloqueie vazamento de chave, token, banco, transcript ou dado pessoal.
+- Abra issues para falhas com versão, horário, ambiente e reprodução.
+- Registre decisão final: aprovado, reprovado ou aprovado com limitações públicas.
+- Publique somente os mesmos binários homologados, sem reconstrução posterior.

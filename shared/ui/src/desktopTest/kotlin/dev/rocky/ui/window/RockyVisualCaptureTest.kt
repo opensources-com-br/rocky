@@ -34,6 +34,7 @@ import dev.rocky.core.locale.RockyLanguage
 import dev.rocky.core.ai.AiConnectionResult
 import dev.rocky.core.ai.AiGeneratedSuggestion
 import dev.rocky.core.ai.AiProviderConfiguration
+import dev.rocky.core.ai.AiProviderKind
 import dev.rocky.core.ai.AiSuggestionClient
 import dev.rocky.core.agent.AgentConfiguration
 import dev.rocky.core.agent.AgentTone
@@ -1289,6 +1290,7 @@ class RockyVisualCaptureTest {
         tiktokChatClient: TikTokChatClient? = null,
         tiktokConfiguration: TikTokConfiguration = TikTokConfiguration(),
         aiSuggestionClient: AiSuggestionClient? = null,
+        aiConfiguration: AiProviderConfiguration = AiProviderConfiguration(AiProviderKind.Ollama, "http://localhost:11434", "test"),
         voiceService: VoiceService = FakeVoiceService(),
         voiceConfiguration: VoiceConfiguration = VoiceConfiguration(),
         onBackup: (List<LiveNote>) -> Boolean = { false },
@@ -1325,6 +1327,7 @@ class RockyVisualCaptureTest {
                         facebookChatClient = facebookChatClient ?: FakeFacebookChatClient(),
                         tiktokChatClient = tiktokChatClient ?: FakeTikTokChatClient(),
                         aiSuggestionClient = aiSuggestionClient ?: FakeAiSuggestionClient(),
+                        initialAiConfiguration = aiConfiguration,
                         voiceService = voiceService,
                         initialVoiceConfiguration = voiceConfiguration,
                         onVoiceConfigurationChange = onVoiceConfigurationChange,

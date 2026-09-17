@@ -31,6 +31,20 @@ class DesktopYouTubeChatClientTest {
     @Test fun recoversAfterTemporaryFailureWithoutReauthorizing() = connectAndReceive(true)
     @Test fun disconnectCancelsRetryAndSuppressesMessages() = connectAndReceive(true, true)
 
+    @Test fun reconnectReplacesPendingAuthorization() {
+        val first = CopyOnWriteArrayList<YouTubeConnectionEvent>()
+        val second = CopyOnWriteArrayList<YouTubeConnectionEvent>()
+        val ports = List(2) { ServerSocket(0).use { it.localPort } }
+        val client = DesktopYouTubeChatClient()
+        try {
+            client.connect(YouTubeConfiguration("client", "secret", "http://127.0.0.1:${ports[0]}/oauth/youtube/callback"), first::add)
+            await { first.any { it is YouTubeConnectionEvent.AuthorizationRequired } }
+            client.connect(YouTubeConfiguration("client", "secret", "http://127.0.0.1:${ports[1]}/oauth/youtube/callback"), second::add)
+            await { second.any { it is YouTubeConnectionEvent.AuthorizationRequired } }
+            assertEquals(1, first.filterIsInstance<YouTubeConnectionEvent.AuthorizationRequired>().size)
+        } finally { client.close() }
+    }
+
     private fun connectAndReceive(failFirstComment: Boolean = false, stopBeforeRetry: Boolean = false) {
         val callbackPort = ServerSocket(0).use { it.localPort }
         val requests = CopyOnWriteArrayList<String>()

@@ -32,6 +32,14 @@ class InstallationVerificationTest(unittest.TestCase):
 
         verify_metadata(metadata, properties, 'abc123', 'darwin', 'arm64')
 
+    def test_rejects_wrong_package_architecture(self):
+        properties = {'rockyVersion': '1.2.3-alpha.1', 'rockyPackageVersion': '1.2.3'}
+        metadata = {'version': '1.2.3-alpha.1', 'native_version': '1.2.3',
+                    'commit': 'abc123', 'os': 'windows', 'architecture': 'arm64'}
+
+        with self.assertRaisesRegex(ValueError, 'architecture'):
+            verify_metadata(metadata, properties, 'abc123', 'windows', 'amd64')
+
 
 if __name__ == '__main__':
     unittest.main()

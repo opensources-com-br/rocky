@@ -42,3 +42,21 @@ def verify_runtime(root, system):
     pattern = 'app/*.app/Contents/MacOS/Rocky' if system == 'darwin' else 'app/**/Rocky.exe'
     if len(list(root.glob(pattern))) != 1:
         raise ValueError('The Rocky launcher is missing')
+
+
+def main():
+    root = pathlib.Path(__file__).resolve().parents[1]
+    binary_root = root / 'apps/desktop/build/compose/binaries/main'
+    lines = (root / 'gradle.properties').read_text().splitlines()
+    properties = dict(line.split('=', 1) for line in lines if '=' in line)
+    system, architecture = platform.system().lower(), platform.machine().lower()
+    metadata_files = list(binary_root.glob(f'BUILDINFO-{system}-{architecture}.json'))
+    if len(metadata_files) != 1:
+        raise ValueError('Expected exactly one BUILDINFO file')
+    metadata = json.loads(metadata_files[0].read_text())
+    commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(
+        ['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+    verify_metadata(metadata, properties, commit, system, architecture)
+    for asset in metadata.get('assets', []):
+        verify_asset(binary_root, asset)
+    verify_runtime(binary_root, system)

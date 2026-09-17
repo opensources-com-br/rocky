@@ -65,8 +65,7 @@ jobs:
       - name: Notarize macOS package
         if: runner.os == 'macOS'
         run: scripts/notarize-macos.sh
-      - name: Record Windows package metadata
-        if: runner.os == 'Windows'
+      - name: Record package metadata
         run: python scripts/release_metadata.py
       - uses: actions/upload-artifact@v7
         with:

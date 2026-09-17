@@ -320,9 +320,9 @@ private fun runRockyApplication() = application {
         )
 }
 
-private val ExpandedSize = DpSize(462.dp, 900.dp)
-private val SettingsSize = DpSize(780.dp, 680.dp)
-private val CompactSize = DpSize(340.dp, 180.dp)
+internal val ExpandedSize = DpSize(462.dp, 900.dp)
+internal val SettingsSize = DpSize(780.dp, 680.dp)
+internal val CompactSize = DpSize(340.dp, 180.dp)
 private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")
 private const val MenuWidthPadding = "\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003"
 internal fun shouldUseTray(osName: String, systemTraySupported: Boolean): Boolean =

@@ -4,6 +4,13 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class VoiceCommandTest {
+    @Test fun ignoresWordsThatOnlyResembleTheWakeWord() {
+        for (speech in listOf("rockylândia", "roquete", "broccoli", "rock")) {
+            assertEquals(false, containsRockyWakeWord(speech))
+            assertEquals(null, extractRockyCommand("$speech, responda"))
+        }
+    }
+
     @org.junit.Test fun parsesFreeNotesAndIdeas() {
         org.junit.Assert.assertEquals(DictatedNote(VoiceSaveTarget.Note, "fazer uma live amanhã"),
             dictatedNote("anota: fazer uma live amanhã"))

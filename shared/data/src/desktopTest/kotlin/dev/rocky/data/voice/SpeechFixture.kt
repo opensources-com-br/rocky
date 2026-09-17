@@ -6,6 +6,7 @@ internal class SpeechFixture : VoiceService, PcmPlayback {
     var spoken = mutableListOf<String>()
     var captured = false
     var samples = 0
+    var volume = -1
     var finished = false
     var failWrite = false
     override fun availableVoices() = emptyList<SystemVoice>()
@@ -16,7 +17,7 @@ internal class SpeechFixture : VoiceService, PcmPlayback {
     override fun stopCaptureAndTranscribe(configuration: LocalTranscriptionConfiguration) = ""
     override fun cancelCapture() { captured = false }
     override fun close() {}
-    override fun start(sampleRate: Int, volumePercent: Int) { check(sampleRate == 24_000) }
+    override fun start(sampleRate: Int, volumePercent: Int) { check(sampleRate == 24_000); volume = volumePercent }
     override fun write(bytes: ByteArray, count: Int) {
         check(!captured) { "Microphone must be paused during playback" }
         if (failWrite) error("Playback failed")

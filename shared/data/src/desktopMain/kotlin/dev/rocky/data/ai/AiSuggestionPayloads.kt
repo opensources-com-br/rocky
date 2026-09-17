@@ -59,6 +59,8 @@ internal object AiSuggestionPayloads {
     fun geminiText(body: String): String {
         val root = body.asObject()
         root.errorMessage()?.let { throw IllegalArgumentException("Gemini: $it") }
+        root["promptFeedback"]?.jsonObject?.get("blockReason")?.jsonPrimitive?.content
+            ?.let { throw AiResponseBlockedException(it) }
         val candidate = root.arrayAt("candidates").firstOrNull()?.jsonObject
             ?: throw IllegalArgumentException("Gemini não retornou candidatos")
         when (val reason = candidate["finishReason"]?.jsonPrimitive?.content) {

@@ -41,4 +41,10 @@ class DesktopWindowLifecycleTest {
         lifecycle.requestSettings()
         assertFalse(lifecycle.mainVisible)
     }
+
+    @Test fun shortcutTogglesMainWindow() {
+        val lifecycle = DesktopWindowLifecycle(usesTray = true)
+        lifecycle.toggleMain(); assertTrue(lifecycle.mainVisible)
+        lifecycle.toggleMain(); assertFalse(lifecycle.mainVisible)
+    }
 }

@@ -82,6 +82,9 @@ internal class AiProviderException(
 internal class AiResponseIncompleteException(val reason: String) :
     Exception("AI provider returned an incomplete response: $reason")
 
+internal class AiResponseBlockedException(val reason: String) :
+    Exception("AI provider blocked the response: $reason")
+
 private fun HttpResponse<String>.requireSuccess(): HttpResponse<String> {
     if (statusCode() !in 200..299) throw AiProviderException(statusCode())
     return this

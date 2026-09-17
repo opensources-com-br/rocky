@@ -12,6 +12,14 @@ import org.junit.Assert.*
 class RecordExperienceTest {
     @get:Rule val rule = createComposeRule()
 
+    @Test fun exposesTheSelectedSettingsSection() {
+        rule.setContent { CompositionLocalProvider(LocalRockyLanguage provides RockyLanguage.English) {
+            SettingsSidebar(SettingsSection.Agent, {}, {})
+        } }
+
+        rule.onNodeWithText("Agent").assertIsSelected()
+    }
+
     @Test fun exposesNoteActionsInTheSelectedLanguage() {
         var edits = 0; var deletes = 0
         rule.setContent { CompositionLocalProvider(LocalRockyLanguage provides RockyLanguage.English) {

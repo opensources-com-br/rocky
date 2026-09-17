@@ -67,7 +67,7 @@ internal object AiSuggestionPayloads {
             else -> throw AiResponseBlockedException(reason)
         }
         return candidate.objectAt("content")
-            ?.arrayAt("parts")
+            .arrayAt("parts")
             ?.asSequence()
             ?.map { it.jsonObject["text"]?.jsonPrimitive?.content }
             ?.filterNotNull()

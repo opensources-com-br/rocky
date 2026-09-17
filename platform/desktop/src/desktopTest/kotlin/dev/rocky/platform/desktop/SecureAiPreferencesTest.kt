@@ -43,6 +43,13 @@ class SecureAiPreferencesTest {
         prefs.put("endpoint", "https://another.example")
         assertEquals("", SecureAiPreferences(prefs, secrets).configuration.apiKey)
     }
+    @Test fun removesCredentials() = withStore { prefs, secrets ->
+        val store = SecureAiPreferences(prefs, secrets)
+        val config = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic")
+        store.configuration = config
+        store.configuration = config.copy(apiKey = "")
+        assertNull(secrets.value)
+    }
     private class FakeSecrets : SecretStore {
         var value: String? = null
         var fail = false

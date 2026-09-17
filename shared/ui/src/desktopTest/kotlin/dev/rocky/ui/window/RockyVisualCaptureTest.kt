@@ -1028,6 +1028,16 @@ class RockyVisualCaptureTest {
         rule.onNodeWithContentDescription("Open settings").assertIsEnabled()
     }
 
+    @Test fun keepsWindowControlsLargeEnoughForPointerAccess() {
+        render()
+
+        listOf("Antes da live", "Modo compacto", "Fixar janela", "Abrir configurações").forEach { label ->
+            val bounds = rule.onNodeWithContentDescription(label).fetchSemanticsNode().boundsInRoot
+            assertTrue("$label width: ${bounds.width}", bounds.width >= 32f)
+            assertTrue("$label height: ${bounds.height}", bounds.height >= 32f)
+        }
+    }
+
 
     private fun selectAiProvider(label: String) {
         rule.onNodeWithTag("ai-provider-menu").performScrollTo().performClick()

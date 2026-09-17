@@ -8,6 +8,16 @@ import platform
 import subprocess
 
 
+def verify_versions(version, native_version):
+    if version.split('-', 1)[0] != native_version:
+        raise ValueError('rockyPackageVersion must match the base rockyVersion.')
+
+
+def verify_tag(tag, version):
+    if tag != 'v' + version:
+        raise ValueError('The release tag must match rockyVersion in gradle.properties.')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--check-tag', action='store_true')
@@ -15,9 +25,9 @@ def main():
     root = pathlib.Path(__file__).resolve().parents[1]
     props = dict(line.split('=', 1) for line in (root / 'gradle.properties').read_text().splitlines() if '=' in line)
     version = props['rockyVersion']
+    verify_versions(version, props['rockyPackageVersion'])
     if args.check_tag:
-        if os.environ.get('GITHUB_REF_NAME') != 'v' + version:
-            raise SystemExit('The release tag must match rockyVersion in gradle.properties.')
+        verify_tag(os.environ.get('GITHUB_REF_NAME'), version)
         return
     binary_root = root / 'apps/desktop/build/compose/binaries/main'
     system = platform.system().lower()

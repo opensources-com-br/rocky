@@ -71,4 +71,4 @@ Provedores por API recebem o conteúdo selecionado do chat. Confira os controles
 
 APIs remotas exigem HTTPS; HTTP é aceito somente no Ollama em loopback. Trocar provedor ou endereço limpa a chave atual: informe a credencial correta e salve novamente.
 
-Em Conversa → Amostra · detalhes, consulte a duração da última análise e os tokens informados. A contagem é parcial: falhas, cancelamentos, testes de conexão e tentativas inválidas podem não informar uso. OpenRouter pode tentar até três respostas quando o formato é inválido. Os contadores não estimam faturamento e cancelar não reverte cobranças.
+Em Conversa → Amostra · detalhes, consulte a duração da última análise e os tokens informados. A contagem é parcial: falhas, cancelamentos e testes de conexão podem não informar uso. O OpenRouter faz uma geração por análise. Os contadores não estimam faturamento e cancelar não reverte cobranças.

@@ -38,6 +38,12 @@ internal class AnthropicSuggestionClient(private val httpClient: HttpClient) {
             put("model", model)
             put("max_tokens", 300)
             put("system", prompt.instructions)
+            put("output_config", buildJsonObject {
+                put("format", buildJsonObject {
+                    put("type", "json_schema")
+                    put("schema", suggestionSchema())
+                })
+            })
             put("messages", buildJsonArray {
                 add(buildJsonObject {
                     put("role", "user")

@@ -5,6 +5,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class MetricFormatTest {
+    @Test fun combinesAudienceFromLivePlatforms() {
+        assertEquals(60, combinedAudience(10, null, 20, 30))
+    }
+
     @Test
     fun keepsSmallMetricsUnabridged() {
         assertEquals("999", compactMetric(999, RockyLanguage.PortugueseBrazil))

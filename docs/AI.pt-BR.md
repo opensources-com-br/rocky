@@ -54,7 +54,7 @@ O Rocky usa `generateContent` da [API Gemini](https://ai.google.dev/api/generate
 3. Mantenha `https://api.x.ai` como endereço e use `grok-4.6` ou outro modelo disponível na sua conta.
 4. Cole a API key e selecione **Testar conexão**.
 
-O Rocky usa a [Responses API do xAI](https://docs.x.ai/developers/rest-api-reference/inference/responses) com autenticação Bearer e saída estruturada. Uma assinatura Grok não fornece credenciais nem créditos de uso da API. As mensagens selecionadas do chat e o pedido são enviados ao xAI; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
+O Rocky usa a [Responses API do xAI](https://docs.x.ai/developers/rest-api-reference/inference/responses) com saída estruturada, armazenamento remoto desativado e cache de prompt. Modelos Grok 4.5 e 4.6 usam raciocínio baixo para reduzir latência e custo; o consumo inclui todos os tokens informados. Apenas modelos de linguagem são listados. Uma assinatura Grok não fornece credenciais nem créditos da API. As mensagens selecionadas e o pedido são enviados ao xAI; o teste também gera uma resposta curta e pode ter cobrança.
 
 ## Comportamento das sugestões
 

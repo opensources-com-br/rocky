@@ -30,3 +30,11 @@ Execute com o aplicativo empacotado, contas de teste e uma live controlada.
 - [ ] Receber chat e audiência da live.
 - [ ] Tratar live inexistente ou encerrada.
 - [ ] Tratar quota esgotada e token expirado.
+
+## Facebook
+
+- [ ] Autorizar uma conta e uma Página reais.
+- [ ] Selecionar a Página autorizada correta.
+- [ ] Receber comentários e audiência da live ativa.
+- [ ] Tratar permissões ausentes ou revogadas.
+- [ ] Tratar token expirado e live encerrada.

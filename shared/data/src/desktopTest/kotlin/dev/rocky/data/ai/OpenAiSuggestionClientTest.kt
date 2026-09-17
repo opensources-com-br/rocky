@@ -88,7 +88,7 @@ class OpenAiSuggestionClientTest {
             val client = OpenAiSuggestionClient(HttpClient.newHttpClient())
             val connection = client.testConnection(endpoint, "secret-key", "gpt-test")
             val suggestion = client.generate(endpoint, "secret-key", "gpt-test", listOf(message),
-                promptCacheKey = "rocky-suggestion-v1")
+                promptCacheKey = "rocky-suggestion-v1", maxOutputTokens = 600)
 
             assertTrue(connection.successful)
             assertEquals("Bearer secret-key", authorization)

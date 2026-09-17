@@ -4,6 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun explainsExhaustedAiCredits() {
+        assertEquals(
+            "Falha (HTTP 402): Confira os créditos e limites do provedor; tente novamente mais tarde.",
+            AiProviderException(402).userMessage("Falha"),
+        )
+    }
+
     @Test fun rejectsInvalidProviderUsage() {
         assertEquals(null, reportedTokenCount("not-json", "input", "output"))
         assertEquals(null, reportedTokenCount("""{"input":-1,"output":2}""", "input", "output"))

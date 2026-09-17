@@ -11,6 +11,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopVoiceServiceTest {
+    @Test fun buildsSafeMacSpeechArguments() {
+        val text = "Preço; ${'$'}(comando)"
+        val command = DesktopVoiceService.macSpeechCommand(
+            text,
+            VoiceOutputConfiguration("Luciana", speedPercent = 999),
+        )
+
+        assertEquals(listOf("say", "-v", "Luciana", "-r", "300", "--", text), command)
+    }
+
     @Test fun forwardsTheSelectedWhisperLanguage() {
         val command = DesktopVoiceService.whisperCommand(
             LocalTranscriptionConfiguration("whisper-cli", "model.bin", language = "en"),

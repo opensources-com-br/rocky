@@ -55,9 +55,9 @@ internal object AiSuggestionPayloads {
         }
         return root.arrayAt("content").asSequence()
             .map { it.jsonObject }
-            .firstOrNull { it.stringAt("type") == "text" }
-            ?.stringAt("text")
-            ?.takeIf(String::isNotBlank)
+            .filter { it.stringAt("type") == "text" }
+            .joinToString("") { it.stringAt("text") }
+            .takeIf(String::isNotBlank)
             ?: throw IllegalArgumentException("Anthropic retornou conteúdo vazio")
     }
 

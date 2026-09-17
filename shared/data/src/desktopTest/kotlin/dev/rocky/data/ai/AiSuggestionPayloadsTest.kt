@@ -104,6 +104,12 @@ class AiSuggestionPayloadsTest {
         }
     }
 
+    @Test fun detectsTruncatedClaudeResponses() {
+        assertFailsWith<AiResponseIncompleteException> {
+            AiSuggestionPayloads.anthropicText("""{"stop_reason":"max_tokens"}""")
+        }
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

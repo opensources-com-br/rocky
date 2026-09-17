@@ -104,8 +104,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
             })
             put("provider", buildJsonObject { put("require_parameters", true) })
         }.toString()
-        var lastInvalidResponse: IllegalArgumentException? = null
-        repeat(OPENROUTER_RESPONSE_ATTEMPTS) {
+        run {
             val response = httpClient.send(
                 request(endpoint, "/v1/chat/completions", apiKey)
                     .header("HTTP-Referer", "https://github.com/opensources-com-br/rocky")
@@ -121,13 +120,12 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
                     prompt.messageIds,
                 )?.copy(
                     reportedTokens = reportedTokenCount(response.body(), "prompt_tokens", "completion_tokens", nested = true),
-                    attempts = it + 1,
+                    attempts = 1,
                 )
             } catch (error: IllegalArgumentException) {
-                lastInvalidResponse = error
+                throw error
             }
         }
-        throw checkNotNull(lastInvalidResponse)
     }
 
     private fun request(endpoint: String, path: String, apiKey: String): HttpRequest.Builder =
@@ -137,8 +135,6 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
 
     private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 }
-
-private const val OPENROUTER_RESPONSE_ATTEMPTS = 1
 
 private fun suggestionSchema() = buildJsonObject {
     put("type", "object")

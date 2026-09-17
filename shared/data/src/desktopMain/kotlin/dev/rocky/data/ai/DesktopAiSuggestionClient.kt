@@ -115,6 +115,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 messages,
                 streamerRequest,
                 agent,
+                promptCacheKey = OPENAI_PROMPT_CACHE_KEY,
             )
             AiProviderKind.OpenRouter -> openRouter.generate(
                 configuration.endpoint,
@@ -157,6 +158,8 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
 
     override fun close() = Unit
 }
+
+private const val OPENAI_PROMPT_CACHE_KEY = "rocky-suggestion-v1"
 
 internal fun AiProviderConfiguration.validationError(allowTestLoopback: Boolean = false): String? = when {
     !safeEndpoint(endpoint, provider == AiProviderKind.Ollama || allowTestLoopback) ->

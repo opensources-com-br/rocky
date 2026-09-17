@@ -5,6 +5,7 @@ compose-icons = "1.7.3"
 sqldelight = "2.3.2"
 serialization = "1.11.0"
 tiktok-live = "1.11.18-Release"
+kover = "0.9.9"
 
 [libraries]
 jna-platform = { module = "net.java.dev.jna:jna-platform", version = "5.19.1" }
@@ -24,3 +25,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

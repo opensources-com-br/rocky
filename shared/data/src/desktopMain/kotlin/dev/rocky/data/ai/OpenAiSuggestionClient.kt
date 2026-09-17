@@ -43,6 +43,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         agent: AgentConfiguration = AgentConfiguration(),
         promptCacheKey: String? = null,
         reasoningEffort: String? = null,
+        providerName: String = "OpenAI",
         maxOutputTokens: Int = 300,
     ): AiGeneratedSuggestion? {
         val prompt = buildAiSuggestionPrompt(messages, streamerRequest, agent)
@@ -72,7 +73,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
             HttpResponse.BodyHandlers.ofString(),
         ).requireOpenAiSuccess()
         return AiSuggestionPayloads.suggestion(
-            AiSuggestionPayloads.openAiText(response.body()),
+            AiSuggestionPayloads.openAiText(response.body(), providerName),
             prompt.messageIds,
         )?.copy(reportedTokens = reportedTotalTokenCount(response.body(), "total_tokens", "usage")
             ?: reportedTokenCount(response.body(), "input_tokens", "output_tokens", nested = true))

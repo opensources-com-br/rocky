@@ -43,3 +43,16 @@ Execute com contas de teste, sem usar chaves de produção, e registre provedor,
 
 - [ ] Validar a chave, listar modelos compatíveis e usar o roteador gratuito.
 - [ ] Confirmar título do app, schema e exigência de parâmetros.
+
+### Anthropic
+
+- [ ] Comparar Claude legado, 4.5 e 5 com saída estruturada adequada.
+- [ ] Validar versão da API, recusa e limite de tokens.
+
+### Gemini
+
+- [ ] Listar somente modelos com `generateContent` e testar bloqueio de segurança.
+
+### Grok
+
+- [ ] Listar modelos, gerar pela Responses API e validar raciocínio baixo.

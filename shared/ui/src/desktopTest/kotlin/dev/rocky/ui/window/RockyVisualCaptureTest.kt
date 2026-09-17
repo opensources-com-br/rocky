@@ -1202,6 +1202,23 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun excludesCredentialsFromDiagnostics() {
+        val secret = "private-diagnostic-key"
+        var diagnostics = ""
+        render(
+            settingsOpen = true,
+            settingsSection = SettingsSection.Data,
+            aiConfiguration = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", secret),
+            youtubeConfiguration = YouTubeConfiguration("client", secret),
+            onExportDiagnostic = { diagnostics = it; true },
+        )
+
+        rule.onNodeWithText("Prévia do diagnóstico").performScrollTo().performClick()
+        rule.onNodeWithText("Exportar").performClick()
+        assertTrue(!diagnostics.contains(secret))
+    }
+
+    @Test
     fun capturesAndExercisesGroupedDataSettings() {
         val repository = TransientNoteRepository()
         repository.save(LiveNote("existing", "Registro salvo", "now", "test"))

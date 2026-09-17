@@ -5,6 +5,23 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class LocalNotesStateTest {
+    @Test fun reloadsRecordsAfterStorageRecovers() {
+        val note = LiveNote("saved", "Recovered", "now", "NOTA")
+        val backing = TransientNoteRepository().apply { save(note) }
+        var unavailable = true
+        val repository = object : dev.rocky.core.notes.NoteRepository by backing {
+            override fun getAll() = if (unavailable) error("locked") else backing.getAll()
+        }
+        val state = LocalNotesState(repository)
+        assertTrue(state.loadFailed)
+
+        unavailable = false
+        state.reload()
+
+        assertFalse(state.loadFailed)
+        assertEquals(listOf(note), state.notes)
+    }
+
     @Test fun explainsAnUnavailableExportDestination() {
         val state = LocalNotesState(TransientNoteRepository())
 

@@ -46,3 +46,12 @@ Execute com o aplicativo empacotado, contas de teste e uma live controlada.
 - [ ] Tratar usuário inexistente, privado ou offline.
 - [ ] Recuperar após queda do WebCast.
 - [ ] Registrar incompatibilidades do protocolo não oficial.
+
+## Kick — quando reativada
+
+- [ ] Concluir o OAuth real.
+- [ ] Receber o webhook por HTTPS público.
+- [ ] Receber chat e eventos reais.
+- [ ] Rejeitar assinatura inválida e replay.
+- [ ] Ignorar eventos atrasados de outra sessão.
+- [ ] Renovar e revogar o token.

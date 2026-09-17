@@ -7,6 +7,17 @@ from scripts.release_metadata import verify_tag, verify_versions
 
 
 class InstallationVerificationTest(unittest.TestCase):
+    def test_rejects_duplicate_candidate_installers(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            first = root / 'dmg' / 'Rocky.dmg'
+            second = root / 'archive' / 'Rocky.dmg'
+            first.parent.mkdir(); second.parent.mkdir()
+            first.write_bytes(b'candidate'); second.write_bytes(b'candidate')
+
+            with self.assertRaisesRegex(ValueError, 'Expected one installer'):
+                verify_asset(root, {'file': 'Rocky.dmg', 'sha256': sha256(first)})
+
     def test_rejects_native_version_from_another_release(self):
         with self.assertRaisesRegex(ValueError, 'rockyPackageVersion'):
             verify_versions('1.2.3-alpha.1', '1.2.2')

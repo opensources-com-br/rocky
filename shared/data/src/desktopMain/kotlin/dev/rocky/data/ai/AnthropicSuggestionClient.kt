@@ -38,7 +38,7 @@ internal class AnthropicSuggestionClient(private val httpClient: HttpClient) {
             put("model", model)
             put("max_tokens", 300)
             put("system", prompt.instructions)
-            put("output_config", buildJsonObject {
+            if (supportsAnthropicStructuredOutput(model)) put("output_config", buildJsonObject {
                 put("format", buildJsonObject {
                     put("type", "json_schema")
                     put("schema", suggestionSchema())
@@ -72,6 +72,13 @@ internal class AnthropicSuggestionClient(private val httpClient: HttpClient) {
 }
 
 private const val ANTHROPIC_VERSION = "2023-06-01"
+
+internal fun supportsAnthropicStructuredOutput(model: String): Boolean {
+    val version = Regex("""^claude-(?:haiku|sonnet|opus)-(\d+)(?:-(\d+))?""").find(model) ?: return false
+    val major = version.groupValues[1].toInt()
+    val minor = version.groupValues[2].toIntOrNull() ?: 0
+    return major > 4 || major == 4 && minor >= 5
+}
 
 internal fun reportedAnthropicTokenCount(body: String): Long? = runCatching {
     val usage = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonObject["usage"]?.jsonObject ?: return null

@@ -8,6 +8,15 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DesktopWindowLifecycleTest {
+    @Test fun settingsKeepsTheMainCaptureVisible() {
+        val lifecycle = DesktopWindowLifecycle(usesTray = true).apply { showMain() }
+
+        lifecycle.requestSettings()
+
+        assertTrue(lifecycle.mainVisible)
+        assertEquals(1, lifecycle.settingsRevision)
+    }
+
     @Test fun trayAppStartsHidden() {
         assertFalse(DesktopWindowLifecycle(usesTray = true).mainVisible)
     }

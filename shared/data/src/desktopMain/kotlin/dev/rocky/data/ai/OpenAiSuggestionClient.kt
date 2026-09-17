@@ -115,12 +115,12 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
                 HttpResponse.BodyHandlers.ofString(),
             ).requireOpenAiSuccess()
             return AiSuggestionPayloads.suggestion(
-                    AiSuggestionPayloads.openRouterText(response.body()),
-                    prompt.messageIds,
-                )?.copy(
-                    reportedTokens = reportedTokenCount(response.body(), "prompt_tokens", "completion_tokens", nested = true),
-                    attempts = 1,
-                )
+                AiSuggestionPayloads.openRouterText(response.body()),
+                prompt.messageIds,
+            )?.copy(
+                reportedTokens = reportedTokenCount(response.body(), "prompt_tokens", "completion_tokens", nested = true),
+                attempts = 1,
+            )
         }
     }
 

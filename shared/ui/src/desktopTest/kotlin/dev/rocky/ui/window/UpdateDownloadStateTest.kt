@@ -8,6 +8,7 @@ import org.junit.Assert.*
 class UpdateDownloadStateTest {
     private class Installer : UpdateInstaller {
         var opened = 0
+        var cancelled = 0
         var failure = false
         var openFailure = false
         override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
@@ -15,7 +16,7 @@ class UpdateDownloadStateTest {
             onProgress(10, 10)
             return PreparedUpdate(update.version, "package", "hash")
         }
-        override fun cancel() {}
+        override fun cancel() { cancelled++ }
         override fun open(update: PreparedUpdate) { if (openFailure) error("blocked"); opened++ }
     }
     @Test fun failedInstallerOpenCanBeRetried() = runBlocking {

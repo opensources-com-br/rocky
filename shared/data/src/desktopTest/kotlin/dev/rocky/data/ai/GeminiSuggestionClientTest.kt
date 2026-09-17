@@ -44,6 +44,7 @@ class GeminiSuggestionClientTest {
             assertEquals("google-key", apiKey)
             assertTrue("\"systemInstruction\"" in requestBody)
             assertTrue("\"responseMimeType\":\"application/json\"" in requestBody)
+            assertTrue("\"responseJsonSchema\"" in requestBody)
             assertTrue("\"maxOutputTokens\":300" in requestBody)
             assertTrue("google-key" !in requestBody)
         } finally {

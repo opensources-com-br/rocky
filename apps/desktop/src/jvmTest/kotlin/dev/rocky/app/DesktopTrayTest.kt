@@ -16,4 +16,8 @@ class DesktopTrayTest {
     @Test fun keepsWindowLifecycleOnLinux() {
         assertFalse(shouldUseTray("Linux", systemTraySupported = true))
     }
+
+    @Test fun fallsBackWhenSystemTrayIsUnavailable() {
+        assertFalse(shouldUseTray("Windows 11", systemTraySupported = false))
+    }
 }

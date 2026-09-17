@@ -22,6 +22,7 @@ class ProviderVoiceServiceTest {
         ProviderVoiceService(fixture, ElevenLabsSpeech(fixture) { ElevenLabsSession(base) }).use {
             it.speak("Hello", output)
             assertEquals(2, fixture.samples)
+            assertEquals(70, fixture.volume)
             assertTrue(fixture.finished)
             assertTrue(fixture.spoken.isEmpty())
         }

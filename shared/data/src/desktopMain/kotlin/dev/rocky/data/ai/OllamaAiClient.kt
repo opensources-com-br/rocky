@@ -93,6 +93,7 @@ private fun HttpResponse<String>.requireSuccess(): HttpResponse<String> {
 internal fun Throwable.userMessage(fallback: String): String = when (this) {
     is dev.rocky.core.ai.AiRequestException -> message ?: fallback
     is AiResponseIncompleteException -> "$fallback: O provedor encerrou a resposta antes de concluir ($reason)."
+    is AiResponseBlockedException -> "$fallback: O provedor bloqueou a resposta ($reason). Revise o conteúdo enviado."
     is AiProviderException -> "$fallback (HTTP $statusCode): " + when (statusCode) {
         401, 403 -> "Confira a chave e as permissões do provedor."
         402, 429 -> "Confira os créditos e limites do provedor; tente novamente mais tarde."

@@ -3,6 +3,16 @@ package dev.rocky.core.voice
 import kotlin.test.*
 
 class SpeechEndpointDetectorTest {
+    @Test fun keepsListeningAcrossANaturalPause() {
+        val detector = SpeechEndpointDetector(silenceMillis = 750)
+        repeat(3) { assertFalse(detector.sample(0.1f, 75)) }
+        repeat(8) { assertFalse(detector.sample(0f, 75)) }
+
+        assertFalse(detector.sample(0.1f, 75))
+        repeat(9) { assertFalse(detector.sample(0f, 75)) }
+        assertTrue(detector.sample(0f, 75))
+    }
+
     @Test fun ignoresNoiseAndWaitsForTrailingSilence() {
         val detector = SpeechEndpointDetector()
         repeat(20) { assertFalse(detector.sample(0f, 75)) }

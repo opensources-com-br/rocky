@@ -18,7 +18,7 @@ Para manter a análise no computador, use um modelo local no Ollama; somente o e
 3. Mantenha `https://api.openai.com` como endereço, informe um modelo disponível no projeto e cole a API key.
 4. Selecione **Testar conexão**.
 
-Use **Salvar configuração e chave** para persistir a chave no Keychain (macOS) ou protegida por DPAPI do usuário (Windows). A chave não é salva em preferências comuns. **Apagar chave** remove a credencial salva; edições não salvas ficam apenas na memória. As chamadas usam a [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) com `store: false`.
+Use **Salvar configuração e chave** para persistir a chave no Keychain (macOS) ou protegida por DPAPI do usuário (Windows). A chave não é salva em preferências comuns. **Apagar chave** remove a credencial salva; edições não salvas ficam apenas na memória. As chamadas usam a [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) com `store: false` e uma chave estável de cache para requisições elegíveis.
 
 ## OpenRouter
 

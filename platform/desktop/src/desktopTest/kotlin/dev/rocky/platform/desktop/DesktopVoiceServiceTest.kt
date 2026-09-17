@@ -11,6 +11,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopVoiceServiceTest {
+    @Test fun forwardsTheSelectedWhisperLanguage() {
+        val command = DesktopVoiceService.whisperCommand(
+            LocalTranscriptionConfiguration("whisper-cli", "model.bin", language = "en"),
+            Path.of("voice.wav"),
+            Path.of("transcript"),
+        )
+
+        assertEquals(listOf("-l", "en"), command.slice(5..6))
+    }
+
     @kotlin.test.Test fun rejectsMissingTranscriptionFiles() {
         DesktopVoiceService().use { service ->
             kotlin.test.assertFalse(service.isTranscriptionConfigured(dev.rocky.core.voice.LocalTranscriptionConfiguration("/missing/whisper-cli", "/missing/model.bin")))

@@ -27,6 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+      - run: git diff --check
       - uses: actions/setup-java@v6
         with:
           distribution: temurin

@@ -11,7 +11,10 @@ internal class GrokSuggestionClient(httpClient: HttpClient) {
     private val responses = OpenAiSuggestionClient(httpClient)
 
     fun testConnection(endpoint: String, apiKey: String, model: String): AiConnectionResult =
-        responses.testConnection(endpoint, apiKey, model, providerName = "Grok")
+        responses.testConnection(
+            endpoint, apiKey, model,
+            modelPath = "/v1/language-models/${model.urlEncode()}", providerName = "Grok",
+        )
 
     fun generate(
         endpoint: String,
@@ -22,3 +25,5 @@ internal class GrokSuggestionClient(httpClient: HttpClient) {
         agent: AgentConfiguration = AgentConfiguration(),
     ): AiGeneratedSuggestion? = responses.generate(endpoint, apiKey, model, messages, streamerRequest, agent)
 }
+
+private fun String.urlEncode(): String = java.net.URLEncoder.encode(this, java.nio.charset.StandardCharsets.UTF_8)

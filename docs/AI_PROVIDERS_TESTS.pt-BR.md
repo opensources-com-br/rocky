@@ -26,3 +26,20 @@ Execute com contas de teste, sem usar chaves de produção, e registre provedor,
 - [ ] Registrar quando o provedor omitir a contagem de tokens.
 - [ ] Inspecionar logs, erros e diagnósticos em busca da chave.
 - [ ] Confirmar que a chave aparece apenas no header autorizado.
+
+## Provedores
+
+### Ollama
+
+- [ ] Listar modelos locais e distinguir tags como `latest` e `70b`.
+- [ ] Gerar sem chave e recuperar após reiniciar o serviço local.
+
+### OpenAI
+
+- [ ] Listar modelos permitidos e gerar pela Responses API.
+- [ ] Confirmar `store=false` e uso do schema estruturado.
+
+### OpenRouter
+
+- [ ] Validar a chave, listar modelos compatíveis e usar o roteador gratuito.
+- [ ] Confirmar título do app, schema e exigência de parâmetros.

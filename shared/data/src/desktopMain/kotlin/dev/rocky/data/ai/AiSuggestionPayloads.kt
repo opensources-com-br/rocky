@@ -15,9 +15,9 @@ internal object AiSuggestionPayloads {
     fun ollamaText(body: String): String =
         body.asObject().objectAt("message").stringAt("content")
 
-    fun openAiText(body: String): String {
+    fun openAiText(body: String, providerName: String = "OpenAI"): String {
         val root = body.asObject()
-        root.errorMessage()?.let { throw IllegalArgumentException("OpenAI: $it") }
+        root.errorMessage()?.let { throw IllegalArgumentException("$providerName: $it") }
         root["incomplete_details"]?.takeUnless { it is JsonNull }?.jsonObject
             ?.get("reason")?.takeUnless { it is JsonNull }?.jsonPrimitive?.content
             ?.let { throw AiResponseIncompleteException(it) }

@@ -48,6 +48,14 @@ class InstallationVerificationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'version'):
             verify_metadata(metadata, properties, 'abc123', 'darwin', 'arm64')
 
+    def test_rejects_wrong_package_commit(self):
+        properties = {'rockyVersion': '1.2.3-alpha.1', 'rockyPackageVersion': '1.2.3'}
+        metadata = {'version': '1.2.3-alpha.1', 'native_version': '1.2.3',
+                    'commit': 'old123', 'os': 'darwin', 'architecture': 'arm64'}
+
+        with self.assertRaisesRegex(ValueError, 'commit'):
+            verify_metadata(metadata, properties, 'new456', 'darwin', 'arm64')
+
 
 if __name__ == '__main__':
     unittest.main()

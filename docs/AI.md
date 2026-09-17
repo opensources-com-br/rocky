@@ -36,7 +36,7 @@ Use **Save configuration and key** to save the key in macOS Keychain or with use
 3. Keep `https://api.anthropic.com` as the endpoint and use `claude-haiku-4-5-20251001` or another model available to your account.
 4. Paste the API key and select **Test connection**.
 
-Rocky uses the [Messages API](https://docs.anthropic.com/en/api/messages) with the supplied key. Selected chat messages and the request are sent to Anthropic; a connection test also generates a short response and may incur charges. The key uses the same system credential vault described above.
+Rocky uses the [Messages API](https://platform.claude.com/docs/en/api/messages) with Structured Outputs on compatible models. Refusals and interrupted responses are identified, usage includes regular and cached tokens, and the catalog requests up to one thousand models. Older models retain prompt-guided JSON. Selected messages and the request are sent to Anthropic; the connection test also generates a short response and may incur charges.
 
 ## Google Gemini API
 

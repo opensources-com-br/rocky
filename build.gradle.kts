@@ -9,6 +9,14 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlinx.kover")
 }
 
+dependencies {
+    kover(project(":apps:desktop"))
+    kover(project(":shared:core"))
+    kover(project(":shared:data"))
+    kover(project(":shared:ui"))
+    kover(project(":platform:desktop"))
+}
+
 allprojects {
     group = "dev.rocky"
     version = providers.gradleProperty("rockyVersion").get()

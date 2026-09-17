@@ -67,13 +67,13 @@ fun main() {
 }
 
 private fun runRockyApplication() = application {
-    val usesMenuBar = isMacOs() && SystemTray.isSupported()
+    val usesTray = shouldUseTray(System.getProperty("os.name"), SystemTray.isSupported())
     val appIcon = remember {
         ImageIO.read(requireNotNull(Thread.currentThread().contextClassLoader.getResource("rocky.png")))
     }
     val trayIcon = painterResource(Res.drawable.rocky_tray)
     LaunchedEffect(Unit) {
-        if (!usesMenuBar && Taskbar.isTaskbarSupported()) {
+        if (!usesTray && Taskbar.isTaskbarSupported()) {
             val taskbar = Taskbar.getTaskbar()
             if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) taskbar.iconImage = appIcon
         }
@@ -82,7 +82,7 @@ private fun runRockyApplication() = application {
     val windowState = rememberWindowState(size = ExpandedSize)
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
-    var windowVisible by remember { mutableStateOf(!usesMenuBar) }
+    var windowVisible by remember { mutableStateOf(!usesTray) }
     var settingsRequestRevision by remember { mutableStateOf(0) }
     val desktopWindow = remember { AtomicReference<Frame?>(null) }
     val settingsDesktopWindow = remember { AtomicReference<Frame?>(null) }
@@ -146,7 +146,7 @@ private fun runRockyApplication() = application {
 
     val mainWindowHost: RockyMainWindowHost = { content ->
         Window(
-            onCloseRequest = { if (usesMenuBar) windowVisible = false else quitRocky() },
+            onCloseRequest = { if (usesTray) windowVisible = false else quitRocky() },
             state = windowState,
             visible = windowVisible,
             title = "Rocky",
@@ -190,7 +190,7 @@ private fun runRockyApplication() = application {
         }
     }
 
-    val settingsWindowHost: RockySettingsWindowHost? = if (usesMenuBar) {
+    val settingsWindowHost: RockySettingsWindowHost? = if (usesTray) {
         { visible, onCloseRequest, content ->
             Window(
                 onCloseRequest = onCloseRequest,
@@ -211,7 +211,7 @@ private fun runRockyApplication() = application {
         null
     }
 
-    if (usesMenuBar) {
+    if (usesTray) {
         Tray(
             icon = trayIcon,
             tooltip = "Rocky",

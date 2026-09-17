@@ -14,11 +14,11 @@ class GrokSuggestionClientTest {
         var authorization = ""
         var requestBody = ""
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
-            createContext("/v1/models") { exchange ->
+            createContext("/v1/language-models") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
-                exchange.respond("""{"data":[{"id":"grok-test"}]}""")
+                exchange.respond("""{"models":[{"id":"grok-test"}]}""")
             }
-            createContext("/v1/models/grok-test") { exchange ->
+            createContext("/v1/language-models/grok-test") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
                 exchange.respond("""{"id":"grok-test"}""")
             }

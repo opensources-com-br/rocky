@@ -61,7 +61,7 @@ internal class AnthropicSuggestionClient(private val httpClient: HttpClient) {
         return AiSuggestionPayloads.suggestion(
             AiSuggestionPayloads.anthropicText(response.body()),
             prompt.messageIds,
-        )?.copy(reportedTokens = reportedTokenCount(response.body(), "input_tokens", "output_tokens", nested = true))
+        )?.copy(reportedTokens = reportedAnthropicTokenCount(response.body()))
     }
 
     private fun request(endpoint: String, path: String, apiKey: String): HttpRequest.Builder =
@@ -72,6 +72,15 @@ internal class AnthropicSuggestionClient(private val httpClient: HttpClient) {
 }
 
 private const val ANTHROPIC_VERSION = "2023-06-01"
+
+internal fun reportedAnthropicTokenCount(body: String): Long? = runCatching {
+    val usage = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonObject["usage"]?.jsonObject ?: return null
+    val keys = listOf("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")
+    val tokens = keys.map { key ->
+        usage[key]?.jsonPrimitive?.content?.toLongOrNull() ?: if (key.startsWith("cache_")) 0 else return null
+    }
+    tokens.sum().takeIf { tokens.all { it >= 0 } }
+}.getOrNull()
 
 private fun HttpResponse<String>.requireAnthropicSuccess(): HttpResponse<String> {
     if (statusCode() !in 200..299) {

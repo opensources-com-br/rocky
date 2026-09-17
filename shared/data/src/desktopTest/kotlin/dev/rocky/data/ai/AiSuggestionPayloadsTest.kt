@@ -75,6 +75,13 @@ class AiSuggestionPayloadsTest {
         assertEquals("OpenAI: generation failed", error.message)
     }
 
+    @Test fun detectsIncompleteOpenAiResponses() {
+        val error = assertFailsWith<AiResponseIncompleteException> {
+            AiSuggestionPayloads.openAiText("""{"incomplete_details":{"reason":"max_output_tokens"}}""")
+        }
+        assertEquals("max_output_tokens", error.reason)
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

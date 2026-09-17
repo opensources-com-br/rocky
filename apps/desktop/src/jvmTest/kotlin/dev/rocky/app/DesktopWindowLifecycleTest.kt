@@ -25,4 +25,8 @@ class DesktopWindowLifecycleTest {
         lifecycle.showMain()
         assertTrue(lifecycle.mainVisible)
     }
+
+    @Test fun closingFallbackWindowRequestsQuit() {
+        assertTrue(DesktopWindowLifecycle(usesTray = false).closeMain())
+    }
 }

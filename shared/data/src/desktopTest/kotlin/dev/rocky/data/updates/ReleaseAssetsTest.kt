@@ -5,6 +5,12 @@ import kotlin.test.*
 
 class ReleaseAssetsTest {
     private fun release(vararg names: String) = AvailableUpdate("v1.2.0", "", names.map { ReleaseAsset(it, "", 42) })
+    @Test fun rejectsAmbiguousNativeInstallers() {
+        val name = "Rocky-1.2.0-windows-amd64.msi"
+
+        assertFails { installerAsset(release(name, name), "Windows 11", "amd64") }
+    }
+
     @Test fun acceptsNativeArchitectureAliases() {
         val update = release("Rocky-1.2.0-darwin-x86_64.dmg", "Rocky-1.2.0-windows-arm64.msi")
 

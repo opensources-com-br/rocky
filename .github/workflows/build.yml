@@ -35,6 +35,11 @@ jobs:
       - run: ./gradlew build
       - if: runner.os == 'macOS'
         run: ./gradlew koverVerify koverXmlReport
+      - if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v7
+        with:
+          name: rocky-coverage
+          path: build/reports/kover/report.xml
       - run: ./gradlew ${{ matrix.package-task }} -ProckyTwitchClientId="${{ vars.ROCKY_TWITCH_CLIENT_ID }}"
       - uses: actions/upload-artifact@v7
         with:

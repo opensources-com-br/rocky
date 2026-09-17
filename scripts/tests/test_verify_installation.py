@@ -67,6 +67,17 @@ class InstallationVerificationTest(unittest.TestCase):
 
             verify_runtime(root, 'darwin')
 
+    def test_accepts_bundled_windows_runtime(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            release = root / 'app/Rocky/runtime/release'
+            launcher = root / 'app/Rocky/Rocky.exe'
+            release.parent.mkdir(parents=True)
+            launcher.parent.mkdir(parents=True, exist_ok=True)
+            release.touch(); launcher.touch()
+
+            verify_runtime(root, 'windows')
+
 
 if __name__ == '__main__':
     unittest.main()

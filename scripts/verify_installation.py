@@ -31,3 +31,11 @@ def verify_metadata(metadata, properties, commit, system, architecture):
     for key, value in expected.items():
         if metadata.get(key) != value:
             raise ValueError(f"Unexpected {key}: {metadata.get(key)}")
+
+
+def verify_runtime(root, system):
+    if len(list(root.glob('app/**/runtime/**/release'))) != 1:
+        raise ValueError('The packaged Java runtime is missing')
+    pattern = 'app/*.app/Contents/MacOS/Rocky' if system == 'darwin' else 'app/**/Rocky.exe'
+    if len(list(root.glob(pattern))) != 1:
+        raise ValueError('The Rocky launcher is missing')

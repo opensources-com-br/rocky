@@ -22,3 +22,11 @@ Execute com o aplicativo empacotado, contas de teste e uma live controlada.
 - [ ] Receber mensagens pelo EventSub.
 - [ ] Recuperar após queda do WebSocket.
 - [ ] Revogar a autorização durante uma sessão.
+
+## YouTube
+
+- [ ] Concluir login e autorização no navegador.
+- [ ] Descobrir a transmissão ativa correta.
+- [ ] Receber chat e audiência da live.
+- [ ] Tratar live inexistente ou encerrada.
+- [ ] Tratar quota esgotada e token expirado.

@@ -19,5 +19,9 @@ class AiProviderErrorTest {
             "Falha ao gerar: Resposta inválida ou sem fontes; tente novamente ou escolha outro modelo.",
             IllegalArgumentException("Missing AI array: choices").userMessage("Falha ao gerar"),
         )
+        assertEquals(
+            "Falha ao gerar: O provedor encerrou a resposta antes de concluir (max_output_tokens).",
+            AiResponseIncompleteException("max_output_tokens").userMessage("Falha ao gerar"),
+        )
     }
 }

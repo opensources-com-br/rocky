@@ -41,6 +41,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         messages: List<ChatMessage>,
         streamerRequest: String? = null,
         agent: AgentConfiguration = AgentConfiguration(),
+        promptCacheKey: String? = null,
     ): AiGeneratedSuggestion? {
         val prompt = buildAiSuggestionPrompt(messages, streamerRequest, agent)
         val schema = suggestionSchema()
@@ -49,6 +50,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
             put("instructions", prompt.instructions)
             put("input", prompt.input)
             put("store", false)
+            promptCacheKey?.let { put("prompt_cache_key", it) }
             put("max_output_tokens", 300)
             put("text", buildJsonObject {
                 put("format", buildJsonObject {

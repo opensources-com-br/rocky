@@ -324,4 +324,11 @@ private val SettingsSize = DpSize(780.dp, 680.dp)
 private val CompactSize = DpSize(340.dp, 180.dp)
 private val TimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss XXX")
 private const val MenuWidthPadding = "\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003"
-private fun isMacOs(): Boolean = System.getProperty("os.name").startsWith("Mac", ignoreCase = true)
+internal fun shouldUseTray(osName: String, systemTraySupported: Boolean): Boolean =
+    systemTraySupported && (isMacOs(osName) || isWindows(osName))
+
+internal fun traySettingsLabel(osName: String): String =
+    "Settings" + if (isMacOs(osName)) MenuWidthPadding else ""
+
+private fun isMacOs(osName: String = System.getProperty("os.name")): Boolean = osName.startsWith("Mac", true)
+private fun isWindows(osName: String = System.getProperty("os.name")): Boolean = osName.startsWith("Windows", true)

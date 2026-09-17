@@ -14,3 +14,16 @@ Registre versão, commit, SO, arquitetura, resolução, escala, plataforma, OBS 
 - Alterne todas as abas; redimensione, fixe, minimize e use o modo compacto.
 - Troque cenas no OBS e mantenha o jogo ou aplicativo principal em primeiro plano.
 - Confirme continuamente que mensagens novas chegam em ordem e sem duplicação.
+
+## Critérios de aprovação
+
+- A interface permanece responsiva e nenhuma reinicialização é necessária.
+- O histórico mantém somente as 1.000 mensagens mais recentes por plataforma.
+- As métricas mantêm no máximo 60 buckets por minuto e 120 amostras de pulso.
+- O histórico de conversa da IA permanece limitado a 30 respostas.
+- A RAM estabiliza após 30 minutos e cresce no máximo 300 MB até o encerramento.
+- A CPU volta ao patamar de repouso depois de rajadas, IA, voz e exportação.
+- Toda operação iniciada termina, falha de forma recuperável ou pode ser cancelada.
+- Registros salvos sobrevivem à reinicialização e o Markdown exportado abre.
+- Nenhuma ação antiga reaparece após cancelamento, troca de sessão ou reconexão.
+- O OBS não perde a janela e não passa a capturar áudio ou Settings sem intenção.

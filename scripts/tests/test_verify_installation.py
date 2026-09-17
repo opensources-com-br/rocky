@@ -3,10 +3,13 @@ import tempfile
 import unittest
 
 from scripts.verify_installation import sha256, verify_asset, verify_metadata, verify_runtime
-from scripts.release_metadata import verify_tag
+from scripts.release_metadata import verify_tag, verify_versions
 
 
 class InstallationVerificationTest(unittest.TestCase):
+    def test_accepts_native_version_matching_the_candidate_base(self):
+        verify_versions('1.2.3-alpha.1', '1.2.3')
+
     def test_rejects_tag_from_another_candidate(self):
         with self.assertRaisesRegex(ValueError, 'release tag'):
             verify_tag('v1.2.3-alpha.2', '1.2.3-alpha.1')

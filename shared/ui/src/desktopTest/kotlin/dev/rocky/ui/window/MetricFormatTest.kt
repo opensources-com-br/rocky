@@ -9,6 +9,10 @@ class MetricFormatTest {
         assertEquals(60, combinedAudience(10, null, 20, 30))
     }
 
+    @Test fun keepsAudienceUnavailableWithoutMeasurements() {
+        assertEquals(null, combinedAudience(null, null))
+    }
+
     @Test
     fun keepsSmallMetricsUnabridged() {
         assertEquals("999", compactMetric(999, RockyLanguage.PortugueseBrazil))

@@ -18,7 +18,7 @@ Use a local Ollama model to keep analysis on the computer; a loopback endpoint a
 3. Keep `https://api.openai.com` as the endpoint, enter a model available to the project, and paste the API key.
 4. Select **Test connection**.
 
-Use **Save configuration and key** to save the key in macOS Keychain or with user-scoped Windows DPAPI. Unsaved edits stay in memory. **Delete key** removes the saved credential. Legacy plaintext preferences are migrated and removed. Requests use the [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) with `store: false`.
+Use **Save configuration and key** to save the key in macOS Keychain or with user-scoped Windows DPAPI. Unsaved edits stay in memory. **Delete key** removes the saved credential. Legacy plaintext preferences are migrated and removed. Requests use the [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create) with `store: false` and a stable cache key for eligible requests.
 
 ## OpenRouter
 

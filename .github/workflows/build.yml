@@ -33,6 +33,8 @@ jobs:
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew build
+      - if: runner.os == 'macOS'
+        run: ./gradlew koverVerify koverXmlReport
       - run: ./gradlew ${{ matrix.package-task }} -ProckyTwitchClientId="${{ vars.ROCKY_TWITCH_CLIENT_ID }}"
       - uses: actions/upload-artifact@v7
         with:

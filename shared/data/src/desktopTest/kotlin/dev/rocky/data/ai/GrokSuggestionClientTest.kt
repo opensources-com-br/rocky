@@ -18,7 +18,7 @@ class GrokSuggestionClientTest {
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
             createContext("/v1/language-models") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
-                exchange.respond("""{"models":[{"id":"grok-4.6-test"}]}""")
+                exchange.respond("""{"models":[{"id":"grok-4.6-test"},{"id":"grok-3-latest"}]}""")
             }
             createContext("/v1/language-models/grok-4.6-test") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
@@ -43,7 +43,7 @@ class GrokSuggestionClientTest {
             val suggestion = client.generateSuggestion(config, listOf(ChatMessage("m1", "viewer", "Preço?", StreamPlatform.Twitch)))
 
             assertTrue(connection.successful)
-            assertEquals(listOf("grok-4.6-test"), models)
+            assertEquals(listOf("grok-3-latest", "grok-4.6-test"), models)
             assertEquals(25L, suggestion?.reportedTokens)
             assertEquals("Bearer xai-key", authorization)
             assertTrue("\"model\":\"grok-4.6-test\"" in requestBody)

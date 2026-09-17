@@ -57,6 +57,16 @@ class TikTokLiveStateTest {
         assertEquals(null, state.room)
         assertEquals(null, state.viewerCount)
     }
+
+    @Test fun keepsOnlyRecentTikTokMessages() {
+        val client = FakeTikTokChatClient()
+        val state = TikTokLiveState(client) { 1L }
+        state.connect(TikTokConfiguration("rocky_live"))
+        repeat(1_001) { client.emit(TikTokConnectionEvent.MessageReceived(
+            ChatMessage("m$it", "viewer", "Olá", StreamPlatform.TikTok))) }
+        assertEquals(1_000, state.messages.size)
+        assertEquals("m1", state.messages.first().id)
+    }
 }
 
 private class FakeTikTokChatClient : TikTokChatClient {

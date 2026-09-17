@@ -19,4 +19,9 @@ class FirstUseInteractionTest {
         render(platform = false, ai = false)
         rule.onNodeWithText("Configure o Rocky").assertIsDisplayed()
     }
+
+    @Test fun requiresConnectedPlatform() {
+        render(platform = false, ai = true, voice = true)
+        rule.onNodeWithText("Concluir configuração").assertIsNotEnabled()
+    }
 }

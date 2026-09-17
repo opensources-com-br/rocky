@@ -70,11 +70,11 @@ internal object AiSuggestionPayloads {
         }
         return candidate.objectAt("content")
             .arrayAt("parts")
-            ?.asSequence()
-            ?.map { it.jsonObject["text"]?.jsonPrimitive?.content }
-            ?.filterNotNull()
-            ?.joinToString("")
-            ?.takeIf(String::isNotBlank)
+            .asSequence()
+            .map { it.jsonObject["text"]?.jsonPrimitive?.content }
+            .filterNotNull()
+            .joinToString("")
+            .takeIf(String::isNotBlank)
             ?: throw IllegalArgumentException("Gemini retornou conteúdo vazio")
     }
 

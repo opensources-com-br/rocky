@@ -56,6 +56,17 @@ class InstallationVerificationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'commit'):
             verify_metadata(metadata, properties, 'new456', 'darwin', 'arm64')
 
+    def test_accepts_bundled_macos_runtime(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            release = root / 'app/Rocky.app/Contents/runtime/Contents/Home/release'
+            launcher = root / 'app/Rocky.app/Contents/MacOS/Rocky'
+            release.parent.mkdir(parents=True)
+            launcher.parent.mkdir(parents=True)
+            release.touch(); launcher.touch()
+
+            verify_runtime(root, 'darwin')
+
 
 if __name__ == '__main__':
     unittest.main()

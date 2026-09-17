@@ -114,17 +114,13 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
                     .build(),
                 HttpResponse.BodyHandlers.ofString(),
             ).requireOpenAiSuccess()
-            try {
-                return AiSuggestionPayloads.suggestion(
+            return AiSuggestionPayloads.suggestion(
                     AiSuggestionPayloads.openRouterText(response.body()),
                     prompt.messageIds,
                 )?.copy(
                     reportedTokens = reportedTokenCount(response.body(), "prompt_tokens", "completion_tokens", nested = true),
                     attempts = 1,
                 )
-            } catch (error: IllegalArgumentException) {
-                throw error
-            }
         }
     }
 

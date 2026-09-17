@@ -75,6 +75,13 @@ class AiSuggestionPayloadsTest {
         assertEquals("OpenAI: generation failed", error.message)
     }
 
+    @Test fun identifiesGrokResponseErrors() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            AiSuggestionPayloads.openAiText("""{"error":{"message":"generation failed"}}""", "Grok")
+        }
+        assertEquals("Grok: generation failed", error.message)
+    }
+
     @Test fun detectsIncompleteOpenAiResponses() {
         val error = assertFailsWith<AiResponseIncompleteException> {
             AiSuggestionPayloads.openAiText("""{"incomplete_details":{"reason":"max_output_tokens"}}""")

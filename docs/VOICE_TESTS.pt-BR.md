@@ -16,3 +16,22 @@ Execute com o aplicativo empacotado, um microfone real e uma gravação de contr
 - [ ] Encerrar no limite máximo mesmo com fala contínua.
 - [ ] Repetir com teclado, jogo, música e ventilador.
 - [ ] Confirmar que áudio temporário é removido após sucesso e erro.
+
+## Conversa e cancelamento
+
+- [ ] Confirmar detecção, comando, análise e resposta falada completas.
+- [ ] Verificar que o microfone pausa enquanto Rocky fala.
+- [ ] Confirmar que o microfone retoma depois da reprodução.
+- [ ] Usar Silenciar, Próxima e o atalho durante uma resposta.
+- [ ] Cancelar captura, transcrição, análise e reprodução separadamente.
+- [ ] Iniciar outro comando imediatamente após cada cancelamento.
+- [ ] Confirmar que nenhuma resposta cancelada aparece depois.
+- [ ] Testar “Rocky, para” e os comandos equivalentes em inglês.
+- [ ] Testar “explica melhor” dentro e fora da janela de continuação.
+
+## Voz do sistema
+
+- [ ] Listar e reproduzir vozes instaladas no macOS.
+- [ ] Listar e reproduzir vozes instaladas no Windows.
+- [ ] Testar os limites mínimo e máximo de velocidade.
+- [ ] Testar volume no Windows e a limitação indicada no macOS.

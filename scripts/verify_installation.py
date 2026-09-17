@@ -1,7 +1,10 @@
 """Verify that a packaged Rocky candidate is self-contained and traceable."""
 import hashlib
 import json
+import os
 import pathlib
+import platform
+import subprocess
 
 
 def sha256(path):

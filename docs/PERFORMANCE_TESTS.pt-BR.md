@@ -27,3 +27,16 @@ Registre versão, commit, SO, arquitetura, resolução, escala, plataforma, OBS 
 - Registros salvos sobrevivem à reinicialização e o Markdown exportado abre.
 - Nenhuma ação antiga reaparece após cancelamento, troca de sessão ou reconexão.
 - O OBS não perde a janela e não passa a capturar áudio ou Settings sem intenção.
+
+## Recuperação e evidência
+
+- Aos 45 minutos, desligue a rede por 15 segundos; aos 75, por 60 segundos.
+- Depois de cada retorno, envie uma mensagem única e confirme uma única entrega.
+- Durante uma análise, desconecte a plataforma e confirme o cancelamento seguro.
+- Feche e reabra o OBS sem encerrar o Rocky; refaça a captura da janela.
+- Após duas horas, reinicie o Rocky e valide os registros persistidos.
+- Anexe capturas do processo em cada medição e do histórico ao fim da sessão.
+- Guarde uma gravação curta do começo, do meio e do fim, sem expor chaves.
+- Registre tempos de recuperação, latência percebida e qualquer travamento visual.
+- Abra uma issue para cada falha com horário, ação, log e passos de reprodução.
+- Marque separadamente macOS e Windows como passou, falhou ou não executado.

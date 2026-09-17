@@ -29,4 +29,11 @@ class FirstUseInteractionTest {
         render(platform = true, ai = false, voice = true)
         rule.onNodeWithText("Finish setup").assertIsNotEnabled()
     }
+
+    @Test fun completesWithoutVoice() {
+        var completed = false
+        render(platform = true, ai = true, complete = { completed = true })
+        rule.onNodeWithText("Finish setup").assertIsEnabled().performClick()
+        rule.runOnIdle { assertTrue(completed) }
+    }
 }

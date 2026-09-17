@@ -12,6 +12,17 @@ import org.junit.Assert.*
 class RecordExperienceTest {
     @get:Rule val rule = createComposeRule()
 
+    @Test fun exposesNoteActionsInTheSelectedLanguage() {
+        var edits = 0; var deletes = 0
+        rule.setContent { CompositionLocalProvider(LocalRockyLanguage provides RockyLanguage.English) {
+            NoteRow(LiveNote("n", "Accessible", "now", "NOTE"), { edits++ }, { deletes++ })
+        } }
+
+        rule.onNodeWithContentDescription("Edit note").performClick()
+        rule.onNodeWithContentDescription("Delete note").performClick()
+        assertEquals(1, edits); assertEquals(1, deletes)
+    }
+
     @Test fun marksGroupedQuestionAnsweredAndReopensIt() {
         val records = LocalNotesState(TransientNoteRepository())
         records.save(LiveNote("q", "Qual jogo?", "now", QUESTION_TAG, sessionId = "live", messageCount = 2))

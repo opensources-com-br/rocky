@@ -15,6 +15,10 @@ class AnthropicSuggestionClientTest {
         assertTrue(supportsAnthropicStructuredOutput("claude-haiku-4-5-20251001"))
     }
 
+    @Test fun supportsClaude5StructuredOutput() {
+        assertTrue(supportsAnthropicStructuredOutput("claude-opus-5"))
+    }
+
     @Test
     fun authenticatesAndGeneratesAGroundedSuggestion() {
         var apiKey = ""

@@ -25,6 +25,11 @@ class SecureAiPreferencesTest {
         assertNotNull(store.storageNotice)
         assertNull(prefs.get("apiKey", null))
     }
+    @Test fun savesCredentials() = withStore { prefs, secrets ->
+        val config = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic")
+        SecureAiPreferences(prefs, secrets).configuration = config
+        assertEquals(config, SecureAiPreferences(prefs, secrets).configuration)
+    }
     @Test fun neverRestoresKeyForDifferentOriginAndSupportsRemoval() = withStore { prefs, secrets ->
         val config = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic")
         SecureAiPreferences(prefs, secrets).configuration = config

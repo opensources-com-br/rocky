@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -1016,6 +1017,15 @@ class RockyVisualCaptureTest {
             assertTrue(pinned)
             assertTrue(compact)
         }
+    }
+
+    @Test fun exposesWindowControlsInTheSelectedLanguage() {
+        render(language = RockyLanguage.English)
+
+        rule.onNodeWithContentDescription("Before going live").assertIsEnabled()
+        rule.onNodeWithContentDescription("Compact mode").assertIsEnabled()
+        rule.onNodeWithContentDescription("Pin window").assertIsEnabled()
+        rule.onNodeWithContentDescription("Open settings").assertIsEnabled()
     }
 
 

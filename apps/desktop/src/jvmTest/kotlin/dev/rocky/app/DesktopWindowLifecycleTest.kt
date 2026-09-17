@@ -9,4 +9,8 @@ class DesktopWindowLifecycleTest {
     @Test fun trayAppStartsHidden() {
         assertFalse(DesktopWindowLifecycle(usesTray = true).mainVisible)
     }
+
+    @Test fun fallbackAppStartsVisible() {
+        assertTrue(DesktopWindowLifecycle(usesTray = false).mainVisible)
+    }
 }

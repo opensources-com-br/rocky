@@ -49,4 +49,8 @@ class DesktopWindowLifecycleTest {
         lifecycle.toggleMain(); assertTrue(lifecycle.mainVisible)
         lifecycle.toggleMain(); assertFalse(lifecycle.mainVisible)
     }
+
+    @Test fun expandedLayoutHasExpectedSize() {
+        assertEquals(DpSize(462.dp, 900.dp), ExpandedSize)
+    }
 }

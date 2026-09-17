@@ -120,3 +120,9 @@ internal fun reportedTokenCount(
     val second = usage[output]?.jsonPrimitive?.content?.toLongOrNull() ?: return null
     (first + second).takeIf { first >= 0 && second >= 0 }
 }.getOrNull()
+
+internal fun reportedTotalTokenCount(body: String, total: String, usageKey: String): Long? = runCatching {
+    val root = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonObject
+    val usage = root[usageKey]?.jsonObject ?: return null
+    usage[total]?.jsonPrimitive?.content?.toLongOrNull()?.takeIf { it >= 0 }
+}.getOrNull()

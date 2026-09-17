@@ -50,6 +50,8 @@ jobs:
       - run: python scripts/verify_installation.py
       - if: runner.os == 'macOS'
         run: bash scripts/smoke-install-macos.sh
+      - if: runner.os == 'Windows'
+        run: ./scripts/smoke-install-windows.ps1
       - run: git diff --exit-code
       - uses: actions/upload-artifact@v7
         with:

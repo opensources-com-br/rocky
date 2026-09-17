@@ -5,7 +5,7 @@ import kotlin.test.*
 
 class AiEndpointTest {
     @Test fun rejectsUnsafeOriginsBeforeTransport() {
-        for (endpoint in listOf("http://example.com", "http://localhost", "file:///tmp/key", "https://user:pass@example.com", "https://example.com?key=x")) {
+        for (endpoint in listOf("http://example.com", "http://localhost", "file:///tmp/key", "https://user:pass@example.com", "https://example.com?key=x", "https://example.com#secret")) {
             assertNotNull(AiProviderConfiguration(AiProviderKind.OpenAI, endpoint, "test", "synthetic").validationError())
         }
         assertNull(AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic").validationError())

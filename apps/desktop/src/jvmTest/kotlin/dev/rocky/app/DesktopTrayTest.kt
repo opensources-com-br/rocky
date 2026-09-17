@@ -1,6 +1,7 @@
 package dev.rocky.app
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -19,5 +20,9 @@ class DesktopTrayTest {
 
     @Test fun fallsBackWhenSystemTrayIsUnavailable() {
         assertFalse(shouldUseTray("Windows 11", systemTraySupported = false))
+    }
+
+    @Test fun usesCompactWindowsMenuLabel() {
+        assertEquals("Settings", traySettingsLabel("Windows 11"))
     }
 }

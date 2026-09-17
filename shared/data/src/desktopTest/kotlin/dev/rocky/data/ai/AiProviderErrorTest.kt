@@ -4,6 +4,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun explainsInvalidCredentialsAndPermissions() {
+        for (status in listOf(401, 403)) {
+            assertEquals(
+                "Falha (HTTP $status): Confira a chave e as permissões do provedor.",
+                AiProviderException(status).userMessage("Falha"),
+            )
+        }
+    }
+
     @Test fun reportsOnlyUsagePresentInProviderResponse() {
         assertEquals(15L, reportedTokenCount("""{"usage":{"input_tokens":10,"output_tokens":5}}""", "input_tokens", "output_tokens", nested = true))
         assertEquals(21L, reportedTotalTokenCount("""{"usageMetadata":{"totalTokenCount":21}}""", "totalTokenCount", "usageMetadata"))

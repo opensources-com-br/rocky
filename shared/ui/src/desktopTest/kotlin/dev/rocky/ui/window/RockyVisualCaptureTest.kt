@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -891,6 +892,14 @@ class RockyVisualCaptureTest {
         }
         rule.onNodeWithText("concluir").performClick()
         rule.onNodeWithText("Acorde").assertExists()
+    }
+
+    @Test fun preservesAgentNameAcrossSettingsTabs() {
+        render(settingsOpen = true, settingsSection = SettingsSection.Agent)
+        rule.onNodeWithTag("agent-name-field").performTextReplacement("Acorde")
+        rule.onNodeWithText("IA").performClick()
+        rule.onAllNodesWithText("Agente")[0].performClick()
+        rule.onNodeWithTag("agent-name-field").assertTextContains("Acorde")
     }
 
     @Test

@@ -53,4 +53,8 @@ class DesktopWindowLifecycleTest {
     @Test fun expandedLayoutHasExpectedSize() {
         assertEquals(DpSize(462.dp, 900.dp), ExpandedSize)
     }
+
+    @Test fun compactLayoutMatchesMinimumSize() {
+        assertEquals(DpSize(340.dp, 180.dp), CompactSize)
+    }
 }

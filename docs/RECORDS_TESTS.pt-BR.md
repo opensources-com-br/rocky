@@ -31,3 +31,15 @@ Execute com o aplicativo empacotado e uma pasta de dados descartável.
 - [ ] Cancelar a importação antes da confirmação.
 - [ ] Confirmar que uma falha não importa apenas parte do backup.
 - [ ] Manter exportações existentes ao apagar os dados locais.
+
+## Persistência e recuperação
+
+- [ ] Encerrar o processo durante uma escrita e reabrir o aplicativo.
+- [ ] Reiniciar após criar, editar e excluir registros.
+- [ ] Bloquear o banco por outro processo e tentar novamente depois.
+- [ ] Remover a permissão da pasta de dados e restaurá-la.
+- [ ] Preencher o disco e confirmar que o registro continua visível.
+- [ ] Corromper uma cópia do banco e preservar o arquivo original.
+- [ ] Reparar ou mover o banco e usar Carregar novamente.
+- [ ] Atualizar um banco de versão anterior sem perder registros.
+- [ ] Confirmar que nenhum erro cria registros parciais ou duplicados.

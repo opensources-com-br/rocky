@@ -8,4 +8,10 @@ import kotlin.test.assertTrue
 
 class FirstUseInteractionTest {
     @get:Rule val rule = createComposeRule()
+
+    private fun render(platform: Boolean, ai: Boolean, voice: Boolean = false, complete: () -> Unit = {}) {
+        rule.setContent {
+            FirstUseContent(platform, ai, voice, {}, {}, {}, complete)
+        }
+    }
 }

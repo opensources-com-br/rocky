@@ -30,6 +30,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
             AiProviderKind.Ollama -> "/api/tags"
             AiProviderKind.Gemini -> "/v1beta/models?pageSize=1000"
             AiProviderKind.OpenRouter -> "/v1/models?supported_parameters=response_format"
+            AiProviderKind.Grok -> "/v1/language-models"
             else -> "/v1/models"
         }
         val request = java.net.http.HttpRequest.newBuilder(java.net.URI(configuration.endpoint.trimEnd('/') + path))
@@ -49,6 +50,8 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
             AiProviderKind.Gemini -> Json.parseToJsonElement(response.body()).jsonObject["models"]?.jsonArray.orEmpty()
                 .filter { "generateContent" in it.jsonObject["supportedGenerationMethods"]?.jsonArray.orEmpty().mapNotNull { method -> method.jsonPrimitive.contentOrNull } }
                 .mapNotNull { it.jsonObject["name"]?.jsonPrimitive?.content?.removePrefix("models/") }.distinct().sorted()
+            AiProviderKind.Grok -> Json.parseToJsonElement(response.body()).jsonObject["models"]?.jsonArray.orEmpty()
+                .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.content }.distinct().sorted()
             else -> Json.parseToJsonElement(response.body()).jsonObject["data"]?.jsonArray.orEmpty()
                 .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.content }.distinct().sorted()
         }

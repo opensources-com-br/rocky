@@ -94,6 +94,7 @@ class OpenAiSuggestionClientTest {
             assertEquals("Bearer secret-key", authorization)
             assertEquals("Responda a dúvida.", suggestion?.text)
             assertTrue("\"store\":false" in requestBody)
+            assertTrue("\"max_output_tokens\":600" in requestBody)
             assertTrue("\"prompt_cache_key\":\"rocky-suggestion-v1\"" in requestBody)
             assertTrue("\"type\":\"json_schema\"" in requestBody)
             assertTrue("secret-key" !in requestBody)

@@ -20,6 +20,9 @@ class OpenAiSuggestionClientTest {
             createContext("/v1/model/openrouter/free") { exchange ->
                 exchange.respond("""{"id":"openrouter/free"}""")
             }
+            createContext("/v1/key") { exchange ->
+                exchange.respond("""{"data":{"label":"rocky-test"}}""")
+            }
             createContext("/v1/chat/completions") { exchange ->
                 requestBody = exchange.requestBody.bufferedReader().readText()
                 generationAttempts += 1

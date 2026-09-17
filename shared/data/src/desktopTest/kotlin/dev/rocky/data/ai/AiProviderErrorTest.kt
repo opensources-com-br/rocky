@@ -4,6 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AiProviderErrorTest {
+    @Test fun explainsMissingOrUnavailableModels() {
+        assertEquals(
+            "Falha (HTTP 404): Confira o modelo e o endereço configurados.",
+            AiProviderException(404).userMessage("Falha"),
+        )
+    }
+
     @Test fun explainsInvalidCredentialsAndPermissions() {
         for (status in listOf(401, 403)) {
             assertEquals(

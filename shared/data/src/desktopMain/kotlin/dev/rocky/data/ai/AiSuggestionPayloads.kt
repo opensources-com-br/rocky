@@ -16,7 +16,9 @@ internal object AiSuggestionPayloads {
         body.asObject().objectAt("message").stringAt("content")
 
     fun openAiText(body: String): String {
-        val output = body.asObject().arrayAt("output")
+        val root = body.asObject()
+        root.errorMessage()?.let { throw IllegalArgumentException("OpenAI: $it") }
+        val output = root.arrayAt("output")
         return output.asSequence()
             .map { it.jsonObject }
             .flatMap { item -> item.arrayAtOrEmpty("content").asSequence() }

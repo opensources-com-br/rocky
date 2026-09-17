@@ -26,7 +26,7 @@ class OpenAiSuggestionClientTest {
             }
             createContext("/v1/models") { exchange ->
                 modelsQuery = exchange.requestURI.rawQuery.orEmpty()
-                exchange.respond("""{"data":[{"id":"openrouter/free"}]}""")
+                exchange.respond("""{"data":[{"id":"openrouter/free"},{"id":"legacy/free"}]}""")
             }
             createContext("/v1/chat/completions") { exchange ->
                 appTitle = exchange.requestHeaders.getFirst("X-OpenRouter-Title")
@@ -51,10 +51,11 @@ class OpenAiSuggestionClientTest {
             assertTrue(result.successful)
             assertTrue(validatedKey)
             assertEquals("Rocky", appTitle)
-            DesktopAiSuggestionClient(allowTestLoopback = true).availableModels(
+            val models = DesktopAiSuggestionClient(allowTestLoopback = true).availableModels(
                 AiProviderConfiguration(AiProviderKind.OpenRouter,
                     "http://localhost:${server.address.port}", "list", "router-key"),
             )
+            assertEquals(listOf("legacy/free", "openrouter/free"), models)
             assertEquals("supported_parameters=response_format", modelsQuery)
             assertEquals("Conexão e geração verificadas", result.message)
             assertTrue("\"response_format\"" in requestBody)

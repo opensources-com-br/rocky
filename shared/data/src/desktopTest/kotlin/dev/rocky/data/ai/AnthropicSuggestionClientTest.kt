@@ -3,6 +3,8 @@ package dev.rocky.data.ai
 import com.sun.net.httpserver.HttpServer
 import dev.rocky.core.ai.AiProviderConfiguration
 import dev.rocky.core.ai.AiProviderKind
+import dev.rocky.core.live.ChatMessage
+import dev.rocky.core.live.StreamPlatform
 import java.net.InetSocketAddress
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,7 +29,7 @@ class AnthropicSuggestionClientTest {
                 version = exchange.requestHeaders.getFirst("anthropic-version")
                 requestBody = exchange.requestBody.bufferedReader().readText()
                 exchange.respond(
-                    """{"content":[{"type":"text","text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}],"usage":{"input_tokens":11,"output_tokens":7}}""",
+                    """{"content":[{"type":"text","text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}],"usage":{"input_tokens":11,"output_tokens":7,"cache_creation_input_tokens":13,"cache_read_input_tokens":5}}""",
                 )
             }
             start()
@@ -39,9 +41,11 @@ class AnthropicSuggestionClientTest {
 
             val connection = client.testConnection(config)
             val models = client.availableModels(config)
+            val suggestion = client.generateSuggestion(config, listOf(ChatMessage("m1", "viewer", "Preço?", StreamPlatform.Twitch)))
 
             assertTrue(connection.successful)
             assertEquals(listOf("claude-test"), models)
+            assertEquals(36L, suggestion?.reportedTokens)
             assertEquals("limit=1000", modelsQuery)
             assertEquals("secret-key", apiKey)
             assertEquals("2023-06-01", version)

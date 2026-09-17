@@ -35,4 +35,10 @@ class DesktopWindowLifecycleTest {
         lifecycle.requestSettings(); lifecycle.requestSettings()
         assertEquals(2, lifecycle.settingsRevision)
     }
+
+    @Test fun settingsDoesNotOpenMainWindow() {
+        val lifecycle = DesktopWindowLifecycle(usesTray = true)
+        lifecycle.requestSettings()
+        assertFalse(lifecycle.mainVisible)
+    }
 }

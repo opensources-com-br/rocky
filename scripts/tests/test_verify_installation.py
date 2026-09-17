@@ -78,6 +78,11 @@ class InstallationVerificationTest(unittest.TestCase):
 
             verify_runtime(root, 'windows')
 
+    def test_rejects_package_without_java_runtime(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(ValueError, 'Java runtime'):
+                verify_runtime(pathlib.Path(temporary), 'darwin')
+
 
 if __name__ == '__main__':
     unittest.main()

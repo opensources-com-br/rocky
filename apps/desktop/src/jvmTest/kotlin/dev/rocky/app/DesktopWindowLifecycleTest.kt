@@ -57,4 +57,8 @@ class DesktopWindowLifecycleTest {
     @Test fun compactLayoutMatchesMinimumSize() {
         assertEquals(DpSize(340.dp, 180.dp), CompactSize)
     }
+
+    @Test fun settingsLayoutHasExpectedSize() {
+        assertEquals(DpSize(780.dp, 680.dp), SettingsSize)
+    }
 }

@@ -82,6 +82,15 @@ class AiSuggestionPayloadsTest {
         assertEquals("max_output_tokens", error.reason)
     }
 
+    @Test fun interpretsGeminiFinishReasons() {
+        assertFailsWith<AiResponseIncompleteException> {
+            AiSuggestionPayloads.geminiText("""{"candidates":[{"finishReason":"MAX_TOKENS"}]}""")
+        }
+        assertFailsWith<AiResponseBlockedException> {
+            AiSuggestionPayloads.geminiText("""{"candidates":[{"finishReason":"SAFETY"}]}""")
+        }
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

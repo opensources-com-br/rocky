@@ -49,6 +49,7 @@ internal class GeminiSuggestionClient(private val httpClient: HttpClient) {
             put("generationConfig", buildJsonObject {
                 put("maxOutputTokens", 300)
                 put("responseMimeType", "application/json")
+                put("responseJsonSchema", suggestionSchema())
             })
         }.toString()
         val response = httpClient.send(

@@ -7,4 +7,8 @@ class DesktopTrayTest {
     @Test fun usesTrayOnWindows() {
         assertTrue(shouldUseTray("Windows 11", systemTraySupported = true))
     }
+
+    @Test fun keepsTrayOnMacOs() {
+        assertTrue(shouldUseTray("Mac OS X", systemTraySupported = true))
+    }
 }

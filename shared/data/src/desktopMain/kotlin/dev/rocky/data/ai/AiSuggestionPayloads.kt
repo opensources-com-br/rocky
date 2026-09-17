@@ -18,6 +18,9 @@ internal object AiSuggestionPayloads {
     fun openAiText(body: String): String {
         val root = body.asObject()
         root.errorMessage()?.let { throw IllegalArgumentException("OpenAI: $it") }
+        root["incomplete_details"]?.takeUnless { it is JsonNull }?.jsonObject
+            ?.get("reason")?.takeUnless { it is JsonNull }?.jsonPrimitive?.content
+            ?.let { throw AiResponseIncompleteException(it) }
         val output = root.arrayAt("output")
         return output.asSequence()
             .map { it.jsonObject }

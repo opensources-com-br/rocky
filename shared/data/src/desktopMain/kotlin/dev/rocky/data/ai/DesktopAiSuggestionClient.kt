@@ -19,6 +19,7 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
         .build()
     private val ollama = OllamaAiClient(httpClient)
     private val openAi = OpenAiSuggestionClient(httpClient)
+    private val openRouter = OpenRouterSuggestionClient(httpClient)
     private val anthropic = AnthropicSuggestionClient(httpClient)
     private val gemini = GeminiSuggestionClient(httpClient)
     private val grok = GrokSuggestionClient(httpClient)
@@ -62,12 +63,10 @@ class DesktopAiSuggestionClient internal constructor(private val allowTestLoopba
                 configuration.apiKey,
                 configuration.model,
             )
-            AiProviderKind.OpenRouter -> openAi.testConnection(
+            AiProviderKind.OpenRouter -> openRouter.testConnection(
                 configuration.endpoint,
                 configuration.apiKey,
                 configuration.model,
-                "/v1/model/${configuration.model}",
-                "OpenRouter",
             )
             AiProviderKind.Anthropic -> anthropic.testConnection(
                 configuration.endpoint,

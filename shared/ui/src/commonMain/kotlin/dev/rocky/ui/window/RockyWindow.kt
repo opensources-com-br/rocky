@@ -898,9 +898,8 @@ fun RockyWindow(
                             inputLevel = voice.inputLevel,
                             busy = voice.transcribing,
                             status = voice.status,
-                            viewerCount = listOfNotNull(twitch.viewerCount, kick.viewerCount, youtube.viewerCount,
-                                facebook.viewerCount, tiktok.viewerCount)
-                                .takeIf { it.isNotEmpty() }?.sum(),
+                            viewerCount = combinedAudience(twitch.viewerCount, kick.viewerCount, youtube.viewerCount,
+                                facebook.viewerCount, tiktok.viewerCount),
                             messagesPerMinute = twitch.messagesPerMinute + kick.messagesPerMinute + youtube.messagesPerMinute +
                                 facebook.messagesPerMinute + tiktok.messagesPerMinute,
                             onTalk = { voice.toggleListener(aiScope, handleVoiceRequest) },
@@ -1006,6 +1005,9 @@ internal fun compactHeadline(status: LiveSessionStatus, suggestion: String?): St
     LiveSessionStatus.Running -> "Chat da live conectado"
     LiveSessionStatus.Ended -> "Conexão da live encerrada"
 }
+
+internal fun combinedAudience(vararg audiences: Int?): Int? =
+    audiences.filterNotNull().takeIf { it.isNotEmpty() }?.sum()
 
 private fun platformStatuses(
     twitch: TwitchLiveState,

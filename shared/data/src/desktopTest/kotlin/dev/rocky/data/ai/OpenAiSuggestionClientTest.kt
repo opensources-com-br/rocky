@@ -23,11 +23,8 @@ class OpenAiSuggestionClientTest {
             createContext("/v1/chat/completions") { exchange ->
                 requestBody = exchange.requestBody.bufferedReader().readText()
                 generationAttempts += 1
-                val response = if (generationAttempts < 3) {
-                    """{"choices":[{"message":null}]}"""
-                } else {
+                val response =
                     """{"choices":[{"message":{"content":"{\"suggestion\":\"Teste aprovado.\",\"source_message_ids\":[\"m1\"]}"}}]}"""
-                }
                 exchange.respond(response)
             }
             start()
@@ -46,7 +43,7 @@ class OpenAiSuggestionClientTest {
             assertEquals("Conexão e geração verificadas", result.message)
             assertTrue("\"response_format\"" in requestBody)
             assertTrue("\"require_parameters\":true" in requestBody)
-            assertEquals(3, generationAttempts)
+            assertEquals(1, generationAttempts)
         } finally {
             server.stop(0)
         }

@@ -45,7 +45,7 @@ O Rocky usa a [Messages API](https://docs.anthropic.com/en/api/messages) com a c
 3. Mantenha `https://generativelanguage.googleapis.com` como endereço e use `gemini-3.8-flash` ou outro modelo disponível na sua conta.
 4. Cole a API key e selecione **Testar conexão**.
 
-O Rocky usa `generateContent` da [API Gemini](https://ai.google.dev/api/generate-content) com a chave informada. As mensagens selecionadas do chat e o pedido são enviados ao Google; teste de conexão também gera uma resposta curta e pode ter cobrança. A chave usa o mesmo cofre do sistema descrito acima.
+O Rocky usa `generateContent` da [API Gemini](https://ai.google.dev/api/generate-content) com JSON Schema. Bloqueios e respostas incompletas são identificados, e o consumo informado inclui tokens de raciocínio. As mensagens selecionadas e o pedido são enviados ao Google; o teste também gera uma resposta curta e pode ter cobrança.
 
 ## API xAI Grok
 

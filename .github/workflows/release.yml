@@ -67,6 +67,8 @@ jobs:
         run: scripts/notarize-macos.sh
       - name: Record package metadata
         run: python scripts/release_metadata.py
+      - name: Verify packaged candidate
+        run: python scripts/verify_installation.py
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}

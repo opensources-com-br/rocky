@@ -1010,8 +1010,8 @@ class RockyVisualCaptureTest {
             }
         }
 
-        rule.onNodeWithContentDescription("Fixar janela").performClick()
-        rule.onNodeWithContentDescription("Modo compacto").performClick()
+        rule.onNodeWithContentDescription("Pin window").performClick()
+        rule.onNodeWithContentDescription("Compact mode").performClick()
 
         rule.runOnIdle {
             assertTrue(pinned)

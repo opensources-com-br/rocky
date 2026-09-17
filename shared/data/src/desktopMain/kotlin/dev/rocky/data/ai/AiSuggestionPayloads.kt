@@ -21,8 +21,10 @@ internal object AiSuggestionPayloads {
             .map { it.jsonObject }
             .flatMap { item -> item.arrayAtOrEmpty("content").asSequence() }
             .map { it.jsonObject }
-            .first { it.stringAt("type") == "output_text" }
-            .stringAt("text")
+            .filter { it.stringAt("type") == "output_text" }
+            .joinToString("") { it.stringAt("text") }
+            .takeIf(String::isNotEmpty)
+            ?: throw IllegalArgumentException("OpenAI não retornou texto")
     }
 
     fun openRouterText(body: String): String {

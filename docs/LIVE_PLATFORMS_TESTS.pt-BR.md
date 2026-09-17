@@ -14,3 +14,11 @@ Execute com o aplicativo empacotado, contas de teste e uma live controlada.
 - [ ] Somar a audiência disponível corretamente.
 - [ ] Não misturar canais, contas ou sessões.
 - [ ] Fechar e reabrir sem reutilizar sessão antiga.
+
+## Twitch
+
+- [ ] Concluir o Device Code no navegador.
+- [ ] Renovar um código expirado.
+- [ ] Receber mensagens pelo EventSub.
+- [ ] Recuperar após queda do WebSocket.
+- [ ] Revogar a autorização durante uma sessão.

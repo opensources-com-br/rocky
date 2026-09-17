@@ -38,3 +38,11 @@ Execute com o aplicativo empacotado, contas de teste e uma live controlada.
 - [ ] Receber comentários e audiência da live ativa.
 - [ ] Tratar permissões ausentes ou revogadas.
 - [ ] Tratar token expirado e live encerrada.
+
+## TikTok
+
+- [ ] Conectar um usuário com live pública ativa.
+- [ ] Receber chat, audiência e fim da live.
+- [ ] Tratar usuário inexistente, privado ou offline.
+- [ ] Recuperar após queda do WebCast.
+- [ ] Registrar incompatibilidades do protocolo não oficial.

@@ -12,6 +12,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TwitchLiveStateSoakTest {
+    @Test fun keepsHourlyMetricStorageBounded() {
+        var now = 0L
+        val client = SoakTwitchChatClient()
+        val state = TwitchLiveState(client) { now }
+        state.connect("client-id")
+        repeat(7_200) { second ->
+            now = second * 1_000L
+            client.emit(TwitchConnectionEvent.MessageReceived(
+                ChatMessage("m$second", "viewer", "Message", StreamPlatform.Twitch)))
+        }
+        assertEquals(60, state.metricBucketCount)
+        assertEquals(60, state.messagesPerMinute)
+        assertEquals(7_200, state.totalMessages)
+    }
+
     @Test
     fun keepsAProlongedSessionBoundedAcrossConnectionDrops() {
         val client = SoakTwitchChatClient()

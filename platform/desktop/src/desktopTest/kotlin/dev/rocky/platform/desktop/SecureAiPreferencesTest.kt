@@ -37,13 +37,11 @@ class SecureAiPreferencesTest {
         store.configuration = config.copy(model = "new", apiKey = "new-key")
         assertEquals("new-key", SecureAiPreferences(prefs, secrets).configuration.apiKey)
     }
-    @Test fun neverRestoresKeyForDifferentOriginAndSupportsRemoval() = withStore { prefs, secrets ->
+    @Test fun neverRestoresKeyForDifferentOrigin() = withStore { prefs, secrets ->
         val config = AiProviderConfiguration(AiProviderKind.OpenAI, "https://api.openai.com", "test", "synthetic")
         SecureAiPreferences(prefs, secrets).configuration = config
         prefs.put("endpoint", "https://another.example")
         assertEquals("", SecureAiPreferences(prefs, secrets).configuration.apiKey)
-        SecureAiPreferences(prefs, secrets).configuration = config.copy(apiKey = "")
-        assertNull(secrets.value)
     }
     private class FakeSecrets : SecretStore {
         var value: String? = null

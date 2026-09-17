@@ -43,6 +43,16 @@ class KickLiveStateTest {
         assertEquals(0, state.totalMessages)
     }
 
+    @Test fun keepsOnlyRecentKickMessages() {
+        val client = FakeKickClient()
+        val state = KickLiveState(client) { 1L }
+        state.connect(KickConfiguration("id", "secret"))
+        repeat(1_001) { client.emit(KickConnectionEvent.MessageReceived(
+            ChatMessage("m$it", "viewer", "Olá", StreamPlatform.Kick))) }
+        assertEquals(1_000, state.messages.size)
+        assertEquals("m1", state.messages.first().id)
+    }
+
     private class FakeKickClient : KickChatClient {
         private var listener = KickConnectionListener {}
         override fun connect(configuration: KickConfiguration, listener: KickConnectionListener) { this.listener = listener }

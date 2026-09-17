@@ -82,8 +82,7 @@ private fun runRockyApplication() = application {
     val windowState = rememberWindowState(size = ExpandedSize)
     var compact by remember { mutableStateOf(false) }
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
-    var windowVisible by remember { mutableStateOf(!usesTray) }
-    var settingsRequestRevision by remember { mutableStateOf(0) }
+    val windowLifecycle = remember { DesktopWindowLifecycle(usesTray) }
     val desktopWindow = remember { AtomicReference<Frame?>(null) }
     val settingsDesktopWindow = remember { AtomicReference<Frame?>(null) }
     val settingsWindowState = rememberWindowState(size = SettingsSize)
@@ -120,7 +119,7 @@ private fun runRockyApplication() = application {
     }
 
     fun showRocky() {
-        windowVisible = true
+        windowLifecycle.showMain()
         windowState.isMinimized = false
         desktopWindow.get()?.apply {
             isVisible = true
@@ -130,7 +129,7 @@ private fun runRockyApplication() = application {
     }
 
     fun showSettings() {
-        settingsRequestRevision += 1
+        windowLifecycle.requestSettings()
         settingsWindowState.isMinimized = false
         settingsDesktopWindow.get()?.takeIf { it.isVisible }?.apply {
             toFront()
@@ -148,9 +147,9 @@ private fun runRockyApplication() = application {
 
     val mainWindowHost: RockyMainWindowHost = { content ->
         Window(
-            onCloseRequest = { if (usesTray) windowVisible = false else quitRocky() },
+            onCloseRequest = { if (windowLifecycle.closeMain()) quitRocky() },
             state = windowState,
-            visible = windowVisible,
+            visible = windowLifecycle.mainVisible,
             title = "Rocky",
             icon = BitmapPainter(appIcon.toComposeImageBitmap()),
             resizable = true,
@@ -181,8 +180,8 @@ private fun runRockyApplication() = application {
                 shortcutStatus = null
                 val shortcuts = DesktopShortcuts(shortcutConfiguration, onAction = { action ->
                     if (action == 2) {
-                        windowVisible = !windowVisible
-                        if (windowVisible) { windowState.isMinimized = false; window.toFront() }
+                        windowLifecycle.toggleMain()
+                        if (windowLifecycle.mainVisible) { windowState.isMinimized = false; window.toFront() }
                     } else { shortcutAction = action; shortcutRevision += 1 }
                 }, onStatus = { shortcutStatus = it })
                 shortcuts.start()
@@ -304,7 +303,7 @@ private fun runRockyApplication() = application {
             onLanguageChange = { LanguageDesktopPreferences.language = it },
             currentTimeLabel = { OffsetDateTime.now().format(TimeFormatter) },
             currentTimeMillis = System::currentTimeMillis,
-            settingsRequestRevision = settingsRequestRevision,
+            settingsRequestRevision = windowLifecycle.settingsRevision,
             mainWindow = mainWindowHost,
             settingsWindow = settingsWindowHost,
             onTogglePinned = { pinned = !pinned; DesktopWindowPreferences.pinned = pinned },

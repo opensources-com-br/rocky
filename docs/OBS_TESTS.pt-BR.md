@@ -31,3 +31,16 @@ Execute uma gravação local antes de cada transmissão pública, no macOS e no 
 - [ ] Interromper uma resposta e iniciar outro comando.
 - [ ] Ligar e desligar o ouvinte durante a gravação.
 - [ ] Verificar áudio ausente, duplicado, cortado ou estourado.
+
+## Privacidade e plataformas
+
+- [ ] Abrir Settings e confirmar que ela não aparece na fonte `Rocky`.
+- [ ] Confirmar que chaves, tokens e campos secretos não entram na cena.
+- [ ] Revisar transições, prévias e gravações antes de transmitir.
+- [ ] Testar com uma e duas telas.
+- [ ] Remover um monitor e confirmar que Rocky volta para área visível.
+- [ ] Repetir em tela cheia, Spaces e jogo quando aplicável.
+- [ ] Repetir toda a matriz no macOS suportado.
+- [ ] Repetir toda a matriz no Windows suportado.
+- [ ] Registrar versão do Rocky, OBS, SO, arquitetura e fontes usadas.
+- [ ] Anexar uma gravação curta aprovada ao relatório de homologação.

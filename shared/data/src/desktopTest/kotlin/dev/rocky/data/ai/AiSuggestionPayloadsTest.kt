@@ -68,6 +68,11 @@ class AiSuggestionPayloadsTest {
         assertEquals("primeira segunda", AiSuggestionPayloads.openAiText(response))
     }
 
+    @Test fun joinsEveryAnthropicTextBlock() {
+        val response = """{"content":[{"type":"text","text":"primeira "},{"type":"text","text":"segunda"}]}"""
+        assertEquals("primeira segunda", AiSuggestionPayloads.anthropicText(response))
+    }
+
     @Test fun explainsOpenAiResponseErrors() {
         val error = assertFailsWith<IllegalArgumentException> {
             AiSuggestionPayloads.openAiText("""{"error":{"message":"generation failed"}}""")

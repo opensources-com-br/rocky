@@ -135,7 +135,7 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
     private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 }
 
-private fun suggestionSchema() = buildJsonObject {
+internal fun suggestionSchema() = buildJsonObject {
     put("type", "object")
     put("additionalProperties", false)
     put("properties", buildJsonObject {

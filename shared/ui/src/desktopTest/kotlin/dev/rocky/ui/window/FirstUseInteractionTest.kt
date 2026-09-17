@@ -14,4 +14,9 @@ class FirstUseInteractionTest {
             FirstUseContent(platform, ai, voice, {}, {}, {}, complete)
         }
     }
+
+    @Test fun showsSetupGuide() {
+        render(platform = false, ai = false)
+        rule.onNodeWithText("Configure o Rocky").assertIsDisplayed()
+    }
 }

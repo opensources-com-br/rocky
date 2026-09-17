@@ -30,3 +30,16 @@ Execute com pacotes assinados de teste e backup recente dos dados locais.
 - [ ] Cancelar a instalação no fluxo nativo do sistema.
 - [ ] Confirmar que o aplicativo anterior continua abrindo.
 - [ ] Verificar assinatura, identidade do publicador e avisos do SO.
+
+## Upgrade e recuperação
+
+- [ ] Instalar sobre a versão anterior em macOS e Windows.
+- [ ] Reabrir e conferir versão, commit e arquitetura esperados.
+- [ ] Preservar notas, ideias, momentos e histórico persistente.
+- [ ] Preservar configurações de agente, voz e plataformas.
+- [ ] Preservar credenciais no Keychain ou DPAPI.
+- [ ] Executar e validar todas as migrações do SQLite.
+- [ ] Simular falha de migração sem apagar o banco original.
+- [ ] Restaurar um backup criado antes do upgrade.
+- [ ] Repetir upgrade com o aplicativo aberto e fechado.
+- [ ] Confirmar que downgrade incompatível é recusado com orientação.

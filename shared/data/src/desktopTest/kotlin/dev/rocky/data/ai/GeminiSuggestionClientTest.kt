@@ -13,8 +13,10 @@ class GeminiSuggestionClientTest {
     fun authenticatesListsModelsAndGeneratesAGroundedSuggestion() {
         var apiKey = ""
         var requestBody = ""
+        var modelsQuery = ""
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
             createContext("/v1beta/models") { exchange ->
+                modelsQuery = exchange.requestURI.rawQuery.orEmpty()
                 apiKey = exchange.requestHeaders.getFirst("x-goog-api-key")
                 exchange.respond("""{"models":[{"name":"models/gemini-test","supportedGenerationMethods":["generateContent"]}]}""")
             }
@@ -41,6 +43,7 @@ class GeminiSuggestionClientTest {
 
             assertTrue(connection.successful)
             assertEquals(listOf("gemini-test"), models)
+            assertEquals("pageSize=1000", modelsQuery)
             assertEquals("google-key", apiKey)
             assertTrue("\"systemInstruction\"" in requestBody)
             assertTrue("\"responseMimeType\":\"application/json\"" in requestBody)

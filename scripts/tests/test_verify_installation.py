@@ -3,9 +3,13 @@ import tempfile
 import unittest
 
 from scripts.verify_installation import sha256, verify_asset, verify_metadata, verify_runtime
+from scripts.release_metadata import verify_tag
 
 
 class InstallationVerificationTest(unittest.TestCase):
+    def test_accepts_tag_matching_the_candidate(self):
+        verify_tag('v1.2.3-alpha.1', '1.2.3-alpha.1')
+
     def test_accepts_installer_in_path_with_spaces_and_accents(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary) / 'instalação Rocky'

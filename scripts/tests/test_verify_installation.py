@@ -7,6 +7,10 @@ from scripts.release_metadata import verify_tag
 
 
 class InstallationVerificationTest(unittest.TestCase):
+    def test_rejects_tag_from_another_candidate(self):
+        with self.assertRaisesRegex(ValueError, 'release tag'):
+            verify_tag('v1.2.3-alpha.2', '1.2.3-alpha.1')
+
     def test_accepts_tag_matching_the_candidate(self):
         verify_tag('v1.2.3-alpha.1', '1.2.3-alpha.1')
 

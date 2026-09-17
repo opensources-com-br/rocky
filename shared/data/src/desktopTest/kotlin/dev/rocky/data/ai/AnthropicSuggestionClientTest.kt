@@ -8,6 +8,7 @@ import dev.rocky.core.live.StreamPlatform
 import java.net.InetSocketAddress
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AnthropicSuggestionClientTest {
@@ -17,6 +18,10 @@ class AnthropicSuggestionClientTest {
 
     @Test fun supportsClaude5StructuredOutput() {
         assertTrue(supportsAnthropicStructuredOutput("claude-opus-5"))
+    }
+
+    @Test fun preservesLegacyClaudeOutput() {
+        assertFalse(supportsAnthropicStructuredOutput("claude-3-5-haiku-latest"))
     }
 
     @Test

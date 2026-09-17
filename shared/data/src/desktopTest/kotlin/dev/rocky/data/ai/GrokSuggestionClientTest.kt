@@ -16,11 +16,11 @@ class GrokSuggestionClientTest {
         val server = HttpServer.create(InetSocketAddress(0), 0).apply {
             createContext("/v1/language-models") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
-                exchange.respond("""{"models":[{"id":"grok-test"}]}""")
+                exchange.respond("""{"models":[{"id":"grok-4.6-test"}]}""")
             }
-            createContext("/v1/language-models/grok-test") { exchange ->
+            createContext("/v1/language-models/grok-4.6-test") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
-                exchange.respond("""{"id":"grok-test"}""")
+                exchange.respond("""{"id":"grok-4.6-test"}""")
             }
             createContext("/v1/responses") { exchange ->
                 authorization = exchange.requestHeaders.getFirst("Authorization")
@@ -33,16 +33,16 @@ class GrokSuggestionClientTest {
         }
         try {
             val endpoint = "http://localhost:${server.address.port}"
-            val config = AiProviderConfiguration(AiProviderKind.Grok, endpoint, "grok-test", "xai-key")
+            val config = AiProviderConfiguration(AiProviderKind.Grok, endpoint, "grok-4.6-test", "xai-key")
             val client = DesktopAiSuggestionClient(allowTestLoopback = true)
 
             val connection = client.testConnection(config)
             val models = client.availableModels(config)
 
             assertTrue(connection.successful)
-            assertEquals(listOf("grok-test"), models)
+            assertEquals(listOf("grok-4.6-test"), models)
             assertEquals("Bearer xai-key", authorization)
-            assertTrue("\"model\":\"grok-test\"" in requestBody)
+            assertTrue("\"model\":\"grok-4.6-test\"" in requestBody)
             assertTrue("\"text\":{\"format\":{\"type\":\"json_schema\"" in requestBody)
             assertTrue("\"prompt_cache_key\":\"rocky-grok-suggestion-v1\"" in requestBody)
             assertTrue("\"reasoning\":{\"effort\":\"low\"}" in requestBody)

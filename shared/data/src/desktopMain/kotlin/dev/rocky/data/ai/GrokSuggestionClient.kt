@@ -26,6 +26,7 @@ internal class GrokSuggestionClient(httpClient: HttpClient) {
     ): AiGeneratedSuggestion? = responses.generate(
         endpoint, apiKey, model, messages, streamerRequest, agent,
         promptCacheKey = "rocky-grok-suggestion-v1",
+        reasoningEffort = "low".takeIf { model.startsWith("grok-4.5") || model.startsWith("grok-4.6") },
     )
 }
 

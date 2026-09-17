@@ -91,6 +91,12 @@ class AiSuggestionPayloadsTest {
         }
     }
 
+    @Test fun detectsBlockedGeminiPrompts() {
+        assertFailsWith<AiResponseBlockedException> {
+            AiSuggestionPayloads.geminiText("""{"promptFeedback":{"blockReason":"BLOCKLIST"}}""")
+        }
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

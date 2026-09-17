@@ -5,6 +5,21 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class LocalNotesStateTest {
+    @Test fun preservesLocalRecordsWhenWritesFail() {
+        val note = LiveNote("saved", "Original", "now", "NOTA")
+        val repository = object : dev.rocky.core.notes.NoteRepository {
+            override fun getAll() = listOf(note)
+            override fun save(note: LiveNote) = error("read only")
+            override fun update(note: LiveNote) = error("read only")
+            override fun delete(noteId: String) = error("read only")
+        }
+        val state = LocalNotesState(repository)
+
+        assertFalse(state.update(note.copy(text = "Changed")))
+        assertFalse(state.delete(note.id))
+        assertEquals(listOf(note), state.notes)
+    }
+
     @Test fun deduplicatesSavesAndUndoesOnlyTheLatestSave() {
         val repository = TransientNoteRepository()
         val state = LocalNotesState(repository)

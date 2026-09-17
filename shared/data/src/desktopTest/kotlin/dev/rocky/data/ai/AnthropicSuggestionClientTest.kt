@@ -35,7 +35,7 @@ class AnthropicSuggestionClientTest {
                 modelsQuery = exchange.requestURI.rawQuery.orEmpty()
                 apiKey = exchange.requestHeaders.getFirst("x-api-key")
                 version = exchange.requestHeaders.getFirst("anthropic-version")
-                exchange.respond("""{"data":[{"id":"claude-haiku-4-5-test"}]}""")
+                exchange.respond("""{"data":[{"id":"claude-haiku-4-5-test"},{"id":"claude-3-5-haiku-latest"}]}""")
             }
             createContext("/v1/messages") { exchange ->
                 apiKey = exchange.requestHeaders.getFirst("x-api-key")
@@ -57,7 +57,7 @@ class AnthropicSuggestionClientTest {
             val suggestion = client.generateSuggestion(config, listOf(ChatMessage("m1", "viewer", "Preço?", StreamPlatform.Twitch)))
 
             assertTrue(connection.successful)
-            assertEquals(listOf("claude-haiku-4-5-test"), models)
+            assertEquals(listOf("claude-3-5-haiku-latest", "claude-haiku-4-5-test"), models)
             assertEquals(36L, suggestion?.reportedTokens)
             assertEquals("limit=1000", modelsQuery)
             assertEquals("secret-key", apiKey)

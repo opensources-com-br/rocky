@@ -13,4 +13,10 @@ class DesktopWindowLifecycleTest {
     @Test fun fallbackAppStartsVisible() {
         assertTrue(DesktopWindowLifecycle(usesTray = false).mainVisible)
     }
+
+    @Test fun closingTrayWindowKeepsApplicationRunning() {
+        val lifecycle = DesktopWindowLifecycle(usesTray = true).apply { showMain() }
+        assertFalse(lifecycle.closeMain())
+        assertFalse(lifecycle.mainVisible)
+    }
 }

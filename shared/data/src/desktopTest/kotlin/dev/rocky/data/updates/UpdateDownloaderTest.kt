@@ -36,4 +36,5 @@ class UpdateDownloaderTest {
     @Test fun rejectsOversizedDownload() = runDownload("abcd")
     @Test fun removesTamperedDownload() = runDownload("abc", "0".repeat(64))
     @Test fun removesCancelledDownload() = runDownload("abc", cancel = true)
+    @Test fun removesOfflineDownload() = runDownload("abc", offline = true)
 }

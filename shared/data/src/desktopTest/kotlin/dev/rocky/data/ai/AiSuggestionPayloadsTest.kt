@@ -60,6 +60,14 @@ class AiSuggestionPayloadsTest {
         assertEquals("OpenRouter retornou uma resposta vazia", error.message)
     }
 
+    @Test fun joinsEveryOpenAiOutputTextItem() {
+        val response = """{"output":[
+            {"content":[{"type":"output_text","text":"primeira "}]},
+            {"content":[{"type":"output_text","text":"segunda"}]}
+        ]}"""
+        assertEquals("primeira segunda", AiSuggestionPayloads.openAiText(response))
+    }
+
     private fun jsonString(value: String): String = buildString {
         append('"')
         value.forEach { character ->

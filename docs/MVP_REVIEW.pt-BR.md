@@ -72,7 +72,7 @@ Fontes: `shared/core/.../live/LiveModels.kt`, `RockyWindow.kt`, `ConversationCon
 
 ### 4. Validar IA e voz nas condições de uso
 
-- O teste da OpenAI verifica disponibilidade do modelo por GET; não valida uma geração real com o schema e parâmetros usados. Ollama considera variantes com o mesmo nome antes de `:` equivalentes no teste. Validar o modelo exato e uma resposta mínima.
+- O teste da OpenAI verifica o modelo por GET e executa uma geração estruturada mínima. O Ollama também valida o modelo solicitado antes do teste de geração.
 - A análise automática começa habilitada. Torná-la uma escolha explícita; o plano original prevê uso sob demanda como padrão.
 - Existe intervalo de análise, mas não expiração de sugestões, medição de consumo ou orçamento de sessão. Sugestão não descartada bloqueia novas análises automáticas.
 - Cancelar o job de IA descarta resultados antigos, mas o transporte usa `HttpClient.send` bloqueante dentro de `Dispatchers.Default`; a interrupção efetiva da chamada não está demonstrada. Implementar e testar cancelamento do transporte, sem prometer reversão de cobrança já incorrida.

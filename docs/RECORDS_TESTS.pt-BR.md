@@ -16,3 +16,18 @@ Execute com o aplicativo empacotado e uma pasta de dados descartável.
 - [ ] Encerrar a live e gerar seu resumo somente uma vez.
 - [ ] Limpar o histórico da conversa sem apagar registros salvos.
 - [ ] Confirmar que registros de sessões diferentes não se misturam.
+
+## Exportação e backup
+
+- [ ] Exportar Markdown para uma pasta gravável.
+- [ ] Confirmar a ordem e os metadados no arquivo exportado.
+- [ ] Substituir um arquivo existente sem deixar arquivo parcial.
+- [ ] Exportar para pasta somente leitura e destino indisponível.
+- [ ] Criar e importar um backup válido.
+- [ ] Importar um backup vazio.
+- [ ] Importar novamente o mesmo backup sem duplicar registros.
+- [ ] Rejeitar IDs duplicados com dados diferentes.
+- [ ] Rejeitar JSON truncado, corrompido ou com versão incompatível.
+- [ ] Cancelar a importação antes da confirmação.
+- [ ] Confirmar que uma falha não importa apenas parte do backup.
+- [ ] Manter exportações existentes ao apagar os dados locais.

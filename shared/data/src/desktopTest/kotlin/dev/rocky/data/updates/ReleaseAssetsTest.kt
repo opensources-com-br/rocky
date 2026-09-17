@@ -5,6 +5,13 @@ import kotlin.test.*
 
 class ReleaseAssetsTest {
     private fun release(vararg names: String) = AvailableUpdate("v1.2.0", "", names.map { ReleaseAsset(it, "", 42) })
+    @Test fun acceptsNativeArchitectureAliases() {
+        val update = release("Rocky-1.2.0-darwin-x86_64.dmg", "Rocky-1.2.0-windows-arm64.msi")
+
+        assertEquals("Rocky-1.2.0-darwin-x86_64.dmg", installerAsset(update, "macOS", "x64").name)
+        assertEquals("Rocky-1.2.0-windows-arm64.msi", installerAsset(update, "Windows 11", "aarch64").name)
+    }
+
     @Test fun selectsNativeArchitectureAndMsiInsteadOfExe() {
         val update = release("Rocky-1.2.0-darwin-arm64.dmg", "Rocky-1.2.0-windows-amd64.msi", "Rocky-1.2.0-windows-amd64.exe")
         assertEquals("Rocky-1.2.0-darwin-arm64.dmg", installerAsset(update, "Mac OS X", "aarch64").name)

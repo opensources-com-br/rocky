@@ -4,7 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertTrue
+import org.junit.Assert.assertTrue
 
 class FirstUseInteractionTest {
     @get:Rule val rule = createComposeRule()
@@ -17,16 +17,16 @@ class FirstUseInteractionTest {
 
     @Test fun showsSetupGuide() {
         render(platform = false, ai = false)
-        rule.onNodeWithText("Configure o Rocky").assertIsDisplayed()
+        rule.onNodeWithText("Set up Rocky").assertIsDisplayed()
     }
 
     @Test fun requiresConnectedPlatform() {
         render(platform = false, ai = true, voice = true)
-        rule.onNodeWithText("Concluir configuração").assertIsNotEnabled()
+        rule.onNodeWithText("Finish setup").assertIsNotEnabled()
     }
 
     @Test fun requiresVerifiedAi() {
         render(platform = true, ai = false, voice = true)
-        rule.onNodeWithText("Concluir configuração").assertIsNotEnabled()
+        rule.onNodeWithText("Finish setup").assertIsNotEnabled()
     }
 }

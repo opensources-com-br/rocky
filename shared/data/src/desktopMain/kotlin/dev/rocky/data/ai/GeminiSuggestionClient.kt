@@ -62,7 +62,7 @@ internal class GeminiSuggestionClient(private val httpClient: HttpClient) {
         return AiSuggestionPayloads.suggestion(
             AiSuggestionPayloads.geminiText(response.body()),
             prompt.messageIds,
-        )?.copy(reportedTokens = reportedTokenCount(response.body(), "promptTokenCount", "candidatesTokenCount", nested = true, usageKey = "usageMetadata"))
+        )?.copy(reportedTokens = reportedTotalTokenCount(response.body(), "totalTokenCount", "usageMetadata"))
     }
 
     private fun request(endpoint: String, path: String, apiKey: String): HttpRequest.Builder =

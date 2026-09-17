@@ -72,7 +72,7 @@ internal fun RockyHeader(
         IconButton(onClick = onToggleCompact, modifier = Modifier.size(34.dp)) {
             Icon(
                 imageVector = if (compact) Icons.Outlined.OpenInFull else Icons.Outlined.CloseFullscreen,
-                contentDescription = if (compact) "Modo expandido" else "Modo compacto",
+                contentDescription = if (compact) tr("Expanded mode", "Modo expandido") else tr("Compact mode", "Modo compacto"),
                 tint = RockyColors.TextMuted,
                 modifier = Modifier.size(17.dp),
             )
@@ -80,7 +80,7 @@ internal fun RockyHeader(
         IconButton(onClick = onTogglePinned, modifier = Modifier.size(34.dp)) {
             Icon(
                 imageVector = Icons.Outlined.PushPin,
-                contentDescription = if (pinned) "Desafixar janela" else "Fixar janela",
+                contentDescription = if (pinned) tr("Unpin window", "Desafixar janela") else tr("Pin window", "Fixar janela"),
                 tint = if (pinned) RockyColors.Accent else RockyColors.TextMuted,
                 modifier = Modifier.size(17.dp),
             )
@@ -89,7 +89,7 @@ internal fun RockyHeader(
             IconButton(onClick = onOpenSettings, modifier = Modifier.size(32.dp)) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Abrir configurações",
+                    contentDescription = tr("Open settings", "Abrir configurações"),
                     tint = RockyColors.TextSecondary,
                     modifier = Modifier.size(17.dp),
                 )

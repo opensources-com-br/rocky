@@ -80,7 +80,7 @@ private fun runRockyApplication() = application {
     }
     var finishSession by remember { mutableStateOf<() -> Boolean>({ true }) }
     val windowState = rememberWindowState(size = ExpandedSize)
-    var compact by remember { mutableStateOf(false) }
+    val layoutLifecycle = remember { DesktopLayoutLifecycle() }
     var pinned by remember { mutableStateOf(DesktopWindowPreferences.pinned) }
     val windowLifecycle = remember { DesktopWindowLifecycle(usesTray) }
     val desktopWindow = remember { AtomicReference<Frame?>(null) }
@@ -90,7 +90,6 @@ private fun runRockyApplication() = application {
     var shortcutStatus by remember { mutableStateOf<Boolean?>(null) }
     var shortcutAction by remember { mutableStateOf(-1) }
     var shortcutRevision by remember { mutableStateOf(0) }
-    var previousSize by remember { mutableStateOf(ExpandedSize) }
     val noteRepository = remember { RecoverableNoteRepository(RockyDesktopPaths.notesDatabase) }
     val twitchClient = remember { DesktopTwitchChatClient() }
     val kickClient = remember { DesktopKickChatClient() }
@@ -159,7 +158,7 @@ private fun runRockyApplication() = application {
                 desktopWindow.set(window)
                 window.minimumSize = Dimension(340, 180)
             }
-            val persistBounds by rememberUpdatedState(!compact)
+            val persistBounds by rememberUpdatedState(!layoutLifecycle.compact)
             DisposableEffect(window) {
                 window.bounds = DesktopWindowPreferences.restore()
                 val timer = javax.swing.Timer(350) {
@@ -235,7 +234,7 @@ private fun runRockyApplication() = application {
             },
             shortcutAction = shortcutAction,
             shortcutRevision = shortcutRevision,
-            compact = compact,
+            compact = layoutLifecycle.compact,
             pinned = pinned,
             noteRepository = noteRepository,
             twitchChatClient = twitchClient,
@@ -308,14 +307,10 @@ private fun runRockyApplication() = application {
             settingsWindow = settingsWindowHost,
             onTogglePinned = { pinned = !pinned; DesktopWindowPreferences.pinned = pinned },
             onToggleCompact = {
-                if (compact) {
-                    windowState.size = previousSize
-                } else {
-                    previousSize = windowState.size
+                if (!layoutLifecycle.compact) {
                     windowState.placement = WindowPlacement.Floating
-                    windowState.size = CompactSize
                 }
-                compact = !compact
+                windowState.size = layoutLifecycle.toggle(windowState.size)
             },
         )
 }

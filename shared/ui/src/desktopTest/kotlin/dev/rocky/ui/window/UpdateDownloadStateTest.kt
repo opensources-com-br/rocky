@@ -18,6 +18,21 @@ class UpdateDownloadStateTest {
         override fun cancel() {}
         override fun open(update: PreparedUpdate) { if (openFailure) error("blocked"); opened++ }
     }
+    @Test fun failedInstallerOpenCanBeRetried() = runBlocking {
+        val installer = Installer().apply { openFailure = true }
+        val state = UpdateDownloadState(installer)
+        state.download(this, AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        state.install(this) { true }
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertEquals(0, installer.opened)
+        assertFalse(state.opening)
+
+        installer.openFailure = false
+        state.install(this) { true }
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertEquals(1, installer.opened)
+    }
     @Test fun downloadDoesNotInstallAndActiveSessionBlocksOpening() = runBlocking {
         val installer = Installer()
         val state = UpdateDownloadState(installer)

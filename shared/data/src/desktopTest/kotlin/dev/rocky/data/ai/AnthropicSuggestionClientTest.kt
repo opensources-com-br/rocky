@@ -22,7 +22,7 @@ class AnthropicSuggestionClientTest {
                 modelsQuery = exchange.requestURI.rawQuery.orEmpty()
                 apiKey = exchange.requestHeaders.getFirst("x-api-key")
                 version = exchange.requestHeaders.getFirst("anthropic-version")
-                exchange.respond("""{"data":[{"id":"claude-test"}]}""")
+                exchange.respond("""{"data":[{"id":"claude-haiku-4-5-test"}]}""")
             }
             createContext("/v1/messages") { exchange ->
                 apiKey = exchange.requestHeaders.getFirst("x-api-key")
@@ -36,7 +36,7 @@ class AnthropicSuggestionClientTest {
         }
         try {
             val endpoint = "http://localhost:${server.address.port}"
-            val config = AiProviderConfiguration(AiProviderKind.Anthropic, endpoint, "claude-test", "secret-key")
+            val config = AiProviderConfiguration(AiProviderKind.Anthropic, endpoint, "claude-haiku-4-5-test", "secret-key")
             val client = DesktopAiSuggestionClient(allowTestLoopback = true)
 
             val connection = client.testConnection(config)
@@ -44,7 +44,7 @@ class AnthropicSuggestionClientTest {
             val suggestion = client.generateSuggestion(config, listOf(ChatMessage("m1", "viewer", "Preço?", StreamPlatform.Twitch)))
 
             assertTrue(connection.successful)
-            assertEquals(listOf("claude-test"), models)
+            assertEquals(listOf("claude-haiku-4-5-test"), models)
             assertEquals(36L, suggestion?.reportedTokens)
             assertEquals("limit=1000", modelsQuery)
             assertEquals("secret-key", apiKey)
@@ -52,7 +52,7 @@ class AnthropicSuggestionClientTest {
             assertTrue("\"system\"" in requestBody)
             assertTrue("\"output_config\":{\"format\":{\"type\":\"json_schema\"" in requestBody)
             assertTrue("\"max_tokens\":300" in requestBody)
-            assertTrue("\"model\":\"claude-test\"" in requestBody)
+            assertTrue("\"model\":\"claude-haiku-4-5-test\"" in requestBody)
             assertTrue("secret-key" !in requestBody)
         } finally {
             server.stop(0)

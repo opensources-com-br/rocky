@@ -26,7 +26,7 @@ class GeminiSuggestionClientTest {
                 apiKey = exchange.requestHeaders.getFirst("x-goog-api-key")
                 requestBody = exchange.requestBody.bufferedReader().readText()
                 exchange.respond(
-                    """{"candidates":[{"content":{"parts":[{"text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}]}}],"usageMetadata":{"promptTokenCount":11,"candidatesTokenCount":7}}""",
+                    """{"candidates":[{"content":{"parts":[{"text":"{\"suggestion\":\"Responda sobre o preço.\",\"source_message_ids\":[\"m1\"]}"}]}}],"usageMetadata":{"promptTokenCount":11,"candidatesTokenCount":7,"thoughtsTokenCount":3,"totalTokenCount":21}}""",
                 )
             }
             start()

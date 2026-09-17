@@ -61,4 +61,10 @@ class DesktopWindowLifecycleTest {
     @Test fun settingsLayoutHasExpectedSize() {
         assertEquals(DpSize(780.dp, 680.dp), SettingsSize)
     }
+
+    @Test fun compactToggleUsesMinimumLayout() {
+        val lifecycle = DesktopLayoutLifecycle()
+        assertEquals(CompactSize, lifecycle.toggle(DpSize(520.dp, 760.dp)))
+        assertTrue(lifecycle.compact)
+    }
 }

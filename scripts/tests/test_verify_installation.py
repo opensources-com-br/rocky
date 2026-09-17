@@ -7,6 +7,10 @@ from scripts.release_metadata import verify_tag, verify_versions
 
 
 class InstallationVerificationTest(unittest.TestCase):
+    def test_rejects_native_version_from_another_release(self):
+        with self.assertRaisesRegex(ValueError, 'rockyPackageVersion'):
+            verify_versions('1.2.3-alpha.1', '1.2.2')
+
     def test_accepts_native_version_matching_the_candidate_base(self):
         verify_versions('1.2.3-alpha.1', '1.2.3')
 

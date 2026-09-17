@@ -24,4 +24,9 @@ class FirstUseInteractionTest {
         render(platform = false, ai = true, voice = true)
         rule.onNodeWithText("Concluir configuração").assertIsNotEnabled()
     }
+
+    @Test fun requiresVerifiedAi() {
+        render(platform = true, ai = false, voice = true)
+        rule.onNodeWithText("Concluir configuração").assertIsNotEnabled()
+    }
 }

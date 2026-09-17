@@ -5,6 +5,10 @@ import java.nio.file.Files
 import kotlin.test.*
 
 class RecordBackupTest {
+    @Test fun acceptsAnEmptyBackup() {
+        assertEquals(emptyList(), RecordBackup.decode(RecordBackup.encode(emptyList())))
+    }
+
     private val note = LiveNote("n", "ideia", "now", "IDEIA", setOf("m"), listOf("viewer: hi"),
         "session", "Live de teste", 42000, true, 3)
 

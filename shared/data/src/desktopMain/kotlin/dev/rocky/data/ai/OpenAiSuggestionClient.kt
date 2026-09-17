@@ -108,6 +108,8 @@ internal class OpenAiSuggestionClient(private val httpClient: HttpClient) {
         repeat(OPENROUTER_RESPONSE_ATTEMPTS) {
             val response = httpClient.send(
                 request(endpoint, "/v1/chat/completions", apiKey)
+                    .header("HTTP-Referer", "https://github.com/opensources-com-br/rocky")
+                    .header("X-OpenRouter-Title", "Rocky")
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build(),

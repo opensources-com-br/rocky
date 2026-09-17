@@ -27,3 +27,17 @@ Registre versão, commit, SO, escala, tema, idioma e tecnologia assistiva.
 - Use resoluções pequenas, HiDPI e dois monitores com escalas diferentes.
 - Ative alto contraste do Windows e aumento de contraste do macOS.
 - Verifique animações, piscadas e transições durante chat, IA e voz.
+
+## Português e inglês
+
+- Inicie com cada idioma do sistema e confirme o idioma correto no primeiro uso.
+- Troque o idioma pelo app, reinicie e confirme a persistência.
+- Percorra todas as abas, Settings, onboarding, confirmações, vazios e erros.
+- Confirme que rótulos visuais e nomes do leitor de tela usam o mesmo idioma.
+- Verifique números, milhares, milhões, datas, horários, durações e percentuais.
+- Teste nomes, mensagens e respostas longas com acentos, emoji e caracteres mistos.
+- Procure textos cortados, traduções ausentes e palavras fixas no idioma anterior.
+- Confirme que URLs, nomes de provedores e termos técnicos não são corrompidos.
+- Gere uma sugestão e use transcrição e fala em cada idioma.
+- Registre captura e saída do leitor de tela para toda falha encontrada.
+- Marque macOS e Windows separadamente como passou, falhou ou não executado.

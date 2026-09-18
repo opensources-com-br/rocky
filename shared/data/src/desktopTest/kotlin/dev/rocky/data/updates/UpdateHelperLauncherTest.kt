@@ -38,3 +38,23 @@ class UpdateHelperLauncherTest {
             launchedJob = job
             Files.writeString(job.resolve("ready"), "ready")
             RunningProcess()
+        }, timeoutMillis = 500)
+        launcher.launch(directory, app, update)
+        val preparedJob = assertNotNull(launchedJob)
+        assertFalse(Files.exists(preparedJob.resolve("cancel")))
+        launcher.cancel()
+        assertTrue(Files.exists(preparedJob.resolve("cancel")))
+    }
+
+    @Test fun cancelsHelperWhenPreparationTimesOut() = fixture { directory, app, update ->
+        var job: Path? = null
+        val launcher = UpdateHelperLauncher({ _, path -> job = path; RunningProcess() }, timeoutMillis = 1)
+        assertFailsWith<IllegalStateException> { launcher.launch(directory, app, update) }
+        assertTrue(Files.exists(job!!.resolve("cancel")))
+    }
+
+    @Test fun neverRequestsRestartWhenHelperFails() = fixture { directory, app, update ->
+        val launcher = UpdateHelperLauncher({ _, _ -> RunningProcess(false) })
+        assertFailsWith<IllegalStateException> { launcher.launch(directory, app, update) }
+    }
+

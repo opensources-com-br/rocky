@@ -58,3 +58,23 @@ def prepare(source, destination, version, commit):
         for asset in assets:
             matches = [path for path in files if path.name == asset['file']]
             if len(matches) != 1 or checksum(matches[0]) != asset['sha256']:
+                raise ValueError(f'Invalid package: {asset["file"]}')
+            recorded[asset['file']] = matches[0]
+    destination.mkdir(parents=True, exist_ok=False)
+    for name, path in recorded.items():
+        shutil.copyfile(path, destination / name)
+    sums = [f'{checksum(destination / name)}  {name}\n' for name in sorted(recorded)]
+    (destination / 'SHA256SUMS.txt').write_text(''.join(sums), encoding='utf-8')
+
+
+def checksum(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', required=True)

@@ -13,6 +13,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python scripts/release_metadata.py --check-tag
+      - run: python -m unittest discover -s scripts/tests
+      - name: Require an increasing native version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > previous-releases.json
+          python scripts/prepare_release.py --version "$GITHUB_REF_NAME" --previous previous-releases.json
+
   package:
     strategy:
       fail-fast: false

@@ -38,7 +38,9 @@ try {
     [int]$remove = Read-Sequence 'RemoveExistingProducts'
     [int]$finalize = Read-Sequence 'InstallFinalize'
     $sequence = $initialize + 1
-    if ($initialize -le 0 -or $sequence -ge $finalize) { throw 'Unexpected installation transaction boundaries.' }
+    if ($initialize -le 0 -or $sequence -ge $finalize) {
+        throw "Unexpected installation transaction boundaries: initialize=$initialize, remove=$remove, finalize=$finalize."
+    }
     if ($remove -ne $sequence) {
         $collision = $database.OpenView("SELECT ``Action`` FROM ``InstallExecuteSequence`` WHERE ``Sequence``=$sequence")
         try {

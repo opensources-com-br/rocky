@@ -38,3 +38,23 @@ try {
     $install = Start-Process msiexec.exe -ArgumentList @('/i', "`"$baseline`"", '/qn', '/norestart') -Wait -PassThru
     if ($install.ExitCode -ne 0) { throw "Baseline installation failed: $($install.ExitCode)" }
     if (-not (Test-Path (Join-Path $target 'Rocky.exe'))) { throw 'Baseline launcher missing' }
+    $parent = Start-Process powershell.exe -ArgumentList @('-NoProfile', '-Command', 'Start-Sleep 120') -PassThru
+    $script = Join-Path $PSScriptRoot '../shared/data/src/desktopMain/resources/updates/install-windows.ps1'
+    $hash = (Get-FileHash $candidate -Algorithm SHA256).Hash.ToLowerInvariant()
+    $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$script`"", "`"$candidate`"",
+        "`"$target`"", $parent.Id, "`"$job`"", $hash, '1.0.2', '1.0.2-alpha.1')
+    $helper = Start-Process powershell.exe -ArgumentList $arguments -PassThru `
+        -RedirectStandardOutput (Join-Path $job 'stdout.log') -RedirectStandardError (Join-Path $job 'stderr.log')
+    $deadline = [DateTime]::UtcNow.AddSeconds(60)
+    while (-not (Test-Path (Join-Path $job 'ready'))) {
+        if ($helper.HasExited -or [DateTime]::UtcNow -gt $deadline) { throw 'Updater did not become ready' }
+        Start-Sleep -Milliseconds 200
+    }
+    $baselineConfig = Get-Content (Join-Path $target 'app/Rocky.cfg')
+    if ($baselineConfig -notcontains 'java-options=-Drocky.version=1.0.1-alpha.1') { throw 'App was replaced before exiting' }
+    Stop-Process -Id $parent.Id
+    if (-not $helper.WaitForExit(120000) -or $helper.ExitCode -ne 0) { throw 'Native upgrade failed' }
+    $deadline = [DateTime]::UtcNow.AddSeconds(30)
+    while (-not (Test-Path $result)) {
+        if ([DateTime]::UtcNow -gt $deadline) { throw 'Updated application did not restart' }
+        Start-Sleep -Milliseconds 200

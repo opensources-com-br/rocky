@@ -16,7 +16,11 @@ jobs:
         include:
           - os: macos-latest
             package-task: :apps:desktop:packageDmg
-            artifact-name: rocky-macos
+            artifact-name: rocky-macos-arm64
+            artifact-path: apps/desktop/build/compose/binaries/main/dmg/*.dmg
+          - os: macos-15-intel
+            package-task: :apps:desktop:packageDmg
+            artifact-name: rocky-macos-x64
             artifact-path: apps/desktop/build/compose/binaries/main/dmg/*.dmg
           - os: windows-latest
             package-task: :apps:desktop:packageMsi :apps:desktop:packageExe

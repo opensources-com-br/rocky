@@ -78,3 +78,18 @@ def checksum(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', required=True)
+    parser.add_argument('--previous', type=pathlib.Path)
+    parser.add_argument('--source', type=pathlib.Path)
+    parser.add_argument('--destination', type=pathlib.Path)
+    parser.add_argument('--commit')
+    args = parser.parse_args()
+    if args.previous:
+        verify_upgrade(args.version, json.loads(args.previous.read_text()))
+    else:
+        if not all((args.source, args.destination, args.commit)):
+            parser.error('--source, --destination and --commit are required')
+        prepare(args.source, args.destination, args.version, args.commit)
+
+
+if __name__ == '__main__':
+    main()

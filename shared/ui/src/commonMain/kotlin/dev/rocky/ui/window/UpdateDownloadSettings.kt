@@ -1,5 +1,6 @@
 package dev.rocky.ui.window
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import dev.rocky.core.updates.AvailableUpdate

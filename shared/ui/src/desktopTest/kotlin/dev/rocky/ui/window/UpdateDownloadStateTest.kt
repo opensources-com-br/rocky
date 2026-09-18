@@ -62,6 +62,26 @@ class UpdateDownloadStateTest {
         withTimeout(5000) { while (state.busy) delay(10) }
         assertNotNull(state.prepared)
     }
+    @Test fun restartRunsOnlyAfterTheHelperIsReadyAndDisposalPreservesHandoff() = runBlocking {
+        val installer = Installer()
+        val state = UpdateDownloadState(installer, this)
+        val helperStarted = CountDownLatch(1)
+        val helperReady = CountDownLatch(1)
+        installer.onOpen = { helperStarted.countDown(); check(helperReady.await(5, TimeUnit.SECONDS)) }
+        state.download(AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        var restarted = false
+        state.install({ true }) { restarted = true; state.dispose(); true }
+        assertTrue(helperStarted.await(5, TimeUnit.SECONDS))
+        assertFalse(restarted)
+        assertTrue(state.opening)
+        helperReady.countDown()
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertTrue(restarted)
+        assertTrue(state.restarting)
+        assertEquals(0, installer.cancelled)
+        state.install({ true }, { error("Must only restart once") })
+        assertEquals(1, installer.opened)
     @Test fun cancellationBeforeTheWorkerStartsDoesNotLeaveDownloadBusy() = runBlocking {
         val installer = Installer()
         val state = UpdateDownloadState(installer)

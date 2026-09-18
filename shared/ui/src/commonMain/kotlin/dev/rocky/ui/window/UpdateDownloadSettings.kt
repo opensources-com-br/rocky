@@ -22,11 +22,21 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
             LinearProgressIndicator(Modifier.fillMaxWidth())
             Text(tr("Preparing update and restart…", "Preparando atualização e reinício…"))
         }
-        state.prepared?.let {
-            Text("${tr("Ready to install", "Pronto para instalar")}: ${it.version}")
-            OutlinedButton(enabled = !blocked, onClick = { confirm = true }) {
-                Text(tr("Open verified installer", "Abrir instalador verificado"))
-            }
+        state.busy -> {
+            LinearProgressIndicator(progress, Modifier.fillMaxWidth())
+            Text("${(progress * 100).toInt()}% · " + tr("Downloading and verifying update", "Baixando e verificando atualização"))
+            TextButton(onClick = state::cancel, modifier = Modifier.testTag("update-cancel")) { Text(tr("Cancel", "Cancelar")) }
+        }
+        state.prepared != null -> {
+            Text("${tr("Ready to install", "Pronto para instalar")}: ${state.prepared?.version}")
+            Button(enabled = !blocked, modifier = Modifier.testTag("update-restart"), onClick = {
+                state.install({ !latestBlocked }, { latestRestart() })
+            }) { Text(tr("Update and restart", "Atualizar e reiniciar")) }
+            Text(tr("Rocky will restart automatically. Your notes, settings and voice models will be preserved.",
+                "O Rocky reiniciará automaticamente. Suas notas, configurações e modelos de voz serão preservados."))
+        }
+        available != null -> OutlinedButton(modifier = Modifier.testTag("update-download"), onClick = { state.download(available) }) {
+            Text(if (state.notice == UpdateDownloadNotice.DownloadFailed) tr("Retry download", "Tentar baixar novamente")
         }
     }
     if (blocked) Text(tr("Disconnect your platforms before installing.", "Desconecte suas plataformas antes de instalar."))

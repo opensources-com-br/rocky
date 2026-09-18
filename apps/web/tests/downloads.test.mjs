@@ -32,8 +32,8 @@ test("selects installers from the current non-draft release", () => {
       packageAsset("1.0.11-alpha.1", "windows", "amd64", "msi")] },
     { tag_name: "v1.0.10-alpha.17", draft: false, prerelease: true, assets: [asset("Rocky-1.0.10.dmg"), asset("Rocky-1.0.10.exe"), asset("Rocky-1.0.10.msi")] },
   ];
-  assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.11.dmg");
-  assert.equal(selectInstaller(releases, "windows")?.name, "Rocky-1.0.11.msi");
+  assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.11-alpha.1-darwin-universal.dmg");
+  assert.equal(selectInstaller(releases, "windows", "x64")?.name, "Rocky-1.0.11-alpha.1-windows-amd64.msi");
 });
 
 test("rejects installers published before the icon and signing fixes", () => {

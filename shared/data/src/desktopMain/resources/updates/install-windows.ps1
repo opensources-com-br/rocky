@@ -18,3 +18,23 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 function Write-Status([string]$Value) {
     [IO.File]::WriteAllText((Join-Path $Job 'status'), $Value, $utf8)
 }
+
+function Assert-NotCancelled {
+    if (Test-Path -LiteralPath (Join-Path $Job 'cancel')) { throw 'Update cancelled.' }
+}
+
+function Get-MsiProperty($Database, [string]$Name) {
+    $view = $Database.OpenView("SELECT ``Value`` FROM ``Property`` WHERE ``Property``='$Name'")
+    try {
+        $view.Execute()
+        $record = $view.Fetch()
+        if ($null -eq $record) { throw "Missing MSI property: $Name" }
+        try { return $record.StringData(1) }
+        finally { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record) }
+    } finally {
+        $view.Close()
+        [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($view)
+    }
+}
+
+try {

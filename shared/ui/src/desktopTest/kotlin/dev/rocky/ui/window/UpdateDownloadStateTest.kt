@@ -33,7 +33,7 @@ class UpdateDownloadStateTest {
         assertFalse(state.opening)
 
         installer.openFailure = false
-        state.install(this) { true }
+        state.install({ true }, { true })
         withTimeout(5000) { while (state.busy) delay(10) }
         assertEquals(1, installer.opened)
     }

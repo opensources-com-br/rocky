@@ -58,3 +58,17 @@ try {
     while (-not (Test-Path $result)) {
         if ([DateTime]::UtcNow -gt $deadline) { throw 'Updated application did not restart' }
         Start-Sleep -Milliseconds 200
+    }
+    if ((Get-Content $result -Raw) -ne '1.0.2-alpha.1') { throw 'Restarted application has the wrong version' }
+    if ((Get-Content (Join-Path $job 'status') -Raw) -notin @('installed', 'restart-required')) { throw 'Missing success status' }
+    Write-Output 'Windows native upgrade and automatic restart passed.'
+} finally {
+    if ($parent -and -not $parent.HasExited) { Stop-Process -Id $parent.Id -ErrorAction SilentlyContinue }
+    if ($helper -and -not $helper.HasExited) {
+        New-Item -ItemType File -Force (Join-Path $job 'cancel') | Out-Null
+        [void]$helper.WaitForExit(10000)
+    }
+    Get-ChildItem $job -Filter '*.log' | ForEach-Object { Get-Content $_.FullName -Tail 40 }
+    $installed = if (Test-Path $result) { $candidate } else { $baseline }
+    Start-Process msiexec.exe -ArgumentList @('/x', "`"$installed`"", '/qn', '/norestart') -Wait | Out-Null
+}

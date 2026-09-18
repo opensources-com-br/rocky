@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: rocky-release
+  cancel-in-progress: false
+
 jobs:
   package:
     strategy:

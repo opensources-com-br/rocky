@@ -16,6 +16,10 @@ test("detects supported desktop platforms", () => {
 test("normalizes installer architectures", () => {
   assert.equal(normalizeArchitecture("aarch64"), "arm64");
   assert.equal(normalizeArchitecture("x86_64"), "x64");
+  assert.equal(normalizeArchitecture("x86"), "unknown");
+  assert.equal(normalizeArchitecture("x86", "64"), "x64");
+  assert.equal(normalizeArchitecture("arm", "64"), "arm64");
+  assert.equal(normalizeArchitecture("arm", "32"), "unknown");
   assert.equal(normalizeArchitecture(""), "unknown");
 });
 

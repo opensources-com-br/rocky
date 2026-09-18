@@ -9,8 +9,11 @@ const content = {
     { type: "para", text: "With Git and JDK 17 installed, clone https://github.com/opensources-com-br/rocky.git. From the root, run ./gradlew :apps:desktop:run on macOS or .\\gradlew.bat :apps:desktop:run in PowerShell. The desktop app uses Kotlin and Compose Multiplatform; Node.js is used by the web app." },
     { type: "h2", text: "Permissions" },
     { type: "para", text: "Voice is optional and requires microphone access. Global shortcuts depend on system permissions and availability; check their registration status in Voice settings. You can start with quick analysis actions without configuring a microphone." },
-    { type: "h2", text: "Open the current alpha on macOS" },
-    { type: "para", text: "After trying to open Rocky, go to System Settings → Privacy & Security, find the Rocky notice, and click Open Anyway. Use this exception only if you downloaded the DMG from the official release and checked its published SHA-256. The next release built with distribution credentials will be signed and notarized." },
+    { type: "h2", text: "Update and restart" },
+    { type: "para", text: "When a release is available, click Update or open Settings → Data → Download update. Rocky downloads the package for your architecture, shows progress, and verifies SHA-256. Then disconnect platforms and click Update and restart. Rocky installs the update and reopens, preserving your data, preferences, and saved credentials. On macOS, Rocky must be installed outside the DMG; the system may ask for permission to replace the app." },
+    { type: "para", text: "If your older version only offers Open installer, install the release with the built-in updater once over the existing installation, without uninstalling or deleting data. From that version onward, use Update and restart. Runs from source use the releases page to install the packaged app. If an update fails, check the message in Data and retry." },
+    { type: "h2", text: "Site updates" },
+    { type: "para", text: "This site contains the landing page, documentation, and showcase; Rocky runs in the desktop app. When a new site version is published, a notice offers Reload site or Later. The page only reloads when you click, and your language preference is preserved." },
     { type: "h2", text: "Systems" },
     { type: "para", text: "The project packages macOS and Windows. The current flow does not offer a Linux installer. Check the requirements and architecture of the selected artifact before installing." }
   ]

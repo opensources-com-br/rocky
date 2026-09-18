@@ -23,6 +23,17 @@ function Assert-NotCancelled {
     if (Test-Path -LiteralPath (Join-Path $Job 'cancel')) { throw 'Update cancelled.' }
 }
 
+function Assert-ExclusiveApplication {
+    foreach ($instance in @(Get-Process -Name 'Rocky' -ErrorAction SilentlyContinue)) {
+        if ($instance.Id -eq $ParentId) { continue }
+        $path = $instance.Path
+        if (-not $path) { throw 'Cannot verify another Rocky process. Close other Rocky instances before updating.' }
+        if ([IO.Path]::GetFullPath($path) -ieq [IO.Path]::GetFullPath($executable)) {
+            throw 'Close other instances of this Rocky installation before updating.'
+        }
+    }
+}
+
 function Get-MsiProperty($Database, [string]$Name) {
     $view = $Database.OpenView("SELECT ``Value`` FROM ``Property`` WHERE ``Property``='$Name'")
     try {

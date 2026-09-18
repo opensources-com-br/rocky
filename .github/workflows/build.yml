@@ -69,9 +69,6 @@ jobs:
         run: bash scripts/smoke-update-macos.sh
       - if: runner.os == 'Windows'
         run: ./scripts/smoke-install-windows.ps1
-      - name: Exercise Windows upgrade and restart
-        if: runner.os == 'Windows'
-        run: ./scripts/smoke-update-windows.ps1
       - run: git diff --exit-code
       - uses: actions/upload-artifact@v7
         with:

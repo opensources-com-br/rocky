@@ -72,7 +72,7 @@ internal fun DataSettings(
         }
         RecordTransferSettings(notes, onBackup, onChooseImport)
         MaintenanceSettings(updates, diagnosticReport, onExportDiagnostic, onOpenGuide) {
-            UpdateDownloadSettings(updateDownload, updates.available, updateBlocked)
+            UpdateDownloadSettings(updateDownload, updates.available, updateBlocked, onRestartAfterUpdate)
             Divider(color = RockyColors.Border)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(tr("Check updates when opening Rocky", "Verificar atualizações ao abrir Rocky"),

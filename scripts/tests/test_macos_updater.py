@@ -38,3 +38,23 @@ elif command == 'codesign':
     print('TeamIdentifier=' + (app / 'team').read_text(), file=sys.stderr)
 elif command == 'ditto':
     shutil.copytree(safe(args[0]), safe(args[1]))
+elif command == 'open':
+    app = safe(args[0])
+    version = (app / 'Contents/MacOS/Rocky').read_text()
+    with (root / 'opened').open('a') as log:
+        log.write(version + '\\n')
+    sys.exit(1 if version == 'new' and os.environ.get('ROCKY_TEST_FAIL_OPEN') else 0)
+elif command == 'ps':
+    print(os.environ['ROCKY_TEST_PARENT_PID'], root / 'Applications/Rocky.app/Contents/MacOS/Rocky')
+    print('999998', root / 'other/Rocky.app/Contents/MacOS/Rocky')
+    if (root / 'extra-instance').exists():
+        print('999999', root / 'Applications/Rocky.app/Contents/MacOS/Rocky')
+else:
+    raise AssertionError(command)
+'''
+
+
+@unittest.skipIf(os.name == 'nt', 'The macOS updater uses a POSIX shell.')
+class MacosUpdaterTest(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix='rocky updater ')

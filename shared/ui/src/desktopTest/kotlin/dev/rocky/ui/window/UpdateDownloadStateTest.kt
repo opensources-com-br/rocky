@@ -45,7 +45,7 @@ class UpdateDownloadStateTest {
         assertNotNull(state.prepared)
         assertEquals(1f, state.progress.value)
         assertEquals(0, installer.opened)
-        state.install(this) { false }
+        state.install({ false }, { true })
         assertEquals(0, installer.opened)
         state.install(this) { true }
         withTimeout(5000) { while (state.busy) delay(10) }

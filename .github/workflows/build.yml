@@ -44,7 +44,7 @@ jobs:
       - run: ./gradlew build
       - if: runner.os == 'macOS' && runner.arch == 'ARM64'
         run: ./gradlew koverVerify koverXmlReport
-      - if: runner.os == 'macOS'
+      - if: runner.os == 'macOS' && runner.arch == 'ARM64'
         uses: actions/upload-artifact@v7
         with:
           name: rocky-coverage

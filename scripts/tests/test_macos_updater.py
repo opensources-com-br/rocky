@@ -158,3 +158,23 @@ class MacosUpdaterTest(unittest.TestCase):
     def test_failed_relaunch_restores_and_reopens_previous_app(self):
         self.environment['ROCKY_TEST_FAIL_OPEN'] = '1'
         process = self.start(); self.ready(process)
+        self.stop_process(self.parent)
+        self.finish(process, 'failed')
+        self.assertEqual('old', self.marker())
+        self.assertEqual(['new', 'old'], (self.root / 'opened').read_text().splitlines())
+
+    def test_checksum_mismatch_fails_before_preparing_replacement(self):
+        process = self.start('0' * 64)
+        self.finish(process, 'failed')
+        self.assertEqual('old', self.marker())
+        self.assertFalse((self.job / 'ready').exists())
+        self.assertFalse((self.root / 'opened').exists())
+
+    def test_rejects_a_different_signing_team(self):
+        (self.payload / 'team').write_text('OTHERTEAM')
+        process = self.start()
+        self.finish(process, 'failed')
+        self.assertEqual('old', self.marker())
+        self.assertFalse((self.job / 'ready').exists())
+
+    def test_rejects_an_invalid_package_signature(self):

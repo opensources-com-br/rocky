@@ -18,7 +18,7 @@ $database = $null
 function Read-Sequence([string]$Action) {
     $view = $database.OpenView("SELECT ``Sequence`` FROM ``InstallExecuteSequence`` WHERE ``Action``='$Action'")
     try {
-        $view.Execute()
+        [void]$view.Execute()
         $record = $view.Fetch()
         if ($null -eq $record) { throw "Required installer action is absent: $Action" }
         try { return [int]$record.IntegerData(1) }

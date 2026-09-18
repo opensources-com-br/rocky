@@ -38,3 +38,5 @@ test("explicit reload keeps the route, query, and fragment with a fresh cache ke
   assert.equal(url.pathname, "/rocky/docs/");
   assert.equal(url.searchParams.get("topic"), "installation");
   assert.equal(url.searchParams.get("rocky-site-version"), "commit-b");
+  assert.equal(url.hash, "#updates");
+});

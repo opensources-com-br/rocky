@@ -1,5 +1,6 @@
 # Exercise the real Windows updater with two tiny jpackage installations.
 $ErrorActionPreference = 'Stop'
+if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') { throw 'Use an isolated GitHub Windows runner' }
 $fixture = Join-Path $env:RUNNER_TEMP 'Rocky update smoke'
 $inputDirectory = Join-Path $fixture 'input'
 $packages = Join-Path $fixture 'packages'

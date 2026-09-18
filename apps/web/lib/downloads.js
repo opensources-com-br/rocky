@@ -11,6 +11,8 @@ export function detectDesktopPlatform(platform = "", userAgent = "") {
 
 export function normalizeArchitecture(value = "", bitness = "") {
   const architecture = value.toLowerCase();
+  if (architecture === "arm" && bitness === "64") return "arm64";
+  if (architecture === "x86" && bitness === "64") return "x64";
   if (["arm64", "aarch64"].includes(architecture)) return "arm64";
   if (["x86", "x86_64", "amd64", "x64"].includes(architecture)) return "x64";
   return "unknown";

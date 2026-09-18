@@ -18,3 +18,10 @@ internal fun installationNotice(directory: Path): String? = runCatching {
         "cancelled" -> return null
         else -> {
             val pid = runCatching { Files.readString(job.resolve("helper.pid")).trim().toLong() }.getOrNull()
+            if (pid != null && ProcessHandle.of(pid).map { it.isAlive }.orElse(false)) return null
+            "update-interrupted"
+        }
+    }
+    Files.deleteIfExists(pointer)
+    notice
+}.getOrNull()

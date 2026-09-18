@@ -78,3 +78,23 @@ class MacosUpdaterTest(unittest.TestCase):
             stub = self.root / command
             stub.write_text(STUB); stub.chmod(0o700)
             absolute = ('/bin/' if command == 'ps' else '/usr/bin/') + command
+            self.assertIn(absolute, source)
+            source = source.replace(absolute, shlex.quote(str(stub)))
+        self.assertNotIn('$HOME', source)
+        self.helper.write_text(source)
+        self.parent = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])
+        self.addCleanup(self.stop_process, self.parent)
+        self.environment['ROCKY_TEST_PARENT_PID'] = str(self.parent.pid)
+
+    @staticmethod
+    def stop_process(process):
+        if process.poll() is None:
+            process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill(); process.wait(timeout=5)
+
+    @staticmethod
+    def create_app(app, marker, version):
+        launcher = app / 'Contents/MacOS/Rocky'

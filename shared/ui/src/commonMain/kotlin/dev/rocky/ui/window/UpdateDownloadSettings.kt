@@ -37,6 +37,7 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
         }
         available != null -> OutlinedButton(modifier = Modifier.testTag("update-download"), onClick = { state.download(available) }) {
             Text(if (state.notice == UpdateDownloadNotice.DownloadFailed) tr("Retry download", "Tentar baixar novamente")
+                else tr("Download update", "Baixar atualização"))
         }
     }
     if (blocked) Text(tr("Disconnect your platforms before installing.", "Desconecte suas plataformas antes de instalar."))

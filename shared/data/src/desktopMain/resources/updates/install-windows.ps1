@@ -98,3 +98,22 @@ try {
     $msiexec = Join-Path $env:SystemRoot 'System32\msiexec.exe'
     $log = Join-Path $Job 'msi.log'
     $arguments = @('/i', "`"$Package`"", '/passive', '/norestart', '/L*v', "`"$log`"", "INSTALLDIR=`"$Target`"")
+    $process = Start-Process -FilePath $msiexec -Verb RunAs -ArgumentList $arguments -Wait -PassThru
+    if ($process.ExitCode -notin @(0, 3010)) { throw "Windows Installer failed with code $($process.ExitCode)." }
+    $config = Join-Path $Target 'app\Rocky.cfg'
+    $versionLine = "java-options=-Drocky.version=$ReleaseVersion"
+    if (-not (Test-Path -LiteralPath $executable) -or
+        -not ((Get-Content -LiteralPath $config) -ccontains $versionLine)) { throw 'Updated application verification failed.' }
+    if ($process.ExitCode -eq 3010) { Write-Status 'restart-required' } else { Write-Status 'installed' }
+    Start-Process -FilePath $executable -WorkingDirectory $Target
+    $finished = $true
+} catch {
+    Write-Output $_.Exception.ToString()
+    if (Test-Path -LiteralPath (Join-Path $Job 'cancel')) { Write-Status 'cancelled' } else { Write-Status 'failed' }
+    if ($stopped -and (Test-Path -LiteralPath $executable)) {
+        try { Start-Process -FilePath $executable -WorkingDirectory $Target } catch { Write-Output $_ }
+    }
+} finally {
+    if ($null -ne $packageLock) { $packageLock.Dispose() }
+}
+if (-not $finished) { exit 1 }

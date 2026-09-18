@@ -102,6 +102,26 @@ class UpdateDownloadStateTest {
     @Test fun platformConnectingDuringPreparationPreventsRestart() = runBlocking {
         val installer = Installer()
         val state = UpdateDownloadState(installer, this)
+        state.download(AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        var checks = 0
+        state.install({ ++checks == 1 }, { error("Must not restart while connected") })
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertEquals(UpdateDownloadNotice.SessionActive, state.notice)
+        assertFalse(state.restarting)
+        assertEquals(1, installer.cancelled)
+    }
+    @Test fun helperFailureDoesNotInvokeRestart() = runBlocking {
+        val installer = Installer().apply { openFailure = true }
+        val state = UpdateDownloadState(installer, this)
+        state.download(AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        state.install({ true }, { error("Must not restart after helper failure") })
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertEquals(UpdateDownloadNotice.InstallFailed, state.notice)
+        assertFalse(state.restarting)
+        assertEquals(1, installer.cancelled)
+    }
     @Test fun cancellationBeforeTheWorkerStartsDoesNotLeaveDownloadBusy() = runBlocking {
         val installer = Installer()
         val state = UpdateDownloadState(installer)

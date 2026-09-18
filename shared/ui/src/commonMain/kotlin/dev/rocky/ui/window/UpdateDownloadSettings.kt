@@ -42,6 +42,4 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
     }
     if (blocked) Text(tr("Disconnect your platforms before restarting to update.", "Desconecte suas plataformas antes de reiniciar para atualizar."))
     state.notice?.let { Text(updateDownloadMessage(it), Modifier.testTag("update-notice")) }
-        dismissButton = { TextButton(onClick = { confirm = false }) { Text(tr("Later", "Depois")) } },
-    )
 }

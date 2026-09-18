@@ -68,3 +68,11 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
         }
     }
 }
+
+internal enum class UpdateDownloadNotice { Verified, DownloadFailed, Cancelled, SessionActive, SaveFailed, InstallFailed }
+
+@Composable
+internal fun rememberUpdateDownloadState(installer: UpdateInstaller?): UpdateDownloadState {
+    val scope = rememberCoroutineScope()
+    return remember(installer, scope) { UpdateDownloadState(installer, scope) }
+}

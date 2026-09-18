@@ -26,7 +26,7 @@ class UpdateExperienceTest {
             onProgress(10, 10)
             return PreparedUpdate(update.version, "test-package", "verified")
         }
-        override fun open(update: PreparedUpdate) { opened++ }
+        override fun open(update: PreparedUpdate) { if (failOpening) error("Invalid installer"); opened++ }
         override fun cancel() = Unit
     }
     @Test fun portugueseSettingsDownloadsBlocksConnectedSessionAndRestartsWhenDisconnected() {

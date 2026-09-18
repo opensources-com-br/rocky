@@ -58,3 +58,7 @@ internal class UpdateHelperLauncher(
             if (Files.exists(job.resolve("ready")) && process.isAlive) return
             check(process.isAlive) { "Não foi possível preparar a atualização. Consulte ${job.resolve("installation.log")}." }
             Thread.sleep(100)
+        }
+        error("O atualizador demorou demais para preparar a instalação. Tente novamente.")
+    }
+}

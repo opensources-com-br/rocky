@@ -38,3 +38,23 @@ internal fun UpdateBanner(updates: UpdateState, download: UpdateDownloadState, b
             if (!download.busy && download.prepared == null) TextButton(onClick = { updates.dismissed = true }) {
                 Text(tr("Later", "Depois"))
             }
+        }
+        if (download.busy && !download.opening) LinearProgressIndicator(progress, Modifier.fillMaxWidth())
+        if (blocked && download.prepared != null) Text(tr("Disconnect your platforms to update.", "Desconecte suas plataformas para atualizar."),
+            style = MaterialTheme.typography.caption)
+        download.notice?.takeUnless { it == UpdateDownloadNotice.Verified }?.let {
+            TextButton(onClick = onOpenSettings) { Text(updateDownloadMessage(it), style = MaterialTheme.typography.caption) }
+        }
+    }
+}
+
+@Composable
+internal fun UpdateInstallationBanner(notice: String?) {
+    var dismissed by remember(notice) { mutableStateOf(false) }
+    if (notice == null || dismissed) return
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(updateInstallationMessage(notice), Modifier.weight(1f).testTag("update-installation-result"),
+            style = MaterialTheme.typography.caption, color = RockyColors.TextSecondary)
+        TextButton(onClick = { dismissed = true }) { Text(tr("Dismiss", "Dispensar")) }
+    }
+}

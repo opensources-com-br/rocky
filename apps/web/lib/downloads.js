@@ -43,6 +43,8 @@ export function selectInstaller(releases, platform, architecture = "unknown") {
   if (!release || !["macos", "windows"].includes(platform)) return null;
 
   const extensions = platform === "macos" ? [".dmg"] : [".msi", ".exe"];
+  const system = platform === "macos" ? "darwin" : "windows";
+  const prefix = `Rocky-${release.tag_name.replace(/^v/i, "")}-${system}-`;
   for (const extension of extensions) {
     const assets = release.assets.filter(asset => asset.name.toLowerCase().endsWith(extension));
     const universal = assets.find(asset => assetArchitecture(asset.name) === "universal");

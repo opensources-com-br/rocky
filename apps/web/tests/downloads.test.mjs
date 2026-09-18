@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { detectDesktopPlatform, normalizeArchitecture, selectInstaller } from "../lib/downloads.js";
+import { detectDesktopPlatform, findInstaller, normalizeArchitecture, RELEASES_API, selectInstaller } from "../lib/downloads.js";
 
 const asset = name => ({ name, browser_download_url: `https://example.test/${name}` });
 

@@ -78,3 +78,23 @@ try {
     $currentSignature = Get-AuthenticodeSignature -LiteralPath $executable
     if ($null -ne $currentSignature.SignerCertificate) {
         $signature = Get-AuthenticodeSignature -LiteralPath $Package
+        if ($signature.Status -ne 'Valid' -or
+            $signature.SignerCertificate.Subject -cne $currentSignature.SignerCertificate.Subject) {
+            throw 'The update must be signed by the installed application publisher.'
+        }
+    }
+    Assert-NotCancelled
+    Write-Status 'ready'
+    [IO.File]::WriteAllText((Join-Path $Job 'ready'), 'ready', $utf8)
+    $deadline = [DateTime]::UtcNow.AddSeconds(120)
+    while (Get-Process -Id $ParentId -ErrorAction SilentlyContinue) {
+        Assert-NotCancelled
+        if ([DateTime]::UtcNow -gt $deadline) { throw 'Rocky did not exit before the update timeout.' }
+        Start-Sleep -Milliseconds 200
+    }
+    Assert-NotCancelled
+    $stopped = $true
+    Write-Status 'installing'
+    $msiexec = Join-Path $env:SystemRoot 'System32\msiexec.exe'
+    $log = Join-Path $Job 'msi.log'
+    $arguments = @('/i', "`"$Package`"", '/passive', '/norestart', '/L*v', "`"$log`"", "INSTALLDIR=`"$Target`"")

@@ -38,3 +38,23 @@ class UpdateExperienceTest {
                 } }
             } }
         }
+        rule.onNodeWithText("Baixar atualização").performClick()
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("update-restart").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Atualizar e reiniciar").assertIsNotEnabled()
+        assertEquals(0, installer.opened)
+        rule.runOnIdle { blocked = false }
+        rule.onNodeWithTag("update-restart").performClick()
+        rule.waitUntil(5000) { restarted }
+        rule.onNodeWithText("Reiniciando o Rocky…").assertExists()
+    }
+    @Test fun englishBannerDownloadsAndRestartsWithoutOpeningTheBrowser() {
+        val installer = Installer()
+        var restarted = false
+        rule.setContent {
+            val scope = rememberCoroutineScope()
+            val updates = remember { UpdateState { AvailableUpdate("v2.0.0", "https://example.com") } }
+            val download = rememberUpdateDownloadState(installer)
+            LaunchedEffect(Unit) { updates.check(scope) }
+            RockyTheme { UpdateBanner(updates, download, false, { error("Must update inside Rocky") }, { restarted = true; true }) }
+        }
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("update-banner-action").fetchSemanticsNodes().isNotEmpty() }

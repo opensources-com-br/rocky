@@ -106,4 +106,24 @@ class UpdateExperienceTest {
         assertNotNull(state.prepared)
         assertEquals(0, installer.opened)
     }
+    @Test fun failedPreparationOffersRedownloadAndCanRecoverWithoutClosingRocky() {
+        val installer = Installer().apply { failOpening = true }
+        var restarted = false
+        rule.setContent {
+            val state = rememberUpdateDownloadState(installer)
+            RockyTheme { Column { UpdateDownloadSettings(state, AvailableUpdate("v2.0.0", ""), false) {
+                restarted = true; true
+            } } }
+        }
+        rule.onNodeWithTag("update-download").performClick()
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("update-restart").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("update-restart").performClick()
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("update-redownload").fetchSemanticsNodes().isNotEmpty() }
+        assertFalse(restarted)
+        rule.runOnIdle { installer.failOpening = false }
+        rule.onNodeWithText("Download again").performClick()
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("update-restart").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("update-redownload").assertDoesNotExist()
+        assertEquals(2, installer.downloads)
+        rule.onNodeWithTag("update-restart").performClick()
 }

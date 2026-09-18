@@ -38,3 +38,23 @@ class PrepareReleaseTest(unittest.TestCase):
             prepare(root / 'source', root / 'ready', 'v1.2.4-alpha.1', 'revision')
             sums = (root / 'ready/SHA256SUMS.txt').read_text().splitlines()
             self.assertEqual(7, len(sums))
+            for line in sums:
+                digest, name = line.split('  ')
+                self.assertEqual(digest, checksum(root / 'ready' / name))
+
+    def test_incomplete_release_is_never_prepared(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            self.candidate(root / 'source')
+            next((root / 'source').rglob('*x86_64.dmg')).unlink()
+            with self.assertRaisesRegex(ValueError, 'Invalid package'):
+                prepare(root / 'source', root / 'ready', 'v1.2.4-alpha.1', 'revision')
+            self.assertFalse((root / 'ready').exists())
+
+    def test_rejects_changed_asset_or_wrong_revision(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            self.candidate(root / 'source')
+            with self.assertRaisesRegex(ValueError, 'Incorrect build identity'):
+                prepare(root / 'source', root / 'ready', 'v1.2.4-alpha.1', 'other')
+            next((root / 'source').rglob('*.msi')).write_bytes(b'corrupt')

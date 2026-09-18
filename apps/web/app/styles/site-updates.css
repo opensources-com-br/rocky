@@ -1,0 +1,19 @@
+.site-update-notice {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  width: min(380px, calc(100vw - 40px));
+  padding: 18px;
+  border: 1px solid #665246;
+  border-radius: 12px;
+  background: #171310;
+  color: #f2efec;
+  box-shadow: 0 8px 28px #0006;
+  font-size: 14px;
+}
+.site-update-notice p { margin: 0 0 12px; }
+.site-update-notice div { display: flex; flex-wrap: wrap; gap: 8px; }
+.site-update-notice button { cursor: pointer; min-height: 44px; padding: 8px 14px; border: 1px solid #84766e; border-radius: 7px; }
+.site-update-notice button:first-child { background: #f2efec; color: #171310; }
+.site-update-notice button:focus-visible { outline: 2px solid #f3a56c; outline-offset: 3px; }

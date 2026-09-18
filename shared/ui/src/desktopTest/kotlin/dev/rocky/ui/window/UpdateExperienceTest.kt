@@ -78,3 +78,23 @@ class UpdateExperienceTest {
                 Column { UpdateDownloadSettings(state, AvailableUpdate("v2.0.0", ""), false) }
             } }
         }
+        rule.onNodeWithText("Mova o Rocky para Aplicativos e abra por lá para habilitar atualizações.").assertExists()
+        rule.onNodeWithText("A atualização anterior não foi concluída. Seus dados foram preservados. Tente novamente ou use o download oficial.").assertExists()
+        rule.onNodeWithTag("update-download").assertDoesNotExist()
+    }
+    @Test fun downloadingContinuesAfterClosingSettings() {
+        val installer = Installer()
+        val started = CountDownLatch(1)
+        val complete = CountDownLatch(1)
+        installer.onDownload = { started.countDown(); check(complete.await(5, TimeUnit.SECONDS)) }
+        var showSettings by mutableStateOf(true)
+        lateinit var state: UpdateDownloadState
+        rule.setContent {
+            state = rememberUpdateDownloadState(installer)
+            RockyTheme { if (showSettings) Column {
+                UpdateDownloadSettings(state, AvailableUpdate("v2.0.0", ""), false)
+            } }
+        }
+        rule.onNodeWithTag("update-download").performClick()
+        assertTrue(started.await(5, TimeUnit.SECONDS))
+        rule.runOnIdle { showSettings = false }

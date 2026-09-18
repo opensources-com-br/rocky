@@ -58,3 +58,8 @@ wait "$parent_pid" || true
 parent_pid=""
 wait "$helper_pid"
 helper_pid=""
+deadline=$((SECONDS + 30))
+until [ -f "$result" ]; do [ "$SECONDS" -lt "$deadline" ]; sleep 0.2; done
+[ "$(cat "$result")" = 1.0.2-alpha.1 ]
+[ "$(cat "$fixture/job/status")" = installed ]
+echo 'macOS native upgrade and automatic restart passed.'

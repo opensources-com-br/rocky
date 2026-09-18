@@ -14,16 +14,11 @@ class DesktopUpdateInstaller(private val directory: Path) : UpdateInstaller {
 
     @Synchronized
     override fun open(update: PreparedUpdate) {
-        val path = Path.of(update.path).toRealPath()
-        require(path.startsWith(directory.toRealPath()) && Files.isRegularFile(path))
-        require(updateChecksum(path) == update.sha256) { "O instalador foi alterado. Baixe novamente." }
-        val os = System.getProperty("os.name").lowercase()
-        val command = when {
-            os.startsWith("mac") && path.toString().endsWith(".dmg") -> listOf("/usr/bin/open", path.toString())
-            os.startsWith("windows") && path.toString().endsWith(".msi") -> listOf(
-                Path.of(System.getenv("SystemRoot") ?: "C:\\Windows", "System32", "msiexec.exe").toString(),
-                "/i", path.toString(), "/norestart", "/log", path.resolveSibling("installation.log").toString(),
-            )
+        check(installationUnavailableReason() == null) { "Instale o Rocky na pasta Aplicativos antes de atualizar." }
+        val app = checkNotNull(environment.application())
+        val path = validatePreparedUpdate(directory, update, System.getProperty("rocky.version"),
+            System.getProperty("os.name"), System.getProperty("os.arch"))
+        helper.launch(directory.toRealPath(), app, update.copy(path = path.toString()))
             else -> error("Formato de instalador incompatível.")
         }
         ProcessBuilder(command).start()

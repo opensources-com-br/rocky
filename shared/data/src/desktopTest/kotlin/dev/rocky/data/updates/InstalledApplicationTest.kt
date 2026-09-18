@@ -38,3 +38,11 @@ class InstalledApplicationTest {
     @Test fun refusesDevelopmentLauncherAndUnsupportedPlatform() {
         assertEquals("development-build", InstallationEnvironment("Mac OS X", null).unavailableReason())
         assertEquals("unsupported-platform", InstallationEnvironment("Linux", null).unavailableReason())
+    }
+
+    @Test fun refusesExternalJavaRuntime() = fixture(true) {
+        val app = it.application()!!
+        val external = InstallationEnvironment("Mac OS X", app.executable.toString(), Path.of(System.getProperty("java.home")))
+        assertEquals("development-build", external.unavailableReason())
+    }
+}

@@ -18,7 +18,7 @@ Versões anteriores ao atualizador precisam receber este primeiro pacote pelo fl
 
 Falhas ficam registradas na subpasta `updates/install-*` do diretório de dados. O próximo início mostra o resultado em Configurações → Dados. `installation.log` registra o helper; no Windows, `msi.log` registra o instalador. A falha de preparação mantém o app aberto e permite tentar novamente. Se o Windows pedir reinício do sistema, o Rocky informa isso no próximo início.
 
-O rollback protege a substituição dos arquivos do app; ele não desfaz migrações do banco realizadas por uma versão que já abriu. O encerramento forçado do computador durante a instalação pode exigir reinstalar o pacote oficial sobre a instalação existente. Os dados permanecem em seu diretório separado.
+O rollback cobre erros na troca e no comando de abertura; não monitora falhas depois que o novo processo inicia. Ele protege a substituição dos arquivos do app; ele não desfaz migrações do banco realizadas por uma versão que já abriu. O encerramento forçado do computador durante a instalação pode exigir reinstalar o pacote oficial sobre a instalação existente. Os dados permanecem em seu diretório separado.
 
 ## Site
 

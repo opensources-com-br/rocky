@@ -139,6 +139,7 @@ fun RockyWindow(
     onChooseImport: () -> List<LiveNote>? = { null },
     onCheckUpdate: () -> dev.rocky.core.updates.AvailableUpdate? = { null },
     updateInstaller: dev.rocky.core.updates.UpdateInstaller? = null,
+    onRestartAfterUpdate: () -> Boolean = { false },
     onExportDiagnostic: (String) -> Boolean = { false },
     initialCheckUpdatesOnStart: Boolean = false,
     onCheckUpdatesOnStartChange: (Boolean) -> Unit = {},

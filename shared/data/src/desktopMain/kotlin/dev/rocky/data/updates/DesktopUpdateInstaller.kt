@@ -21,3 +21,20 @@ class DesktopUpdateInstaller(private val directory: Path) : UpdateInstaller {
         helper.launch(directory.toRealPath(), app, update.copy(path = path.toString()))
     }
 }
+
+internal fun validatePreparedUpdate(directory: Path, update: PreparedUpdate, current: String?, os: String, arch: String): Path {
+    val version = requireNotNull(ReleaseVersion.parse(update.version)) { "Versão de atualização inválida." }
+    val installed = requireNotNull(current?.let(ReleaseVersion::parse)) { "Build sem versão de release." }
+    require(version > installed) { "Esta atualização já está instalada ou é mais antiga." }
+    val source = Path.of(update.path)
+    val path = source.toRealPath()
+    require(!Files.isSymbolicLink(source) && Files.isRegularFile(path)) { "Caminho de instalador inválido." }
+    require(path.parent.parent == directory.toRealPath() && path.parent.fileName.toString().startsWith("download-")) {
+        "O instalador não pertence ao download verificado."
+    }
+    installerAsset(AvailableUpdate(update.version, "", listOf(ReleaseAsset(path.fileName.toString(), "", Files.size(path)))), os, arch)
+    require(Regex("[a-f0-9]{64}").matches(update.sha256) && updateChecksum(path) == update.sha256) {
+        "O instalador foi alterado. Baixe novamente."
+    }
+    return path
+}

@@ -126,4 +126,7 @@ class UpdateExperienceTest {
         rule.onNodeWithTag("update-redownload").assertDoesNotExist()
         assertEquals(2, installer.downloads)
         rule.onNodeWithTag("update-restart").performClick()
+        rule.waitUntil(5000) { restarted }
+        assertEquals(1, installer.opened)
+    }
 }

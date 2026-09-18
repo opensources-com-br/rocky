@@ -145,7 +145,7 @@ class UpdateDownloadStateTest {
         withTimeout(5000) { while (state.busy) delay(10) }
         assertFalse(state.busy)
         assertNull(state.prepared)
-        state.download(this, AvailableUpdate("v2.0.0", ""))
+        state.download(AvailableUpdate("v2.0.0", ""))
         withTimeout(5000) { while (state.busy) delay(10) }
         assertNotNull(state.prepared)
     }

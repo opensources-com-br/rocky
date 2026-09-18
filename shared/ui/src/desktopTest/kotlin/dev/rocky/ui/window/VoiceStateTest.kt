@@ -154,13 +154,19 @@ class VoiceStateTest {
         val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
         val state = VoiceState(service, readyConfiguration, captureDurationMillis = 30_000) {}
         var received = false
-        state.enableListener(this) { received = true }
-        waitUntil { state.capturing }
-        delay(350)
-        service.level = 0f
-        waitUntil { received }
-        assertEquals(1, service.transcriptions)
-        state.resetSession()
+        try {
+            state.enableListener(this) { received = true }
+            // Complete before the capture cap, after the detector has sampled enough speech.
+            kotlinx.coroutines.withTimeout(5_000) {
+                while (!state.heardInput) delay(10)
+                assertTrue(state.capturing)
+                assertEquals(0, service.transcriptions)
+                service.level = 0f
+                while (!received) delay(10)
+            }
+            assertEquals(1, service.transcriptions)
+        } finally {
+            state.resetSession()
     }
 
     @Test fun silentCaptureRestartsWithoutTranscribing() = runBlocking {

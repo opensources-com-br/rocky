@@ -69,6 +69,8 @@ function isOfficialAsset(asset, tag) {
 
 export async function findInstaller(platform, architecture = "unknown", fetcher = fetch) {
   const response = await fetcher(RELEASES_API, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(15000),
     headers: {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",

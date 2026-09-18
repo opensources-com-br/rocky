@@ -1,6 +1,6 @@
 const content = {
   "group": "Começando",
-  "lead": "Use os instaladores alpha para macOS e Windows disponíveis na página de releases do repositório opensources-com-br/rocky. Eles são builds de desenvolvimento não assinados.",
+  "lead": "Instale Rocky para macOS ou Windows pela página de releases de opensources-com-br/rocky. As versões com atualização integrada permitem instalar as próximas versões pelo próprio aplicativo.",
   "blocks": [
     {
       "type": "h2",

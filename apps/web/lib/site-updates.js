@@ -18,3 +18,10 @@ export async function checkSiteUpdate(current, basePath, signal, fetcher = fetch
   if (!response.ok) return null;
   const candidate = await response.json();
   return isNewerSiteBuild(current, candidate) ? candidate : null;
+}
+
+export function siteReloadUrl(href, version) {
+  const url = new URL(href);
+  url.searchParams.set("rocky-site-version", version);
+  return url.href;
+}

@@ -13,6 +13,7 @@ class UpdateDownloadStateTest {
         var cancelled = 0
         var failure = false
         var openFailure = false
+        var onOpen: () -> Unit = {}
         override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
             if (failure) error("offline")
             onProgress(10, 10)

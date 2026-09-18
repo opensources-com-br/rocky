@@ -12,16 +12,15 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
     onRestart: () -> Boolean = { false }) {
     val progress by state.progress.collectAsState()
     val latestBlocked by rememberUpdatedState(blocked)
-    var confirm by remember { mutableStateOf(false) }
-    if (state.opening) {
-        LinearProgressIndicator()
-        Text(tr("Verifying and opening installer…", "Verificando e abrindo o instalador…"))
-    } else if (state.busy) {
-        LinearProgressIndicator(progress)
-        Text("${(progress * 100).toInt()}% · Aguarde a verificação do pacote")
-        TextButton(onClick = state::cancel) { Text(tr("Cancel", "Cancelar")) }
-    } else {
-        available?.let { update ->
+    val latestRestart by rememberUpdatedState(onRestart)
+    state.installationNotice?.let { Text(updateInstallationMessage(it)) }
+    state.unavailableReason?.let { Text(updateUnavailableMessage(it)) }
+    if (!state.supported) return
+    when {
+        state.restarting -> Text(tr("Restarting Rocky…", "Reiniciando o Rocky…"))
+        state.opening -> {
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+            Text(tr("Preparing update and restart…", "Preparando atualização e reinício…"))
             OutlinedButton(onClick = { state.download(scope, update) }) {
                 Text(tr("Download update", "Baixar atualização"))
             }

@@ -70,7 +70,7 @@ try {
         if ((Get-MsiProperty $database 'UpgradeCode') -ine $upgradeCode) { throw 'Incorrect MSI upgrade identity.' }
         if ((Get-MsiProperty $database 'ProductName') -cne 'Rocky') { throw 'Incorrect MSI product.' }
         if ((Get-MsiProperty $database 'ProductVersion') -ne $NativeVersion) { throw 'Incorrect MSI version.' }
-        $related = $installer.RelatedProducts($upgradeCode)
+        $related = $installer.GetType().InvokeMember('RelatedProducts', 'GetProperty', $null, $installer, @($upgradeCode))
         $matched = $false
         foreach ($product in $related) {
             $location = $installer.ProductInfo($product, 'InstallLocation')

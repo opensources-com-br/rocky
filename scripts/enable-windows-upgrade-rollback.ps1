@@ -51,7 +51,7 @@ try {
                 throw "Another installer action already uses sequence $sequence."
             }
         } finally {
-            $collision.Close()
+            [void]$collision.Close()
             [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($collision)
         }
         $update = $database.OpenView("UPDATE ``InstallExecuteSequence`` SET ``Sequence``=$sequence WHERE ``Action``='RemoveExistingProducts'")

@@ -18,7 +18,7 @@ internal fun DataSettings(
     onBackup: (List<dev.rocky.core.live.LiveNote>) -> Boolean = { false },
     onChooseImport: () -> List<dev.rocky.core.live.LiveNote>? = { null },
     updates: UpdateState = remember { UpdateState { null } },
-    updateDownload: UpdateDownloadState = remember { UpdateDownloadState(null) },
+    updateDownload: UpdateDownloadState = rememberUpdateDownloadState(null),
     updateBlocked: Boolean = false,
     diagnosticReport: () -> String = { "" },
     onExportDiagnostic: (String) -> Boolean = { false },

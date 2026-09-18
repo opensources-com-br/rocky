@@ -24,8 +24,8 @@ function assetArchitecture(name) {
 }
 
 function isCurrentInstallerRelease(release) {
-  const match = release.tag_name?.match(/^v?(\d+)\.(\d+)\.(\d+)/i);
-  if (!match) return true;
+  const match = release.tag_name?.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-[\da-z.-]+)?$/i);
+  if (!match) return false;
 
   const version = match.slice(1).map(Number);
   for (let index = 0; index < version.length; index += 1) {

@@ -38,3 +38,23 @@ for version in 1.0.1 1.0.2; do
     --mac-package-identifier dev.rocky.app --java-options "-Drocky.version=$version-alpha.1" \
     --java-options "'-Drocky.smoke.result=$result'" --add-modules java.base
 done
+ditto "$fixture/1.0.1/Rocky.app" "$target"
+package="$fixture/1.0.2/Rocky-1.0.2.dmg"
+hash="$(shasum -a 256 "$package" | awk '{print $1}')"
+sleep 120 &
+parent_pid=$!
+bash shared/data/src/desktopMain/resources/updates/install-macos.sh "$package" "$target" "$parent_pid" \
+  "$fixture/job" "$hash" 1.0.2 1.0.2-alpha.1 > "$fixture/job/installation.log" 2>&1 &
+helper_pid=$!
+deadline=$((SECONDS + 60))
+until [ -f "$fixture/job/ready" ]; do
+  kill -0 "$helper_pid"
+  [ "$SECONDS" -lt "$deadline" ]
+  sleep 0.2
+done
+grep -Fx 'java-options=-Drocky.version=1.0.1-alpha.1' "$target/Contents/app/Rocky.cfg"
+kill "$parent_pid"
+wait "$parent_pid" || true
+parent_pid=""
+wait "$helper_pid"
+helper_pid=""

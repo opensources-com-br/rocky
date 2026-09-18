@@ -58,3 +58,14 @@ class PrepareReleaseTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Incorrect build identity'):
                 prepare(root / 'source', root / 'ready', 'v1.2.4-alpha.1', 'other')
             next((root / 'source').rglob('*.msi')).write_bytes(b'corrupt')
+            with self.assertRaisesRegex(ValueError, 'Invalid package'):
+                prepare(root / 'source', root / 'ready', 'v1.2.4-alpha.1', 'revision')
+
+    def test_rejects_duplicate_asset_names(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            self.candidate(root / 'source')
+            asset = next((root / 'source').rglob('*.msi'))
+            (root / 'source' / asset.name).write_bytes(asset.read_bytes())
+            with self.assertRaisesRegex(ValueError, 'Invalid package'):
+                prepare(root / 'source', root / 'ready', 'v1.2.4-alpha.1', 'revision')

@@ -19,8 +19,5 @@ class DesktopUpdateInstaller(private val directory: Path) : UpdateInstaller {
         val path = validatePreparedUpdate(directory, update, System.getProperty("rocky.version"),
             System.getProperty("os.name"), System.getProperty("os.arch"))
         helper.launch(directory.toRealPath(), app, update.copy(path = path.toString()))
-            else -> error("Formato de instalador incompatível.")
-        }
-        ProcessBuilder(command).start()
     }
 }

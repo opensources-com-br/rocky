@@ -18,3 +18,23 @@ class UpdateInstallationStatusTest {
     @Test fun consumesSuccessNoticeAndKeepsLogs() = fixture("installed") { directory, job ->
         assertEquals("update-installed", installationNotice(directory))
         assertNull(installationNotice(directory))
+        assertTrue(Files.exists(job.resolve("status")))
+    }
+
+    @Test fun reportsFailureAndWindowsRestart() {
+        fixture("failed") { directory, _ -> assertEquals("update-failed", installationNotice(directory)) }
+        fixture("restart-required") { directory, _ -> assertEquals("restart-required", installationNotice(directory)) }
+    }
+
+    @Test fun detectsAbandonedHelper() = fixture("installing") { directory, _ ->
+        assertEquals("update-interrupted", installationNotice(directory))
+    }
+
+    @Test fun leavesRunningHelperAlone() = fixture("ready") { directory, job ->
+        Files.writeString(job.resolve("helper.pid"), ProcessHandle.current().pid().toString())
+        assertNull(installationNotice(directory))
+        assertTrue(Files.exists(directory.resolve("latest-installation")))
+    }
+
+    @Test fun ignoresUnsafeStatusPointer() = fixture("failed") { directory, _ ->
+        Files.writeString(directory.resolve("latest-installation"), "../installation")

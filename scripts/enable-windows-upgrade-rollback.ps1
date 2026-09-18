@@ -34,9 +34,9 @@ function Read-Sequence([string]$Action) {
 
 try {
     $database = $installer.OpenDatabase($package.FullName, 1)
-    $initialize = Read-Sequence 'InstallInitialize'
-    $remove = Read-Sequence 'RemoveExistingProducts'
-    $finalize = Read-Sequence 'InstallFinalize'
+    [int]$initialize = Read-Sequence 'InstallInitialize'
+    [int]$remove = Read-Sequence 'RemoveExistingProducts'
+    [int]$finalize = Read-Sequence 'InstallFinalize'
     $sequence = $initialize + 1
     if ($initialize -le 0 -or $sequence -ge $finalize) { throw 'Unexpected installation transaction boundaries.' }
     if ($remove -ne $sequence) {

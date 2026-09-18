@@ -20,7 +20,7 @@ internal class UpdateState(private val checker: () -> AvailableUpdate?) {
                     notice = if (it == null) UpdateCheckNotice.Current else UpdateCheckNotice.Available
                 }.onFailure {
                     if (it is CancellationException) throw it
-                    notice = "Não foi possível verificar atualizações. Tente novamente."
+                    notice = UpdateCheckNotice.Failed
                 }
             } finally { checking = false }
         }

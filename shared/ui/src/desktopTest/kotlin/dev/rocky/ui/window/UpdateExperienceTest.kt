@@ -98,3 +98,9 @@ class UpdateExperienceTest {
         rule.onNodeWithTag("update-download").performClick()
         assertTrue(started.await(5, TimeUnit.SECONDS))
         rule.runOnIdle { showSettings = false }
+        complete.countDown()
+        rule.waitUntil(5000) { !state.busy }
+        assertNotNull(state.prepared)
+        assertEquals(0, installer.opened)
+    }
+}

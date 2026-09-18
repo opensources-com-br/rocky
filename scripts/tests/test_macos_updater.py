@@ -98,3 +98,23 @@ class MacosUpdaterTest(unittest.TestCase):
     @staticmethod
     def create_app(app, marker, version):
         launcher = app / 'Contents/MacOS/Rocky'
+        launcher.parent.mkdir(parents=True)
+        launcher.write_text(marker); launcher.chmod(0o700)
+        (app / 'team').write_text('ROCKYTEAM')
+        (app / 'Contents/Info.plist').write_bytes(plistlib.dumps({
+            'CFBundleIdentifier': 'dev.rocky.app', 'CFBundleShortVersionString': version,
+        }))
+        config = app / 'Contents/app/Rocky.cfg'
+        config.parent.mkdir()
+        config.write_text('java-options=-Drocky.version=2.0.0-alpha.1\n')
+
+    def start(self, digest=None):
+        process = subprocess.Popen([
+            '/bin/bash', str(self.helper), str(self.package), str(self.target),
+            str(self.parent.pid), str(self.job), digest or self.digest, '2.0.0', '2.0.0-alpha.1',
+        ], env=self.environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.addCleanup(self.stop_process, process)
+        self.addCleanup(process.stdout.close)
+        self.addCleanup(process.stderr.close)
+        return process
+

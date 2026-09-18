@@ -9,6 +9,14 @@ The `Site` workflow publishes `out/` to GitHub Pages on pushes to `main`. It obt
 
 To reproduce a project-site build: `NEXT_PUBLIC_BASE_PATH=/rocky npm run build`.
 
+## Updates
+
+Every build exports `/version.json` with the same version and build timestamp embedded in the browser bundle. `NEXT_PUBLIC_SITE_VERSION` defaults to `GITHUB_SHA` in CI and a local timestamp otherwise; `NEXT_PUBLIC_SITE_BUILT_AT` accepts an epoch timestamp in milliseconds and defaults to build time. Set these before building if supplying custom deployment metadata, and deploy the entire `out/` directory together.
+
+Open tabs check that file on startup, focus, reconnect, and every five minutes while visible. Requests bypass caches and time out after ten seconds. A newer build shows a localized **Reload site** / **Later** notice; the site never reloads automatically. Reload preserves the route, query, fragment, and local preferences, and adds a version query parameter to avoid stale HTML. Static hosting needs no server, service worker, or special response headers.
+
+Desktop downloads use published official releases containing `SHA256SUMS.txt` (or the legacy `SHA256SUMS`). The browser downloads only a universal or matching architecture installer; unidentified or unavailable architectures and GitHub failures fall back to the official releases page. The desktop updater and the site's reload notice are independent. Older desktop builds require one installation over the existing app to gain the built-in updater.
+
 ## Pages and components
 
 - `/`: landing, animated app preview, features and download links.

@@ -20,7 +20,6 @@ export default function DownloadButton({ className, locale, style }) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (loading) return;
-    setUnavailable(false);
     setLoading(true);
     try {
       const platform = detectDesktopPlatform(navigator.userAgentData?.platform || navigator.platform, navigator.userAgent);

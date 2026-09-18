@@ -240,6 +240,10 @@ fun RockyWindow(
         val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected ||
             facebook.isConnected || tiktok.isConnected
         val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive || tiktok.isActive
+        val restartAfterUpdate = {
+            if (twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive || tiktok.isActive) false
+            else onRestartAfterUpdate()
+        }
         val visibleMessages = (twitch.messages + kick.messages + youtube.messages + facebook.messages + tiktok.messages)
             .sortedBy(ChatMessage::receivedAtMillis)
         val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages + facebook.totalMessages +

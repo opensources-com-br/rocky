@@ -5,8 +5,10 @@ import dev.rocky.core.updates.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
-internal class UpdateDownloadState(private val installer: UpdateInstaller?) {
-    val supported get() = installer != null
+internal class UpdateDownloadState(private val installer: UpdateInstaller?, private val scope: CoroutineScope) {
+    val unavailableReason = installer?.installationUnavailableReason()
+    val installationNotice = installer?.installationNotice()
+    val supported get() = installer != null && unavailableReason == null
     var busy by mutableStateOf(false); private set
     var opening by mutableStateOf(false); private set
     var prepared by mutableStateOf<PreparedUpdate?>(null); private set

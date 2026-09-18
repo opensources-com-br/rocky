@@ -1,7 +1,7 @@
 const content = {
   group: "Getting started",
   title: "Installation",
-  lead: "Use the alpha installers for macOS and Windows available on the opensources-com-br/rocky repository releases page. They are unsigned development builds.",
+  lead: "Install Rocky for macOS or Windows from opensources-com-br/rocky releases. Versions with the built-in updater let you install future releases from the app itself.",
   blocks: [
     { type: "h2", text: "Installers" },
     { type: "para", text: "On macOS, use the DMG that matches your machine; on Windows, use MSI or EXE. Check the files and SHA-256 checksums for the selected release. The system may display security warnings because the installers are unsigned. This project does not document a Homebrew distribution for Rocky." },

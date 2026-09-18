@@ -15,7 +15,6 @@ async function browserArchitecture() {
 
 export default function DownloadButton({ className, locale, style }) {
   const [loading, setLoading] = useState(false);
-  const [unavailable, setUnavailable] = useState(false);
 
   async function download(event) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

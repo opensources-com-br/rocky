@@ -89,6 +89,13 @@ test("rejects packages for another release, system, tag URL, or unknown CPU", ()
 
 test("checks fresh release metadata and propagates API failures for the fallback", async () => {
   await assert.rejects(findInstaller("macos", "arm64", async (url, options) => {
+    assert.equal(url, RELEASES_API);
+    assert.equal(options.cache, "no-store");
+    assert.ok(options.signal);
+    return { ok: false, status: 403 };
+  }), /403/);
+});
+
 test("returns no installer for unsupported systems", () => {
   assert.equal(selectInstaller([{ draft: false, assets: [asset("Rocky.dmg")] }], "unknown"), null);
   assert.equal(selectInstaller([], "macos"), null);

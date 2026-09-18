@@ -38,3 +38,10 @@ class UpdateInstallationStatusTest {
 
     @Test fun ignoresUnsafeStatusPointer() = fixture("failed") { directory, _ ->
         Files.writeString(directory.resolve("latest-installation"), "../installation")
+        assertNull(installationNotice(directory))
+    }
+
+    @Test fun doesNotShowCancelledAttemptAsFailure() = fixture("cancelled") { directory, _ ->
+        assertNull(installationNotice(directory))
+    }
+}

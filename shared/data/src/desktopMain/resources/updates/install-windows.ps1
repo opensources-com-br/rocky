@@ -37,7 +37,7 @@ function Assert-ExclusiveApplication {
 function Get-MsiProperty($Database, [string]$Name) {
     $view = $Database.OpenView("SELECT ``Value`` FROM ``Property`` WHERE ``Property``='$Name'")
     try {
-        $view.Execute()
+        [void]$view.Execute()
         $record = $view.Fetch()
         if ($null -eq $record) { throw "Missing MSI property: $Name" }
         try { return $record.StringData(1) }

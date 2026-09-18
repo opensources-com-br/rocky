@@ -89,6 +89,7 @@ fi
 /bin/rmdir "$mount_path"
 mount_path=""
 [ ! -f "$job/cancel" ]
+assert_exclusive_application
 status ready
 /usr/bin/touch "$job/ready"
 

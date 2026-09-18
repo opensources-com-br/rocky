@@ -42,9 +42,10 @@ test("rejects installers published before the icon and signing fixes", () => {
 });
 
 test("matches architecture when releases provide multiple packages", () => {
-  const releases = [{ tag_name: "v1.0.11-alpha.1", draft: false, assets: [asset("Rocky-darwin-arm64.dmg"), asset("Rocky-darwin-x86_64.dmg")] }];
-  assert.equal(selectInstaller(releases, "macos", "arm64")?.name, "Rocky-darwin-arm64.dmg");
-  assert.equal(selectInstaller(releases, "macos", "x64")?.name, "Rocky-darwin-x86_64.dmg");
+  const releases = [{ tag_name: "v1.0.11", draft: false, assets: [checksum,
+    packageAsset("1.0.11", "darwin", "arm64", "dmg"), packageAsset("1.0.11", "darwin", "x86_64", "dmg")] }];
+  assert.equal(selectInstaller(releases, "macos", "arm64")?.name, "Rocky-1.0.11-darwin-arm64.dmg");
+  assert.equal(selectInstaller(releases, "macos", "x64")?.name, "Rocky-1.0.11-darwin-x86_64.dmg");
   assert.equal(selectInstaller(releases, "macos", "unknown"), null);
 });
 

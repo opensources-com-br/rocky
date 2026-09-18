@@ -7,5 +7,6 @@ data class PreparedUpdate(val version: String, val path: String, val sha256: Str
 interface UpdateInstaller {
     fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate
     fun cancel()
+    /** Returns after the updater is ready and waiting for the application to exit. */
     fun open(update: PreparedUpdate)
 }

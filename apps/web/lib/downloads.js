@@ -59,6 +59,14 @@ export function selectInstaller(releases, platform, architecture = "unknown") {
   return null;
 }
 
+function isOfficialAsset(asset, tag) {
+  try {
+    const url = new URL(asset.browser_download_url);
+    return url.origin === "https://github.com"
+      && decodeURIComponent(url.pathname) === `/opensources-com-br/rocky/releases/download/${tag}/${asset.name}`;
+  } catch { return false; }
+}
+
 export async function findInstaller(platform, architecture = "unknown", fetcher = fetch) {
   const response = await fetcher(RELEASES_API, {
     headers: {

@@ -198,3 +198,4 @@ class MacosUpdaterTest(unittest.TestCase):
         self.stop_process(self.parent)
         self.finish(process, 'failed')
         self.assertEqual('old', self.marker())
+        self.assertFalse((self.root / 'opened').exists())

@@ -21,9 +21,6 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
         state.opening -> {
             LinearProgressIndicator(Modifier.fillMaxWidth())
             Text(tr("Preparing update and restart…", "Preparando atualização e reinício…"))
-            OutlinedButton(onClick = { state.download(scope, update) }) {
-                Text(tr("Download update", "Baixar atualização"))
-            }
         }
         state.prepared?.let {
             Text("${tr("Ready to install", "Pronto para instalar")}: ${it.version}")

@@ -22,6 +22,7 @@ class UpdateExperienceTest {
         var onDownload: () -> Unit = {}
         override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
             onDownload()
+            downloads++
             onProgress(10, 10)
             return PreparedUpdate(update.version, "test-package", "verified")
         }

@@ -3,6 +3,8 @@ package dev.rocky.ui.window
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import dev.rocky.core.updates.AvailableUpdate
 
 @Composable

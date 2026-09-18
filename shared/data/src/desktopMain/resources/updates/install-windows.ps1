@@ -73,7 +73,7 @@ try {
         $related = $installer.GetType().InvokeMember('RelatedProducts', 'GetProperty', $null, $installer, @($upgradeCode))
         $matched = $false
         foreach ($product in $related) {
-            $location = $installer.ProductInfo($product, 'InstallLocation')
+            $location = $installer.GetType().InvokeMember('ProductInfo', 'GetProperty', $null, $installer, @($product, 'InstallLocation'))
             if ($location -and [IO.Path]::GetFullPath($location).TrimEnd('\') -ieq $Target.TrimEnd('\')) {
                 $installedVersion = $installer.ProductInfo($product, 'VersionString')
                 if ([version]$NativeVersion -le [version]$installedVersion) { throw 'Native update version must increase.' }

@@ -37,7 +37,7 @@ test("selects installers from the current non-draft release", () => {
 });
 
 test("rejects installers published before the icon and signing fixes", () => {
-  const releases = [{ tag_name: "v1.0.10-alpha.17", draft: false, assets: [asset("Rocky-1.0.10.dmg")] }];
+  const releases = [{ tag_name: "v1.0.10-alpha.17", draft: false, assets: [checksum, packageAsset("1.0.10-alpha.17", "darwin", "universal", "dmg")] }];
   assert.equal(selectInstaller(releases, "macos"), null);
 });
 

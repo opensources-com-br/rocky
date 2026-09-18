@@ -32,7 +32,19 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Depois de tentar abrir Rocky, acesse Ajustes do Sistema → Privacidade e Segurança, localize o aviso do Rocky e clique em Abrir Mesmo Assim. Use essa exceção somente se você baixou o DMG da release oficial e conferiu o SHA-256 publicado. A próxima release gerada com as credenciais de distribuição será assinada e notarizada."
+      "text": "Quando uma versão estiver disponível, clique em Atualizar ou abra Configurações → Dados → Baixar atualização. Rocky baixa o pacote da sua arquitetura, mostra o progresso e verifica o SHA-256. Depois, desconecte as plataformas e clique em Atualizar e reiniciar. O aplicativo instala a atualização e reabre, preservando seus dados, preferências e credenciais salvas. No macOS, Rocky deve estar instalado fora do DMG; o sistema pode pedir autorização para substituir o aplicativo."
+    },
+    {
+      "type": "para",
+      "text": "Se sua versão antiga só oferece Abrir instalador, instale uma vez a release com atualização integrada sobre a instalação existente, sem desinstalar nem apagar dados. A partir dessa versão, use Atualizar e reiniciar. Execuções pelo código usam a página de releases para instalar o aplicativo empacotado. Se houver falha, confira a mensagem em Dados e tente novamente."
+    },
+    {
+      "type": "h2",
+      "text": "Atualização do site"
+    },
+    {
+      "type": "para",
+      "text": "Este site contém apresentação, documentação e showcase; o Rocky roda no aplicativo desktop. Quando uma nova versão do site for publicada, um aviso oferece Recarregar site ou Depois. A atualização só recarrega a página quando você clicar e preserva o idioma escolhido."
     },
     {
       "type": "h2",

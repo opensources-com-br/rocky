@@ -40,16 +40,8 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
                 else tr("Download update", "Baixar atualização"))
         }
     }
-    if (blocked) Text(tr("Disconnect your platforms before installing.", "Desconecte suas plataformas antes de instalar."))
-    state.notice?.let { Text(it) }
-    if (confirm) AlertDialog(
-        onDismissRequest = { confirm = false },
-        title = { Text(tr("Install update", "Instalar atualização")) },
-        text = { Text(tr("The system installer will open. Close Rocky before completing the installation, then reopen it. On macOS, replace Rocky in Applications. Your records and settings stay in the data directory.",
-            "O instalador do sistema será aberto. Feche o Rocky antes de concluir e reabra após instalar. No macOS, substitua Rocky em Aplicativos. Registros e configurações permanecem na pasta de dados.")) },
-        confirmButton = { TextButton(enabled = !blocked, onClick = {
-            confirm = false; state.install(scope) { !latestBlocked }
-        }) { Text(tr("Open installer", "Abrir instalador")) } },
+    if (blocked) Text(tr("Disconnect your platforms before restarting to update.", "Desconecte suas plataformas antes de reiniciar para atualizar."))
+    state.notice?.let { Text(updateDownloadMessage(it), Modifier.testTag("update-notice")) }
         dismissButton = { TextButton(onClick = { confirm = false }) { Text(tr("Later", "Depois")) } },
     )
 }

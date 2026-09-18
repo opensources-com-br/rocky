@@ -8,7 +8,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "No macOS, use o DMG compatível com sua máquina; no Windows, MSI ou EXE. Confira os arquivos e checksums SHA-256 da release escolhida. O sistema pode mostrar avisos de segurança por falta de assinatura. Não há distribuição Homebrew do Rocky documentada neste projeto."
+      "text": "No macOS, escolha o DMG arm64 para Apple Silicon ou x86_64 para Intel e copie Rocky para Aplicativos antes de abrir. No Windows, use MSI ou EXE amd64/x64. O botão de download usa a arquitetura identificada pelo navegador; se não puder identificá-la, abre a página oficial para você escolher. Confira os checksums SHA-256 da release."
     },
     {
       "type": "h2",

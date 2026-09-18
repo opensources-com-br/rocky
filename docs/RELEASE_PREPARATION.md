@@ -28,7 +28,7 @@ No GitHub, os secrets opcionais `ROCKY_WINDOWS_CERTIFICATE_BASE64` (PFX com chav
 
 ## Atualização e recuperação
 
-Em Configurações → Dados, **Baixar atualização** seleciona DMG/MSI por sistema e arquitetura, mostra progresso e valida tamanho e SHA-256. Downloads incompletos, corrompidos ou cancelados são descartados. A abertura revalida o arquivo e fica bloqueada com plataformas ativas. Feche Rocky antes de concluir o instalador; no macOS, substitua o app em Aplicativos. O pacote verificado permanece na subpasta `updates` para nova tentativa. Não há substituição silenciosa, reinício automático ou rollback automático nesta versão.
+Em Configurações → Dados, **Baixar atualização** seleciona DMG/MSI por sistema e arquitetura, mostra progresso e valida tamanho e SHA-256. Downloads incompletos, corrompidos ou cancelados são descartados. **Atualizar e reiniciar** prepara o atualizador, encerra o Rocky após salvar a sessão, instala sobre a versão existente e reabre o app. Plataformas ativas bloqueiam a instalação. Notas, preferências e credenciais permanecem nos diretórios e cofres existentes. Veja [o fluxo completo e a recuperação](UPDATES.md).
 
 Validação obrigatória entre dois instaladores: download e cancelamento; nova tentativa offline/online; pacote alterado; tentativa com conexão ativa; cancelamento do instalador; upgrade com preservação de notas, fontes, preferências e credenciais; reabertura na versão esperada. Execute em macOS e Windows. Testes automatizados não homologam a instalação nativa nem a assinatura dos releases.
 

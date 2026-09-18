@@ -19,10 +19,8 @@ export function normalizeArchitecture(value = "", bitness = "") {
 }
 
 function assetArchitecture(name) {
-  const normalized = name.toLowerCase();
-  if (/(arm64|aarch64)/.test(normalized)) return "arm64";
-  if (/(x86_64|amd64|x64)/.test(normalized)) return "x64";
-  return "universal";
+  const architecture = name.toLowerCase().match(/-(arm64|aarch64|x86_64|amd64|x64|universal)\.(?:dmg|msi|exe)$/)?.[1];
+  return architecture === "universal" ? "universal" : normalizeArchitecture(architecture);
 }
 
 function isCurrentInstallerRelease(release) {

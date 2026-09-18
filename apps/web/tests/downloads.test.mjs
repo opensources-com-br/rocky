@@ -49,6 +49,26 @@ test("matches architecture when releases provide multiple packages", () => {
   assert.equal(selectInstaller(releases, "macos", "unknown"), null);
 });
 
+test("never substitutes an incompatible or unidentified architecture", () => {
+  const releases = [{ tag_name: "v1.0.11", assets: [checksum, packageAsset("1.0.11", "darwin", "arm64", "dmg")] }];
+  assert.equal(selectInstaller(releases, "macos", "x64"), null);
+  assert.equal(selectInstaller(releases, "macos", "unknown"), null);
+  assert.equal(selectInstaller(releases, "macos", "arm64")?.name, "Rocky-1.0.11-darwin-arm64.dmg");
+});
+
+test("skips incomplete and draft releases until publication finishes", () => {
+  const releases = [
+    { tag_name: "v1.0.13", assets: [packageAsset("1.0.13", "darwin", "universal", "dmg")] },
+    { tag_name: "v1.0.12", draft: true, assets: [checksum, packageAsset("1.0.12", "darwin", "universal", "dmg")] },
+    { tag_name: "v1.0.11", assets: [checksum, packageAsset("1.0.11", "darwin", "universal", "dmg")] },
+  ];
+  assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.11-darwin-universal.dmg");
+});
+
+test("also accepts checksum manifests without a text extension", () => {
+  const releases = [{ tag_name: "v1.0.11", assets: [asset("SHA256SUMS"), packageAsset("1.0.11", "darwin", "universal", "dmg")] }];
+  assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.11-darwin-universal.dmg");
+});
 test("returns no installer for unsupported systems", () => {
   assert.equal(selectInstaller([{ draft: false, assets: [asset("Rocky.dmg")] }], "unknown"), null);
   assert.equal(selectInstaller([], "macos"), null);

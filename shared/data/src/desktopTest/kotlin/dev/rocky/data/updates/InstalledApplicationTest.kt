@@ -18,3 +18,23 @@ class InstalledApplicationTest {
             Files.writeString(executable, "launcher")
             Files.writeString(config, "[JavaOptions]")
             test(InstallationEnvironment(if (mac) "Mac OS X" else "Windows 11", executable.toString(), runtime, home))
+        } finally { home.toFile().deleteRecursively() }
+    }
+
+    @Test fun acceptsInstalledMacBundle() = fixture(true) {
+        assertNull(it.unavailableReason())
+        assertTrue(it.application()!!.mac)
+    }
+
+    @Test fun refusesMacDiskImageOrUninstalledCopy() = fixture(true, "Downloads") {
+        assertEquals("not-installed", it.unavailableReason())
+    }
+
+    @Test fun detectsWindowsPackagedApplication() = fixture(false) {
+        assertNull(it.unavailableReason())
+        assertFalse(it.application()!!.mac)
+    }
+
+    @Test fun refusesDevelopmentLauncherAndUnsupportedPlatform() {
+        assertEquals("development-build", InstallationEnvironment("Mac OS X", null).unavailableReason())
+        assertEquals("unsupported-platform", InstallationEnvironment("Linux", null).unavailableReason())

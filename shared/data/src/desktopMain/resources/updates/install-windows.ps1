@@ -40,7 +40,10 @@ function Get-MsiProperty($Database, [string]$Name) {
         [void]$view.Execute()
         $record = $view.Fetch()
         if ($null -eq $record) { throw "Missing MSI property: $Name" }
-        try { return $record.StringData(1) }
+        try {
+            [string]$value = $record.GetType().InvokeMember('StringData', 'GetProperty', $null, $record, @(1))
+            return $value
+        }
         finally { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record) }
     } finally {
         $view.Close()

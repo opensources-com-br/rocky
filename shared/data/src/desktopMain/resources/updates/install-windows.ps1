@@ -105,6 +105,7 @@ try {
         Start-Sleep -Milliseconds 200
     }
     Assert-NotCancelled
+    Assert-ExclusiveApplication
     $stopped = $true
     Write-Status 'installing'
     $msiexec = Join-Path $env:SystemRoot 'System32\msiexec.exe'

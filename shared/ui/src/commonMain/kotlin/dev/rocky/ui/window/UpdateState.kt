@@ -7,7 +7,7 @@ import kotlinx.coroutines.*
 internal class UpdateState(private val checker: () -> AvailableUpdate?) {
     var checking by mutableStateOf(false); private set
     var available by mutableStateOf<AvailableUpdate?>(null); private set
-    var notice by mutableStateOf<String?>(null); private set
+    var notice by mutableStateOf<UpdateCheckNotice?>(null); private set
     var dismissed by mutableStateOf(false)
     fun check(scope: CoroutineScope) {
         if (checking) return

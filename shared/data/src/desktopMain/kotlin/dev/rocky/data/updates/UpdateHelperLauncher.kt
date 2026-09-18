@@ -38,3 +38,23 @@ internal class UpdateHelperLauncher(
             listOf(system.resolve("WindowsPowerShell/v1.0/powershell.exe").toString(),
                 "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden",
                 "-File", script.toString()) + arguments
+        }
+        try {
+            val process = start(command, job)
+            process.outputStream.close()
+            Files.writeString(job.resolve("helper.pid"), process.pid().toString())
+            awaitReady(job, process)
+        } catch (error: Exception) {
+            cancel()
+            throw error
+        }
+    }
+
+    private fun awaitReady(job: Path, process: Process) {
+        val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis)
+        while (System.nanoTime() < deadline) {
+            if (Thread.currentThread().isInterrupted) throw InterruptedException("Atualização cancelada")
+            check(!Files.exists(job.resolve("cancel"))) { "Atualização cancelada." }
+            if (Files.exists(job.resolve("ready")) && process.isAlive) return
+            check(process.isAlive) { "Não foi possível preparar a atualização. Consulte ${job.resolve("installation.log")}." }
+            Thread.sleep(100)

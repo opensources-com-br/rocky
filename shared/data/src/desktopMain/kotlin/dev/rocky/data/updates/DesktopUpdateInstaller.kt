@@ -8,7 +8,9 @@ class DesktopUpdateInstaller(private val directory: Path) : UpdateInstaller {
     private val environment = InstallationEnvironment()
     private val helper = UpdateHelperLauncher()
     override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit) = downloader.download(update, onProgress)
-    override fun cancel() = downloader.cancel()
+    override fun cancel() { downloader.cancel(); helper.cancel() }
+    override fun installationUnavailableReason() = environment.unavailableReason()
+    override fun installationNotice() = installationNotice(directory)
 
     override fun open(update: PreparedUpdate) {
         val path = Path.of(update.path).toRealPath()

@@ -55,7 +55,7 @@ try {
             [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($collision)
         }
         $update = $database.OpenView("UPDATE ``InstallExecuteSequence`` SET ``Sequence``=$sequence WHERE ``Action``='RemoveExistingProducts'")
-        try { $update.Execute() }
+        try { [void]$update.Execute() }
         finally {
             $update.Close()
             [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($update)

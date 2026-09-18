@@ -138,3 +138,23 @@ class MacosUpdaterTest(unittest.TestCase):
 
     def test_waits_for_parent_then_replaces_and_relaunches(self):
         process = self.start(); self.ready(process)
+        self.assertIsNone(process.poll())
+        self.assertEqual('old', self.marker())
+        self.assertFalse((self.root / 'opened').exists())
+        self.assertEqual(process.pid, int((self.job / 'helper.pid').read_text()))
+        self.stop_process(self.parent)
+        self.finish(process, 'installed')
+        self.assertEqual('new', self.marker())
+        self.assertEqual(['new'], (self.root / 'opened').read_text().splitlines())
+
+    def test_cancel_keeps_the_running_app_untouched(self):
+        process = self.start(); self.ready(process)
+        (self.job / 'cancel').touch()
+        self.finish(process, 'cancelled')
+        self.assertEqual('old', self.marker())
+        self.assertIsNone(self.parent.poll())
+        self.assertFalse((self.root / 'opened').exists())
+
+    def test_failed_relaunch_restores_and_reopens_previous_app(self):
+        self.environment['ROCKY_TEST_FAIL_OPEN'] = '1'
+        process = self.start(); self.ready(process)

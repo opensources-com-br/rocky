@@ -17,6 +17,8 @@ class UpdateExperienceTest {
     @get:Rule val rule = createComposeRule()
     private class Installer : UpdateInstaller {
         var opened = 0
+        var downloads = 0
+        var failOpening = false
         var onDownload: () -> Unit = {}
         override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
             onDownload()

@@ -46,7 +46,7 @@ function Get-MsiProperty($Database, [string]$Name) {
         }
         finally { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record) }
     } finally {
-        $view.Close()
+        [void]$view.Close()
         [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($view)
     }
 }

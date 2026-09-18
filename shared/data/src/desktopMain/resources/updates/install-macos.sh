@@ -78,3 +78,18 @@ mount_path=""
 [ ! -f "$job/cancel" ]
 status ready
 /usr/bin/touch "$job/ready"
+
+deadline=$((SECONDS + 120))
+while /bin/kill -0 "$parent_pid" 2>/dev/null; do
+  [ ! -f "$job/cancel" ]
+  [ "$SECONDS" -lt "$deadline" ]
+  /bin/sleep 0.2
+done
+[ ! -f "$job/cancel" ]
+stopped=1
+status installing
+/bin/mv "$target" "$work/Previous.app"
+/bin/mv "$work/Rocky.app" "$target"
+status installed
+/usr/bin/open "$target"
+finished=1

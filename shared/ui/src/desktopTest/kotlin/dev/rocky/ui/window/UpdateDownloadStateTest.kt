@@ -39,8 +39,8 @@ class UpdateDownloadStateTest {
     }
     @Test fun downloadDoesNotInstallAndActiveSessionBlocksOpening() = runBlocking {
         val installer = Installer()
-        val state = UpdateDownloadState(installer)
-        state.download(this, AvailableUpdate("v2.0.0", ""))
+        val state = UpdateDownloadState(installer, this)
+        state.download(AvailableUpdate("v2.0.0", ""))
         withTimeout(5000) { while (state.busy) delay(10) }
         assertNotNull(state.prepared)
         assertEquals(1f, state.progress.value)

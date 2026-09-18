@@ -32,7 +32,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Quando uma versão estiver disponível, clique em Atualizar ou abra Configurações → Dados → Baixar atualização. Rocky baixa o pacote da sua arquitetura, mostra o progresso e verifica o SHA-256. Depois, desconecte as plataformas e clique em Atualizar e reiniciar. O aplicativo instala a atualização e reabre, preservando seus dados, preferências e credenciais salvas. No macOS, Rocky deve estar instalado fora do DMG; o sistema pode pedir autorização para substituir o aplicativo."
+      "text": "Quando uma versão estiver disponível, clique em Atualizar ou abra Configurações → Dados → Baixar atualização. Rocky baixa o pacote da sua arquitetura, mostra o progresso e verifica o SHA-256. Depois, desconecte as plataformas e clique em Atualizar e reiniciar. O aplicativo instala a atualização e reabre, preservando seus dados, preferências e credenciais salvas. No macOS, instale Rocky em /Applications/Rocky.app ou ~/Applications/Rocky.app, com permissão de escrita na pasta; sem essa permissão, use o instalador oficial. No Windows, o sistema pode pedir autorização para instalar a atualização."
     },
     {
       "type": "para",

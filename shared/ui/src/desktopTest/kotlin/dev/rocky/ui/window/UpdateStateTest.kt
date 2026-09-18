@@ -12,7 +12,7 @@ class UpdateStateTest {
         state.check(this)
         withTimeout(5000) { while (state.checking) delay(10) }
         assertNull(state.available)
-        assertFalse(state.notice.orEmpty().contains("private"))
+        assertEquals(UpdateCheckNotice.Failed, state.notice)
         fail = false
         state.dismissed = true
         state.check(this)

@@ -9,23 +9,23 @@ export function detectDesktopPlatform(platform = "", userAgent = "") {
   return "unknown";
 }
 
-export function normalizeArchitecture(value = "") {
+export function normalizeArchitecture(value = "", bitness = "") {
   const architecture = value.toLowerCase();
+  if (architecture === "arm" && bitness === "64") return "arm64";
+  if (architecture === "x86" && bitness === "64") return "x64";
   if (["arm64", "aarch64"].includes(architecture)) return "arm64";
-  if (["x86", "x86_64", "amd64", "x64"].includes(architecture)) return "x64";
+  if (["x86_64", "amd64", "x64"].includes(architecture)) return "x64";
   return "unknown";
 }
 
 function assetArchitecture(name) {
-  const normalized = name.toLowerCase();
-  if (/(arm64|aarch64)/.test(normalized)) return "arm64";
-  if (/(x86_64|amd64|x64)/.test(normalized)) return "x64";
-  return "universal";
+  const architecture = name.toLowerCase().match(/-(arm64|aarch64|x86_64|amd64|x64|universal)\.(?:dmg|msi|exe)$/)?.[1];
+  return architecture === "universal" ? "universal" : normalizeArchitecture(architecture);
 }
 
 function isCurrentInstallerRelease(release) {
-  const match = release.tag_name?.match(/^v?(\d+)\.(\d+)\.(\d+)/i);
-  if (!match) return true;
+  const match = release.tag_name?.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-[\da-z.-]+)?$/i);
+  if (!match) return false;
 
   const version = match.slice(1).map(Number);
   for (let index = 0; index < version.length; index += 1) {
@@ -37,23 +37,40 @@ function isCurrentInstallerRelease(release) {
 }
 
 export function selectInstaller(releases, platform, architecture = "unknown") {
-  const release = releases.find(item => !item.draft && isCurrentInstallerRelease(item));
+  if (!Array.isArray(releases)) return null;
+  const release = releases.find(item => item && !item.draft && isCurrentInstallerRelease(item)
+    && Array.isArray(item.assets) && item.assets.some(asset => /^SHA256SUMS(?:\.txt)?$/.test(asset?.name)));
   if (!release || !["macos", "windows"].includes(platform)) return null;
 
   const extensions = platform === "macos" ? [".dmg"] : [".msi", ".exe"];
+  const system = platform === "macos" ? "darwin" : "windows";
+  const prefix = `Rocky-${release.tag_name.replace(/^v/i, "")}-${system}-`;
   for (const extension of extensions) {
-    const assets = release.assets.filter(asset => asset.name.toLowerCase().endsWith(extension));
+    const assets = release.assets.filter(asset => typeof asset?.name === "string"
+      && asset.name.startsWith(prefix)
+      && asset.name.toLowerCase().endsWith(extension)
+      && assetArchitecture(asset.name) !== "unknown"
+      && isOfficialAsset(asset, release.tag_name));
     const universal = assets.find(asset => assetArchitecture(asset.name) === "universal");
     if (universal) return universal;
     const matching = assets.find(asset => assetArchitecture(asset.name) === architecture);
     if (matching) return matching;
-    if (assets.length === 1) return assets[0];
   }
   return null;
 }
 
+function isOfficialAsset(asset, tag) {
+  try {
+    const url = new URL(asset.browser_download_url);
+    return url.origin === "https://github.com"
+      && decodeURIComponent(url.pathname) === `/opensources-com-br/rocky/releases/download/${tag}/${asset.name}`;
+  } catch { return false; }
+}
+
 export async function findInstaller(platform, architecture = "unknown", fetcher = fetch) {
   const response = await fetcher(RELEASES_API, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(15000),
     headers: {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",

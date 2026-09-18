@@ -1,6 +1,6 @@
 # Preparação do candidato / Release preparation
 
-Candidato: **1.0.11-alpha.1**, versão nativa **1.0.11**. Escopo atual: Twitch, Kick, YouTube, Facebook, TikTok LIVE, IA, voz do sistema ou ElevenLabs, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Kick, YouTube e Facebook exigem credenciais próprias; a Kick também exige webhook HTTPS público e o Facebook exige uma Página com live ativa. O TikTok usa WebCast não oficial via Eulerstream e exige uma live pública ativa. Super Chats, Estrelas, presentes e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
+Candidato: **1.0.12-alpha.1**, versão nativa **1.0.12**. Escopo atual: Twitch, Kick, YouTube, Facebook, TikTok LIVE, IA, voz do sistema ou ElevenLabs, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Kick, YouTube e Facebook exigem credenciais próprias; a Kick também exige webhook HTTPS público e o Facebook exige uma Página com live ativa. O TikTok usa WebCast não oficial via Eulerstream e exige uma live pública ativa. Super Chats, Estrelas, presentes e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
 
 ## Build e identidade
 
@@ -10,7 +10,7 @@ Inclua o Client ID público por `-ProckyTwitchClientId=...` quando gerar o pacot
 
 Depois do empacotamento, execute `python3 scripts/release_metadata.py` (Windows: `python`). O script identifica versão, commit e arquitetura nos nomes e em `BUILDINFO-*.json`. Gere checksums **depois** da assinatura/notarização. Não sobrescreva candidatos já nomeados: arquive o pacote anterior e gere outro. O tag deve corresponder exatamente a `rockyVersion`; cada novo candidato deve ter versão nativa adequada à sequência de upgrades.
 
-A matriz atual gera um pacote por runner macOS/Windows. Consulte a arquitetura gravada no manifesto; isso não comprova suporte a outras arquiteturas, em particular macOS Intel. O app mostra a identidade em **Configurações → Dados** e a exportação inclui versão/commit.
+A matriz gera DMGs para macOS Apple Silicon e Intel, além de MSI/EXE para Windows x64. O pipeline verifica versão, commit e checksums de todos os pacotes antes de publicar o release. O app mostra a identidade em **Configurações → Dados** e a exportação inclui versão/commit.
 
 ## Assinatura e notarização
 
@@ -24,11 +24,11 @@ Releases anteriores não são alteradas por essa automação. Depois de cadastra
 
 No Windows, instale o certificado de assinatura e sua chave privada no repositório do usuário. Configure `ROCKY_WINDOWS_CERT_THUMBPRINT` e disponibilize `signtool.exe` (ou `ROCKY_SIGNTOOL`). Execute `scripts/sign-windows.ps1` após gerar um MSI e um EXE; o script assina os instaladores com timestamp e verifica o resultado. O executável instalado e os avisos do sistema também precisam de validação no Windows; assinatura dos instaladores não substitui essa etapa.
 
-O workflow público atual permanece no canal prerelease e não presume certificados instalados em runners hospedados. Configure a importação dos certificados no ambiente de publicação antes de automatizar assinatura ali. A promoção para estável é uma ação deliberada do responsável, depois de verificar os pacotes assinados e o protocolo; não é consequência de um tag ou de testes unitários verdes.
+No GitHub, os secrets opcionais `ROCKY_WINDOWS_CERTIFICATE_BASE64` (PFX com chave privada) e `ROCKY_WINDOWS_CERTIFICATE_PASSWORD` habilitam importação, assinatura e limpeza no runner Windows. Sem eles, o alpha Windows usa checksum e pode exibir avisos do sistema. Tags com `-alpha.N` publicam prereleases; tags sem sufixo publicam estáveis e só devem ser criadas após o protocolo. Cada publicação, inclusive alpha, deve aumentar a versão nativa de três números. O pipeline rejeita versões iguais ou menores que qualquer release publicado.
 
 ## Atualização e recuperação
 
-Em Configurações → Dados, **Baixar atualização** seleciona DMG/MSI por sistema e arquitetura, mostra progresso e valida tamanho e SHA-256. Downloads incompletos, corrompidos ou cancelados são descartados. A abertura revalida o arquivo e fica bloqueada com plataformas ativas. Feche Rocky antes de concluir o instalador; no macOS, substitua o app em Aplicativos. O pacote verificado permanece na subpasta `updates` para nova tentativa. Não há substituição silenciosa, reinício automático ou rollback automático nesta versão.
+Em Configurações → Dados, **Baixar atualização** seleciona DMG/MSI por sistema e arquitetura, mostra progresso e valida tamanho e SHA-256. Downloads incompletos, corrompidos ou cancelados são descartados. **Atualizar e reiniciar** prepara o atualizador, encerra o Rocky após salvar a sessão, instala sobre a versão existente e reabre o app. Plataformas ativas bloqueiam a instalação. Notas, preferências e credenciais permanecem nos diretórios e cofres existentes. Veja [o fluxo completo e a recuperação](UPDATES.md).
 
 Validação obrigatória entre dois instaladores: download e cancelamento; nova tentativa offline/online; pacote alterado; tentativa com conexão ativa; cancelamento do instalador; upgrade com preservação de notas, fontes, preferências e credenciais; reabertura na versão esperada. Execute em macOS e Windows. Testes automatizados não homologam a instalação nativa nem a assinatura dos releases.
 
@@ -44,6 +44,6 @@ Execute [o roteiro do candidato](TEST_TODAY.pt-BR.md) e [o protocolo com streame
 
 This candidate targets Twitch, Kick, YouTube, Facebook, TikTok LIVE, AI, system/ElevenLabs speech, grouped questions, notes, ideas, moments and a local records summary on disconnect or app close. Kick, YouTube and Facebook require developer credentials; Kick also requires public HTTPS webhook forwarding and Facebook requires an active live on an authorized Page. TikTok requires an active public live and uses unofficial WebCast through Eulerstream. Build with JDK 17; run `scripts/release_metadata.py` after packaging/signing to record version, commit and architecture. The release tag must match `rockyVersion`.
 
-macOS signing uses an installed Developer ID identity via `ROCKY_MAC_SIGN=true` and `ROCKY_MAC_SIGN_IDENTITY`; notarization uses a `notarytool` profile through `scripts/notarize-macos.sh`. Windows installer signing uses an installed certificate selected by `ROCKY_WINDOWS_CERT_THUMBPRINT` through `scripts/sign-windows.ps1`. These require publisher-owned credentials and validation on the target OS. Hosted CI does not automatically import certificates.
+macOS signing uses an installed Developer ID identity via `ROCKY_MAC_SIGN=true` and `ROCKY_MAC_SIGN_IDENTITY`; notarization uses a `notarytool` profile through `scripts/notarize-macos.sh`. Windows installer signing uses an installed certificate selected by `ROCKY_WINDOWS_CERT_THUMBPRINT` through `scripts/sign-windows.ps1`. These require publisher-owned credentials and validation on the target OS. The release workflow imports the required macOS certificate and optionally imports a Windows PFX from `ROCKY_WINDOWS_CERTIFICATE_BASE64` and `ROCKY_WINDOWS_CERTIFICATE_PASSWORD`.
 
 Back up the data directory with Rocky closed before upgrading. Verify notes, evidence, native version and credential migration after installation. Clean installation, upgrade, real Twitch, Kick, YouTube and Facebook OAuth, Kick webhooks, Facebook Page live comments, a real TikTok LIVE WebCast session, AI, system/ElevenLabs speech with real credentials and cancellation, system credential storage, OBS and long streams remain manual release gates.

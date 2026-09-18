@@ -139,6 +139,7 @@ fun RockyWindow(
     onChooseImport: () -> List<LiveNote>? = { null },
     onCheckUpdate: () -> dev.rocky.core.updates.AvailableUpdate? = { null },
     updateInstaller: dev.rocky.core.updates.UpdateInstaller? = null,
+    onRestartAfterUpdate: () -> Boolean = { false },
     onExportDiagnostic: (String) -> Boolean = { false },
     initialCheckUpdatesOnStart: Boolean = false,
     onCheckUpdatesOnStartChange: (Boolean) -> Unit = {},
@@ -217,8 +218,8 @@ fun RockyWindow(
         }
         val aiScope = rememberCoroutineScope()
         val updates = remember { UpdateState(onCheckUpdate) }
-        val updateDownload = remember(updateInstaller) { UpdateDownloadState(updateInstaller) }
-        androidx.compose.runtime.DisposableEffect(updateDownload) { onDispose { updateDownload.cancel() } }
+        val updateDownload = rememberUpdateDownloadState(updateInstaller)
+        androidx.compose.runtime.DisposableEffect(updateDownload) { onDispose { updateDownload.dispose() } }
         var checkUpdatesOnStart by remember { mutableStateOf(initialCheckUpdatesOnStart) }
         LaunchedEffect(Unit) { if (checkUpdatesOnStart) updates.check(aiScope) }
         val mainContentScrollState = rememberScrollState()
@@ -239,6 +240,10 @@ fun RockyWindow(
         val liveConnected = twitch.phase == TwitchConnectionPhase.Connected || kick.isConnected || youtube.isConnected ||
             facebook.isConnected || tiktok.isConnected
         val liveActive = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive || tiktok.isActive
+        val restartAfterUpdate = {
+            if (twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive || tiktok.isActive) false
+            else onRestartAfterUpdate()
+        }
         val visibleMessages = (twitch.messages + kick.messages + youtube.messages + facebook.messages + tiktok.messages)
             .sortedBy(ChatMessage::receivedAtMillis)
         val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages + facebook.totalMessages +
@@ -505,6 +510,7 @@ fun RockyWindow(
                         onBackup = onBackup, onChooseImport = onChooseImport,
                         updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
                         updateDownload = updateDownload,
+                        onRestartAfterUpdate = restartAfterUpdate,
                         updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive ||
                             tiktok.isActive || liveConnected,
                         checkUpdatesOnStart = checkUpdatesOnStart,
@@ -703,14 +709,12 @@ fun RockyWindow(
                     },
                 )
                 Divider(color = RockyColors.Divider)
-                if (!updates.dismissed && sessionStatus != LiveSessionStatus.Running) updates.available?.let { update ->
-                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-                        androidx.compose.material.TextButton(onClick = { onOpenGuide(update.url) }) {
-                            Text(tr("Update available", "Atualização disponível") + " · ${update.version}")
-                        }
-                        androidx.compose.material.TextButton(onClick = { updates.dismissed = true }) { Text(tr("Later", "Depois")) }
-                    }
-                }
+                UpdateInstallationBanner(updateDownload.installationNotice)
+                UpdateBanner(updates, updateDownload, liveActive || liveConnected,
+                    onOpenSettings = {
+                        settingsSection = SettingsSection.Data; settingsOpen = true
+                        onSettingsVisibilityChanged(true)
+                    }, onRestart = restartAfterUpdate)
                 if (!historyOpen) localNotes.notice?.let { notice ->
                     Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {

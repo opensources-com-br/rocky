@@ -16,7 +16,11 @@ jobs:
         include:
           - os: macos-latest
             package-task: :apps:desktop:packageDmg
-            artifact-name: rocky-macos
+            artifact-name: rocky-macos-arm64
+            artifact-path: apps/desktop/build/compose/binaries/main/dmg/*.dmg
+          - os: macos-15-intel
+            package-task: :apps:desktop:packageDmg
+            artifact-name: rocky-macos-x64
             artifact-path: apps/desktop/build/compose/binaries/main/dmg/*.dmg
           - os: windows-latest
             package-task: :apps:desktop:packageMsi :apps:desktop:packageExe
@@ -37,10 +41,20 @@ jobs:
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
       - run: python -m unittest discover -s scripts/tests
+      - name: Exercise Windows upgrade and restart
+        if: runner.os == 'Windows'
+        run: ./scripts/smoke-update-windows.ps1
       - run: ./gradlew build
-      - if: runner.os == 'macOS'
+      - name: Preserve test failures
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.artifact-name }}
+          path: "**/build/test-results/**/*.xml"
+          if-no-files-found: ignore
+      - if: runner.os == 'macOS' && runner.arch == 'ARM64'
         run: ./gradlew koverVerify koverXmlReport
-      - if: runner.os == 'macOS'
+      - if: runner.os == 'macOS' && runner.arch == 'ARM64'
         uses: actions/upload-artifact@v7
         with:
           name: rocky-coverage
@@ -50,6 +64,9 @@ jobs:
       - run: python scripts/verify_installation.py
       - if: runner.os == 'macOS'
         run: bash scripts/smoke-install-macos.sh
+      - name: Exercise macOS upgrade and restart
+        if: runner.os == 'macOS'
+        run: bash scripts/smoke-update-macos.sh
       - if: runner.os == 'Windows'
         run: ./scripts/smoke-install-windows.ps1
       - run: git diff --exit-code

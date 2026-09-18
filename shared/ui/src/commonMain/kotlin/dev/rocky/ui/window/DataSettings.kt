@@ -18,8 +18,9 @@ internal fun DataSettings(
     onBackup: (List<dev.rocky.core.live.LiveNote>) -> Boolean = { false },
     onChooseImport: () -> List<dev.rocky.core.live.LiveNote>? = { null },
     updates: UpdateState = remember { UpdateState { null } },
-    updateDownload: UpdateDownloadState = remember { UpdateDownloadState(null) },
+    updateDownload: UpdateDownloadState = rememberUpdateDownloadState(null),
     updateBlocked: Boolean = false,
+    onRestartAfterUpdate: () -> Boolean = { false },
     diagnosticReport: () -> String = { "" },
     onExportDiagnostic: (String) -> Boolean = { false },
     onOpenGuide: (String) -> Unit = {},
@@ -71,7 +72,7 @@ internal fun DataSettings(
         }
         RecordTransferSettings(notes, onBackup, onChooseImport)
         MaintenanceSettings(updates, diagnosticReport, onExportDiagnostic, onOpenGuide) {
-            UpdateDownloadSettings(updateDownload, updates.available, updateBlocked)
+            UpdateDownloadSettings(updateDownload, updates.available, updateBlocked, onRestartAfterUpdate)
             Divider(color = RockyColors.Border)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(tr("Check updates when opening Rocky", "Verificar atualizações ao abrir Rocky"),

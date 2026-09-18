@@ -21,7 +21,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "É uma versão alpha com instaladores de desenvolvimento não assinados. Super Chats, Estrelas, presentes, envio de mensagens e plugins não estão integrados. A Kick exige um webhook HTTPS público; o Facebook exige um app Business e uma Página com live ativa; o TikTok usa WebCast não oficial via Eulerstream. O app não modera o chat nem grava a transmissão."
+      "text": "É uma versão alpha; confira as notas e os instaladores da release oficial. Super Chats, Estrelas, presentes, envio de mensagens e plugins não estão integrados. A Kick exige um webhook HTTPS público; o Facebook exige um app Business e uma Página com live ativa; o TikTok usa WebCast não oficial via Eulerstream. O app não modera o chat nem grava a transmissão."
     },
     {
       "type": "h2",

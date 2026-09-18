@@ -9,6 +9,23 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
 }
 
+if (System.getProperty("os.name").startsWith("Windows", true)) {
+    val configureWindowsUpgrade by tasks.registering(Exec::class) {
+        val nativeVersion = providers.gradleProperty("rockyPackageVersion").get()
+        val msiPackage = layout.buildDirectory.file("compose/binaries/main/msi/Rocky-$nativeVersion.msi")
+        commandLine("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+            rootProject.file("scripts/enable-windows-upgrade-rollback.ps1").absolutePath,
+            "-MsiPath", msiPackage.get().asFile.absolutePath)
+    }
+    tasks.matching { it.name == "packageMsi" }.configureEach {
+        finalizedBy(configureWindowsUpgrade)
+    }
+    // Windows packaging does not create the app image inspected by verify_installation.py.
+    tasks.matching { it.name in setOf("packageMsi", "packageExe") }.configureEach {
+        dependsOn("createDistributable")
+    }
+}
+
 kotlin {
     jvm {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_17)

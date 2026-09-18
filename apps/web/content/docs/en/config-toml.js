@@ -10,7 +10,7 @@ const content = {
     { type: "h2", text: "Backup and import" },
     { type: "para", text: "Under Data, export a JSON backup of records and sources without credentials. Import asks for confirmation, ignores identical copies, and stops on conflicting IDs; it does not replace existing records. Close Rocky before copying the database directly." },
     { type: "h2", text: "Diagnostics and updates" },
-    { type: "para", text: "Data lets you view and export diagnostics without messages or keys. The optional update check accesses GitHub. Download update selects the compatible DMG or MSI, shows progress, and verifies the published SHA-256. You can cancel and retry. Disconnect platforms before opening the verified installer; close Rocky, finish installation, and reopen the app. On macOS, replace Rocky in Applications. Installation and restart are manual. Reset settings removes saved credentials and ends the session; reopen the app to apply every default." }
+    { type: "para", text: "Data lets you view and export diagnostics without messages or keys. Update checks access GitHub and can be disabled in settings. Download update selects the compatible package, shows progress, and verifies the published SHA-256. You can cancel and retry. Disconnect platforms and click Update and restart to install and reopen Rocky, preserving data and saved credentials. Older versions without this button need the release with the built-in updater installed once through the official installer. Reset settings is a separate action that removes saved credentials and ends the session; reopen the app to apply every default." }
   ]
 };
 

@@ -253,6 +253,9 @@ private fun runRockyApplication() = application {
             onChooseImport = { dev.rocky.platform.desktop.chooseRecordBackup(activeWindow())?.let(dev.rocky.data.notes.RecordBackup::decode) },
             onCheckUpdate = { dev.rocky.data.updates.ReleaseChecker().check(System.getProperty("rocky.version", "development")) },
             updateInstaller = updateInstaller,
+            onRestartAfterUpdate = {
+                if (finishSession()) { exitApplication(); true } else false
+            },
             onExportDiagnostic = { report -> dev.rocky.platform.desktop.exportRecordFile(activeWindow(), report, "rocky-diagnostics.txt") },
             initialCheckUpdatesOnStart = dev.rocky.platform.desktop.ExperiencePreferences.checkUpdatesOnStart,
             onCheckUpdatesOnStartChange = { dev.rocky.platform.desktop.ExperiencePreferences.checkUpdatesOnStart = it },

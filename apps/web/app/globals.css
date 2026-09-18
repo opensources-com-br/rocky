@@ -6,6 +6,7 @@
 @import "./styles/shadcn-dark.css";
 @import "./reference.css";
 @import "./styles/site-layout.css";
+@import "./styles/site-updates.css";
 
 @custom-variant dark (&:is(.dark *));
 

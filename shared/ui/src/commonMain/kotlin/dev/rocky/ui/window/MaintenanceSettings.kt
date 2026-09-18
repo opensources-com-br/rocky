@@ -20,8 +20,14 @@ internal fun MaintenanceSettings(updates: UpdateState, report: () -> String, onE
     var notice by remember { mutableStateOf<String?>(null) }
     SettingsPreferenceGroup(tr("Updates", "Atualizações")) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            OutlinedButton(shape = RoundedCornerShape(8.dp), enabled = !updates.checking, onClick = { updates.check(scope) }) { Text(tr("Check for updates", "Verificar atualizações")) }
-            updates.notice?.let { Text(it, color = RockyColors.TextSecondary, style = MaterialTheme.typography.caption) }
+            OutlinedButton(shape = RoundedCornerShape(8.dp), enabled = !updates.checking, onClick = { updates.check(scope) }) {
+                Text(if (updates.checking) tr("Checking…", "Verificando…") else tr("Check for updates", "Verificar atualizações"))
+            }
+            updates.notice?.let { Text(when (it) {
+                UpdateCheckNotice.Current -> tr("No newer version in your channel.", "Nenhuma versão mais recente no seu canal.")
+                UpdateCheckNotice.Available -> tr("New version available", "Nova versão disponível") + ": ${updates.available?.version}"
+                UpdateCheckNotice.Failed -> tr("Could not check for updates. Try again.", "Não foi possível verificar atualizações. Tente novamente.")
+            }, color = RockyColors.TextSecondary, style = MaterialTheme.typography.caption) }
             updates.available?.let { update ->
                 TextButton(onClick = { onOpen(update.url) }) { Text(tr("Open official download", "Abrir download oficial")) }
             }

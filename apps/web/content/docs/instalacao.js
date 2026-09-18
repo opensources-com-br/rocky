@@ -1,6 +1,6 @@
 const content = {
   "group": "Começando",
-  "lead": "Use os instaladores alpha para macOS e Windows disponíveis na página de releases do repositório opensources-com-br/rocky. Eles são builds de desenvolvimento não assinados.",
+  "lead": "Instale Rocky para macOS ou Windows pela página de releases de opensources-com-br/rocky. As versões com atualização integrada permitem instalar as próximas versões pelo próprio aplicativo.",
   "blocks": [
     {
       "type": "h2",
@@ -8,7 +8,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "No macOS, use o DMG compatível com sua máquina; no Windows, MSI ou EXE. Confira os arquivos e checksums SHA-256 da release escolhida. O sistema pode mostrar avisos de segurança por falta de assinatura. Não há distribuição Homebrew do Rocky documentada neste projeto."
+      "text": "No macOS, escolha o DMG arm64 para Apple Silicon ou x86_64 para Intel e copie Rocky para Aplicativos antes de abrir. No Windows, use MSI ou EXE amd64/x64. O botão de download usa a arquitetura identificada pelo navegador; se não puder identificá-la, abre a página oficial para você escolher. Confira os checksums SHA-256 da release."
     },
     {
       "type": "h2",
@@ -28,11 +28,23 @@ const content = {
     },
     {
       "type": "h2",
-      "text": "Abrir o alpha atual no macOS"
+      "text": "Atualizar e reiniciar"
     },
     {
       "type": "para",
-      "text": "Depois de tentar abrir Rocky, acesse Ajustes do Sistema → Privacidade e Segurança, localize o aviso do Rocky e clique em Abrir Mesmo Assim. Use essa exceção somente se você baixou o DMG da release oficial e conferiu o SHA-256 publicado. A próxima release gerada com as credenciais de distribuição será assinada e notarizada."
+      "text": "Quando uma versão estiver disponível, clique em Atualizar ou abra Configurações → Dados → Baixar atualização. Rocky baixa o pacote da sua arquitetura, mostra o progresso e verifica o SHA-256. Depois, desconecte as plataformas e clique em Atualizar e reiniciar. O aplicativo instala a atualização e reabre, preservando seus dados, preferências e credenciais salvas. No macOS, instale Rocky em /Applications/Rocky.app ou ~/Applications/Rocky.app, com permissão de escrita na pasta; sem essa permissão, use o instalador oficial. No Windows, o sistema pode pedir autorização para instalar a atualização."
+    },
+    {
+      "type": "para",
+      "text": "Se sua versão antiga só oferece Abrir instalador, instale uma vez a release com atualização integrada sobre a instalação existente, sem desinstalar nem apagar dados. A partir dessa versão, use Atualizar e reiniciar. Execuções pelo código usam a página de releases para instalar o aplicativo empacotado. Se houver falha, confira a mensagem em Dados e tente novamente."
+    },
+    {
+      "type": "h2",
+      "text": "Atualização do site"
+    },
+    {
+      "type": "para",
+      "text": "Este site contém apresentação, documentação e showcase; o Rocky roda no aplicativo desktop. Quando uma nova versão do site for publicada, um aviso oferece Recarregar site ou Depois. A atualização só recarrega a página quando você clicar e preserva o idioma escolhido."
     },
     {
       "type": "h2",

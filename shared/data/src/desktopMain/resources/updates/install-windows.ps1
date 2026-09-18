@@ -8,6 +8,11 @@ param(
     [string]$ReleaseVersion
 )
 $ErrorActionPreference = 'Stop'
+# Load this PowerShell installation's modules even when started by PowerShell 7.
+foreach ($moduleName in @('Microsoft.PowerShell.Management', 'Microsoft.PowerShell.Utility', 'Microsoft.PowerShell.Security')) {
+    $manifest = [IO.Path]::Combine($PSHOME, "Modules\$moduleName\$moduleName.psd1")
+    Import-Module -Name $manifest -ErrorAction Stop
+}
 $upgradeCode = '{CD761319-DDDF-439F-BEAF-9616ED84E4AF}'
 $stopped = $false
 $finished = $false

@@ -218,8 +218,8 @@ fun RockyWindow(
         }
         val aiScope = rememberCoroutineScope()
         val updates = remember { UpdateState(onCheckUpdate) }
-        val updateDownload = remember(updateInstaller) { UpdateDownloadState(updateInstaller) }
-        androidx.compose.runtime.DisposableEffect(updateDownload) { onDispose { updateDownload.cancel() } }
+        val updateDownload = rememberUpdateDownloadState(updateInstaller)
+        androidx.compose.runtime.DisposableEffect(updateDownload) { onDispose { updateDownload.dispose() } }
         var checkUpdatesOnStart by remember { mutableStateOf(initialCheckUpdatesOnStart) }
         LaunchedEffect(Unit) { if (checkUpdatesOnStart) updates.check(aiScope) }
         val mainContentScrollState = rememberScrollState()

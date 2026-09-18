@@ -38,3 +38,14 @@ export default function SiteUpdateNotice() {
     };
   }, []);
 
+  if (!update || update.version === dismissed) return null;
+  return <aside className="site-update-notice" aria-label={localized(locale, "Site update", "Atualização do site")}>
+    <p role="status">{localized(locale, "A new version of the site is available.", "Uma nova versão do site está disponível.")}</p>
+    <div>
+      <button onClick={() => window.location.replace(siteReloadUrl(window.location.href, update.version))}>
+        {localized(locale, "Reload site", "Recarregar site")}
+      </button>
+      <button onClick={() => setDismissed(update.version)}>{localized(locale, "Later", "Depois")}</button>
+    </div>
+  </aside>;
+}

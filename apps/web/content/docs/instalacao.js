@@ -28,7 +28,7 @@ const content = {
     },
     {
       "type": "h2",
-      "text": "Abrir o alpha atual no macOS"
+      "text": "Atualizar e reiniciar"
     },
     {
       "type": "para",

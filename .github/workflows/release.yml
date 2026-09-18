@@ -92,6 +92,15 @@ jobs:
         run: scripts/notarize-macos.sh
       - name: Record package metadata
         run: python scripts/release_metadata.py
+      - name: Import optional Windows signing certificate
+        if: runner.os == 'Windows'
+        env:
+          ROCKY_WINDOWS_CERTIFICATE_BASE64: ${{ secrets.ROCKY_WINDOWS_CERTIFICATE_BASE64 }}
+          ROCKY_WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.ROCKY_WINDOWS_CERTIFICATE_PASSWORD }}
+        run: ./scripts/import-windows-signing-certificate.ps1
+      - name: Sign Windows installers
+        if: runner.os == 'Windows' && env.ROCKY_WINDOWS_CERT_THUMBPRINT != ''
+        run: ./scripts/sign-windows.ps1
       - name: Verify packaged candidate
         run: python scripts/verify_installation.py
       - name: Smoke test macOS installer

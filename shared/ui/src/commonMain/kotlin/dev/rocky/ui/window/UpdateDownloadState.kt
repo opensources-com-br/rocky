@@ -17,7 +17,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
     val progress = MutableStateFlow(0f)
     private var job: Job? = null
 
-    fun download(scope: CoroutineScope, update: AvailableUpdate) {
+    fun download(update: AvailableUpdate) {
         val service = installer ?: return
         if (busy) return
         busy = true; prepared = null; notice = null; progress.value = 0f

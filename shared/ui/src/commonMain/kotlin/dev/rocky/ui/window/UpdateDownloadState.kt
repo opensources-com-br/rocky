@@ -19,7 +19,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
 
     fun download(update: AvailableUpdate) {
         val service = installer ?: return
-        if (busy) return
+        if (busy || restarting || !supported) return
         busy = true; prepared = null; notice = null; progress.value = 0f
         job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {

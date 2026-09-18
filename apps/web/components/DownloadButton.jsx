@@ -28,9 +28,6 @@ export default function DownloadButton({ className, locale, style }) {
         window.location.assign(installer.browser_download_url);
       } else {
         window.location.assign(RELEASES_PAGE);
-      } else {
-        setUnavailable(true);
-        setLoading(false);
       }
     } catch {
       window.location.assign(RELEASES_PAGE);

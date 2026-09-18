@@ -58,3 +58,23 @@ source_app="$mount_path/Rocky.app"
 [ ! -L "$source_app" ] && [ -x "$source_app/Contents/MacOS/Rocky" ]
 [ "$(/usr/bin/plutil -extract CFBundleIdentifier raw -o - "$source_app/Contents/Info.plist")" = 'dev.rocky.app' ]
 [ "$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - "$source_app/Contents/Info.plist")" = "$native_version" ]
+/usr/bin/grep -Fx -- "java-options=-Drocky.version=$release_version" "$source_app/Contents/app/Rocky.cfg"
+
+old_team="$(/usr/bin/codesign -dv --verbose=4 "$target" 2>&1 | /usr/bin/awk -F= '/^TeamIdentifier=/{print $2}' || true)"
+if [ -n "$old_team" ] && [ "$old_team" != 'not set' ]; then
+  /usr/bin/codesign --verify --deep --strict "$source_app"
+  new_team="$(/usr/bin/codesign -dv --verbose=4 "$source_app" 2>&1 | /usr/bin/awk -F= '/^TeamIdentifier=/{print $2}')"
+  [ "$old_team" = "$new_team" ]
+fi
+
+work="$(/usr/bin/mktemp -d "$(/usr/bin/dirname "$target")/.Rocky-update.XXXXXX")"
+/usr/bin/ditto "$source_app" "$work/Rocky.app"
+if [ -n "$old_team" ] && [ "$old_team" != 'not set' ]; then
+  /usr/bin/codesign --verify --deep --strict "$work/Rocky.app"
+fi
+/usr/bin/hdiutil detach "$mount_path" -quiet
+/bin/rmdir "$mount_path"
+mount_path=""
+[ ! -f "$job/cancel" ]
+status ready
+/usr/bin/touch "$job/ready"

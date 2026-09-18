@@ -142,5 +142,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mapfile -d '' assets < <(find release-assets -type f -print0)
-          gh release create "$GITHUB_REF_NAME" "${assets[@]}" --repo "$GITHUB_REPOSITORY" --prerelease --generate-notes --title "Rocky $GITHUB_REF_NAME"
+          mapfile -d '' assets < <(find release-ready -type f -print0)
+          prerelease=false
+          [[ "$GITHUB_REF_NAME" == *-alpha.* ]] && prerelease=true
+          if gh release view "$GITHUB_REF_NAME" --json isDraft --jq .isDraft > release-draft.txt; then
+            test "$(cat release-draft.txt)" = true
+          else
+            gh release create "$GITHUB_REF_NAME" --draft --verify-tag --generate-notes --title "Rocky $GITHUB_REF_NAME"
+          fi
+          gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+          gh release edit "$GITHUB_REF_NAME" --draft=false --prerelease="$prerelease"

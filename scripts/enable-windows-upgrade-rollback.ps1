@@ -44,7 +44,7 @@ try {
     if ($remove -ne $sequence) {
         $collision = $database.OpenView("SELECT ``Action`` FROM ``InstallExecuteSequence`` WHERE ``Sequence``=$sequence")
         try {
-            $collision.Execute()
+            [void]$collision.Execute()
             $record = $collision.Fetch()
             if ($null -ne $record) {
                 [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record)

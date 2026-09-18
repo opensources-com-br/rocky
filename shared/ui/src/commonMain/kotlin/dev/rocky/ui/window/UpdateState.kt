@@ -17,7 +17,7 @@ internal class UpdateState(private val checker: () -> AvailableUpdate?) {
                 val result = runCatching { interruptibleWork(checker) }
                 result.onSuccess {
                     available = it; dismissed = false
-                    notice = if (it == null) "Nenhuma versão mais recente no seu canal." else "Nova versão disponível: ${it.version}"
+                    notice = if (it == null) UpdateCheckNotice.Current else UpdateCheckNotice.Available
                 }.onFailure {
                     if (it is CancellationException) throw it
                     notice = "Não foi possível verificar atualizações. Tente novamente."

@@ -5,6 +5,8 @@ import java.nio.file.*
 
 class DesktopUpdateInstaller(private val directory: Path) : UpdateInstaller {
     private val downloader = UpdateDownloader(directory)
+    private val environment = InstallationEnvironment()
+    private val helper = UpdateHelperLauncher()
     override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit) = downloader.download(update, onProgress)
     override fun cancel() = downloader.cancel()
 

@@ -20,7 +20,7 @@ class UpdateDownloadStateTest {
             return PreparedUpdate(update.version, "package", "hash")
         }
         override fun cancel() { cancelled++ }
-        override fun open(update: PreparedUpdate) { if (openFailure) error("blocked"); opened++ }
+        override fun open(update: PreparedUpdate) { if (openFailure) error("blocked"); onOpen(); opened++ }
     }
     @Test fun failedInstallerOpenCanBeRetried() = runBlocking {
         val installer = Installer().apply { openFailure = true }

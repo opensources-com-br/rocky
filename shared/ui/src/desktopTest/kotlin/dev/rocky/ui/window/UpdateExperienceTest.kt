@@ -58,3 +58,23 @@ class UpdateExperienceTest {
             RockyTheme { UpdateBanner(updates, download, false, { error("Must update inside Rocky") }, { restarted = true; true }) }
         }
         rule.waitUntil(5000) { rule.onAllNodesWithTag("update-banner-action").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Update").performClick()
+        rule.waitUntil(5000) { rule.onAllNodesWithText("Update and restart").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Update and restart").performClick()
+        rule.waitUntil(5000) { restarted }
+        assertEquals(1, installer.opened)
+    }
+    @Test fun unavailableInstallationExplainsTheRequiredSetupInPortuguese() {
+        val installer = object : UpdateInstaller {
+            override fun installationUnavailableReason() = "not-installed"
+            override fun installationNotice() = "update-failed"
+            override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate = error("Unavailable")
+            override fun open(update: PreparedUpdate) = error("Unavailable")
+            override fun cancel() = Unit
+        }
+        rule.setContent {
+            val state = rememberUpdateDownloadState(installer)
+            RockyTheme { CompositionLocalProvider(LocalRockyLanguage provides RockyLanguage.PortugueseBrazil) {
+                Column { UpdateDownloadSettings(state, AvailableUpdate("v2.0.0", ""), false) }
+            } }
+        }

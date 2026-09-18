@@ -53,8 +53,8 @@ class UpdateDownloadStateTest {
     }
     @Test fun failedDownloadCanBeRetried() = runBlocking {
         val installer = Installer().apply { failure = true }
-        val state = UpdateDownloadState(installer)
-        state.download(this, AvailableUpdate("v2.0.0", ""))
+        val state = UpdateDownloadState(installer, this)
+        state.download(AvailableUpdate("v2.0.0", ""))
         withTimeout(5000) { while (state.busy) delay(10) }
         assertNull(state.prepared)
         installer.failure = false

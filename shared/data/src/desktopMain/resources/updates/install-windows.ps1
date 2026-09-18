@@ -58,3 +58,23 @@ try {
         if ((Get-MsiProperty $database 'ProductVersion') -ne $NativeVersion) { throw 'Incorrect MSI version.' }
         $related = $installer.RelatedProducts($upgradeCode)
         $matched = $false
+        foreach ($product in $related) {
+            $location = $installer.ProductInfo($product, 'InstallLocation')
+            if ($location -and [IO.Path]::GetFullPath($location).TrimEnd('\') -ieq $Target.TrimEnd('\')) {
+                $installedVersion = $installer.ProductInfo($product, 'VersionString')
+                if ([version]$NativeVersion -le [version]$installedVersion) { throw 'Native update version must increase.' }
+                $matched = $true
+            }
+        }
+        if ([Runtime.InteropServices.Marshal]::IsComObject($related)) {
+            [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($related)
+        }
+        if (-not $matched) { throw 'Rocky must be installed using its official MSI installer.' }
+    } finally {
+        if ($null -ne $database) { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($database) }
+        [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($installer)
+    }
+
+    $currentSignature = Get-AuthenticodeSignature -LiteralPath $executable
+    if ($null -ne $currentSignature.SignerCertificate) {
+        $signature = Get-AuthenticodeSignature -LiteralPath $Package

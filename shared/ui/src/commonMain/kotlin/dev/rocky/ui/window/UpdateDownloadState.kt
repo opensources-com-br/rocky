@@ -40,7 +40,11 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
         notice = UpdateDownloadNotice.Cancelled
     }
 
-    fun install(scope: CoroutineScope, canInstall: () -> Boolean) {
+    fun dispose() {
+        if (!restarting) { job?.cancel(); installer?.cancel() }
+    }
+
+    fun install(canInstall: () -> Boolean, onRestart: () -> Boolean) {
         val service = installer ?: return
         val ready = prepared ?: return
         if (busy || !canInstall()) return

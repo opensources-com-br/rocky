@@ -11,7 +11,8 @@ plugins {
 
 if (System.getProperty("os.name").startsWith("Windows", true)) {
     val configureWindowsUpgrade by tasks.registering(Exec::class) {
-        val msiDirectory = layout.buildDirectory.dir("compose/binaries/main/msi")
+        val nativeVersion = providers.gradleProperty("rockyPackageVersion").get()
+        val msiPackage = layout.buildDirectory.file("compose/binaries/main/msi/Rocky-$nativeVersion.msi")
         commandLine("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
             rootProject.file("scripts/enable-windows-upgrade-rollback.ps1").absolutePath,
             "-Directory", msiDirectory.get().asFile.absolutePath)

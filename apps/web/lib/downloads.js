@@ -9,7 +9,7 @@ export function detectDesktopPlatform(platform = "", userAgent = "") {
   return "unknown";
 }
 
-export function normalizeArchitecture(value = "") {
+export function normalizeArchitecture(value = "", bitness = "") {
   const architecture = value.toLowerCase();
   if (["arm64", "aarch64"].includes(architecture)) return "arm64";
   if (["x86", "x86_64", "amd64", "x64"].includes(architecture)) return "x64";

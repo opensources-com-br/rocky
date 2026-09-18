@@ -58,3 +58,23 @@ class UpdateHelperLauncherTest {
         assertFailsWith<IllegalStateException> { launcher.launch(directory, app, update) }
     }
 
+    @Test fun cancellationTakesPrecedenceOverReady() = fixture { directory, app, update ->
+        val launcher = UpdateHelperLauncher({ _, job ->
+            Files.writeString(job.resolve("ready"), "ready")
+            Files.writeString(job.resolve("cancel"), "cancel")
+            RunningProcess()
+        })
+        assertFailsWith<IllegalStateException> { launcher.launch(directory, app, update) }
+    }
+
+    @Test fun windowsUsesPackagedPowerShellWithoutShellInterpolation() = fixture { directory, app, update ->
+        val launcher = UpdateHelperLauncher({ command, job ->
+            assertTrue(command.first().endsWith("powershell.exe"))
+            assertEquals(update.path, command[9])
+            assertTrue(Files.readString(Path.of(command[8])).contains("[string]\$Package"))
+            Files.writeString(job.resolve("ready"), "ready")
+            RunningProcess()
+        })
+        launcher.launch(directory, app.copy(mac = false), update)
+    }
+}

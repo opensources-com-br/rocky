@@ -28,7 +28,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
                 } }
                 notice = UpdateDownloadNotice.Verified
             } catch (error: CancellationException) { throw error }
-            catch (error: Exception) { notice = "Não foi possível baixar ou verificar o instalador. Tente novamente ou use o download oficial." }
+            catch (error: Exception) { notice = UpdateDownloadNotice.DownloadFailed }
             finally { busy = false; job = null }
         }
     }

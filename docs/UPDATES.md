@@ -18,3 +18,23 @@ Versões anteriores ao atualizador precisam receber este primeiro pacote pelo fl
 
 Falhas ficam registradas na subpasta `updates/install-*` do diretório de dados. O próximo início mostra o resultado em Configurações → Dados. `installation.log` registra o helper; no Windows, `msi.log` registra o instalador. A falha de preparação mantém o app aberto e permite tentar novamente. Se o Windows pedir reinício do sistema, o Rocky informa isso no próximo início.
 
+O rollback protege a substituição dos arquivos do app; ele não desfaz migrações do banco realizadas por uma versão que já abriu. O encerramento forçado do computador durante a instalação pode exigir reinstalar o pacote oficial sobre a instalação existente. Os dados permanecem em seu diretório separado.
+
+## Site
+
+O site consulta `version.json` e oferece **Recarregar site** quando detecta uma publicação mais recente. O usuário escolhe quando recarregar; a URL e o idioma são preservados. O site não instala o aplicativo desktop. Seus botões de download consultam releases publicadas com checksums e selecionam apenas uma arquitetura compatível.
+
+## Publicar pelo GitHub
+
+1. Atualize `rockyVersion` e `rockyPackageVersion` em `gradle.properties`. A parte numérica deve ser igual e maior que a de todos os releases publicados, inclusive para um novo alpha.
+2. Valide os testes e os instaladores. Use JDK 17; a matriz do GitHub inclui macOS ARM64, macOS Intel e Windows x64.
+3. Crie uma tag `v` seguida da versão exata. O workflow de release assina/notariza macOS e assina Windows quando os secrets opcionais estiverem configurados.
+4. O pipeline valida os quatro instaladores e os três BUILDINFOs, gera `SHA256SUMS.txt`, envia tudo a um draft e só então publica. Um draft incompleto não aparece no atualizador. A repetição do job pode recuperar um draft, mas não sobrescreve um release público.
+
+Tags `-alpha.N` criam prereleases; tags sem sufixo criam releases estáveis. Clientes estáveis ignoram alphas. A assinatura e os secrets estão documentados em [RELEASE_PREPARATION.md](RELEASE_PREPARATION.md). O site é publicado pelo workflow Site após alterações web em `main`.
+
+## English
+
+Starting with **1.0.12-alpha.1**, choose **Update**, then **Update and restart**, or use Settings → Data. Rocky downloads and verifies the matching official installer, saves the session, exits, updates the existing installation, and relaunches. Active platform sessions block installation. Notes, preferences, credentials, and voice models are preserved. Older versions need one update through their existing installer flow to gain this capability; uninstalling is unnecessary.
+
+macOS requires a writable installation in Applications and preserves the existing Developer ID team. It stages the app on the same volume and restores the previous bundle if replacement or launch fails. Windows uses the existing MSI upgrade identity and installation location, with transactional rollback and an optional system permission prompt. It never automatically reboots the computer. Logs and the next-start result are available through Settings → Data.

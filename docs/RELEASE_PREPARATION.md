@@ -24,7 +24,7 @@ Releases anteriores não são alteradas por essa automação. Depois de cadastra
 
 No Windows, instale o certificado de assinatura e sua chave privada no repositório do usuário. Configure `ROCKY_WINDOWS_CERT_THUMBPRINT` e disponibilize `signtool.exe` (ou `ROCKY_SIGNTOOL`). Execute `scripts/sign-windows.ps1` após gerar um MSI e um EXE; o script assina os instaladores com timestamp e verifica o resultado. O executável instalado e os avisos do sistema também precisam de validação no Windows; assinatura dos instaladores não substitui essa etapa.
 
-O workflow público atual permanece no canal prerelease e não presume certificados instalados em runners hospedados. Configure a importação dos certificados no ambiente de publicação antes de automatizar assinatura ali. A promoção para estável é uma ação deliberada do responsável, depois de verificar os pacotes assinados e o protocolo; não é consequência de um tag ou de testes unitários verdes.
+No GitHub, os secrets opcionais `ROCKY_WINDOWS_CERTIFICATE_BASE64` (PFX com chave privada) e `ROCKY_WINDOWS_CERTIFICATE_PASSWORD` habilitam importação, assinatura e limpeza no runner Windows. Sem eles, o alpha Windows usa checksum e pode exibir avisos do sistema. Tags com `-alpha.N` publicam prereleases; tags sem sufixo publicam estáveis e só devem ser criadas após o protocolo. Cada publicação, inclusive alpha, deve aumentar a versão nativa de três números. O pipeline rejeita versões iguais ou menores que qualquer release publicado.
 
 ## Atualização e recuperação
 

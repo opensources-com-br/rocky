@@ -11,7 +11,7 @@ internal class UpdateState(private val checker: () -> AvailableUpdate?) {
     var dismissed by mutableStateOf(false)
     fun check(scope: CoroutineScope) {
         if (checking) return
-        checking = true
+        checking = true; notice = null
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 val result = runCatching { interruptibleWork(checker) }

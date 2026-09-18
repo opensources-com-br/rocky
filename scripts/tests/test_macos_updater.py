@@ -178,3 +178,23 @@ class MacosUpdaterTest(unittest.TestCase):
         self.assertFalse((self.job / 'ready').exists())
 
     def test_rejects_an_invalid_package_signature(self):
+        (self.payload / 'reject-signature').touch()
+        process = self.start()
+        self.finish(process, 'failed')
+        self.assertEqual('old', self.marker())
+        self.assertFalse((self.job / 'ready').exists())
+
+    def test_another_instance_of_this_installation_blocks_preparation(self):
+        (self.root / 'extra-instance').touch()
+        process = self.start()
+        self.finish(process, 'failed')
+        self.assertEqual('old', self.marker())
+        self.assertFalse((self.job / 'ready').exists())
+        self.assertFalse((self.root / 'opened').exists())
+
+    def test_an_instance_started_after_ready_prevents_replacement(self):
+        process = self.start(); self.ready(process)
+        (self.root / 'extra-instance').touch()
+        self.stop_process(self.parent)
+        self.finish(process, 'failed')
+        self.assertEqual('old', self.marker())

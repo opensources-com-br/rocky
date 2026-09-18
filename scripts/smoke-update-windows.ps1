@@ -6,6 +6,7 @@ $inputDirectory = Join-Path $fixture 'input'
 $packages = Join-Path $fixture 'packages'
 $result = Join-Path $fixture 'started.txt'
 $target = Join-Path $env:ProgramFiles 'Rocky'
+if (Test-Path $target) { throw 'Refusing to replace an existing installation during smoke testing' }
 $job = Join-Path $fixture 'job'
 New-Item -ItemType Directory -Force $inputDirectory, $packages, $job | Out-Null
 $source = @'

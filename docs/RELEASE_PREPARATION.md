@@ -1,6 +1,6 @@
 # Preparação do candidato / Release preparation
 
-Candidato: **1.0.11-alpha.1**, versão nativa **1.0.11**. Escopo atual: Twitch, Kick, YouTube, Facebook, TikTok LIVE, IA, voz do sistema ou ElevenLabs, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Kick, YouTube e Facebook exigem credenciais próprias; a Kick também exige webhook HTTPS público e o Facebook exige uma Página com live ativa. O TikTok usa WebCast não oficial via Eulerstream e exige uma live pública ativa. Super Chats, Estrelas, presentes e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
+Candidato: **1.0.12-alpha.1**, versão nativa **1.0.12**. Escopo atual: Twitch, Kick, YouTube, Facebook, TikTok LIVE, IA, voz do sistema ou ElevenLabs, perguntas agrupadas, notas, ideias, momentos, exportação e resumo dos registros locais ao desconectar ou fechar o app. Kick, YouTube e Facebook exigem credenciais próprias; a Kick também exige webhook HTTPS público e o Facebook exige uma Página com live ativa. O TikTok usa WebCast não oficial via Eulerstream e exige uma live pública ativa. Super Chats, Estrelas, presentes e geração automática de ideias ficam fora deste candidato. Não promover a estável antes do protocolo real.
 
 ## Build e identidade
 

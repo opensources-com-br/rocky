@@ -26,3 +26,5 @@ internal class UpdateState(private val checker: () -> AvailableUpdate?) {
         }
     }
 }
+
+internal enum class UpdateCheckNotice { Current, Available, Failed }

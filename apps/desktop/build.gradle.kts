@@ -9,6 +9,18 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
 }
 
+if (System.getProperty("os.name").startsWith("Windows", true)) {
+    val configureWindowsUpgrade by tasks.registering(Exec::class) {
+        val msiDirectory = layout.buildDirectory.dir("compose/binaries/main/msi")
+        commandLine("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+            rootProject.file("scripts/enable-windows-upgrade-rollback.ps1").absolutePath,
+            "-Directory", msiDirectory.get().asFile.absolutePath)
+    }
+    tasks.matching { it.name == "packageMsi" }.configureEach {
+        finalizedBy(configureWindowsUpgrade)
+    }
+}
+
 kotlin {
     jvm {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_17)

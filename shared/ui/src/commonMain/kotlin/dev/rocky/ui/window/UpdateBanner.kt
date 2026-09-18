@@ -1,0 +1,20 @@
+package dev.rocky.ui.window
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+import dev.rocky.ui.theme.RockyColors
+
+@Composable
+internal fun UpdateBanner(updates: UpdateState, download: UpdateDownloadState, blocked: Boolean,
+    onOpenSettings: () -> Unit, onRestart: () -> Boolean) {
+    val available = updates.available ?: return
+    if (updates.dismissed && !download.busy && download.prepared == null) return
+    val progress by download.progress.collectAsState()
+    val latestBlocked by rememberUpdatedState(blocked)
+    val latestRestart by rememberUpdatedState(onRestart)
+    Column(Modifier.fillMaxWidth().testTag("update-banner").padding(horizontal = 12.dp)) {

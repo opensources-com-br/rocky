@@ -30,6 +30,7 @@ jobs:
           python scripts/prepare_release.py --version "$GITHUB_REF_NAME" --previous previous-releases.json
 
   package:
+    needs: validate
     strategy:
       fail-fast: false
       matrix:

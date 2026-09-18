@@ -95,6 +95,7 @@ try {
         }
     }
     Assert-NotCancelled
+    Assert-ExclusiveApplication
     Write-Status 'ready'
     [IO.File]::WriteAllText((Join-Path $Job 'ready'), 'ready', $utf8)
     $deadline = [DateTime]::UtcNow.AddSeconds(120)

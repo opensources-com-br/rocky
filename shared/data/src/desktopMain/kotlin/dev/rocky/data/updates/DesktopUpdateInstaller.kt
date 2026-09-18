@@ -12,6 +12,7 @@ class DesktopUpdateInstaller(private val directory: Path) : UpdateInstaller {
     override fun installationUnavailableReason() = environment.unavailableReason()
     override fun installationNotice() = installationNotice(directory)
 
+    @Synchronized
     override fun open(update: PreparedUpdate) {
         val path = Path.of(update.path).toRealPath()
         require(path.startsWith(directory.toRealPath()) && Files.isRegularFile(path))

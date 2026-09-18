@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { detectDesktopPlatform, findInstaller, normalizeArchitecture, RELEASES_API, selectInstaller } from "../lib/downloads.js";
 
-const asset = name => ({ name, browser_download_url: `https://example.test/${name}` });
+const asset = (name, tag = "v1.0.11") => ({ name, browser_download_url: `https://github.com/opensources-com-br/rocky/releases/download/${tag}/${name}` });
+const packageAsset = (version, system, architecture, extension) => asset(`Rocky-${version}-${system}-${architecture}.${extension}`, `v${version}`);
+const checksum = asset("SHA256SUMS.txt");
 
 test("detects supported desktop platforms", () => {
   assert.equal(detectDesktopPlatform("macOS"), "macos");

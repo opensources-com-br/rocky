@@ -120,6 +120,9 @@ jobs:
       - name: Remove temporary macOS keychain
         if: always() && runner.os == 'macOS'
         run: security delete-keychain "$ROCKY_MAC_KEYCHAIN" || true
+      - name: Remove temporary Windows certificate
+        if: always() && runner.os == 'Windows' && env.ROCKY_WINDOWS_CERT_THUMBPRINT != ''
+        run: Remove-Item "Cert:\CurrentUser\My\$env:ROCKY_WINDOWS_CERT_THUMBPRINT" -Force
 
   publish:
     needs: package

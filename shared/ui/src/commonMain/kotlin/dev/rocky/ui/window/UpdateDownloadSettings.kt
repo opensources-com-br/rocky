@@ -32,6 +32,11 @@ internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: Avail
             Button(enabled = !blocked, modifier = Modifier.testTag("update-restart"), onClick = {
                 state.install({ !latestBlocked }, { latestRestart() })
             }) { Text(tr("Update and restart", "Atualizar e reiniciar")) }
+            if (state.notice == UpdateDownloadNotice.InstallFailed && available != null) {
+                TextButton(modifier = Modifier.testTag("update-redownload"), onClick = { state.download(available) }) {
+                    Text(tr("Download again", "Baixar novamente"))
+                }
+            }
             Text(tr("Rocky will restart automatically. Your notes, settings and voice models will be preserved.",
                 "O Rocky reiniciará automaticamente. Suas notas, configurações e modelos de voz serão preservados."))
         }

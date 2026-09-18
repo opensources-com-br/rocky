@@ -38,3 +38,14 @@ class PreparedUpdateTest {
     }
 
     @Test fun refusesMismatchedReleaseFilenameOrArchitecture() = fixture { directory, update ->
+        assertFails { validate(directory, update.copy(version = "v2.1.0")) }
+        assertFails { validatePreparedUpdate(directory, update, "1.0.0", "Mac OS X", "amd64") }
+    }
+
+    @Test fun refusesSymbolicLinkPackage() = fixture { directory, update ->
+        if (System.getProperty("os.name").startsWith("Windows")) return@fixture
+        val link = Path.of(update.path).resolveSibling("linked.dmg")
+        Files.createSymbolicLink(link, Path.of(update.path))
+        assertFailsWith<IllegalArgumentException> { validate(directory, update.copy(path = link.toString())) }
+    }
+}

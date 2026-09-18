@@ -9,7 +9,7 @@ export default function DownloadContent({ locale }) {
 {localized(locale, "Give chat questions more attention.", "Dê mais atenção às perguntas do chat.")}
 </h2>
 <p style={{"margin": "0", "maxWidth": "460px", "fontSize": "15px", "lineHeight": "1.6", "color": "rgba(255,255,255,.45)"}}>
-{localized(locale, "The signed alpha for macOS and Windows is being prepared. Soon you can connect Twitch, Kick, YouTube, Facebook, or TikTok LIVE and test AI before your stream.", "A versão alpha assinada para macOS e Windows está sendo preparada. Em breve você poderá conectar Twitch, Kick, YouTube, Facebook ou TikTok LIVE e testar a IA antes da live.")}
+{localized(locale, "Install Rocky for macOS or Windows from official releases. With the built-in updater, download the next release and choose Update and restart. Your saved data and settings stay with you.", "Instale Rocky para macOS ou Windows pelas releases oficiais. Com a atualização integrada, baixe a próxima versão e escolha Atualizar e reiniciar. Seus dados e configurações salvos são preservados.")}
 </p>
 <div style={{"display": "flex", "flexWrap": "wrap", "justifyContent": "center", "gap": "9px"}}>
 <DownloadButton locale={locale} style={{"padding": "12px 24px", "borderRadius": "9px", "background": "#f2efec", "color": "#0d0b0a", "fontSize": "14px", "fontWeight": "500"}} />

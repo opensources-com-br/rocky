@@ -38,3 +38,23 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 1' INT TERM
 trap 'printf "Updater failed at line %s\n" "$LINENO" >&2' ERR
+printf '%s\n' "$$" > "$job/helper.pid"
+
+case "$target" in
+  /Applications/Rocky.app|"$HOME/Applications/Rocky.app") ;;
+  *) echo 'Rocky must be installed in Applications.' >&2; exit 1 ;;
+esac
+[[ "$parent_pid" =~ ^[0-9]+$ ]] && [ "$parent_pid" -gt 1 ]
+[[ "$native_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$expected_hash" =~ ^[a-f0-9]{64}$ ]]
+[ ! -L "$target" ] && [ ! -L "$package" ] && [ -f "$package" ]
+[ -w "$(/usr/bin/dirname "$target")" ]
+[ "$(/usr/bin/shasum -a 256 "$package" | /usr/bin/awk '{print $1}')" = "$expected_hash" ]
+[ "$(/usr/bin/plutil -extract CFBundleIdentifier raw -o - "$target/Contents/Info.plist")" = 'dev.rocky.app' ]
+
+mount_path="$(/usr/bin/mktemp -d "$job/mounted.XXXXXX")"
+/usr/bin/hdiutil attach "$package" -mountpoint "$mount_path" -nobrowse -readonly -quiet
+source_app="$mount_path/Rocky.app"
+[ ! -L "$source_app" ] && [ -x "$source_app/Contents/MacOS/Rocky" ]
+[ "$(/usr/bin/plutil -extract CFBundleIdentifier raw -o - "$source_app/Contents/Info.plist")" = 'dev.rocky.app' ]
+[ "$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - "$source_app/Contents/Info.plist")" = "$native_version" ]

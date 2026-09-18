@@ -31,6 +31,8 @@ export default function DownloadButton({ className, locale, style }) {
       }
     } catch {
       window.location.assign(RELEASES_PAGE);
+    } finally {
+      setLoading(false);
     }
   }
 

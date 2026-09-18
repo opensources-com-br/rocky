@@ -18,3 +18,23 @@ cleanup() {
   if [ -f "$fixture/job/installation.log" ]; then tail -40 "$fixture/job/installation.log"; fi
   rm -rf "$target" "$fixture"
   exit "$code"
+}
+trap cleanup EXIT
+cat > "$fixture/Main.java" <<'JAVA'
+import java.nio.file.*;
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Files.writeString(Path.of(System.getProperty("rocky.smoke.result")), System.getProperty("rocky.version"));
+    }
+}
+JAVA
+"$JAVA_HOME/bin/javac" -d "$fixture/input" "$fixture/Main.java"
+"$JAVA_HOME/bin/jar" --create --file "$fixture/input/fixture.jar" -C "$fixture/input" Main.class
+for version in 1.0.1 1.0.2; do
+  format=app-image
+  if [ "$version" = 1.0.2 ]; then format=dmg; fi
+  "$JAVA_HOME/bin/jpackage" --type "$format" --name Rocky --app-version "$version" \
+    --input "$fixture/input" --main-jar fixture.jar --main-class Main --dest "$fixture/$version" \
+    --mac-package-identifier dev.rocky.app --java-options "-Drocky.version=$version-alpha.1" \
+    --java-options "'-Drocky.smoke.result=$result'" --add-modules java.base
+done

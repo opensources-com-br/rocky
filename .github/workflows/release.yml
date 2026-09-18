@@ -106,6 +106,9 @@ jobs:
       - name: Smoke test macOS installer
         if: runner.os == 'macOS'
         run: bash scripts/smoke-install-macos.sh
+      - name: Exercise macOS upgrade and restart
+        if: runner.os == 'macOS'
+        run: bash scripts/smoke-update-macos.sh
       - name: Smoke test Windows installer
         if: runner.os == 'Windows'
         run: ./scripts/smoke-install-windows.ps1

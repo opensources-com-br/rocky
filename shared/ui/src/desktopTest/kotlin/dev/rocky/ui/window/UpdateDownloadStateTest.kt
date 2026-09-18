@@ -122,6 +122,20 @@ class UpdateDownloadStateTest {
         assertFalse(state.restarting)
         assertEquals(1, installer.cancelled)
     }
+    @Test fun disposalWhilePreparingCancelsHelperWithoutRestart() = runBlocking {
+        val installer = Installer()
+        val state = UpdateDownloadState(installer, this)
+        val helperStarted = CountDownLatch(1)
+        installer.onOpen = { helperStarted.countDown(); CountDownLatch(1).await() }
+        state.download(AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        state.install({ true }, { error("Must not restart after closing") })
+        assertTrue(helperStarted.await(5, TimeUnit.SECONDS))
+        state.dispose()
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertFalse(state.restarting)
+        assertTrue(installer.cancelled > 0)
+    }
     @Test fun cancellationBeforeTheWorkerStartsDoesNotLeaveDownloadBusy() = runBlocking {
         val installer = Installer()
         val state = UpdateDownloadState(installer)

@@ -20,6 +20,7 @@ internal fun DataSettings(
     updates: UpdateState = remember { UpdateState { null } },
     updateDownload: UpdateDownloadState = rememberUpdateDownloadState(null),
     updateBlocked: Boolean = false,
+    onRestartAfterUpdate: () -> Boolean = { false },
     diagnosticReport: () -> String = { "" },
     onExportDiagnostic: (String) -> Boolean = { false },
     onOpenGuide: (String) -> Unit = {},

@@ -118,3 +118,23 @@ class MacosUpdaterTest(unittest.TestCase):
         self.addCleanup(process.stderr.close)
         return process
 
+    def ready(self, process):
+        deadline = time.monotonic() + 10
+        while not (self.job / 'ready').exists() and process.poll() is None:
+            if time.monotonic() > deadline:
+                self.fail('The updater did not finish preparation in time.')
+            time.sleep(0.02)
+        self.assertTrue((self.job / 'ready').exists())
+        self.assertEqual('ready', (self.job / 'status').read_text().strip())
+
+    def finish(self, process, status):
+        output, error = process.communicate(timeout=10)
+        self.assertEqual(status, (self.job / 'status').read_text().strip(), output + error)
+        self.assertEqual(0 if status == 'installed' else 1, process.returncode, output + error)
+        self.assertFalse(list(self.target.parent.glob('.Rocky-update.*')))
+
+    def marker(self):
+        return (self.target / 'Contents/MacOS/Rocky').read_text()
+
+    def test_waits_for_parent_then_replaces_and_relaunches(self):
+        process = self.start(); self.ready(process)

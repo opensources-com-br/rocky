@@ -82,6 +82,26 @@ class UpdateDownloadStateTest {
         assertEquals(0, installer.cancelled)
         state.install({ true }, { error("Must only restart once") })
         assertEquals(1, installer.opened)
+    }
+    @Test fun failedSessionSaveKeepsAppOpenAndCancelsPreparedHelper() = runBlocking {
+        val installer = Installer()
+        val state = UpdateDownloadState(installer, this)
+        state.download(AvailableUpdate("v2.0.0", ""))
+        withTimeout(5000) { while (state.busy) delay(10) }
+        state.install({ true }, { false })
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertFalse(state.restarting)
+        assertEquals(UpdateDownloadNotice.SaveFailed, state.notice)
+        assertEquals(1, installer.cancelled)
+        assertNotNull(state.prepared)
+        state.install({ true }, { true })
+        withTimeout(5000) { while (state.busy) delay(10) }
+        assertTrue(state.restarting)
+        assertEquals(2, installer.opened)
+    }
+    @Test fun platformConnectingDuringPreparationPreventsRestart() = runBlocking {
+        val installer = Installer()
+        val state = UpdateDownloadState(installer, this)
     @Test fun cancellationBeforeTheWorkerStartsDoesNotLeaveDownloadBusy() = runBlocking {
         val installer = Installer()
         val state = UpdateDownloadState(installer)

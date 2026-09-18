@@ -4,7 +4,7 @@ const content = {
   lead: "Install Rocky for macOS or Windows from opensources-com-br/rocky releases. Versions with the built-in updater let you install future releases from the app itself.",
   blocks: [
     { type: "h2", text: "Installers" },
-    { type: "para", text: "On macOS, use the DMG that matches your machine; on Windows, use MSI or EXE. Check the files and SHA-256 checksums for the selected release. The system may display security warnings because the installers are unsigned. This project does not document a Homebrew distribution for Rocky." },
+    { type: "para", text: "On macOS, choose the arm64 DMG for Apple Silicon or x86_64 for Intel, then copy Rocky to Applications before opening it. On Windows, use the amd64/x64 MSI or EXE. The download button uses the architecture reported by your browser; if it cannot identify it, the official release page opens for you to choose. Check the release SHA-256 checksums." },
     { type: "h2", text: "Run from source" },
     { type: "para", text: "With Git and JDK 17 installed, clone https://github.com/opensources-com-br/rocky.git. From the root, run ./gradlew :apps:desktop:run on macOS or .\\gradlew.bat :apps:desktop:run in PowerShell. The desktop app uses Kotlin and Compose Multiplatform; Node.js is used by the web app." },
     { type: "h2", text: "Permissions" },

@@ -52,9 +52,18 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
         job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 interruptibleWork { service.open(ready) }
-                notice = "Instalador aberto. Feche o Rocky, conclua a instalação e abra o app novamente."
-            } catch (error: CancellationException) { throw error }
-            catch (error: Exception) { notice = "Não foi possível abrir o instalador. Tente baixar novamente ou use o download oficial." }
+                if (!canInstall()) {
+                    service.cancel(); notice = UpdateDownloadNotice.SessionActive
+                } else {
+                    restarting = true
+                    if (!onRestart()) {
+                        restarting = false; service.cancel(); notice = UpdateDownloadNotice.SaveFailed
+                    }
+                }
+            } catch (error: CancellationException) { if (!restarting) service.cancel(); throw error }
+            catch (error: Exception) {
+                restarting = false; runCatching { service.cancel() }; notice = UpdateDownloadNotice.InstallFailed
+            }
             finally { busy = false; opening = false; job = null }
         }
     }

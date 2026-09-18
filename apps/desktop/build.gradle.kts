@@ -15,7 +15,7 @@ if (System.getProperty("os.name").startsWith("Windows", true)) {
         val msiPackage = layout.buildDirectory.file("compose/binaries/main/msi/Rocky-$nativeVersion.msi")
         commandLine("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
             rootProject.file("scripts/enable-windows-upgrade-rollback.ps1").absolutePath,
-            "-Directory", msiDirectory.get().asFile.absolutePath)
+            "-MsiPath", msiPackage.get().asFile.absolutePath)
     }
     tasks.matching { it.name == "packageMsi" }.configureEach {
         finalizedBy(configureWindowsUpgrade)

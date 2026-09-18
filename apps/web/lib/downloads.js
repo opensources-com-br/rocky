@@ -37,7 +37,9 @@ function isCurrentInstallerRelease(release) {
 }
 
 export function selectInstaller(releases, platform, architecture = "unknown") {
-  const release = releases.find(item => !item.draft && isCurrentInstallerRelease(item));
+  if (!Array.isArray(releases)) return null;
+  const release = releases.find(item => item && !item.draft && isCurrentInstallerRelease(item)
+    && Array.isArray(item.assets) && item.assets.some(asset => /^SHA256SUMS(?:\.txt)?$/.test(asset?.name)));
   if (!release || !["macos", "windows"].includes(platform)) return null;
 
   const extensions = platform === "macos" ? [".dmg"] : [".msi", ".exe"];

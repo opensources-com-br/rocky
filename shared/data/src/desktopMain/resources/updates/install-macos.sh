@@ -100,6 +100,7 @@ while /bin/kill -0 "$parent_pid" 2>/dev/null; do
   /bin/sleep 0.2
 done
 [ ! -f "$job/cancel" ]
+assert_exclusive_application
 stopped=1
 status installing
 /bin/mv "$target" "$work/Previous.app"

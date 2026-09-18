@@ -19,6 +19,19 @@ status() {
   /bin/mv -f "$job/status.tmp" "$job/status"
 }
 
+assert_exclusive_application() {
+  local others
+  others="$(/bin/ps -axww -o pid=,comm= | /usr/bin/awk \
+    -v executable="$target/Contents/MacOS/Rocky" -v parent="$parent_pid" '
+      { pid = $1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "") }
+      $0 == executable && pid != parent { print pid }
+    ')"
+  if [ -n "$others" ]; then
+    echo 'Close other instances of this Rocky installation before updating.' >&2
+    return 1
+  fi
+}
+
 cleanup() {
   result=$?
   trap - EXIT

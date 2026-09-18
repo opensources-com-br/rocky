@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
   images: { unoptimized: true },
+  env: {
+    NEXT_PUBLIC_SITE_VERSION: siteVersion,
+    NEXT_PUBLIC_SITE_BUILT_AT: builtAt,
+  },
 };
 
 export default nextConfig;

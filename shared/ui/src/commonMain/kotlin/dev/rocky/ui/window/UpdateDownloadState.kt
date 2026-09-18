@@ -11,6 +11,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
     val supported get() = installer != null && unavailableReason == null
     var busy by mutableStateOf(false); private set
     var opening by mutableStateOf(false); private set
+    var restarting by mutableStateOf(false); private set
     var prepared by mutableStateOf<PreparedUpdate?>(null); private set
     var notice by mutableStateOf<String?>(null); private set
     val progress = MutableStateFlow(0f)

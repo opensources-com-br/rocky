@@ -46,8 +46,6 @@ export default function DownloadButton({ className, locale, style }) {
   >
     {loading
       ? localized(locale, "Preparing download…", "Preparando download…")
-      : unavailable
-        ? localized(locale, "Signed build coming soon", "Versão assinada em breve")
-        : localized(locale, "Download app", "Baixar aplicativo")}
+      : localized(locale, "Download app", "Baixar aplicativo")}
   </a>;
 }

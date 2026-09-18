@@ -26,7 +26,7 @@ export default function DownloadButton({ className, locale, style }) {
       const installer = await findInstaller(platform, await browserArchitecture());
       if (installer) {
         window.location.assign(installer.browser_download_url);
-      } else if (platform === "unknown") {
+      } else {
         window.location.assign(RELEASES_PAGE);
       } else {
         setUnavailable(true);

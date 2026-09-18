@@ -167,6 +167,7 @@ class VoiceStateTest {
             assertEquals(1, service.transcriptions)
         } finally {
             state.resetSession()
+        }
     }
 
     @Test fun silentCaptureRestartsWithoutTranscribing() = runBlocking {

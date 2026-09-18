@@ -510,6 +510,7 @@ fun RockyWindow(
                         onBackup = onBackup, onChooseImport = onChooseImport,
                         updates = updates, onOpenGuide = onOpenGuide, onExportDiagnostic = onExportDiagnostic,
                         updateDownload = updateDownload,
+                        onRestartAfterUpdate = restartAfterUpdate,
                         updateBlocked = twitch.isRealSession || kick.isActive || youtube.isActive || facebook.isActive ||
                             tiktok.isActive || liveConnected,
                         checkUpdatesOnStart = checkUpdatesOnStart,

@@ -6,8 +6,8 @@ import { localized } from "@/lib/i18n";
 
 async function browserArchitecture() {
   try {
-    const values = await navigator.userAgentData?.getHighEntropyValues?.(["architecture"]);
-    return normalizeArchitecture(values?.architecture);
+    const values = await navigator.userAgentData?.getHighEntropyValues?.(["architecture", "bitness"]);
+    return normalizeArchitecture(values?.architecture, values?.bitness);
   } catch {
     return "unknown";
   }

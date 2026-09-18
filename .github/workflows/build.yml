@@ -54,6 +54,9 @@ jobs:
       - run: python scripts/verify_installation.py
       - if: runner.os == 'macOS'
         run: bash scripts/smoke-install-macos.sh
+      - name: Exercise macOS upgrade and restart
+        if: runner.os == 'macOS'
+        run: bash scripts/smoke-update-macos.sh
       - if: runner.os == 'Windows'
         run: ./scripts/smoke-install-windows.ps1
       - name: Exercise Windows upgrade and restart

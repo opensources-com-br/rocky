@@ -10,7 +10,7 @@ Inclua o Client ID público por `-ProckyTwitchClientId=...` quando gerar o pacot
 
 Depois do empacotamento, execute `python3 scripts/release_metadata.py` (Windows: `python`). O script identifica versão, commit e arquitetura nos nomes e em `BUILDINFO-*.json`. Gere checksums **depois** da assinatura/notarização. Não sobrescreva candidatos já nomeados: arquive o pacote anterior e gere outro. O tag deve corresponder exatamente a `rockyVersion`; cada novo candidato deve ter versão nativa adequada à sequência de upgrades.
 
-A matriz atual gera um pacote por runner macOS/Windows. Consulte a arquitetura gravada no manifesto; isso não comprova suporte a outras arquiteturas, em particular macOS Intel. O app mostra a identidade em **Configurações → Dados** e a exportação inclui versão/commit.
+A matriz gera DMGs para macOS Apple Silicon e Intel, além de MSI/EXE para Windows x64. O pipeline verifica versão, commit e checksums de todos os pacotes antes de publicar o release. O app mostra a identidade em **Configurações → Dados** e a exportação inclui versão/commit.
 
 ## Assinatura e notarização
 

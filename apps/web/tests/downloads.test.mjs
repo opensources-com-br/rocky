@@ -69,6 +69,26 @@ test("also accepts checksum manifests without a text extension", () => {
   const releases = [{ tag_name: "v1.0.11", assets: [asset("SHA256SUMS"), packageAsset("1.0.11", "darwin", "universal", "dmg")] }];
   assert.equal(selectInstaller(releases, "macos")?.name, "Rocky-1.0.11-darwin-universal.dmg");
 });
+
+test("rejects unofficial download URLs and malformed API responses", () => {
+  const releases = [{ tag_name: "v1.0.11", assets: [checksum,
+    { ...packageAsset("1.0.11", "darwin", "universal", "dmg"), browser_download_url: "https://example.test/Rocky.dmg" }] }];
+  assert.equal(selectInstaller(releases, "macos"), null);
+  assert.equal(selectInstaller({ message: "rate limited" }, "macos"), null);
+  assert.equal(selectInstaller([{ tag_name: "latest", assets: [checksum] }], "macos"), null);
+});
+
+test("rejects packages for another release, system, tag URL, or unknown CPU", () => {
+  for (const candidate of [packageAsset("1.0.12", "darwin", "universal", "dmg"),
+    packageAsset("1.0.11", "windows", "universal", "dmg"),
+    asset("Rocky-1.0.11-darwin-universal.dmg", "v1.0.12"),
+    packageAsset("1.0.11", "darwin", "armv7", "dmg")]) {
+    assert.equal(selectInstaller([{ tag_name: "v1.0.11", assets: [checksum, candidate] }], "macos"), null);
+  }
+});
+
+test("checks fresh release metadata and propagates API failures for the fallback", async () => {
+  await assert.rejects(findInstaller("macos", "arm64", async (url, options) => {
 test("returns no installer for unsupported systems", () => {
   assert.equal(selectInstaller([{ draft: false, assets: [asset("Rocky.dmg")] }], "unknown"), null);
   assert.equal(selectInstaller([], "macos"), null);

@@ -138,8 +138,8 @@ class UpdateDownloadStateTest {
     }
     @Test fun cancellationBeforeTheWorkerStartsDoesNotLeaveDownloadBusy() = runBlocking {
         val installer = Installer()
-        val state = UpdateDownloadState(installer)
-        state.download(this, AvailableUpdate("v2.0.0", ""))
+        val state = UpdateDownloadState(installer, this)
+        state.download(AvailableUpdate("v2.0.0", ""))
         state.cancel()
         assertEquals(1, installer.cancelled)
         withTimeout(5000) { while (state.busy) delay(10) }

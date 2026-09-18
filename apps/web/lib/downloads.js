@@ -55,7 +55,6 @@ export function selectInstaller(releases, platform, architecture = "unknown") {
     if (universal) return universal;
     const matching = assets.find(asset => assetArchitecture(asset.name) === architecture);
     if (matching) return matching;
-    if (assets.length === 1) return assets[0];
   }
   return null;
 }

@@ -18,3 +18,23 @@ status() {
   printf '%s\n' "$1" > "$job/status.tmp"
   /bin/mv -f "$job/status.tmp" "$job/status"
 }
+
+cleanup() {
+  result=$?
+  trap - EXIT
+  if [ "$finished" -eq 0 ]; then
+    if [ -n "$work" ] && [ -d "$work/Previous.app" ]; then
+      /bin/rm -rf "$target"
+      /bin/mv "$work/Previous.app" "$target" || true
+    fi
+    if [ -f "$job/cancel" ]; then status cancelled; else status failed; fi
+    if [ "$stopped" -eq 1 ]; then /usr/bin/open "$target" || true; fi
+  fi
+  if [ -n "$mount_path" ]; then /usr/bin/hdiutil detach "$mount_path" -quiet || true; fi
+  if [ -n "$work" ] && [ ! -d "$work/Previous.app" ]; then /bin/rm -rf "$work"; fi
+  if [ "$finished" -eq 1 ] && [ -n "$work" ]; then /bin/rm -rf "$work"; fi
+  exit "$result"
+}
+trap cleanup EXIT
+trap 'exit 1' INT TERM
+trap 'printf "Updater failed at line %s\n" "$LINENO" >&2' ERR

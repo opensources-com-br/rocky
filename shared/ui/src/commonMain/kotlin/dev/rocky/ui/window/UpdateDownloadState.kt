@@ -26,7 +26,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
                 prepared = interruptibleWork { service.download(update) { bytes, total ->
                     progress.value = if (total > 0) (bytes.toDouble() / total).toFloat().coerceIn(0f, 1f) else 0f
                 } }
-                notice = "Download verificado. O instalador está pronto para abrir."
+                notice = UpdateDownloadNotice.Verified
             } catch (error: CancellationException) { throw error }
             catch (error: Exception) { notice = "Não foi possível baixar ou verificar o instalador. Tente novamente ou use o download oficial." }
             finally { busy = false; job = null }

@@ -38,3 +38,23 @@ try {
     if ($initialize -le 0 -or $sequence -ge $finalize) { throw 'Unexpected installation transaction boundaries.' }
     if ($remove -ne $sequence) {
         $collision = $database.OpenView("SELECT ``Action`` FROM ``InstallExecuteSequence`` WHERE ``Sequence``=$sequence")
+        try {
+            $collision.Execute()
+            $record = $collision.Fetch()
+            if ($null -ne $record) {
+                [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record)
+                throw "Another installer action already uses sequence $sequence."
+            }
+        } finally {
+            $collision.Close()
+            [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($collision)
+        }
+        $update = $database.OpenView("UPDATE ``InstallExecuteSequence`` SET ``Sequence``=$sequence WHERE ``Action``='RemoveExistingProducts'")
+        try { $update.Execute() }
+        finally {
+            $update.Close()
+            [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($update)
+        }
+        if ((Read-Sequence 'RemoveExistingProducts') -ne $sequence) { throw 'Could not enable transactional upgrade rollback.' }
+        $database.Commit()
+    }

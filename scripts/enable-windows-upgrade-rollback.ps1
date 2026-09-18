@@ -57,7 +57,7 @@ try {
         $update = $database.OpenView("UPDATE ``InstallExecuteSequence`` SET ``Sequence``=$sequence WHERE ``Action``='RemoveExistingProducts'")
         try { [void]$update.Execute() }
         finally {
-            $update.Close()
+            [void]$update.Close()
             [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($update)
         }
         if ((Read-Sequence 'RemoveExistingProducts') -ne $sequence) { throw 'Could not enable transactional upgrade rollback.' }

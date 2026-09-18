@@ -20,6 +20,10 @@ if (System.getProperty("os.name").startsWith("Windows", true)) {
     tasks.matching { it.name == "packageMsi" }.configureEach {
         finalizedBy(configureWindowsUpgrade)
     }
+    // Windows packaging does not create the app image inspected by verify_installation.py.
+    tasks.matching { it.name in setOf("packageMsi", "packageExe") }.configureEach {
+        dependsOn("createDistributable")
+    }
 }
 
 kotlin {

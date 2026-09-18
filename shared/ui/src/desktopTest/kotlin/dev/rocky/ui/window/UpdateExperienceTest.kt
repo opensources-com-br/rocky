@@ -18,3 +18,23 @@ class UpdateExperienceTest {
     private class Installer : UpdateInstaller {
         var opened = 0
         var onDownload: () -> Unit = {}
+        override fun download(update: AvailableUpdate, onProgress: (Long, Long) -> Unit): PreparedUpdate {
+            onDownload()
+            onProgress(10, 10)
+            return PreparedUpdate(update.version, "test-package", "verified")
+        }
+        override fun open(update: PreparedUpdate) { opened++ }
+        override fun cancel() = Unit
+    }
+    @Test fun portugueseSettingsDownloadsBlocksConnectedSessionAndRestartsWhenDisconnected() {
+        val installer = Installer()
+        var blocked by mutableStateOf(true)
+        var restarted = false
+        rule.setContent {
+            val state = rememberUpdateDownloadState(installer)
+            RockyTheme { CompositionLocalProvider(LocalRockyLanguage provides RockyLanguage.PortugueseBrazil) {
+                Column { UpdateDownloadSettings(state, AvailableUpdate("v2.0.0", ""), blocked) {
+                    assertEquals(1, installer.opened); restarted = true; true
+                } }
+            } }
+        }

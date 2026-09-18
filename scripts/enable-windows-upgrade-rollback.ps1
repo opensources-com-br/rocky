@@ -21,7 +21,10 @@ function Read-Sequence([string]$Action) {
         [void]$view.Execute()
         $record = $view.Fetch()
         if ($null -eq $record) { throw "Required installer action is absent: $Action" }
-        try { return [int]$record.IntegerData(1) }
+        try {
+            [int]$value = $record.GetType().InvokeMember('IntegerData', 'GetProperty', $null, $record, @(1))
+            return $value
+        }
         finally { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record) }
     } finally {
         $view.Close()

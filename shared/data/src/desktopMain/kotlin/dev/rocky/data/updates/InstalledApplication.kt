@@ -18,3 +18,20 @@ internal class InstallationEnvironment(
             val locations = listOf(Path.of("/Applications"), userHome.resolve("Applications"))
             if (locations.none { app.target.parent == runCatching { it.toRealPath() }.getOrNull() }) return "not-installed"
             if (!Files.isWritable(app.target.parent)) return "read-only-installation"
+        }
+        return null
+    }
+
+    fun application(): InstalledApplication? = runCatching {
+        val executable = Path.of(launcher ?: return null).toRealPath()
+        val mac = os.startsWith("Mac", true)
+        val target = if (mac) executable.parent.parent.parent else executable.parent
+        val config = if (mac) target.resolve("Contents/app/Rocky.cfg") else target.resolve("app/Rocky.cfg")
+        val runtimeRoot = if (mac) target.resolve("Contents/runtime") else target.resolve("runtime")
+        if (mac && executable != target.resolve("Contents/MacOS/Rocky")) return null
+        if (!mac && (!os.startsWith("Windows", true) || executable.fileName.toString() != "Rocky.exe")) return null
+        if (mac && target.fileName.toString() != "Rocky.app") return null
+        if (!Files.isRegularFile(config) || !runtime.toRealPath().startsWith(runtimeRoot.toRealPath())) return null
+        InstalledApplication(executable, target, mac)
+    }.getOrNull()
+}

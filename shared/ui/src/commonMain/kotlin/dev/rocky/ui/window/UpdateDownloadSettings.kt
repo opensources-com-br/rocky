@@ -8,9 +8,8 @@ import androidx.compose.ui.platform.testTag
 import dev.rocky.core.updates.AvailableUpdate
 
 @Composable
-internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: AvailableUpdate?, blocked: Boolean) {
-    if (!state.supported) return
-    val scope = rememberCoroutineScope()
+internal fun UpdateDownloadSettings(state: UpdateDownloadState, available: AvailableUpdate?, blocked: Boolean,
+    onRestart: () -> Boolean = { false }) {
     val progress by state.progress.collectAsState()
     val latestBlocked by rememberUpdatedState(blocked)
     var confirm by remember { mutableStateOf(false) }

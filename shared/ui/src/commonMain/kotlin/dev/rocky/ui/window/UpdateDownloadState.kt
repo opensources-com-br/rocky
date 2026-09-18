@@ -37,7 +37,7 @@ internal class UpdateDownloadState(private val installer: UpdateInstaller?, priv
         if (opening || restarting) return
         job?.cancel()
         installer?.cancel()
-        notice = "Download cancelado. Você pode tentar novamente."
+        notice = UpdateDownloadNotice.Cancelled
     }
 
     fun install(scope: CoroutineScope, canInstall: () -> Boolean) {

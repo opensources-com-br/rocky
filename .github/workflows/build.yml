@@ -41,6 +41,9 @@ jobs:
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v6
       - run: python -m unittest discover -s scripts/tests
+      - name: Exercise Windows upgrade and restart
+        if: runner.os == 'Windows'
+        run: ./scripts/smoke-update-windows.ps1
       - run: ./gradlew build
       - name: Preserve test failures
         if: failure()

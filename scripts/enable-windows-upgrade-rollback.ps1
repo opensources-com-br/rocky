@@ -58,3 +58,8 @@ try {
         if ((Read-Sequence 'RemoveExistingProducts') -ne $sequence) { throw 'Could not enable transactional upgrade rollback.' }
         $database.Commit()
     }
+    Write-Output "Upgrade rollback enabled: RemoveExistingProducts sequence $sequence."
+} finally {
+    if ($null -ne $database) { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($database) }
+    [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($installer)
+}

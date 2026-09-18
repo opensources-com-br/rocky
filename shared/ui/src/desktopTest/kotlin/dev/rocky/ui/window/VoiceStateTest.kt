@@ -152,7 +152,7 @@ class VoiceStateTest {
 
     @Test fun transcribesAfterSpeechEndsBeforeTheCaptureLimit() = runBlocking {
         val service = FakeVoiceService().apply { supportsLevel = true; level = 0.2f }
-        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 3_000) {}
+        val state = VoiceState(service, readyConfiguration, captureDurationMillis = 30_000) {}
         var received = false
         state.enableListener(this) { received = true }
         waitUntil { state.capturing }

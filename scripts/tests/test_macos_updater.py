@@ -58,3 +58,23 @@ else:
 class MacosUpdaterTest(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory(prefix='rocky updater ')
+        self.addCleanup(temporary.cleanup)
+        self.root = pathlib.Path(temporary.name).resolve()
+        self.target = self.root / 'Applications/Rocky.app'
+        self.payload = self.root / 'payload/Rocky.app'
+        self.job = self.root / 'job'; self.job.mkdir()
+        self.package = self.root / 'Rocky.dmg'
+        self.package.write_bytes(b'only a disk-image fixture, never mounted')
+        self.digest = hashlib.sha256(self.package.read_bytes()).hexdigest()
+        self.create_app(self.target, 'old', '1.0.0')
+        self.create_app(self.payload, 'new', '2.0.0')
+        self.environment = dict(os.environ, ROCKY_TEST_ROOT=str(self.root))
+        self.helper = self.root / 'install-macos.sh'
+        source = HELPER.read_text()
+        allowed = '/Applications/Rocky.app|"$HOME/Applications/Rocky.app"'
+        self.assertIn(allowed, source)
+        source = source.replace(allowed, shlex.quote(str(self.target)))
+        for command in ('plutil', 'hdiutil', 'codesign', 'ditto', 'open', 'ps'):
+            stub = self.root / command
+            stub.write_text(STUB); stub.chmod(0o700)
+            absolute = ('/bin/' if command == 'ps' else '/usr/bin/') + command

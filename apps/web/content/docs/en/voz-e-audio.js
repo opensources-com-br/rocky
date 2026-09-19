@@ -6,7 +6,7 @@ const content = {
     { type: "h2", text: "Voice output" },
     { type: "para", text: "Under Voice, choose the provider and test playback. System voice uses say on macOS and System.Speech on Windows. On Mac, this option uses system volume. ElevenLabs allows volume control in the app. Piper, ducking, and output selection are not implemented." },
     { type: "h2", text: "ElevenLabs" },
-    { type: "para", text: "Select ElevenLabs, save your key, and click Load voices and models. Choose both or enter their IDs manually. The key uses the system vault. Tests and answers send text to ElevenLabs and may consume credits. Audio plays as it arrives; key, permission, and quota failures appear in the panel. The local fallback is optional and only applies before playback starts." },
+    { type: "para", text: "Select ElevenLabs, save your key, and click Load voices and models. Choose both or enter their IDs manually; the initial model is eleven_flash_v2_5. The key uses the system vault. Tests and answers send text to ElevenLabs and may consume credits. Audio plays as it arrives; key, permission, and quota failures appear in the panel. The local fallback is optional and only applies before playback starts." },
     { type: "h2", text: "Recognition" },
     { type: "para", text: "On macOS with Homebrew, Set up voice recognition installs whisper.cpp and downloads the managed model. On Windows, manually select the whisper-cli executable, GGML model, and microphone. Setup requires network access; transcription is local." },
     { type: "h2", text: "How to speak" },

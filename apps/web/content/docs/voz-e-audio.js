@@ -16,7 +16,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Selecione ElevenLabs, salve sua chave e clique em Carregar vozes e modelos. Escolha ambos ou informe os IDs manualmente. A chave usa o cofre do sistema. Testes e respostas enviam texto à ElevenLabs e podem consumir créditos. O áudio toca enquanto chega; falhas de chave, permissão e quota aparecem no painel. A alternativa local é opcional e só atua antes de começar a reprodução."
+      "text": "Selecione ElevenLabs, salve sua chave e clique em Carregar vozes e modelos. Escolha ambos ou informe os IDs manualmente; o modelo inicial é eleven_flash_v2_5. A chave usa o cofre do sistema. Testes e respostas enviam texto à ElevenLabs e podem consumir créditos. O áudio toca enquanto chega; falhas de chave, permissão e quota aparecem no painel. A alternativa local é opcional e só atua antes de começar a reprodução."
     },
     {
       "type": "h2",

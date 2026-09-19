@@ -18,7 +18,7 @@ const content = {
       "Ctrl + Shift + F8: capture a direct command without saying Rocky.",
       "Ctrl + Shift + F9: mute or resume voice.",
       "Ctrl + Shift + F10: show or hide the window.",
-      "On Mac, use Control; some keyboards also require Fn. Under Voice, choose three distinct keys between F1 and F12."
+      "On Mac, use Control; some keyboards also require Fn. The current shortcuts use F8, F9, and F10."
     ] },
     { type: "h2", text: "Window" },
     { type: "para", text: "The expanded window position and size are persisted. Use compact mode and always-on-top controls as needed for your stream." }

@@ -34,7 +34,7 @@ const content = {
         "Ctrl + Shift + F8: capturar um comando direto, sem precisar dizer Rocky.",
         "Ctrl + Shift + F9: silenciar ou retomar a voz.",
         "Ctrl + Shift + F10: mostrar ou ocultar a janela.",
-        "No Mac, use Control; alguns teclados também exigem Fn. Em Voz, escolha três teclas distintas entre F1 e F12."
+        "No Mac, use Control; alguns teclados também exigem Fn. Os atalhos atuais usam F8, F9 e F10."
       ]
     },
     {

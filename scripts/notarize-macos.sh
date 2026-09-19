@@ -9,7 +9,7 @@ rocky_app="$rocky_root/apps/desktop/build/compose/binaries/main/app/Rocky.app"
 security unlock-keychain -p "$ROCKY_MAC_KEYCHAIN_PASSWORD" "$ROCKY_MAC_KEYCHAIN"
 codesign --verify --deep --strict "$rocky_app"
 # An ad-hoc signature is not a distributable Developer ID signature.
-codesign -dv "$rocky_app" 2>&1 | grep -q 'Authority=Developer ID Application:'
+codesign -dvv "$rocky_app" 2>&1 | grep 'Authority=Developer ID Application:' >/dev/null
 shopt -s nullglob
 rocky_packages=("$rocky_root"/apps/desktop/build/compose/binaries/main/dmg/*.dmg)
 [ "${#rocky_packages[@]}" -eq 1 ] || { echo 'Expected exactly one candidate DMG.' >&2; exit 1; }

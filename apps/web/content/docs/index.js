@@ -34,14 +34,14 @@ import enContributing from "./en/contributing";
 import enUseCases from "./en/use-cases";
 
 const pageIds = {
-  introduction: [introducao, "Introdução", enIntroducao],
-  installation: [instalacao, "Instalação", enInstalacao],
-  firstStream: [primeiraLive, "Primeira live", enPrimeiraLive],
-  concepts: [conceitos, "Conceitos", enConceitos],
-  platforms: [plataformas, "Plataformas", enPlataformas],
-  aiModel: [modeloDeIa, "Modelo de IA", enModeloDeIa],
-  voiceAudio: [vozEAudio, "Voz e áudio", enVozEAudio],
-  agentBehavior: [comportamentoDoAgente, "Comportamento do agente", enComportamentoDoAgente],
+  introduction: [introduction, "Introdução", enIntroduction],
+  installation: [installation, "Instalação", enInstallation],
+  firstStream: [firstStream, "Primeira live", enFirstStream],
+  concepts: [concepts, "Conceitos", enConcepts],
+  platforms: [platforms, "Plataformas", enPlatforms],
+  aiModel: [aiModel, "Modelo de IA", enAiModel],
+  voiceAudio: [voiceAudio, "Voz e áudio", enVoiceAudio],
+  agentBehavior: [agentBehavior, "Comportamento do agente", enAgentBehavior],
   chatQuestions: [chatUnificado, "Chat e perguntas", enChatUnificado],
   superchats: [superchats, "Superchats", enSuperchats],
   notesIdeas: [notasEIdeias, "Notas e ideias", enNotasEIdeias],

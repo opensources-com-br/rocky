@@ -2,7 +2,7 @@
 
 ## Usar no desktop
 
-A partir de **1.0.12-alpha.1**, o Rocky verifica releases oficiais ao abrir (opção em Configurações → Dados). O aviso **Atualizar** baixa o pacote correto para Windows x64, macOS Intel ou Apple Silicon. Também é possível usar **Verificar atualizações** nas configurações. Downloads têm progresso, cancelamento e verificação de tamanho e SHA-256.
+A partir de **1.0.12-alpha.2**, o Rocky verifica releases oficiais ao abrir (opção em Configurações → Dados). O aviso **Atualizar** baixa o pacote correto para Windows x64, macOS Intel ou Apple Silicon. Também é possível usar **Verificar atualizações** nas configurações. Downloads têm progresso, cancelamento e verificação de tamanho e SHA-256.
 
 Depois do download, **Atualizar e reiniciar** prepara o instalador, salva a sessão e encerra o app. Um processo separado aguarda o Rocky sair, instala a nova versão e abre o Rocky novamente. A instalação fica bloqueada enquanto houver uma plataforma conectada ou em conexão. O Windows pode solicitar autorização do sistema; o computador não é reiniciado automaticamente.
 
@@ -35,7 +35,7 @@ Tags `-alpha.N` criam prereleases; tags sem sufixo criam releases estáveis. Cli
 
 ## English
 
-Starting with **1.0.12-alpha.1**, choose **Update**, then **Update and restart**, or use Settings → Data. Rocky downloads and verifies the matching official installer, saves the session, exits, updates the existing installation, and relaunches. Active platform sessions block installation. Notes, preferences, credentials, and voice models are preserved. Older versions need one update through their existing installer flow to gain this capability; uninstalling is unnecessary.
+Starting with **1.0.12-alpha.2**, choose **Update**, then **Update and restart**, or use Settings → Data. Rocky downloads and verifies the matching official installer, saves the session, exits, updates the existing installation, and relaunches. Active platform sessions block installation. Notes, preferences, credentials, and voice models are preserved. Older versions need one update through their existing installer flow to gain this capability; uninstalling is unnecessary.
 
 macOS requires a writable installation in Applications and preserves the existing Developer ID team. It stages the app on the same volume and restores the previous bundle if replacement or launch fails. Windows uses the existing MSI upgrade identity and installation location, with transactional rollback and an optional system permission prompt. It never automatically reboots the computer. Logs and the next-start result are available through Settings → Data.
 

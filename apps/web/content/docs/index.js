@@ -23,15 +23,15 @@ import enPlatforms from "./en/platforms";
 import enAiModel from "./en/ai-model";
 import enVoiceAudio from "./en/voice-audio";
 import enAgentBehavior from "./en/agent-behavior";
-import enChatUnificado from "./en/chat-unificado";
+import enUnifiedChat from "./en/unified-chat";
 import enSuperchats from "./en/superchats";
-import enNotasEIdeias from "./en/notas-e-ideias";
-import enResumoPosLive from "./en/resumo-pos-live";
-import enConfigToml from "./en/config-toml";
-import enModelosLocais from "./en/modelos-locais";
+import enNotesIdeas from "./en/notes-ideas";
+import enPostStreamSummary from "./en/post-stream-summary";
+import enDataConfiguration from "./en/data-configuration";
+import enLocalModels from "./en/local-models";
 import enPlugins from "./en/plugins";
-import enContribuir from "./en/contribuir";
-import enDepoimentos from "./en/depoimentos";
+import enContributing from "./en/contributing";
+import enUseCases from "./en/use-cases";
 
 const pageIds = {
   introduction: [introducao, "Introdução", enIntroducao],

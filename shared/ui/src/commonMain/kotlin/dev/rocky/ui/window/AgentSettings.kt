@@ -91,11 +91,11 @@ internal fun AgentSettings(
         Surface(color = RockyColors.SurfaceElevated, shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(tr("Automatic interruption", "Interrupção automática"), style = MaterialTheme.typography.body2)
+                    Text(tr("Voice listener", "Ouvinte de voz"), style = MaterialTheme.typography.body2)
                     Spacer(Modifier.weight(1f))
                     Surface(color = RockyColors.SurfaceSelected, shape = RoundedCornerShape(6.dp)) {
                         Text(
-                            tr("Coming soon", "Em breve"),
+                            tr("Available", "Disponível"),
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             color = RockyColors.TextSecondary,
                             style = MaterialTheme.typography.caption,
@@ -103,8 +103,8 @@ internal fun AgentSettings(
                     }
                 }
                 Text(
-                    text = tr("Voice input currently works by click and does not interrupt the streamer.",
-                        "A entrada de voz atual funciona por clique e não interrompe o streamer."),
+                    text = tr("With recognition ready, the listener starts when a live connects and reacts to the agent name.",
+                        "Com o reconhecimento pronto, o ouvinte inicia ao conectar uma live e reage ao nome do agente."),
                     modifier = Modifier.padding(top = 8.dp),
                     color = RockyColors.TextSecondary,
                     style = MaterialTheme.typography.caption,

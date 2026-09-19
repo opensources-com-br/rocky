@@ -42,15 +42,15 @@ const pageIds = {
   aiModel: [aiModel, "Modelo de IA", enAiModel],
   voiceAudio: [voiceAudio, "Voz e áudio", enVoiceAudio],
   agentBehavior: [agentBehavior, "Comportamento do agente", enAgentBehavior],
-  chatQuestions: [chatUnificado, "Chat e perguntas", enChatUnificado],
+  chatQuestions: [unifiedChat, "Chat e perguntas", enUnifiedChat],
   superchats: [superchats, "Superchats", enSuperchats],
-  notesIdeas: [notasEIdeias, "Notas e ideias", enNotasEIdeias],
-  postStream: [resumoPosLive, "Resumo pós-live", enResumoPosLive],
-  dataConfiguration: [configToml, "Dados e configuração", enConfigToml],
-  localModels: [modelosLocais, "Modelos locais", enModelosLocais],
+  notesIdeas: [notesIdeas, "Notas e ideias", enNotesIdeas],
+  postStream: [postStreamSummary, "Resumo pós-live", enPostStreamSummary],
+  dataConfiguration: [dataConfiguration, "Dados e configuração", enDataConfiguration],
+  localModels: [localModels, "Modelos locais", enLocalModels],
   plugins: [plugins, "Plugins", enPlugins],
-  contributing: [contribuir, "Contribuir", enContribuir],
-  useCases: [depoimentos, "Cenários de uso", enDepoimentos],
+  contributing: [contributing, "Contribuir", enContributing],
+  useCases: [useCases, "Cenários de uso", enUseCases],
 };
 
 const groups = [

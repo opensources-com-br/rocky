@@ -1,6 +1,6 @@
 const content = {
   "group": "Começando",
-  "lead": "Instale Rocky para macOS ou Windows pela página de releases de opensources-com-br/rocky. As versões com atualização integrada permitem instalar as próximas versões pelo próprio aplicativo.",
+  "lead": "Baixe Rocky para macOS ou Windows pelo botão do site. Ele seleciona o instalador oficial compatível; depois, as próximas versões podem ser instaladas pelo próprio aplicativo.",
   "blocks": [
     {
       "type": "h2",
@@ -24,7 +24,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Voz é opcional e requer acesso ao microfone. Atalhos globais dependem das permissões e disponibilidade do sistema; confira o estado de registro nas configurações de Voz. É possível começar pelas ações rápidas de análise sem configurar microfone."
+      "text": "Voz é opcional e requer acesso ao microfone. Os atalhos globais dependem das permissões e disponibilidade do sistema. É possível começar pelas ações rápidas de análise sem configurar microfone."
     },
     {
       "type": "h2",

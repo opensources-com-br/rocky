@@ -1,4 +1,4 @@
-// Casos preservados para reativação futura.
+// Cases preserved for future reactivation.
 /*
 import julia from "./julia";
 import marcos from "./marcos";

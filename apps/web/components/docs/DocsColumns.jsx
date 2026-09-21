@@ -7,12 +7,6 @@ import DocsArticle from "./DocsArticle";
 export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, locale, nav, nextTitle, pageGroup, pageLead, pageTitle, prevTitle, toc }) {
   return (<>
 <SiteFrame className="docs-columns">
-<div style={{"position": "absolute", "top": "0", "bottom": "0", "left": "214px", "width": "1px", "background": "rgba(255,255,255,.07)", "pointerEvents": "none"}}>
-
-</div>
-<div style={{"position": "absolute", "top": "0", "bottom": "0", "right": "200px", "width": "1px", "background": "rgba(255,255,255,.07)", "pointerEvents": "none"}}>
-
-</div>
 <div style={{"position": "sticky", "top": "var(--site-nav-height)", "padding": "var(--site-heading-space) 18px var(--site-section-space)", "maxHeight": "calc(100dvh - var(--site-nav-height))", "overflowY": "auto"}} className="sticky-panel">
 {nav.map((group, index) => <React.Fragment key={group?.id ?? group?.name ?? index}>
 <div style={{"display": "flex", "flexDirection": "column", "gap": "2px", "marginBottom": "22px"}}>

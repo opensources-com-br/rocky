@@ -36,10 +36,10 @@ export function docsView(selectedPage, onNavigate, locale) {
       nav: nav.map((g) => ({
         title: g.title,
         items: g.items.map((id) => ({
+          id,
           name: pages[id].title,
           go: () => onNavigate(id),
-          color: id === page ? "#f2efec" : "rgba(255,255,255,.48)",
-          bg: id === page ? "rgba(255,255,255,.07)" : "transparent",
+          selected: id === page,
         })),
       })),
       toc: data.blocks.filter((b) => b.type === "h2").map((b) => ({ name: b.text, href: "#" + slug(b.text) })),

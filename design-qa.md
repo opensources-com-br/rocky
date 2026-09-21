@@ -1,3 +1,21 @@
+# Design QA — selectable docs navigation, 2026-09-20
+- Source visual truth: `design-qa-docs-navigation-reference.png` (465 × 994 px).
+- Implementation: `design-qa-docs-navigation.png` (293 × 626 px browser capture).
+- Combined comparison: `design-qa-docs-navigation-comparison.png`, normalized to 293 × 626 px per panel.
+- Viewport: 466 × 994 CSS px, mobile, dark theme; source uses a light theme.
+- State: English introduction with both mobile navigation controls collapsed.
+- Full-view and focused evidence: the same comparison covers the header, controls, article hierarchy, and first content section.
+## Findings and verification
+- No actionable P0, P1, or P2 differences remain; Rocky keeps its existing palette while matching the reference structure.
+- Typography, spacing, dividers, responsive order, and disclosure chevrons preserve the reference hierarchy without clipping.
+- Existing Lucide icons are sharp; this screen needs no raster product imagery or generated assets.
+- Sidebar selection updates the article and closes the menu; the contents menu opens, navigates to anchors, and closes.
+- Desktop and mobile states work in English and Portuguese; navigation labels are localized and expose current/expanded state.
+- Browser diagnostics contain no errors. Tests, lint, type checking, static generation, and production compilation pass.
+- First pass exposed an English accessibility label in Portuguese; it was localized before the final capture.
+final result: passed
+---
+
 # Design QA — web frame alignment
 
 > Historical visual checkpoint for the referenced screenshots. This records the layout at that review, not a current documentation audit or a guarantee for later changes. Temporary source images may no longer be available.

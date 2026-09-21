@@ -103,7 +103,16 @@ html { scrollbar-gutter: stable; }
   .site-navigation { gap: 20px; }
   .site-github-link { display: none !important; }
   .docs-columns { grid-template-columns: minmax(0, 1fr); }
-  .docs-columns > .sticky-panel { border-bottom: var(--site-border); }
+  .docs-sidebar, .docs-toc {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    border: 0;
+    border-bottom: var(--site-border);
+  }
+  .docs-toc { order: 2; }
+  .docs-article { order: 3; }
 }
 @media (max-width: 480px) {
   :root { --site-gutter: 16px; --site-nav-height: 96px; }

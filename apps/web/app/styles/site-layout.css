@@ -72,6 +72,22 @@ html { scrollbar-gutter: stable; }
 .docs-nav-item:hover { background: rgba(255,255,255,.035); color: rgba(255,255,255,.78); }
 .docs-nav-item:focus-visible { outline: 2px solid #d4703c; outline-offset: 2px; }
 .docs-nav-item[aria-current="page"] { background: rgba(255,255,255,.07); color: #f2efec; }
+.docs-toc { padding: var(--site-heading-space) 20px var(--site-section-space); border-left: var(--site-border); }
+.docs-toc-links { display: flex; flex-direction: column; gap: 10px; }
+.docs-toc-links > span {
+  color: rgba(255,255,255,.35);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+}
+.docs-toc-links a { color: rgba(255,255,255,.45); font-size: 13px; line-height: 1.4; }
+.docs-toc-links a:hover { color: #f2efec; }
+.docs-toc-links .docs-repository-link {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: var(--site-border);
+  color: rgba(255,255,255,.4);
+}
 @media (min-width: 801px) and (max-width: 1024px) {
   .docs-columns { grid-template-columns: 214px minmax(0, 1fr); }
   .docs-columns > .sticky-panel:last-child,

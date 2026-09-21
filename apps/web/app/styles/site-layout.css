@@ -45,6 +45,18 @@ html { scrollbar-gutter: stable; }
   overflow-wrap: anywhere;
 }
 .docs-article [id] { scroll-margin-top: calc(var(--site-nav-height) + 24px); }
+.docs-sidebar, .docs-toc {
+  position: sticky;
+  top: var(--site-nav-height);
+  box-sizing: border-box;
+  max-height: calc(100dvh - var(--site-nav-height));
+  overflow-y: auto;
+}
+.docs-sidebar { padding: var(--site-heading-space) 18px var(--site-section-space); border-right: var(--site-border); }
+.docs-menu-toggle, .docs-toc-toggle { display: none; }
+.docs-sidebar-list { display: flex; flex-direction: column; gap: 22px; }
+.docs-nav-group { display: flex; flex-direction: column; gap: 2px; }
+.docs-nav-group h2 { margin: 0; padding: 0 10px 8px; font-size: 12.5px; font-weight: 600; }
 @media (min-width: 801px) and (max-width: 1024px) {
   .docs-columns { grid-template-columns: 214px minmax(0, 1fr); }
   .docs-columns > .sticky-panel:last-child,

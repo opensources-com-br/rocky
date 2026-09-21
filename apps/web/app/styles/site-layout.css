@@ -129,6 +129,13 @@ html { scrollbar-gutter: stable; }
     cursor: pointer;
   }
   .docs-menu-toggle strong, .docs-toc-toggle strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+  .docs-menu-toggle > span, .docs-toc-toggle > span { color: rgba(255,255,255,.5); font-size: 13px; }
+  .docs-menu-toggle svg, .docs-toc-toggle svg { transition: transform .2s ease; }
+  .docs-sidebar[data-open="true"] .docs-menu-toggle svg,
+  .docs-toc[data-open="true"] .docs-toc-toggle svg { transform: rotate(180deg); }
+  .docs-sidebar-list, .docs-toc-links { display: none; }
+  .docs-sidebar[data-open="true"] .docs-sidebar-list { display: flex; padding: 8px var(--site-gutter) 24px; }
+  .docs-toc[data-open="true"] .docs-toc-links { display: flex; padding: 8px var(--site-gutter) 24px; }
 }
 @media (max-width: 480px) {
   :root { --site-gutter: 16px; --site-nav-height: 96px; }

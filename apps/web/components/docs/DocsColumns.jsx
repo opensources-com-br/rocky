@@ -1,26 +1,11 @@
 import SiteFrame from "@/components/SiteFrame";
-import { Button } from "@/components/ui/button";
-import { localized } from "@/lib/i18n";
-import React from "react";
 import DocsArticle from "./DocsArticle";
+import DocsSidebar from "./DocsSidebar";
 
 export default function DocsColumns({ blocks, goNext, goPrev, hasNext, hasPrev, locale, nav, nextTitle, pageGroup, pageLead, pageTitle, prevTitle, toc }) {
   return (<>
 <SiteFrame className="docs-columns">
-<div style={{"position": "sticky", "top": "var(--site-nav-height)", "padding": "var(--site-heading-space) 18px var(--site-section-space)", "maxHeight": "calc(100dvh - var(--site-nav-height))", "overflowY": "auto"}} className="sticky-panel">
-{nav.map((group, index) => <React.Fragment key={group?.id ?? group?.name ?? index}>
-<div style={{"display": "flex", "flexDirection": "column", "gap": "2px", "marginBottom": "22px"}}>
-<span style={{"padding": "0 10px 8px", "fontSize": "12.5px", "fontWeight": "600", "color": "rgba(255,255,255,.85)"}}>
-{group.title}
-</span>
-{group.items.map((item, index) => <React.Fragment key={item?.id ?? item?.name ?? index}>
-<Button variant="ghost" className="reference-button" type="button" style={{"padding": "6px 10px", "borderRadius": "6px", "cursor": "pointer", "fontSize": "13.5px", "color": item.color, "background": item.bg}} onClick={item.go}>
-{item.name}
-</Button>
-</React.Fragment>)}
-</div>
-</React.Fragment>)}
-</div>
+<DocsSidebar nav={nav} pageTitle={pageTitle} />
 <DocsArticle blocks={blocks} goNext={goNext} goPrev={goPrev} hasNext={hasNext} hasPrev={hasPrev} locale={locale} nextTitle={nextTitle} pageGroup={pageGroup} pageLead={pageLead} pageTitle={pageTitle} prevTitle={prevTitle} />
 <div style={{"position": "sticky", "top": "var(--site-nav-height)", "padding": "var(--site-heading-space) 20px var(--site-section-space)", "boxSizing": "border-box", "display": "flex", "flexDirection": "column", "gap": "10px"}} className="sticky-panel">
 <span style={{"fontFamily": "var(--font-geist-mono), monospace", "fontSize": "11px", "letterSpacing": ".1em", "color": "rgba(255,255,255,.35)"}}>

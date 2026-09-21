@@ -113,6 +113,22 @@ html { scrollbar-gutter: stable; }
   }
   .docs-toc { order: 2; }
   .docs-article { order: 3; }
+  .docs-menu-toggle, .docs-toc-toggle {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 58px;
+    border: 0;
+    padding: 0 var(--site-gutter);
+    background: transparent;
+    color: #f2efec;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .docs-menu-toggle strong, .docs-toc-toggle strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 }
 @media (max-width: 480px) {
   :root { --site-gutter: 16px; --site-nav-height: 96px; }

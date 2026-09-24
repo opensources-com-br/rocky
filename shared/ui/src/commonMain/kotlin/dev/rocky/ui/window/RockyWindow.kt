@@ -785,15 +785,7 @@ fun RockyWindow(
                                 else -> false
                             }
                             if (active) {
-                                silenced = false
-                                when (platform) {
-                                    PlatformColor.Twitch -> twitch.disconnect()
-                                    PlatformColor.Kick -> kick.disconnect()
-                                    PlatformColor.YouTube -> youtube.disconnect()
-                                    PlatformColor.Facebook -> facebook.disconnect()
-                                    PlatformColor.TikTok -> tiktok.disconnect()
-                                    else -> Unit
-                                }
+                                disconnectPlatform(platform)
                             }
                         }
                         Divider(color = RockyColors.Divider)

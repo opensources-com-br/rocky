@@ -288,8 +288,14 @@ class RockyVisualCaptureTest {
         rule.onNodeWithText("Conectar YouTube").performScrollTo().performClick()
         rule.runOnIdle { youtube.emit(YouTubeConnectionEvent.Connected(
             YouTubeAccount("channel", "Rocky YouTube"), YouTubeBroadcast("video", "chat", "Live"))) }
+        rule.runOnIdle {
+            twitch.emit(TwitchConnectionEvent.MessageReceived(ChatMessage("t1", "viewer", "Olá Twitch", StreamPlatform.Twitch)))
+            youtube.emit(YouTubeConnectionEvent.MessageReceived(ChatMessage("y1", "viewer", "Olá YouTube", StreamPlatform.YouTube)))
+        }
         rule.onNodeWithText("concluir").performClick()
         rule.onNodeWithText("2 PLATAFORMAS ONLINE").assertExists()
+        rule.onNodeWithText("Olá Twitch").assertExists()
+        rule.onNodeWithText("Olá YouTube").assertExists()
         rule.onNodeWithTag("platform-twitch").performClick()
         rule.onNodeWithText("Desconectar").performClick()
         rule.onNodeWithText("1 PLATAFORMA ONLINE").assertExists()

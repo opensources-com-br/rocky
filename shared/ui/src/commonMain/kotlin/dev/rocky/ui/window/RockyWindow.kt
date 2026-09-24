@@ -395,6 +395,26 @@ fun RockyWindow(
             facebook.disconnect(); tiktok.disconnect()
             return true
         }
+        fun disconnectPlatform(platform: PlatformColor) {
+            val othersActive = listOf(
+                twitch.isRealSession && platform != PlatformColor.Twitch,
+                kick.isActive && platform != PlatformColor.Kick,
+                youtube.isActive && platform != PlatformColor.YouTube,
+                facebook.isActive && platform != PlatformColor.Facebook,
+                tiktok.isActive && platform != PlatformColor.TikTok,
+            ).any { it }
+            if (!othersActive && !workspace.finish(currentTimeLabel())) return
+            silenced = false
+            when (platform) {
+                PlatformColor.Twitch -> twitch.disconnect()
+                PlatformColor.Kick -> kick.disconnect()
+                PlatformColor.YouTube -> youtube.disconnect()
+                PlatformColor.Facebook -> facebook.disconnect()
+                PlatformColor.TikTok -> tiktok.disconnect()
+                else -> Unit
+            }
+            if (!othersActive) { turns.reset(); voice.resetSession(); ai.resetSession() }
+        }
         fun saveAnswer(entry: ConversationEntry, target: VoiceSaveTarget): Boolean {
             val note = suggestionNote(entry.answer, entry.sources, currentTimeLabel()).copy(
                 id = "${entry.answer.id}-${target.name}",

@@ -41,6 +41,14 @@ const content = {
     },
     {
       "type": "h2",
+      "text": "Várias plataformas conectadas"
+    },
+    {
+      "type": "para",
+      "text": "A aba Conversa combina mensagens das conexões ativas, mas os registros usam uma única sessão por vez. Com várias plataformas conectadas, a sessão de registros segue a primeira disponível nesta ordem: Twitch, Kick, YouTube, Facebook e TikTok. Para separar notas e resumos por live, conecte uma plataforma de cada vez."
+    },
+    {
+      "type": "h2",
       "text": "Tempo da sessão"
     },
     {

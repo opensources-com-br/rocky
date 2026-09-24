@@ -8,7 +8,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Perguntas detectadas por regras de texto são agrupadas por semelhança e salvas por live. Use a fila para consultar fontes e marcar pendentes ou respondidas. A detecção pode deixar perguntas de fora; não garante equivalência semântica nem identifica automaticamente tudo que foi respondido em voz alta."
+      "text": "Perguntas detectadas por regras de texto são agrupadas por semelhança e salvas por sessão Rocky. Use a fila para consultar fontes e marcar pendentes ou respondidas. A detecção pode deixar perguntas de fora; não garante equivalência semântica nem identifica automaticamente tudo que foi respondido em voz alta."
     },
     {
       "type": "h2",

@@ -5,6 +5,17 @@ import org.junit.Test
 import org.junit.Assert.*
 
 class LiveWorkspaceTest {
+    @Test fun keepsOneSessionUntilAllPlatformsDisconnect() {
+        val records = LocalNotesState(TransientNoteRepository())
+        val workspace = LiveWorkspace(records)
+        workspace.start("twitch", "Rocky", 1000)
+        workspace.start("kick", "Kick", 2000)
+        assertEquals("twitch", workspace.decorate(LiveNote("n", "Note", "now", "NOTE"), 3000).sessionId)
+        assertEquals(2000L, workspace.offset(3000))
+        assertTrue(workspace.finish("end"))
+        workspace.start("kick", "Rocky", 2000)
+        assertEquals("kick", workspace.sessionId)
+    }
     @Test fun summarizesOnlyCurrentRecordsAndPersistsOnce() {
         val repo = TransientNoteRepository()
         val records = LocalNotesState(repo)

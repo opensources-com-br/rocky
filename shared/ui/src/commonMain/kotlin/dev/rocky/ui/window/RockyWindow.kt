@@ -259,25 +259,22 @@ fun RockyWindow(
         LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId,
             facebook.phase, facebook.sessionId, tiktok.phase, tiktok.sessionId) {
             val sessionLabel = "Rocky · ${currentTimeLabel()}"
-            when {
-                twitch.phase == TwitchConnectionPhase.Connected -> workspace.start(
+            if (twitch.phase == TwitchConnectionPhase.Connected) workspace.start(
                     twitch.sessionId, sessionLabel,
                     twitch.startedAtMillis ?: currentTimeMillis())
-                kick.isConnected -> workspace.start(
+            if (kick.isConnected) workspace.start(
                     kick.sessionId, sessionLabel,
                     kick.startedAtMillis ?: currentTimeMillis())
-                youtube.isConnected -> workspace.start(
+            if (youtube.isConnected) workspace.start(
                     youtube.sessionId, sessionLabel,
                     youtube.startedAtMillis ?: currentTimeMillis())
-                facebook.isConnected -> workspace.start(
+            if (facebook.isConnected) workspace.start(
                     facebook.sessionId, sessionLabel,
                     facebook.startedAtMillis ?: currentTimeMillis())
-                tiktok.isConnected -> workspace.start(
+            if (tiktok.isConnected) workspace.start(
                     tiktok.sessionId, sessionLabel,
                     tiktok.startedAtMillis ?: currentTimeMillis())
-                !liveActive && workspace.sessionId.isNotBlank() ->
-                    if (workspace.finish(currentTimeLabel())) ai.resetSession()
-            }
+            if (!liveActive && workspace.sessionId.isNotBlank() && workspace.finish(currentTimeLabel())) ai.resetSession()
         }
         val sessionStatus = when {
             liveConnected -> LiveSessionStatus.Running

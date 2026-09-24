@@ -1,6 +1,6 @@
 const content = {
   "group": "Recursos",
-  "lead": "Notas e ideias são registros locais que você cria, edita, pesquisa e organiza por live. Ideias não são geradas e salvas automaticamente.",
+  "lead": "Notas e ideias são registros locais que você cria, edita, pesquisa e organiza por sessão Rocky. Ideias não são geradas e salvas automaticamente.",
   "blocks": [
     {
       "type": "h2",
@@ -21,7 +21,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Busque texto, filtre registros por live e marque ideias realizadas. Perguntas detectadas pela fila são salvas automaticamente; isso não significa que Rocky registra todas as promessas ou problemas da transmissão."
+      "text": "Busque texto, filtre registros por sessão e marque ideias realizadas. Perguntas detectadas pela fila são salvas automaticamente; isso não significa que Rocky registra todas as promessas ou problemas da transmissão."
     },
     {
       "type": "h2",

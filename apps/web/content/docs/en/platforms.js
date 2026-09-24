@@ -33,6 +33,8 @@ const content = {
       "In Rocky, open Settings → Platforms → TikTok LIVE, enter the username, and choose Connect TikTok.",
       "The connection does not request a password or cookies. It uses the unofficial WebCast protocol through TikTokLiveJava and the Eulerstream service; TikTok changes may interrupt the feature."
     ] },
+    { type: "h2", text: "Simultaneous connections" },
+    { type: "para", text: "You can connect more than one platform and disconnect each separately. Conversation combines received messages; notes, questions, and the summary stay in one Rocky session until the last platform disconnects." },
     { type: "h2", text: "Data and permissions" },
     { type: "para", text: "Twitch uses Device Code Flow and EventSub WebSocket. Kick uses OAuth 2.1 and signed webhooks. YouTube and Facebook use OAuth and periodically poll chat. TikTok uses the public channel username and unofficial WebCast through Eulerstream. Client Secrets and App Secrets use the system vault; tokens remain in memory only." },
     { type: "h2", text: "What is not integrated" },

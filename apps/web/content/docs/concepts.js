@@ -53,7 +53,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "Momentos e registros associados à live usam o tempo desde o início da conexão. Esse tempo não é necessariamente o timestamp do vídeo publicado."
+      "text": "Momentos e registros usam o tempo desde o início da sessão Rocky. Esse tempo não é necessariamente o timestamp do vídeo publicado, especialmente quando há várias plataformas conectadas."
     }
   ]
 };

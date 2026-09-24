@@ -12,7 +12,7 @@ const portuguese = [
   {
     "tag": "IDEIAS",
     "title": "Organize suas pautas",
-    "text": "Peça ideias à IA, salve as que escolher e marque as realizadas. Filtre os registros por live."
+    "text": "Peça ideias à IA, salve as que escolher e marque as realizadas. Filtre os registros por sessão."
   },
   {
     "tag": "MOMENTOS",
@@ -45,7 +45,7 @@ const english = [
   {
     "tag": "IDEAS",
     "title": "Organize your topics",
-    "text": "Ask AI for ideas, save the ones you choose, and mark completed ideas. Filter records by stream."
+    "text": "Ask AI for ideas, save the ones you choose, and mark completed ideas. Filter records by session."
   },
   {
     "tag": "MOMENTS",

@@ -16,7 +16,7 @@ const content = {
     { type: "h2", text: "Multiple connected platforms" },
     { type: "para", text: "Conversation combines messages from active connections. Notes, ideas, questions, and the summary belong to one Rocky session, which remains open until every platform disconnects. Connect one platform at a time if you need separate records and summaries for each stream." },
     { type: "h2", text: "Session time" },
-    { type: "para", text: "Moments and stream-related records use elapsed time since the connection began. This time is not necessarily the timestamp in the published video." }
+    { type: "para", text: "Moments and records use elapsed time since the Rocky session began. This is not necessarily the timestamp in a published video, especially with several platforms connected." }
   ]
 };
 

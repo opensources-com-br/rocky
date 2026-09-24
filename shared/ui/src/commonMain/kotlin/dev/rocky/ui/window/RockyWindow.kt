@@ -576,8 +576,7 @@ fun RockyWindow(
                             twitch.connect(twitchClientId)
                         },
                         onDisconnect = {
-                            silenced = false
-                            twitch.disconnect()
+                            disconnectPlatform(PlatformColor.Twitch)
                         },
                         onOpenBrowser = onOpenTwitchAuthorization,
                         kickConfiguration = kickConfiguration,
@@ -589,8 +588,7 @@ fun RockyWindow(
                             kick.connect(configuration)
                         },
                         onDisconnectKick = {
-                            silenced = false
-                            kick.disconnect()
+                            disconnectPlatform(PlatformColor.Kick)
                         },
                         onOpenKickBrowser = onOpenKickAuthorization,
                         youtubeConfiguration = youtubeConfiguration,
@@ -602,8 +600,7 @@ fun RockyWindow(
                             youtube.connect(configuration)
                         },
                         onDisconnectYouTube = {
-                            silenced = false
-                            youtube.disconnect()
+                            disconnectPlatform(PlatformColor.YouTube)
                         },
                         onOpenYouTubeBrowser = onOpenYouTubeAuthorization,
                         facebookConfiguration = facebookConfiguration,
@@ -615,8 +612,7 @@ fun RockyWindow(
                             facebook.connect(configuration)
                         },
                         onDisconnectFacebook = {
-                            silenced = false
-                            facebook.disconnect()
+                            disconnectPlatform(PlatformColor.Facebook)
                         },
                         onOpenFacebookBrowser = onOpenFacebookAuthorization,
                         tiktokConfiguration = tiktokConfiguration,
@@ -628,8 +624,7 @@ fun RockyWindow(
                             tiktok.connect(configuration)
                         },
                         onDisconnectTikTok = {
-                            silenced = false
-                            tiktok.disconnect()
+                            disconnectPlatform(PlatformColor.TikTok)
                         },
                     )
                 }

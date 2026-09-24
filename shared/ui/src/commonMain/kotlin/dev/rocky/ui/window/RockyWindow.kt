@@ -609,7 +609,7 @@ fun RockyWindow(
                         },
                         onDisconnectTikTok = {
                             silenced = false
-                            finishLive()
+                            tiktok.disconnect()
                         },
                     )
                 }
@@ -771,7 +771,14 @@ fun RockyWindow(
                             }
                             if (active) {
                                 silenced = false
-                                finishLive()
+                                when (platform) {
+                                    PlatformColor.Twitch -> twitch.disconnect()
+                                    PlatformColor.Kick -> kick.disconnect()
+                                    PlatformColor.YouTube -> youtube.disconnect()
+                                    PlatformColor.Facebook -> facebook.disconnect()
+                                    PlatformColor.TikTok -> tiktok.disconnect()
+                                    else -> Unit
+                                }
                             }
                         }
                         Divider(color = RockyColors.Divider)

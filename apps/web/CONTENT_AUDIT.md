@@ -1,4 +1,4 @@
-# Web content audit · 2026-09-23
+# Web content audit · 2026-09-24
 
 Scope: landing page, 17 documentation topics, showcase coming-soon notice, disabled contribution action, preview labels and release copy. Authority: the current desktop source, cross-checked with the repository guides. This is a content audit, not launch certification or a hardware test.
 

@@ -274,7 +274,8 @@ fun RockyWindow(
                 tiktok.isConnected -> workspace.start(
                     tiktok.sessionId, sessionLabel,
                     tiktok.startedAtMillis ?: currentTimeMillis())
-                !liveActive -> workspace.finish(currentTimeLabel())
+                !liveActive && workspace.sessionId.isNotBlank() ->
+                    if (workspace.finish(currentTimeLabel())) ai.resetSession()
             }
         }
         val sessionStatus = when {

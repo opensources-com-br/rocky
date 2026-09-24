@@ -8,18 +8,19 @@ class LiveWorkspaceTest {
     @Test fun excludesPreviousChatFromNewSession() {
         val workspace = LiveWorkspace(LocalNotesState(TransientNoteRepository()))
         workspace.start("first", "Rocky", 1000)
-        val old = ChatMessage("old", "viewer", "Old", StreamPlatform.Twitch, receivedAtMillis = 1500)
+        val old = ChatMessage("old", "viewer", "Old", StreamPlatform.Twitch, sessionId = "first")
         assertTrue(workspace.includes(old))
         assertTrue(workspace.finish("end"))
         workspace.start("second", "Rocky", 2000)
         assertFalse(workspace.includes(old))
-        assertTrue(workspace.includes(old.copy(id = "new", receivedAtMillis = 2500)))
+        assertTrue(workspace.includes(old.copy(id = "new", sessionId = "second")))
     }
     @Test fun keepsOneSessionUntilAllPlatformsDisconnect() {
         val records = LocalNotesState(TransientNoteRepository())
         val workspace = LiveWorkspace(records)
         workspace.start("twitch", "Rocky", 1000)
         workspace.start("kick", "Kick", 2000)
+        assertTrue(workspace.includes(ChatMessage("k", "viewer", "Question", StreamPlatform.Kick, sessionId = "kick")))
         assertEquals("twitch", workspace.decorate(LiveNote("n", "Note", "now", "NOTE"), 3000).sessionId)
         assertEquals(2000L, workspace.offset(3000))
         assertTrue(workspace.finish("end"))

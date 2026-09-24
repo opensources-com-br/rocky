@@ -1,4 +1,4 @@
-# Web content audit · 2026-09-14
+# Web content audit · 2026-09-23
 
 Scope: landing page, 17 documentation topics, showcase coming-soon notice, disabled contribution action, preview labels and release copy. Authority: the current desktop source, cross-checked with the repository guides. This is a content audit, not launch certification or a hardware test.
 
@@ -14,12 +14,13 @@ Scope: landing page, 17 documentation topics, showcase coming-soon notice, disab
 | Records | User-saved notes/ideas/moments; detected questions persist | `shared/ui/.../VoiceCommand.kt`, `QuestionQueue.kt` |
 | Summary | Deterministic summary of saved session records | `shared/core/.../live/RecordSummary.kt` |
 | Storage | SQLite, system preferences, secure AI/ElevenLabs keys and Kick/YouTube Client Secrets | `docs/PRIVACY.md` |
-| Maintenance | JSON backup/import, local diagnostic, verified installer download; manual installation/restart | `docs/PRIVACY.md`, `shared/ui/.../MaintenanceSettings.kt` |
+| Maintenance | JSON backup/import, local diagnostic, verified installer download and update/restart in current packaged builds | `docs/PRIVACY.md`, `shared/ui/.../MaintenanceSettings.kt` |
+| Multiple platforms | Conversation combines active chats; saved records use one session, prioritized Twitch, Kick, YouTube, Facebook, TikTok | `shared/ui/.../RockyWindow.kt`, `LiveWorkspace.kt` |
 | Packaging | Gradle/Compose, macOS and Windows development installers | `README.md`, `apps/desktop/build.gradle.kts` |
 
 `...` abbreviates `src/commonMain/kotlin/dev/rocky/{ui/window,core}` in the respective module.
 
-Removed unsupported promises: simultaneous multi-platform ingestion, Super Chat reading, automatic clip/idea detection, private OBS monitoring, Piper, generic compatible AI providers, TOML configuration, JavaScript plugins and Homebrew/Tauri installation instructions for Rocky.
+Removed unsupported promises: Super Chat reading, automatic clip/idea detection, private OBS monitoring, Piper, generic compatible AI providers, TOML configuration, JavaScript plugins and Homebrew/Tauri installation instructions for Rocky.
 
 Showcase examples remain in source but CASES is empty. Cases, filters and contribution form are inaccessible; Enviar o seu is disabled. Preserved examples are not current product documentation or user testimonials.
 

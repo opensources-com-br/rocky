@@ -1,7 +1,7 @@
 const content = {
   group: "Features",
   title: "Notes and ideas",
-  lead: "Notes and ideas are local records that you create, edit, search, and organize by stream. Ideas are not generated and saved automatically.",
+  lead: "Notes and ideas are local records that you create, edit, search, and organize by Rocky session. Ideas are not generated and saved automatically.",
   blocks: [
     { type: "h2", text: "Save" },
     { type: "list", items: [
@@ -11,7 +11,7 @@ const content = {
       "Saving keeps the current tab open and offers Undo. You can also create and edit records in the interface."
     ] },
     { type: "h2", text: "Organize" },
-    { type: "para", text: "Search text, filter records by stream, and mark completed ideas. Questions detected by the queue are saved automatically; this does not mean Rocky records every promise or problem from the broadcast." },
+    { type: "para", text: "Search text, filter records by session, and mark completed ideas. Questions detected by the queue are saved automatically; this does not mean Rocky records every promise or problem from the broadcast." },
     { type: "h2", text: "Moments" },
     { type: "para", text: "Say “Rocky, mark this moment: project demo.” The record stores the offset since the connected session began. It does not detect clips automatically or cut video, and its time can differ from the VOD if Rocky connects after the stream starts." },
     { type: "h2", text: "Persistence" },

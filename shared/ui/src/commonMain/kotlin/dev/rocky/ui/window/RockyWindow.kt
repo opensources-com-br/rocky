@@ -552,25 +552,21 @@ fun RockyWindow(
                         },
                         twitch = twitch,
                         onConnect = {
-                            if (finishLive()) {
-                                silenced = false
-                                twitch.connect(twitchClientId)
-                            }
+                            silenced = false
+                            twitch.connect(twitchClientId)
                         },
                         onDisconnect = {
                             silenced = false
-                            finishLive()
+                            twitch.disconnect()
                         },
                         onOpenBrowser = onOpenTwitchAuthorization,
                         kickConfiguration = kickConfiguration,
                         kick = kick,
                         onConnectKick = { configuration ->
-                            if (finishLive()) {
-                                silenced = false
-                                kickConfiguration = configuration
-                                onKickConfigurationChange(configuration)
-                                kick.connect(configuration)
-                            }
+                            silenced = false
+                            kickConfiguration = configuration
+                            onKickConfigurationChange(configuration)
+                            kick.connect(configuration)
                         },
                         onDisconnectKick = {
                             silenced = false

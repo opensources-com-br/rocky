@@ -1,7 +1,7 @@
 const content = {
   group: "Features",
   title: "Post-stream summary",
-  lead: "When you disconnect the session or close the app, Rocky creates a local summary of the records associated with that stream.",
+  lead: "When every platform disconnects or you close the app, Rocky creates a local summary of the session records, which may span several streams.",
   blocks: [
     { type: "h2", text: "Content" },
     { type: "para", text: "The summary gathers saved session records, including notes, ideas, moments, and pending questions. It can only summarize what was recorded; it does not analyze the recording or recover the full chat." },

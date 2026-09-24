@@ -15,7 +15,7 @@ Scope: landing page, 17 documentation topics, showcase coming-soon notice, disab
 | Summary | Deterministic summary of saved session records | `shared/core/.../live/RecordSummary.kt` |
 | Storage | SQLite, system preferences, secure AI/ElevenLabs keys and Kick/YouTube Client Secrets | `docs/PRIVACY.md` |
 | Maintenance | JSON backup/import, local diagnostic, verified installer download and update/restart in current packaged builds | `docs/PRIVACY.md`, `shared/ui/.../MaintenanceSettings.kt` |
-| Multiple platforms | Conversation combines active chats; saved records share one stable Rocky session until every platform disconnects | `shared/ui/.../RockyWindow.kt`, `LiveWorkspace.kt` |
+| Multiple platforms | Platform controls connect/disconnect independently; Conversation combines active chats and saved records share one stable Rocky session until every platform disconnects | `shared/ui/.../RockyWindow.kt`, `LiveWorkspace.kt` |
 | Packaging | Gradle/Compose, macOS and Windows development installers | `README.md`, `apps/desktop/build.gradle.kts` |
 
 `...` abbreviates `src/commonMain/kotlin/dev/rocky/{ui/window,core}` in the respective module.

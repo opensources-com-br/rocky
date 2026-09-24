@@ -570,7 +570,7 @@ fun RockyWindow(
                         },
                         onDisconnectKick = {
                             silenced = false
-                            finishLive()
+                            kick.disconnect()
                         },
                         onOpenKickBrowser = onOpenKickAuthorization,
                         youtubeConfiguration = youtubeConfiguration,
@@ -583,7 +583,7 @@ fun RockyWindow(
                         },
                         onDisconnectYouTube = {
                             silenced = false
-                            finishLive()
+                            youtube.disconnect()
                         },
                         onOpenYouTubeBrowser = onOpenYouTubeAuthorization,
                         facebookConfiguration = facebookConfiguration,
@@ -596,18 +596,16 @@ fun RockyWindow(
                         },
                         onDisconnectFacebook = {
                             silenced = false
-                            finishLive()
+                            facebook.disconnect()
                         },
                         onOpenFacebookBrowser = onOpenFacebookAuthorization,
                         tiktokConfiguration = tiktokConfiguration,
                         tiktok = tiktok,
                         onConnectTikTok = { configuration ->
-                            if (finishLive()) {
-                                silenced = false
-                                tiktokConfiguration = configuration
-                                onTikTokConfigurationChange(configuration)
-                                tiktok.connect(configuration)
-                            }
+                            silenced = false
+                            tiktokConfiguration = configuration
+                            onTikTokConfigurationChange(configuration)
+                            tiktok.connect(configuration)
                         },
                         onDisconnectTikTok = {
                             silenced = false

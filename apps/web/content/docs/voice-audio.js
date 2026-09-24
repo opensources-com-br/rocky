@@ -48,7 +48,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "O WAV temporário é apagado ao terminar a transcrição, inclusive em erros tratados; um crash pode deixar temporários do sistema. Áudio bruto não é enviado à IA. Use fones e grave um teste: captura de áudio do desktop pode incluir Rocky na transmissão. Não existe monitor privado garantido."
+      "text": "O WAV temporário é apagado ao terminar a transcrição, inclusive em erros tratados; um crash pode deixar temporários do sistema. Áudio bruto não é enviado à IA. Use fones e grave um teste com as mesmas fontes do OBS da live: fones sozinhos não impedem que a captura de áudio inclua Rocky. Não existe monitor privado garantido."
     }
   ]
 };

@@ -4,7 +4,7 @@ const content = {
   lead: "The Conversation tab combines chat from active Twitch, Kick, YouTube, Facebook, and TikTok LIVE connections. The question queue organizes part of that content.",
   blocks: [
     { type: "h2", text: "Grouped questions" },
-    { type: "para", text: "Questions detected by text rules are grouped by similarity and saved by stream. Use the queue to inspect sources and mark them pending or answered. Detection may miss questions; it does not guarantee semantic equivalence or automatically identify everything answered out loud." },
+    { type: "para", text: "Questions detected by text rules are grouped by similarity and saved by Rocky session. Use the queue to inspect sources and mark them pending or answered. Detection may miss questions; it does not guarantee semantic equivalence or automatically identify everything answered out loud." },
     { type: "h2", text: "Context filters" },
     { type: "list", items: [
       "Commands beginning with ! or / are ignored by default.",

@@ -260,20 +260,20 @@ fun RockyWindow(
             facebook.phase, facebook.sessionId, tiktok.phase, tiktok.sessionId) {
             val sessionLabel = "Rocky · ${currentTimeLabel()}"
             if (twitch.phase == TwitchConnectionPhase.Connected) workspace.start(
-                    twitch.sessionId, sessionLabel,
-                    twitch.startedAtMillis ?: currentTimeMillis())
+                twitch.sessionId, sessionLabel,
+                twitch.startedAtMillis ?: currentTimeMillis())
             if (kick.isConnected) workspace.start(
-                    kick.sessionId, sessionLabel,
-                    kick.startedAtMillis ?: currentTimeMillis())
+                kick.sessionId, sessionLabel,
+                kick.startedAtMillis ?: currentTimeMillis())
             if (youtube.isConnected) workspace.start(
-                    youtube.sessionId, sessionLabel,
-                    youtube.startedAtMillis ?: currentTimeMillis())
+                youtube.sessionId, sessionLabel,
+                youtube.startedAtMillis ?: currentTimeMillis())
             if (facebook.isConnected) workspace.start(
-                    facebook.sessionId, sessionLabel,
-                    facebook.startedAtMillis ?: currentTimeMillis())
+                facebook.sessionId, sessionLabel,
+                facebook.startedAtMillis ?: currentTimeMillis())
             if (tiktok.isConnected) workspace.start(
-                    tiktok.sessionId, sessionLabel,
-                    tiktok.startedAtMillis ?: currentTimeMillis())
+                tiktok.sessionId, sessionLabel,
+                tiktok.startedAtMillis ?: currentTimeMillis())
             if (!liveActive && workspace.sessionId.isNotBlank() && workspace.finish(currentTimeLabel())) ai.resetSession()
         }
         val sessionStatus = when {

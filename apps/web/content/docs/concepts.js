@@ -45,7 +45,7 @@ const content = {
     },
     {
       "type": "para",
-      "text": "A aba Conversa combina mensagens das conexões ativas, mas os registros usam uma única sessão por vez. Com várias plataformas conectadas, a sessão de registros segue a primeira disponível nesta ordem: Twitch, Kick, YouTube, Facebook e TikTok. Para separar notas e resumos por live, conecte uma plataforma de cada vez."
+      "text": "A aba Conversa combina mensagens das conexões ativas. Notas, ideias, perguntas e resumo pertencem a uma única sessão Rocky, que permanece até todas as plataformas serem desconectadas. Se precisar de registros e resumos separados por live, conecte uma plataforma de cada vez."
     },
     {
       "type": "h2",

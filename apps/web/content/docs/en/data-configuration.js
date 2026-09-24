@@ -6,7 +6,7 @@ const content = {
     { type: "h2", text: "Settings" },
     { type: "para", text: "Use Platforms, AI, Voice, Agent, and Data in the interface. This flow does not implement profiles through --profile, automatic TOML reloads, or the ROCKY_CONFIG, ROCKY_DATA_DIR, and ROCKY_LOG variables." },
     { type: "h2", text: "Storage" },
-    { type: "para", text: "On macOS, data is stored under ~/Library/Application Support/Rocky; on Windows, under %APPDATA%/Rocky. Non-secret preferences, including the TikTok channel username, use the dev/rocky namespace. AI and ElevenLabs keys and Kick and YouTube Client Secrets use the system vault; platform tokens stay in memory. Rocky does not encrypt SQLite." },
+    { type: "para", text: "On macOS, data is stored under ~/Library/Application Support/Rocky; on Windows, under %APPDATA%/Rocky. Non-secret preferences, including the TikTok channel username, use the dev/rocky namespace. AI and ElevenLabs keys, Kick and YouTube Client Secrets, and the Facebook App Secret use the system vault; platform tokens stay in memory. Rocky does not encrypt SQLite." },
     { type: "h2", text: "Backup and import" },
     { type: "para", text: "Under Data, export a JSON backup of records and sources without credentials. Import asks for confirmation, ignores identical copies, and stops on conflicting IDs; it does not replace existing records. Close Rocky before copying the database directly." },
     { type: "h2", text: "Diagnostics and updates" },

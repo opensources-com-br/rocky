@@ -257,21 +257,22 @@ fun RockyWindow(
             ).sortedBy(ChatMessage::receivedAtMillis)
         LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId,
             facebook.phase, facebook.sessionId, tiktok.phase, tiktok.sessionId) {
+            val sessionLabel = "Rocky · ${currentTimeLabel()}"
             when {
                 twitch.phase == TwitchConnectionPhase.Connected -> workspace.start(
-                    twitch.sessionId, "@${twitch.account?.login} · ${currentTimeLabel()}",
+                    twitch.sessionId, sessionLabel,
                     twitch.startedAtMillis ?: currentTimeMillis())
                 kick.isConnected -> workspace.start(
-                    kick.sessionId, "@${kick.account?.username} · ${currentTimeLabel()}",
+                    kick.sessionId, sessionLabel,
                     kick.startedAtMillis ?: currentTimeMillis())
                 youtube.isConnected -> workspace.start(
-                    youtube.sessionId, "${youtube.account?.displayName} · ${currentTimeLabel()}",
+                    youtube.sessionId, sessionLabel,
                     youtube.startedAtMillis ?: currentTimeMillis())
                 facebook.isConnected -> workspace.start(
-                    facebook.sessionId, "${facebook.page?.name} · ${currentTimeLabel()}",
+                    facebook.sessionId, sessionLabel,
                     facebook.startedAtMillis ?: currentTimeMillis())
                 tiktok.isConnected -> workspace.start(
-                    tiktok.sessionId, "@${tiktok.account?.username} · ${currentTimeLabel()}",
+                    tiktok.sessionId, sessionLabel,
                     tiktok.startedAtMillis ?: currentTimeMillis())
                 !liveActive -> workspace.finish(currentTimeLabel())
             }

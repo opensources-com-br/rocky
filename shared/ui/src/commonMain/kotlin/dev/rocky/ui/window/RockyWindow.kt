@@ -576,12 +576,10 @@ fun RockyWindow(
                         youtubeConfiguration = youtubeConfiguration,
                         youtube = youtube,
                         onConnectYouTube = { configuration ->
-                            if (finishLive()) {
-                                silenced = false
-                                youtubeConfiguration = configuration
-                                onYouTubeConfigurationChange(configuration)
-                                youtube.connect(configuration)
-                            }
+                            silenced = false
+                            youtubeConfiguration = configuration
+                            onYouTubeConfigurationChange(configuration)
+                            youtube.connect(configuration)
                         },
                         onDisconnectYouTube = {
                             silenced = false
@@ -591,12 +589,10 @@ fun RockyWindow(
                         facebookConfiguration = facebookConfiguration,
                         facebook = facebook,
                         onConnectFacebook = { configuration ->
-                            if (finishLive()) {
-                                silenced = false
-                                facebookConfiguration = configuration
-                                onFacebookConfigurationChange(configuration)
-                                facebook.connect(configuration)
-                            }
+                            silenced = false
+                            facebookConfiguration = configuration
+                            onFacebookConfigurationChange(configuration)
+                            facebook.connect(configuration)
                         },
                         onDisconnectFacebook = {
                             silenced = false

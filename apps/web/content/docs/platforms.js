@@ -64,6 +64,14 @@ const content = {
     },
     {
       "type": "h2",
+      "text": "Conexões simultâneas"
+    },
+    {
+      "type": "para",
+      "text": "Você pode conectar mais de uma plataforma e desconectar cada uma separadamente. A aba Conversa combina as mensagens recebidas; notas, perguntas e resumo ficam na mesma sessão Rocky até a última plataforma ser desconectada."
+    },
+    {
+      "type": "h2",
       "text": "Dados e permissões"
     },
     {

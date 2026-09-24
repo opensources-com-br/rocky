@@ -277,6 +277,25 @@ class RockyVisualCaptureTest {
     }
 
     @Test
+    fun keepsOtherPlatformConnectedWhenOneDisconnects() {
+        val twitch = FakeTwitchChatClient()
+        val youtube = FakeYouTubeChatClient()
+        render(settingsOpen = true, settingsSection = SettingsSection.Platforms,
+            twitchChatClient = twitch, twitchClientId = "client-id", youtubeChatClient = youtube,
+            youtubeConfiguration = YouTubeConfiguration("client-id", "client-secret"))
+        rule.onNodeWithText("Conectar Twitch").performClick()
+        rule.runOnIdle { twitch.emit(TwitchConnectionEvent.Connected(TwitchAccount("42", "rocky_live"))) }
+        rule.onNodeWithText("Conectar YouTube").performScrollTo().performClick()
+        rule.runOnIdle { youtube.emit(YouTubeConnectionEvent.Connected(
+            YouTubeAccount("channel", "Rocky YouTube"), YouTubeBroadcast("video", "chat", "Live"))) }
+        rule.onNodeWithText("concluir").performClick()
+        rule.onNodeWithText("2 PLATAFORMAS ONLINE").assertExists()
+        rule.onNodeWithTag("platform-twitch").performClick()
+        rule.onNodeWithText("Desconectar").performClick()
+        rule.onNodeWithText("1 PLATAFORMA ONLINE").assertExists()
+    }
+
+    @Test
     fun connectsAndDisplaysRealTwitchChat() {
         val twitch = FakeTwitchChatClient()
         val ai = FakeAiSuggestionClient()

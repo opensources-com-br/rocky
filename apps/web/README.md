@@ -15,7 +15,7 @@ Every build exports `/version.json` with the same version and build timestamp em
 
 Open tabs check that file on startup, focus, reconnect, and every five minutes while visible. Requests bypass caches and time out after ten seconds. A newer build shows a localized **Reload site** / **Later** notice; the site never reloads automatically. Reload preserves the route, query, fragment, and local preferences, and adds a version query parameter to avoid stale HTML. Static hosting needs no server, service worker, or special response headers.
 
-Desktop downloads use published official releases containing `SHA256SUMS.txt` (or the legacy `SHA256SUMS`). The browser downloads only a universal or matching architecture installer; unidentified or unavailable architectures and GitHub failures fall back to the official releases page. The desktop updater and the site's reload notice are independent. Older desktop builds require one installation over the existing app to gain the built-in updater.
+Desktop downloads use published official releases containing `SHA256SUMS.txt` (or the legacy `SHA256SUMS`). The browser downloads only a universal or matching architecture installer; unidentified or unavailable architectures and GitHub failures fall back to the official releases page. The desktop updater and the site's reload notice are independent. Current packaged desktop builds can install a verified update and restart after platforms disconnect. Older builds require one installation over the existing app to gain this updater.
 
 ## Pages and components
 

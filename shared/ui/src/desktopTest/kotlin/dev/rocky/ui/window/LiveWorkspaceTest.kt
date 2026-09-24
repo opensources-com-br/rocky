@@ -5,6 +5,16 @@ import org.junit.Test
 import org.junit.Assert.*
 
 class LiveWorkspaceTest {
+    @Test fun excludesPreviousChatFromNewSession() {
+        val workspace = LiveWorkspace(LocalNotesState(TransientNoteRepository()))
+        workspace.start("first", "Rocky", 1000)
+        val old = ChatMessage("old", "viewer", "Old", StreamPlatform.Twitch, receivedAtMillis = 1500)
+        assertTrue(workspace.includes(old))
+        assertTrue(workspace.finish("end"))
+        workspace.start("second", "Rocky", 2000)
+        assertFalse(workspace.includes(old))
+        assertTrue(workspace.includes(old.copy(id = "new", receivedAtMillis = 2500)))
+    }
     @Test fun keepsOneSessionUntilAllPlatformsDisconnect() {
         val records = LocalNotesState(TransientNoteRepository())
         val workspace = LiveWorkspace(records)

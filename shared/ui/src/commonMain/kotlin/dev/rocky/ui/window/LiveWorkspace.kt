@@ -14,6 +14,8 @@ internal class LiveWorkspace(private val records: LocalNotesState) {
         sessionId = id; label = name; startedAt = start
     }
     fun offset(now: Long) = (now - startedAt).coerceAtLeast(0)
+    fun includes(message: ChatMessage) = sessionId.isNotBlank() &&
+        (message.receivedAtMillis ?: Long.MIN_VALUE) >= startedAt
     fun decorate(note: LiveNote, now: Long): LiveNote = if (sessionId.isBlank()) note else
         note.copy(sessionId = sessionId, sessionLabel = label, offsetMillis = offset(now))
     fun finish(timestamp: String): Boolean {

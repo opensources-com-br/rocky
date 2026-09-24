@@ -13,6 +13,8 @@ const content = {
     ] },
     { type: "h2", text: "What persists" },
     { type: "para", text: "Notes, ideas, questions with evidence, moments, and summaries stay in SQLite. Answer history is temporary and is cleared when you disconnect. A question marked as answered reflects a user action, not automatic verification of spoken audio." },
+    { type: "h2", text: "Multiple connected platforms" },
+    { type: "para", text: "Conversation combines messages from active connections, but records use one session at a time. With several platforms connected, the record session follows the first available in this order: Twitch, Kick, YouTube, Facebook, then TikTok. Connect one platform at a time to keep notes and summaries separate by stream." },
     { type: "h2", text: "Session time" },
     { type: "para", text: "Moments and stream-related records use elapsed time since the connection began. This time is not necessarily the timestamp in the published video." }
   ]

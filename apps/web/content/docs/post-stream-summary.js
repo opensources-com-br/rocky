@@ -1,6 +1,6 @@
 const content = {
   "group": "Recursos",
-  "lead": "Ao desconectar a sessão ou fechar o app, Rocky cria um resumo local dos registros associados àquela live.",
+  "lead": "Ao desconectar todas as plataformas ou fechar o app, Rocky cria um resumo local dos registros da sessão, que pode reunir mais de uma live.",
   "blocks": [
     {
       "type": "h2",

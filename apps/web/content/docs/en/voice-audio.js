@@ -14,7 +14,7 @@ const content = {
     { type: "h2", text: "End of speech" },
     { type: "para", text: "Capture ends after speech followed by 450 to 1500 ms of silence. Ongoing phrases can last up to 30 seconds; without detection, capture uses eight-second blocks. Calibrate noise under Voice or adjust the threshold. The microphone keeps a buffer during transcription and listens during analysis; it pauses during playback to avoid hearing its own voice. Use the speech shortcut to interrupt and rephrase." },
     { type: "h2", text: "Audio and OBS" },
-    { type: "para", text: "The temporary WAV is deleted when transcription ends, including handled errors; a crash may leave system temporary files. Raw audio is not sent to the AI provider. Use headphones and make a test recording: desktop audio capture may include Rocky in the stream. A private monitor is not guaranteed." }
+    { type: "para", text: "The temporary WAV is deleted when transcription ends, including handled errors; a crash may leave system temporary files. Raw audio is not sent to the AI provider. Use headphones and make a test recording with the same OBS sources as the stream: headphones alone do not prevent audio capture from including Rocky. A private monitor is not guaranteed." }
   ]
 };
 

@@ -245,6 +245,7 @@ fun RockyWindow(
             else onRestartAfterUpdate()
         }
         val visibleMessages = (twitch.messages + kick.messages + youtube.messages + facebook.messages + tiktok.messages)
+            .filter(workspace::includes)
             .sortedBy(ChatMessage::receivedAtMillis)
         val visibleMessageCount = twitch.totalMessages + kick.totalMessages + youtube.totalMessages + facebook.totalMessages +
             tiktok.totalMessages
@@ -254,7 +255,7 @@ fun RockyWindow(
                 youtube.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
                 + facebook.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS) +
                 tiktok.messagesReceivedWithin(VOICE_CHAT_WINDOW_MILLIS)
-            ).sortedBy(ChatMessage::receivedAtMillis)
+            ).filter(workspace::includes).sortedBy(ChatMessage::receivedAtMillis)
         LaunchedEffect(twitch.phase, twitch.sessionId, kick.phase, kick.sessionId, youtube.phase, youtube.sessionId,
             facebook.phase, facebook.sessionId, tiktok.phase, tiktok.sessionId) {
             val sessionLabel = "Rocky · ${currentTimeLabel()}"

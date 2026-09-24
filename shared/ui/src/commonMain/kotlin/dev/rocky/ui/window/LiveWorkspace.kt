@@ -10,7 +10,7 @@ internal class LiveWorkspace(private val records: LocalNotesState) {
     var summary by mutableStateOf<String?>(null)
     val questions = QuestionQueue(records)
     fun start(id: String, name: String, start: Long) {
-        if (sessionId == id) return
+        if (sessionId.isNotBlank()) return
         sessionId = id; label = name; startedAt = start
     }
     fun offset(now: Long) = (now - startedAt).coerceAtLeast(0)
